@@ -1,0 +1,45 @@
+project:
+    type: book
+
+book:
+  title: "Adapting the Future"
+  author: "Nils Nerhus Rørstad"
+  date: "07.02.2025"
+  chapters:
+    - index.qmd
+    - part: "Introduction"
+      chapters: 
+        - chapters/intro.qmd
+        - chapters/scope.qmd
+    - part: "Research design"
+      chapters:
+        - chapters/theory.qmd
+        - chapters/methods.qmd
+    - part: "Analysis"
+      chapters:
+        - chapters/findings.qmd
+        - chapters/discussion.qmd
+    - chapters/conclusion.qmd
+
+bibliography: references.bib
+
+format:
+  html:
+    theme: cosmo
+    toc: true
+    number-sections: false
+    self-contained: true
+  pdf:
+    documentclass: scrreprt
+    toc: true
+    number-sections: true
+    number-depth: 2
+  docx:
+    toc: true
+    number-sections: true
+    number-depth: 2
+  epub:
+    toc: true
+    
+
+editor: source

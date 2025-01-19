@@ -1,0 +1,34 @@
+# Scope and research questions 
+
+his thesis seeks to understand climate adaptation funding flows, on a global scale. Since this funding, and its discourse, is anchored in the UNFCCC[^1], it is a natural focal point for the study. The declarations made at the end of every Climate Summit are the outcome of intense negotiations at the summit, and their contents become a part national political debates all around the world. 
+
+The UNFCCC is also the stage where climate-related are launched, and a meeting place for activists, lobbyists, decision-makers and experts. The National Adaptation plans are a part of this, where a World Bank supported project has 
+
+What is climate adaptation?
+
+- How has climate adaptation evolved at the UNFCCC?
+- What is the impact of cllimate adaptation on are North-South finance flows?
+- What are the most common climate adaptation interventions? What do they replace?
+
+I intend to answer these question by analyzing flows in the OECD DAC CRS dataset [^2]. The first question would be answered by modelling the relationship between the climate adaptation marker and the funding flows. The second question will be answered in the same dataset, looking at the relationship between the OECD sectors and the marker. The last one will look at the relationship between development funders[^3] and the climate adaptation marker.
+
+How will climate adaptation shape the future?
+
+- What futures do climate adaptation projects have? What are their implications?
+- How are climate adaptation interventions justified? Who decides?
+- How could climate adaptation be reimagined? What are the alternatives?
+
+I intend to answer these questions by analyzing the English language National Adaptation Plans (NAPs) submitted at the UNFCCC. The analysis will be layered and aim to deconstruct the visions of the future expressed in the texts. I identify the key methphors underpinning the adaptation discourse.
+
+Lastly, based on these methaphors, I construct three scenarios for the future of climate adaptation. One where the trends continues as I found the first research question, one where *protection* is prioritized and one where *capacity* is prioritized.
+
+[^1]: United Nations Framework Conference for Climate Change is the UN organization responsible for organizing the early Climate Summits, also known as Conference of the Parties (COP)
+[^2]: Spelled out this is: Organisation for Economic Co-operation and Development, Development Assistance Committee, Creditor Reporting System. It is a database of all Official Development Assistance (ODA) reported by OECD countries, and is split along sectors, purpose, target SDG and policy markers. 
+[^3]: This could be Multilateral Development Banks (MDB), members of the World Bank group (WB), funds established under the UNFCCC or bilateral aid from donor countries. 
+
+
+[^1]: There is an argument to be made that the Norwegian economy is suppresed by the phenomenon known as "Dutch Disease", where one very large export sector hampers growth in all the others. See @aune2020 for a more detailed explaination
+[^2]: While it excludes fossil fuels from the future, it does not conceptually choose between technologies
+[^3]: See all these many sources that claim that climate adaptation could also be 
+[^4]: See even more of my sources.
+[^5]: The language of the agreement states: blablabla
