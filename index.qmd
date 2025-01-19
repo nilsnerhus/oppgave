@@ -6,18 +6,9 @@ First, it analyzes data from the OECD's Creditor Reporting System to see how Nor
 
 Second, it analyzes the National Adaptation Plans subitted to the UNFCCC, through the Causal Layered Analysis framework. It finds that, despite the planned interventions amount to a total rewiring of the economy on all levels, they fail to envision a different future. The interventions, rather, seem to believe there is no alternative to the destructive system that have caused climate change in the first place. 
 
-Lastly, the thesis suggests more research into new ways of understanding climate adaptation, and highlights promising work by authors in the fields of futurology, design and development. Based on these different conceptualizations, I construct three different scenarios for the future of climate adaptation. 
+Lastly, the thesis suggests more research into new ways of understanding climate adaptation, and highlights promising work by authors in the fields of futurology, design and development. Based on these different conceptualizations, I construct three different scenarios for the future of climate adaptation.
 
 
 # Acknowledgements {.unnumbered}
 
-Thank you to:
-
-- Michael Eilenberg
-- Natur og Ungdom
-- Lea Justine Nesheim
-- Erlend Hovdhaugen
-- Edvard Botterli Udnæs
-- CONCITO
-- Søren Have
-- Henrik Gudmundson
+Thank you
