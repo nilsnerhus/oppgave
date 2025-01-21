@@ -1,1 +1,42 @@
 # Methods
+
+In this section, I will 
+
+## Mixed-methods design
+
+
+
+## Reports as the focus of the study 
+
+I have chosen to focus on actors reporting, rather than observing outcomes or processes for this thesis. As the focus is on understanding how actors see climate adaptation and attempting to understand how that might impact the future.
+
+Focussing on the reported 
+
+The are multiple ethnographies written about the effects of climate adaptation.
+
+Because of the scope and complexity of the thesis, an in-depth field work would have been too much work. 
+
+## Modelling OECD data
+
+The OECD Creditor Reporting System is a collection of self-reported activities by the members of the OECD. This is, to the member states and the officials that report, a very serious exersice, but it is also not coordinated beyond the guidance the OECD gives. Automatic (artificial intelligence) coding of the data will give different results. 
+
+This is to this study fine, as I am after what is coded as climate adaptation to analyze what the actors think, and not the other way around. I will not compare across donors, so that inconsistency is handeled. 
+
+As I have dealt with this dataset earlier during my internship with CONCITO, I was confident in how it functioned. 
+
+I will retrieve the numbers by calling the OECDs api. This ensures I have updated and reproducible numbers. 
+
+I will then clean the data by using the `dyplr`-package in `R`, a well known and open statistical program. I have decided to include the code I manipulate the data with in the analysis, so that it is easy to see what I have done and haven't. 
+
+To analyse how much of a relationship there is between some of the columns, I did a [insert name of method]. 
+
+## Analyzing the National Adaptation plans
+
+Are the SIDS-countries representable? No. They are small island countries, so their donor's focus will be on other things than a land-locked country fx. 
+
+The plans are created by the climate adaptation project in one of the members of the World Bank group, in cooperation with different Government actors. 
+
+The plans are obvously the outcome of a brokering process between the local context and how the 
+
+
+

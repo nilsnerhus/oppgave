@@ -1,11 +1,32 @@
 # Theory
 
+In this theory section, I will present the two main strands of thinking within climate adapation. First, I will expand on climate security as a part of the Human Security framework and expantions of security
+
+## Expantion of the notion of security
+
+Historically, security has been understood in national terms. A nation with a stable leadership, stable neighboors and a stable economy, was a stable country. Since the end of the cold was, this has changed. While it could be argued that the Nordic countries have all of the above[^1], threats like a possible climate- and/or biodiversity collapse and terrorism trancend the borders and still create insecurity. 
+
+The notion of security has expanded in two ways. The first way is vertically. It now encopasses not just the 
+
+The notion of security has expanded in two ways, horizontally, to include more aspects such as 
+
+## North-south interventions
+
+There are three main ways of understanding the justifications for interventions by countries in the global north, in countries in the global south.
+
+Mainstream/Neoliberal/Capitalist/Economic. This view is that the global north needs markets to sell stuff to, and that investments and markets will help stabilize and grow poorer countries.
+
+Bottom-up/Local. This view is that countries in the global south are incapable of helping their citizens, and targeted local-led bottom-up projects could give capacity, and build capability to increase resilience.
+
+Security. With an expanded view of security as outlined above, interventions to further security has also expanded. While military interventions are preserved for ongoing violence, an increasing amount of internavntions are justified by the need to preserve common goods, such as the environment[^2]. 
+
+In the next section, I will explore how these intervnetion-types map onto climate adaptation. 
+
 ## Theoretical approaches to climate adaptation {#sec-adaptation-theory}
 
 
-### Synergy approaches {#sec-synergy}
 
-[Definitions of vulnarability and resilience to climate change]
+### Synergy approaches {#sec-synergy}
 
 [Highlight the 100% overlap between vulnerability and poverty]
 
@@ -13,6 +34,12 @@
 
 
 
+## Mainstreaming
+
+
 ## Layered visions of the future
 
 ### The adaptation regime and defuturing
+
+[^1]: While Norway and Finland border Russia, the amount of military encounters on the border has decreased since the full-scale Russian invation of Ukraine
+[^2]: Here I need a whole lot more 
