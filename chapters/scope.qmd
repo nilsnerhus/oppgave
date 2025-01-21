@@ -10,7 +10,7 @@ What is climate adaptation?
 - What is the impact of cllimate adaptation on are North-South finance flows?
 - What are the most common climate adaptation interventions? What do they replace?
 
-I intend to answer these question by analyzing flows in the OECD DAC CRS dataset [^2]. The first question would be answered by modelling the relationship between the climate adaptation marker and the funding flows. The second question will be answered in the same dataset, looking at the relationship between the OECD sectors and the marker. The last one will look at the relationship between development funders[^3] and the climate adaptation marker.
+I intend to answer these question by analyzing flows in the OECD DAC CRS dataset [^2]. The first question would be answered by modelling the relationship between the climate adaptation marker and the funding flows. The second question will be answered in the same dataset, looking at the relationship between the OECD sectors and the marker. The last one will look at the relationship between development funders[^3] and the climate adaptation marker. 
 
 How will climate adaptation shape the future?
 
