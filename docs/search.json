@@ -4,7 +4,7 @@
     "href": "index.html",
     "title": "Adapting the Future",
     "section": "",
-    "text": "Abstract\nClimate adaptation shapes up to be the defining paradigm of the 21th century. This thesis seeks to understand the role climate adaptation plays today, and how it will shape the future. It is a common assumption that climate adaptation is “green”, a claim I will investigate through a mixed-methods approach.\nFirst, it analyzes data from the OECD’s Creditor Reporting System to see how North-South finance flows have changed over the last ten years. It finds that while the amount of aid tagged as climate adaptation is rising, it is not across the board. This leads to a structural shift in aid, where a larger part of aid is out in construction, transport and energy.\nSecond, it analyzes the National Adaptation Plans subitted to the UNFCCC, through the Causal Layered Analysis framework. It finds that, despite the planned interventions amount to a total rewiring of the economy on all levels, they fail to envision a different future. The interventions, rather, seem to believe there is no alternative to the destructive system that have caused climate change in the first place.\nLastly, the thesis suggests more research into new ways of understanding climate adaptation, and highlights promising work by authors in the fields of futurology, design and development. Based on these different conceptualizations, I construct three different scenarios for the future of climate adaptation.\n\n\nAcknowledgements\nThank you",
+    "text": "Abstract\nClimate adaptation shapes up to be the defining paradigm of the 21th century. This thesis seeks to understand the role climate adaptation plays today, and how it will shape the future. It is a common assumption that climate adaptation is “green”, a claim I will investigate through a mixed-methods approach.\nFirst, it analyzes data from the OECD’s Creditor Reporting System to see how North-South finance flows have changed over the last ten years. It finds that while the amount of aid tagged as climate adaptation is rising, it is not across the board. This leads to a structural shift in aid, where a larger part of aid is out in construction, transport and energy.\nSecond, it analyzes the National Adaptation Plans subitted to the UNFCCC, through the Causal Layered Analysis framework. It finds that, despite the planned interventions amount to a total rewiring of the economy on all levels, they fail to envision a different future. The interventions, rather, seem to believe there is no alternative to the destructive system that have caused climate change in the first place.\nLastly, the thesis suggests more research into new ways of understanding climate adaptation, and highlights promising work by authors in the fields of futurology, design and development. Based on these different conceptualizations, I construct three different scenarios for the future of climate adaptation.\n\n\nAcknowledgements\nThank you.\nDette er en testtest",
     "crumbs": [
       "Abstract"
     ]
@@ -14,7 +14,7 @@
     "href": "chapters/intro.html",
     "title": "Motivation and context - Climate change is the future",
     "section": "",
-    "text": "Human Security and climate security\nClimate change is dangerous, unfair and already happening. Environmental security is a key pillar in the Human Security approach. Climate change risks to harm it.\nSomething about the shifting geopolitics meaning that the green transition is also somehow becoming securitized, and that the global polity is more concerned with the security-frame of international relations. Global south adaptation becoming a central part of the climate discourse, and as I will expand on in later in this thesis, it is unclear what it actually entails.\nClimate security is a multi-level issue. Droughts, floods and other extremes caused by climate change could impact the livelihoods of many, and possible threaten peace and security in society at large.\nSecurity is also concerned with anticipating and avoiding risk. This means looking into the future.\nClimate adaptation is special because of its orientation to the future. It is a process of adaptation to risks of change. It is a reconstruction of the world to adapt to dangers that we do not know the full extent of. Most theory today assumes that climate adaptation can, and will come, as a win-win for people, climate and\nClimate\nUnderstanding climate adaptation\nIn Scandinavia, climate security (klimasikring) and climate adaptation (klimatilpasning) is used interchangebly. I will use climate adaptation thorughout the rest of the thesis, because this is the language of the UNFCCC.",
+    "text": "Climate security\nClimate change is dangerous, unfair and already happening. Environmental security is a key pillar in the Human Security approach. Climate change is set to harm it. The instability this\nSomething about the shifting geopolitics meaning that the green transition is also somehow becoming securitized, and that the global polity is more concerned with the security-frame of international relations. Global south adaptation becoming a central part of the climate discourse, and as I will expand on in later in this thesis, it is unclear what it actually entails.\nClimate security is a multi-level issue. Droughts, floods and other extremes caused by climate change could impact the livelihoods of many, and possible threaten peace and security in society at large.\nSecurity is also concerned with anticipating and avoiding risk. This means looking into the future.\nClimate adaptation is special because of its orientation to the future. It is a process of adaptation to risks of change. It is a reconstruction of the world to adapt to dangers that we do not know the full extent of. Most theory today assumes that climate adaptation can, and will come, as a win-win for people, climate and\nClimate\nUnderstanding climate adaptation\nIn Scandinavia, climate security (klimasikring) and climate adaptation (klimatilpasning) is used interchangebly. I will use climate adaptation thorughout the rest of the thesis, because this is the language of the UNFCCC.",
     "crumbs": [
       "Introduction",
       "<span class='chapter-number'>1</span>  <span class='chapter-title'>Motivation and context - Climate change is the future</span>"
@@ -58,7 +58,18 @@
     "href": "chapters/theory.html",
     "title": "Theory",
     "section": "",
-    "text": "Theoretical approaches to climate adaptation",
+    "text": "Expantion of the notion of security\nHistorically, security has been understood in national terms. A nation with a stable leadership, stable neighboors and a stable economy, was a stable country. Since the end of the cold was, this has changed. While it could be argued that the Nordic countries have all of the above1, threats like a possible climate- and/or biodiversity collapse and terrorism trancend the borders and still create insecurity.\nThe notion of security has expanded in two ways. The first way is vertically. It now encopasses not just the\nThe notion of security has expanded in two ways, horizontally, to include more aspects such as",
+    "crumbs": [
+      "Research design",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Theory</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/theory.html#north-south-interventions",
+    "href": "chapters/theory.html#north-south-interventions",
+    "title": "Theory",
+    "section": "North-south interventions",
+    "text": "North-south interventions\nThere are three main ways of understanding the justifications for interventions by countries in the global north, in countries in the global south.\nMainstream/Neoliberal/Capitalist/Economic. This view is that the global north needs markets to sell stuff to, and that investments and markets will help stabilize and grow poorer countries.\nBottom-up/Local. This view is that countries in the global south are incapable of helping their citizens, and targeted local-led bottom-up projects could give capacity, and build capability to increase resilience.\nSecurity. With an expanded view of security as outlined above, interventions to further security has also expanded. While military interventions are preserved for ongoing violence, an increasing amount of internavntions are justified by the need to preserve common goods, such as the environment2.\nIn the next section, I will explore how these intervnetion-types map onto climate adaptation.",
     "crumbs": [
       "Research design",
       "<span class='chapter-number'>3</span>  <span class='chapter-title'>Theory</span>"
@@ -68,8 +79,19 @@
     "objectID": "chapters/theory.html#sec-adaptation-theory",
     "href": "chapters/theory.html#sec-adaptation-theory",
     "title": "Theory",
-    "section": "",
-    "text": "Synergy approaches\n[Definitions of vulnarability and resilience to climate change]\n[Highlight the 100% overlap between vulnerability and poverty]\n\n\nVulnerability approaches",
+    "section": "Theoretical approaches to climate adaptation",
+    "text": "Theoretical approaches to climate adaptation\n\nSynergy approaches\n[Highlight the 100% overlap between vulnerability and poverty]\n\n\nVulnerability approaches",
+    "crumbs": [
+      "Research design",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Theory</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/theory.html#mainstreaming",
+    "href": "chapters/theory.html#mainstreaming",
+    "title": "Theory",
+    "section": "Mainstreaming",
+    "text": "Mainstreaming",
     "crumbs": [
       "Research design",
       "<span class='chapter-number'>3</span>  <span class='chapter-title'>Theory</span>"
@@ -84,6 +106,61 @@
     "crumbs": [
       "Research design",
       "<span class='chapter-number'>3</span>  <span class='chapter-title'>Theory</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/theory.html#footnotes",
+    "href": "chapters/theory.html#footnotes",
+    "title": "Theory",
+    "section": "",
+    "text": "While Norway and Finland border Russia, the amount of military encounters on the border has decreased since the full-scale Russian invation of Ukraine↩︎\nHere I need a whole lot more↩︎",
+    "crumbs": [
+      "Research design",
+      "<span class='chapter-number'>3</span>  <span class='chapter-title'>Theory</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/methods.html",
+    "href": "chapters/methods.html",
+    "title": "Methods",
+    "section": "",
+    "text": "Mixed-methods design",
+    "crumbs": [
+      "Research design",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Methods</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/methods.html#reports-as-the-focus-of-the-study",
+    "href": "chapters/methods.html#reports-as-the-focus-of-the-study",
+    "title": "Methods",
+    "section": "Reports as the focus of the study",
+    "text": "Reports as the focus of the study\nI have chosen to focus on actors reporting, rather than observing outcomes or processes for this thesis. As the focus is on understanding how actors see climate adaptation and attempting to understand how that might impact the future.\nFocussing on the reported\nThe are multiple ethnographies written about the effects of climate adaptation.\nBecause of the scope and complexity of the thesis, an in-depth field work would have been too much work.",
+    "crumbs": [
+      "Research design",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Methods</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/methods.html#modelling-oecd-data",
+    "href": "chapters/methods.html#modelling-oecd-data",
+    "title": "Methods",
+    "section": "Modelling OECD data",
+    "text": "Modelling OECD data\nThe OECD Creditor Reporting System is a collection of self-reported activities by the members of the OECD. This is, to the member states and the officials that report, a very serious exersice, but it is also not coordinated beyond the guidance the OECD gives. Automatic (artificial intelligence) coding of the data will give different results.\nThis is to this study fine, as I am after what is coded as climate adaptation to analyze what the actors think, and not the other way around. I will not compare across donors, so that inconsistency is handeled.\nAs I have dealt with this dataset earlier during my internship with CONCITO, I was confident in how it functioned.\nI will retrieve the numbers by calling the OECDs api. This ensures I have updated and reproducible numbers.\nI will then clean the data by using the dyplr-package in R, a well known and open statistical program. I have decided to include the code I manipulate the data with in the analysis, so that it is easy to see what I have done and haven’t.\nTo analyse how much of a relationship there is between some of the columns, I did a [insert name of method].",
+    "crumbs": [
+      "Research design",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Methods</span>"
+    ]
+  },
+  {
+    "objectID": "chapters/methods.html#analyzing-the-national-adaptation-plans",
+    "href": "chapters/methods.html#analyzing-the-national-adaptation-plans",
+    "title": "Methods",
+    "section": "Analyzing the National Adaptation plans",
+    "text": "Analyzing the National Adaptation plans\nAre the SIDS-countries representable? No. They are small island countries, so their donor’s focus will be on other things than a land-locked country fx.\nThe plans are created by the climate adaptation project in one of the members of the World Bank group, in cooperation with different Government actors.\nThe plans are obvously the outcome of a brokering process between the local context and how the",
+    "crumbs": [
+      "Research design",
+      "<span class='chapter-number'>4</span>  <span class='chapter-title'>Methods</span>"
     ]
   },
   {
