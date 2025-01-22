@@ -1,45 +1,67 @@
 # Theory
 
-In this theory section, I will present the two main strands of thinking within climate adapation. First, I will expand on climate security as a part of the Human Security framework and expantions of security policy
+In this theory section, I will present the theoretical framework that informs the analyzis later in the thesis. As a novel framework, it brings in movements in the fields of antrhopology, agronomy, economy, development, design, security and futurology, to better understand the complex and transdisiplinary concept of climate adaptation. 
 
-## Expantion of the notion of security
+First, I will explore how the concept of security has evolved sine the World War 2, and how this leads to a form of securitization. Second, I will explain the different justifications for North-South interventions, arguing that there are four main types of justifications. Third, I will explain the main views of climate adaptation, and mapping them onto the intervention framework I have built earlier. Lastly, I will explore development and security's relation to the future, and explore new developments the critical literature.
 
-Historically, security has been understood in national terms. A nation with a stable leadership, stable neighboors and a stable economy, was a stable country. Since the end of the cold was, this has changed. While it could be argued that the Nordic countries have all of the above[^1], threats like a possible climate- and/or biodiversity collapse and terrorism trancend the borders and still create insecurity. 
+## New wars, new security
 
-The notion of security has expanded in two ways. The first way is vertically. It now encopasses not just the 
+Security is seen as combination of a security problem with a security solution [@waever1995]. Interestingly, it is the absence of security solutions that creates insecurity, not the presence of the threat. This idea makes perfect security impossible to achieve [@baldwin1997, p. 15]. It is a concept with deep historical roots, it has traditionally been associated with military power and state building, but has also included other values and other actors. The values security guards, what *is* secured, is subject for debate, and has changed throughout history and between contexts [@baldwin1997, p. 13]. 
 
-The notion of security has expanded in two ways, horizontally, to include more aspects such as 
+Since security is unachievable, and has a cost, it is no more than just another policy objective for those involved in politics to weigh against other issues, it has marginal value. The value of say, national security, always has to be valued against its costs, and other values, such as human rights [@baldwin1997, p. 16]. There are two main strains of security thinking; the realpolitik-paradigm, and the human security paradigm. These discussions shaddow discussions of human nature and the nature of man [see @keeley1997; @otterbein1997]. 
+
+As the prompt referenced in the introduction the concept of security was extended in four directions, vertically, up to the international and down to the individual, and horizontally, from military threats to economic, social and other threats [@rothschild1995, p. 55]. The concept of human security came as the last in a long line of expansions to the notion of security [@paris2001, p. 88]. The realpolitik-paradigm was deemed to not fit the new post-cold war situation and the new wars that emerged. There was a need for a new framework to ensure the security of all people in the world [@undp1994, p. 49]. International politics was no longer a fight between the superpowers, and there was considerable fear the "new wars", by some seen as a different kind of organized violence taking hold [@kaldor2012, p. 1]. 
+
+To feel insecure is more connected to everyday worries and suffering, than it is international headline-grabbing crises [@undp1994, p. 34]. Threats against human security somewhere, is a threat to people everywhere [@undp1994, p. 46]. These failed states threaten the security of people everywhere, because the new threats would come from individuals and groups, not from nation states [@undp1994, p. 46]. To overcome this insecurity there is a need for state building and promotion of human rights, not military interventions [@tadjbakhsh2007, p. 18]. 
+
+## Securitization
+
+A central point to the understanding of security is the process of securitization. Here, a topic, event or other peace of politics is made into a security issue. Securitization is not simply to speak louder, but to change the language in witch an issue is discussed in a specific way [@waever1995]. This language often invokes life or death for the state or society, and often makes references to war [@waever1995]. Classic examples of this are "the war on terror", "the war on drugs", the "war on crime" and the "war on poverty" all not so proud examples from the US. 
+
+Since security is the combination of a security problem with a security solution, and the threats to security has expanded, it is possible to securitize virtually every aspect of society. Securitization has a massive potential to mobilize people to rally behind causes [@waever1995]. This can be seen in the ability to mobilize troops to fight in actual wars, for states to provide resources to a cause or to shift the debate around an issue.
+
+Securitization, with its references to war, often invokes the state as the provider of security [@waever1995]. As with the example of "war on drugs", it was not a war for the pharma-businesses to fight, nor was it because it was an health crisis. It was to enable the coercive powers of the state to now focus on a new issue, and to use laws, regulations, taxes, fines and incarceration to get it. Some scholars argue that one should only investigate the impacts of securitization, instead of weather or not an issue has been securitized [@owen2008, p. 447]. Other argues that securitization itself is defensive. It will reinforce the state of the world like it is today [@waever1995].
+
+Climate security is a securitization of the biosphere and, as I will explore later in this thesis, 
 
 ## North-south interventions
 
-There are three main ways of understanding the justifications for interventions by countries in the global north, in countries in the global south.
+There are four main ways of understanding the justifications for interventions by countries in the global north, in countries in the global south:
 
-Mainstream/Neoliberal/Capitalist/Economic. This view is that the global north needs markets to sell stuff to, and that investments and markets will help stabilize and grow poorer countries.
+- Institutional development
+- Participatory development
+- Security development
+- Alternative development
 
-Bottom-up/Local. This view is that countries in the global south are incapable of helping their citizens, and targeted local-led bottom-up projects could give capacity, and build capability to increase resilience.
+This way of understanding is perhaps the most common, as it involved the World Bank, IMF and the other large multilateral institutions. It assumes that the issues countries face are somehow of their own making and a result of a history of oppression. Through better governance and improved infrastructure, transportation cost will sink, and spur economic development. Funds will be dispersed at the national level, most often as loans, with conditions attached. These conditions could include the use of private sector instruments, and mobilization of funds at the project level.
 
-Security. With an expanded view of security as outlined above, interventions to further security has also expanded. While military interventions are preserved for ongoing violence, an increasing amount of internavntions are justified by the need to preserve common goods, such as the environment[^2]. 
+The particapatory view is skeptical of the government, both as in its ability to represent its citizens, as well as implementing its policies. By engaging poor populations directly, funds would not be wasted in bureaucracy and corruption. Since funds can target the most vulnerable populations, they make life better. Funds will be dispersed in many of small-scale projects, mediated by an international network of NGOs. The communities that best understand donor preferences, get a larger part of aid flows. 
 
-In the next section, I will explore how these intervnetion-types map onto climate adaptation. 
+The security view sees the era of rapid growth in international trade as over. The United States, Russia, China and the EU moving investment to allies and strategically important parts of the world, through mechanisms such as EU's Global Gateway and China's Belt and Road, aiming to sure up their value chains. Funds are either dispersed at the national level, as loans or grants, or through infrastructure deals, where the infrastructure is delivered already assembled. Consultation with other actors that the State is limited. 
 
-## Theoretical approaches to climate adaptation {#sec-adaptation-theory}
+Perhaps the most radical on this list, influenced by post-development thinking, the alternative development view rejects development interventions on the whole. Rather, development is sees as an always-ongoing process, where local communities find better solutions when left alone, without distortions from the outside. Funds are not needed for this approach, but cases where a donors' Ministry for Energy is funding the polluters, and the same donors Ministry for Environment is funding activists to fight the polluters, should be avoided[^2]. 
 
-
+The literature on climate adaptation is large and growing rapidly. In this section I will outline the main ways climate adaptation is envisioned by the actors that 
 
 ### Synergy approaches {#sec-synergy}
 
-[Highlight the 100% overlap between vulnerability and poverty]
+This approach, favored by UN organizations such as the Food and Agriculture Organization (FAO), highlights the linkages between the ecosystem and resilience, advocating for more 
 
-### Vulnerability approaches
+Projects that includes this view is the *Great Green Wall of Africa*. 
 
+Through measures such as knowledge transfers, co-management of resorces and tree planting. This view promises win-win scenarios, as the interventions is thought to have positive effects on the farmer (and farmers familiy's) income, which then leads to a fortunes cycle. 
 
+This approach is squarly based in the participatory view, and dismisses the state and international factors in having an impact locally. 
 
 ## Mainstreaming
 
+This view, favored by international NGOs[^1] is that climate change should be a part of all development assitance. 
+
+This approach is attempting to mainstream
 
 ## Layered visions of the future
 
 ### The adaptation regime and defuturing
 
-[^1]: While Norway and Finland border Russia, the amount of military encounters on the border has decreased since the full-scale Russian invation of Ukraine
-[^2]: Here I need a whole lot more 
+[^1]: And Danish ones like CONCITO....
+[^2]: This was a finding from my field work in Uganda in the spring of 2023 as part of my Bachelor thesis in Development Studies at the University of Oslo. The French embassy in Kampala was administering funds both for Total Energy to build the East African Pipeline, and Fridays for Future Uganda to fight it. 
