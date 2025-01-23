@@ -22,13 +22,6 @@ I intend to answer these questions by analyzing the English language National Ad
 
 Lastly, based on these methaphors, I construct three scenarios for the future of climate adaptation. One where the trends continues as I found the first research question, one where *protection* is prioritized and one where *capacity* is prioritized.
 
-[^1]: United Nations Framework Conference for Climate Change is the UN organization responsible for organizing the early Climate Summits, also known as Conference of the Parties (COP)
-[^2]: Spelled out this is: Organisation for Economic Co-operation and Development, Development Assistance Committee, Creditor Reporting System. It is a database of all Official Development Assistance (ODA) reported by OECD countries, and is split along sectors, purpose, target SDG and policy markers. 
-[^3]: This could be Multilateral Development Banks (MDB), members of the World Bank group (WB), funds established under the UNFCCC or bilateral aid from donor countries. 
-
-
 [^1]: There is an argument to be made that the Norwegian economy is suppresed by the phenomenon known as "Dutch Disease", where one very large export sector hampers growth in all the others. See @aune2020 for a more detailed explaination
 [^2]: While it excludes fossil fuels from the future, it does not conceptually choose between technologies
-[^3]: See all these many sources that claim that climate adaptation could also be 
-[^4]: See even more of my sources.
-[^5]: The language of the agreement states: blablabla
+[^3]: See all these many sources that claim that climate adaptation could also be

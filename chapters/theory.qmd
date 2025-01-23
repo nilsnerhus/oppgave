@@ -2,7 +2,7 @@
 
 In this theory section, I will present the theoretical framework that informs the analyzis later in the thesis. As a novel framework, it brings in movements in the fields of antrhopology, agronomy, economy, development, design, security and futurology, to better understand the complex and transdisiplinary concept of climate adaptation. 
 
-First, I will explore how the concept of security has evolved sine the World War 2, and how this leads to a form of securitization. Second, I will explain the different justifications for North-South interventions, arguing that there are four main types of justifications. Third, I will explain the main views of climate adaptation, and mapping them onto the intervention framework I have built earlier. Lastly, I will explore development and security's relation to the future, and explore new developments the critical literature.
+First, I will explore how the concept of security has evolved sine the World War 2, and how this leads to a form of securitization. Second, I will explain the different justifications for North-South interventions, arguing that there are four main types. Third, I will explain the main views of climate adaptation, and mapping them onto the intervention framework I have built earlier. Lastly, I will explore development and security's relation to the future, and explore new developments the critical literature.
 
 ## New wars, new security
 
@@ -26,7 +26,7 @@ Climate security is a securitization of the biosphere and, as I will explore lat
 
 ## North-south interventions
 
-There are four main ways of understanding the justifications for interventions by countries in the global north, in countries in the global south:
+There are four main ways of understanding the justifications for interventions by countries in the global north, in countries in the global south [@escobar2018]:
 
 - Institutional development
 - Participatory development
@@ -39,29 +39,29 @@ The particapatory view is skeptical of the government, both as in its ability to
 
 The security view sees the era of rapid growth in international trade as over. The United States, Russia, China and the EU moving investment to allies and strategically important parts of the world, through mechanisms such as EU's Global Gateway and China's Belt and Road, aiming to sure up their value chains. Funds are either dispersed at the national level, as loans or grants, or through infrastructure deals, where the infrastructure is delivered already assembled. Consultation with other actors that the State is limited. 
 
-Perhaps the most radical on this list, influenced by post-development thinking, the alternative development view rejects development interventions on the whole. Rather, development is sees as an always-ongoing process, where local communities find better solutions when left alone, without distortions from the outside. Funds are not needed for this approach, but cases where a donors' Ministry for Energy is funding the polluters, and the same donors Ministry for Environment is funding activists to fight the polluters, should be avoided[^2]. 
+Perhaps the most radical on this list, influenced by post-development thinking, the alternative development view rejects development interventions on the whole. Rather, development is sees as an always-ongoing process, where local communities find better solutions when left alone, without distortions from the outside. Funds are not needed for this approach, but cases where a donors' Ministry for Energy is funding the polluters, and the same donors Ministry for Environment is funding activists to fight the polluters, should be avoided[^1]. 
 
 The literature on climate adaptation is large and growing rapidly. In this section I will outline the main ways climate adaptation is envisioned by the actors that 
 
-### Synergy approaches {#sec-synergy}
+## Synergy approaches {#sec-synergy}
 
 This approach, favored by UN organizations such as the Food and Agriculture Organization (FAO), highlights the linkages between the ecosystem and resilience, advocating for more 
 
-Projects that includes this view is the *Great Green Wall of Africa*. 
-
 Through measures such as knowledge transfers, co-management of resorces and tree planting. This view promises win-win scenarios, as the interventions is thought to have positive effects on the farmer (and farmers familiy's) income, which then leads to a fortunes cycle. 
 
-This approach is squarly based in the participatory view, and dismisses the state and international factors in having an impact locally. 
+These approaches are synergy approaches because of their belief in that the transformation of peasant society could be achieved through local projects. This approach is squarly based in the participatory view, and dismisses the state and international factors in having an impact locally. 
 
 ## Mainstreaming
 
-This view, favored by international NGOs[^1] is that climate change should be a part of all development assitance. 
+This view, favored by international NGOs[^2] is that climate change should be a part of all development assitance. 
 
-This approach is attempting to mainstream
+This approach is attempting to mainstream climate adaptation into all aspects of development. 
 
-## Layered visions of the future
+## Future visions
+
+There are many different conceptualizations of the future. 
 
 ### The adaptation regime and defuturing
 
-[^1]: And Danish ones like CONCITO....
-[^2]: This was a finding from my field work in Uganda in the spring of 2023 as part of my Bachelor thesis in Development Studies at the University of Oslo. The French embassy in Kampala was administering funds both for Total Energy to build the East African Pipeline, and Fridays for Future Uganda to fight it. 
+[^1]: This was a finding from my field work in Uganda in the spring of 2023 as part of my Bachelor thesis in Development Studies at the University of Oslo. The French embassy in Kampala was administering funds both for Total Energy to build the East African Pipeline, and Fridays for Future Uganda to fight it. 
+[^2]: And Danish ones like CONCITO....
