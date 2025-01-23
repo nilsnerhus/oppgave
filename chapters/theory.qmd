@@ -43,7 +43,7 @@ Perhaps the most radical on this list, influenced by post-development thinking, 
 
 The literature on climate adaptation is large and growing rapidly. In this section I will outline the main ways climate adaptation is envisioned by the actors that 
 
-## Synergy approaches {#sec-synergy}
+## Nexus {#sec-nexus}
 
 This approach, favored by UN organizations such as the Food and Agriculture Organization (FAO), highlights the linkages between the ecosystem and resilience, advocating for more 
 
@@ -60,8 +60,6 @@ This approach is attempting to mainstream climate adaptation into all aspects of
 ## Future visions
 
 There are many different conceptualizations of the future. 
-
-### The adaptation regime and defuturing
 
 [^1]: This was a finding from my field work in Uganda in the spring of 2023 as part of my Bachelor thesis in Development Studies at the University of Oslo. The French embassy in Kampala was administering funds both for Total Energy to build the East African Pipeline, and Fridays for Future Uganda to fight it. 
 [^2]: And Danish ones like CONCITO....
