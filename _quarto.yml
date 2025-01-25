@@ -6,7 +6,7 @@ book:
   title: "Adapting the Future"
   author: "Nils Nerhus Rørstad"
   date: "07.02.2025"
-  downloads: [pdf]
+  downloads: [pdf,docx]
   chapters:
     - index.qmd
     - part: "Introduction"
@@ -33,5 +33,7 @@ format:
     toc: true
     number-sections: true
     number-depth: 2
+  docx: 
+    toc: true
 
 editor: source
