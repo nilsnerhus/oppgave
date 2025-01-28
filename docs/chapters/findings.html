@@ -20,7 +20,27 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -143,13 +163,13 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../chapters/intro.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Motivation and context</span></span></a>
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../chapters/scope.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Scope and research questions</span></span></a>
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Scope</span></span></a>
   </div>
 </li>
       </ul>
@@ -211,8 +231,16 @@ ul.task-list li input[type="checkbox"] {
 </nav>
 <div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
-    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar zindex-bottom">
-        
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul>
+  <li><a href="#oecd-findings" id="toc-oecd-findings" class="nav-link active" data-scroll-target="#oecd-findings"><span class="header-section-number">5.1</span> OECD findings</a></li>
+  <li><a href="#nap-findings" id="toc-nap-findings" class="nav-link" data-scroll-target="#nap-findings"><span class="header-section-number">5.2</span> NAP findings</a></li>
+  <li><a href="#case-findings" id="toc-case-findings" class="nav-link" data-scroll-target="#case-findings"><span class="header-section-number">5.3</span> Case findings</a></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
@@ -236,8 +264,44 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
+<p>In this findings-section, I will present the results from the preliminary data collection I have done. It is by no means scientifically sound, nor it it reproducble, but it is something. I will use this data as a way of testing the structure of the thesis, and highlight my own lack of understanding.</p>
+<p>The stucture is as follows:</p>
+<ul>
+<li>First, I present my findings from the OECD CRS dataset</li>
+<li>Second, I present my findings from the National Adaptation Plans</li>
+<li>Third, I present a “representative” project, and its funding, justification and planning</li>
+</ul>
+<section id="oecd-findings" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="oecd-findings"><span class="header-section-number">5.1</span> OECD findings</h2>
+<p>The “real” data collection for this part will be done in <code>R</code>, following best practice from <span class="citation" data-cites="yakir2019">Yakir (<a href="conclusion.html#ref-yakir2019" role="doc-biblioref">2019</a>)</span>, helped by more advanced literature when I get that far <span class="citation" data-cites="kuhn2022 kabacoff2024">(<a href="conclusion.html#ref-kuhn2022" role="doc-biblioref">Kuhn 2022</a>; <a href="conclusion.html#ref-kabacoff2024" role="doc-biblioref">Kabacoff 2024</a>)</span>.</p>
+<p>The data in this analysis is based on calculations I did while I was an intern at CONCITO in Copenhagen. I forgot to send myself the file, so I am doing the findings from memory. They are based on a lot of <code>=sumif()</code> calculations done in the 2022 OECD CRS dataset, and highlighted five “key” donors (at least in our contract): Germany, France, Japan, the EU and the UK. It is also based on transcripts of interviews that I still have.</p>
+<p>I found that, within the field of transportation, there was considerable variation between the different donors, both in what they decided to fund, and how they coded their funding. Even though France and Germany are neighboors and the OECD officers meet regulary, their interpretation of sustainability is very different.</p>
+<p>Some thing very visible nonetheless. <em>All</em> train projects were coded as climate mitigation, as well as <em>all</em> road projects were coded as climate adaptation.</p>
+</section>
+<section id="nap-findings" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="nap-findings"><span class="header-section-number">5.2</span> NAP findings</h2>
+<p>The “real” data collection is a review of texts. Here, I am still unsure how to go about it. I can do this as an analysis in <code>R</code> as well <span class="citation" data-cites="silge2017">(<a href="conclusion.html#ref-silge2017" role="doc-biblioref">Silge and Robinson 2017</a>)</span>, or I can choose to do this process manually, and just read them structurally while I take notes. With the text processing, I can have data on <em>all</em> published NAPs.</p>
+</section>
+<section id="case-findings" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="case-findings"><span class="header-section-number">5.3</span> Case findings</h2>
+<p>Then, to satisfy Michael’s wishes, and to make sure the reader understands what is going on, I can find an “representative” example from the data I’ve extracted. From what I am thinking now, that is a sea wall around some big city in West-Africa, but it could turn out to be something else.</p>
 
 
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" role="list" style="display: none">
+<div id="ref-kabacoff2024" class="csl-entry" role="listitem">
+Kabacoff, Robert. 2024. <em>Modern Data Visualization with <span>R</span></em>. First edition. Chapman &amp; <span>Hall</span>/<span>CRC The R</span> Series. Boca Raton: CRC Press, Taylor &amp; Francis Group. <a href="https://rkabacoff.github.io/datavis/">https://rkabacoff.github.io/datavis/</a>.
+</div>
+<div id="ref-kuhn2022" class="csl-entry" role="listitem">
+Kuhn, Max. 2022. <em>Tidy <span>Modeling</span> with <span>R</span></em>. Sebastopol: O’Reilly Media, Incorporated. <a href="https://www.tmwr.org/?__readwiseLocation=">https://www.tmwr.org/?__readwiseLocation=</a>.
+</div>
+<div id="ref-silge2017" class="csl-entry" role="listitem">
+Silge, Julia, and David Robinson. 2017. <em>Text Mining with <span>R</span>: A Tidy Approach</em>. Beijing, China: O’Reilly. <a href="https://www.tidytextmining.com/">https://www.tidytextmining.com/</a>.
+</div>
+<div id="ref-yakir2019" class="csl-entry" role="listitem">
+Yakir, Benjamin. 2019. <em>Introduction to <span>Statistical Thinking</span></em>. <a href="https://eleuven.github.io/statthink/ChapEstimation.html">https://eleuven.github.io/statthink/ChapEstimation.html</a>.
+</div>
+</div>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">

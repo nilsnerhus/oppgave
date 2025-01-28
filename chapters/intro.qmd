@@ -1,4 +1,4 @@
-# Motivation and context
+# Introduction
 
 In January of 2025, as I am starting the process of writing this thesis, the people Los Angeles is feeling the extreme effects of a changing climate. As of today, 24 persons have died from the fires, and billions upon billions of assets have gone up in smoke. Irreplaceble art and music, stored in the homes of the elites that lived in Hollywood, are likely lost for ever.
 
@@ -38,7 +38,7 @@ Loss and damage is the newest pillar, and its distinction from climate adaptatio
 
 The logic of the UNFCCC then becomes: All countries must cut their emissions. The impacts of unmitigated climate change must be adapted and what is beyond adaptation must be paid for as damages. 
 
-While the distinctions I present here are *true*, they are not popularly adapted, and as I will highligh in @sec-synergy, many approaches to climate change seek to impact (or subvert) all pillars simultainously. 
+While the distinctions I present here are *true*, they are not popularly adapted, and as I will highligh in [@sec-nexus], many approaches to climate change seek to impact (or subvert) all pillars simultainously. 
 
 Climate change finance is a billion-dollar industry, and scholars claim climate adaptation is increasingly being funded with funds from other policy areas [@scoville-simonds2020]. The money is funneled into a growing amount of international funds dedicated to climate adaptation, and existing projects are being recast as adaptation projects [@dewan2022; @paprocki2018].
 

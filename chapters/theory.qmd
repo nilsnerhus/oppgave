@@ -24,7 +24,7 @@ Securitization, with its references to war, often invokes the state as the provi
 
 Climate security is a securitization of the biosphere and, as I will explore later in this thesis, leads to a focus on the actions and relations between states, rather than other aspects of society. 
 
-## North-south interventions
+## North-south interventions {#sec-dev}
 
 There are four main ways of understanding the justifications for interventions by countries in the global north, in countries in the global south [@escobar2018]:
 
