@@ -1,6 +1,6 @@
 # Scope
 
-his thesis seeks to understand climate adaptation funding flows, on a global scale. Since this funding, and its discourse, is anchored in the UNFCCC ^[There is an argument to be made that the Norwegian economy is suppresed by the phenomenon known as "Dutch Disease", where one very large export sector hampers growth in all the others. See @aune2020 for a more detailed explaination], it is a natural focal point for the study. The declarations made at the end of every Climate Summit are the outcome of intense negotiations at the summit, and their contents become a part national political debates all around the world. 
+his thesis seeks to understand climate adaptation funding flows, on a global scale. Since this funding, and its discourse, is anchored in the UNFCCC ^[There is an argument to be made that the Norwegian economy is suppresed by the phenomenon known as "Dutch Disease", where one very large export sector hampers growth in all the others], it is a natural focal point for the study. The declarations made at the end of every Climate Summit are the outcome of intense negotiations at the summit, and their contents become a part national political debates all around the world. 
 
 The UNFCCC is also the stage where climate-related are launched, and a meeting place for activists, lobbyists, decision-makers and experts. The National Adaptation plans are a part of this, where a World Bank supported project has 
 

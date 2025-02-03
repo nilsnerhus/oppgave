@@ -24,7 +24,7 @@ By comparing the stated preferences of the donor-countries (as part of the UNFCC
 
 I have chosen to focus on actors reporting, rather than observing outcomes or processes for this thesis. As the focus is on understanding how actors see climate adaptation and attempting to understand how that might impact the future.
 
-There are already a broad literature on the effects of climate adaptation and other "grand schemes"[^1] 
+There are already a broad literature on the effects of climate adaptation and other "grand schemes" ^[See [@ferguson1994;@paprocki2018;@dewan2022] for other examples]
 
 ## Modelling OECD data
 
@@ -45,5 +45,3 @@ The plans are obvously the outcome of a brokering process between the local cont
 ## Building scenarios 
 
 Based on the Causal Layered analysis, I will identify the key myths in the climate adaptation plans, or at least identify what tey all have in common. 
-
-[^1]: A concept from @li2007, see [@escobar1995;@ferguson1994;@paprocki2018;@dewan2022] for other examples
