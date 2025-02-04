@@ -25,6 +25,16 @@ jobs:
         with:
           cache-version: 1
           extra-packages: "tinytex"
+          
+      - name: Install tinytex    
+        uses: r-lib/actions/setup-tinytex@v2
+        run: tlmgr --version
+      
+      - name: Install additional LaTeX packages
+        run: |
+          tlmgr update --self
+          tlmgr install titlesec
+          tlmgr list --only-installed
   
       - name: Render and Publish
         uses: quarto-dev/quarto-actions/publish@v2
@@ -32,4 +42,3 @@ jobs:
           target: gh-pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
