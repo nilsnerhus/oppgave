@@ -1,7 +1,0 @@
-# Conclusion
-
-# References {.unnumbered}
-
-::: {#refs}
-:::
-
