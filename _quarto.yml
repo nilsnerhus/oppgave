@@ -27,11 +27,6 @@ bibliography: references.bib
 format:
   html:
     theme: cosmo
-  pdf:
-    documentclass: scrreprt
-    toc: true
-    number-sections: true
-    number-depth: 2
   docx: 
     toc: true
 
