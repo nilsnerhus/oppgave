@@ -9,16 +9,3 @@ Second, it analyzes the National Adaptation Plans submitted to the UNFCCC, throu
 Lastly, the thesis suggests more research into new ways of understanding climate adaptation, and highlights promising work by authors in the fields of futurology, design and development. Based on these different conceptualizations, I construct three different scenarios for the future of climate adaptation.
 
 # Acknowledgements {.unnumbered}
-
-Tekstanalyse er en [[Metode]] for å [[Analyse]]re store mengder tekstdata med [[R]]. Jeg tar utgangspunkt i @silge2017, som gir flere måter man kan gjøre tekstanalyse på:
-
-- Sentiment analysis
-- n-grams
-- Frequency
-- [[Topic modelling]]
-
-Boka argumenteter for at man enkelt kan 
-
-Topic modelling er det desidert mest spennende av alle metodene. Den benytter seg av [[Latent Dirichlet allocation]], som både identifiserer hvilke ord som henger sammen med hvilket emne, og hvilke emner som er viktige. 
-
-Med topic modelling så er det mulig å kjøre alle NAPs gjennom R (som vil ta jævelig lang tid), og så spesifisere at jeg ønsker at den skal modellere 10 temaer. Når den er ferdig så vil den gi meg en oversikt over hvilke temaer den fant, og hvordan de fordeler seg på temaene. Jeg kan også få en oversikt over hvilke ord som kobler seg på hvilke 
