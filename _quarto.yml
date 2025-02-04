@@ -4,14 +4,15 @@ project:
 book:
   title: "Adapting the Future"
   author: "Nils Nerhus Rørstad"
-  date: "07.02.2025"
-  downloads: [pdf,docx]
+  date: today
+  downloads: [pdf,docx,epub]
   chapters:
     - index.qmd
     - part: "Introduction"
       chapters: 
         - chapters/intro.qmd
         - chapters/scope.qmd
+        - chapters/lit.qmd
     - part: "Research design"
       chapters:
         - chapters/theory.qmd
@@ -33,6 +34,8 @@ format:
     number-sections: true
     number-depth: 2
   docx: 
+    toc: true
+  epub: 
     toc: true
 
 editor: source
