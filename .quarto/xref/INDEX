@@ -1,0 +1,62 @@
+{
+  "chapters/findings.qmd": {
+    "findings.html": "1988b5cf"
+  },
+  "index.qmd": {
+    "index.html": "14c108fd"
+  },
+  "chapters/intro.qmd": {
+    "intro.html": "73833f4f"
+  },
+  "chapters/motivation.qmd": {
+    "motivation.html": "391e49ba"
+  },
+  "chapters/earlierresearch.qmd": {
+    "earlierresearch.html": "233a46d3"
+  },
+  "chapters/unfccc.qmd": {
+    "unfccc.html": "bed5533c"
+  },
+  "chapters/pacific.qmd": {
+    "pacific.html": "3ae54566"
+  },
+  "chapters/researchdesign.qmd": {
+    "researchdesign.html": "8eb4935e"
+  },
+  "chapters/theory.qmd": {
+    "theory.html": "f30903a3"
+  },
+  "chapters/methods.qmd": {
+    "methods.html": "0f7b3097"
+  },
+  "chapters/case.qmd": {
+    "case.html": "2511a464"
+  },
+  "chapters/discussion.qmd": {
+    "discussion.html": "7a6804ba"
+  },
+  "chapters/conclusion.qmd": {
+    "conclusion.html": "357b5f1a"
+  },
+  "chapters/literature.qmd": {
+    "literature.html": "7d74ce07"
+  },
+  "chapters/appendix.qmd": {
+    "appendix.html": "61077466"
+  },
+  "chapters/analysis.qmd": {
+    "analysis.html": "c64de33a"
+  },
+  "chapters/background.qmd": {
+    "background.html": "42dbeeac"
+  },
+  "chapters/scope.qmd": {
+    "scope.html": "b7a51744"
+  },
+  "chapters/outline.qmd": {
+    "outline.html": "a1414e53"
+  },
+  "chapters/research.qmd": {
+    "research.html": "1baeb46f"
+  }
+}
