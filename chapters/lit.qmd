@@ -1,26 +1,27 @@
 # Literature review
 
-## New security
+In this section, I will review the main strands of earlier research done in the field of climate adaptation.
 
-Security is seen as combination of a security problem with a security solution [@waever1995]. Interestingly, it is the absence of security solutions that creates insecurity, not the presence of the threat. This idea makes perfect security impossible to achieve [@baldwin1997, p. 15]. It is a concept with deep historical roots, it has traditionally been associated with military power and state building, but has also included other values and other actors. The values security guards, what *is* secured, is subject for debate, and has changed throughout history and between contexts [@baldwin1997, p. 13]. 
+## Nexus approaches {#sec-nexus}
 
-Since security is unachievable, and has a cost, it is no more than just another policy objective for those involved in politics to weigh against other issues, it has marginal value. The value of say, national security, always has to be valued against its costs, and other values, such as human rights [@baldwin1997, p. 16]. There are two main strains of security thinking; the realpolitik-paradigm, and the human security paradigm.
+This approach, favored by UN organizations such as the Food and Agriculture Organization (FAO), highlights the linkages between the ecosystem and resilience, advocating for more 
 
-The concept of security was extended in four directions, vertically, up to the international and down to the individual, and horizontally, from military threats to economic, social and other threats [@rothschild1995, p. 55]. The concept of human security came as the last in a long line of expansions to the notion of security [@paris2001, p. 88]. The realpolitik-paradigm was deemed to not fit the new post-cold war situation and the new wars that emerged. There was a need for a new framework to ensure the security of all people in the world [@undp1994, p. 49]. International politics was no longer a fight between the superpowers, and there was considerable fear the "new wars", by some seen as a different kind of organized violence taking hold [@kaldor2012, p. 1]. 
+Through measures such as knowledge transfers, co-management of resorces and tree planting. This view promises win-win scenarios, as the interventions is thought to have positive effects on the farmer (and farmers familiy's) income, which then leads to a fortunes cycle. 
 
-To feel insecure is more connected to everyday worries and suffering, than it is international headline-grabbing crises [@undp1994, p. 34]. Threats against human security somewhere, is a threat to people everywhere [@undp1994, p. 46]. These failed states threaten the security of people everywhere, because the new threats would come from individuals and groups, not from nation states [@undp1994, p. 46]. 
+This approach is squarly based in the participatory view, and has, as its goal, to 
 
-## Securitization of the biosphere
+## Mainstreaming {#sec-mainstream}
 
-A central point to the understanding of security is the process of securitization. Here, a topic, event or other peace of politics is made into a security issue. Securitization is not simply to speak louder, but to change the language in witch an issue is discussed in a specific way [@waever1995]. This language often invokes life or death for the state or society, and often makes references to war [@waever1995]. Classic examples of this are "the war on terror", "the war on drugs", the "war on crime" and the "war on poverty" all not so proud examples from the US. 
+The Anthropology of Development, as the critical analysis of development actors and their projects has a long history. Thinkers like @ferguson1994 and his analysis of the *Anti-politics machine* in Lesotho and the discourse of underdevelopment in Latin America have highlighted and spurred research into why development seems to always miss targets and fail in predictable ways.
 
-Since security is the combination of a security problem with a security solution, and the threats to security has expanded, it is possible to securitize virtually every aspect of society. Securitization has a massive potential to mobilize people to rally behind causes [@waever1995]. This can be seen in the ability to mobilize troops to fight in actual wars, for states to provide resources to a cause or to shift the debate around an issue.
+Scholars have recently begun the work of deconstructing the climate adaptation discourse. @paprocki2018 describes it as an *Adaptation regime* based on her field work in Bangladesh. She argues that some countries are constructed as climate vulnerable and therefore in need of climate adaptation and that this imaginary is closely related to other historical processes of colonialism. All societal issues are reduced to be climate related, and unavoidable. This dystopian imaginary builds the groundwork for extensive experimentation, since the dystopian outlook eliminates the possible downsides. This, she argues, leads to dispossession as land is taken for shrimp aquaculture and migration to the cities is promoted. The poor and vulnerable that were supposed to be helped, simply are not [@paprocki2018].
 
-Securitization, with its references to war, often invokes the state as the provider of security [@waever1995]. As with the example of "war on drugs", it was not a war for the pharma-businesses to fight, nor was it because it was an health crisis. It was to enable the coercive powers of the state to now focus on a new issue, and to use laws, regulations, taxes, fines and incarceration to get it. Some scholars argue that one should only investigate the impacts of securitization, instead of weather or not an issue has been securitized [@owen2008, p. 447]. Other argues that securitization itself is defensive. It will reinforce the state of the world like it is today [@waever1995].
+@dewan2022 further develops this, highlighting the building of dams and polders as flood protection. She argues the polders built as a climate adaptation measure, are the same as the old for flood protection, and are successful at acquiring funding. Climate adaptation was *the spice* that made their applications for funding work. The only issue was that the polders did not work. By blocking the seasonal flooding and draining, the rivers became silted and needed dredging, furthering the risk of floods [@dewan2022]. 
 
-Climate security is a securitization of the biosphere and, as I will explore later in this thesis, leads to a focus on the actions and relations between states, rather than other aspects of society. 
+This view, favored by international NGOs[^2] is that climate change should be a part of all development assitance. 
 
-## North-south interventions {#sec-dev}
+This approach is attempting to mainstream climate adaptation into all aspects of development. 
+### North-south interventions {#sec-dev}
 
 There are four main ways of understanding the justifications for interventions by countries in the global north, in countries in the global south [@escobar2018]:
 
@@ -37,18 +38,3 @@ The security view sees the era of rapid growth in international trade as over. T
 
 Perhaps the most radical on this list, influenced by post-development thinking, the alternative development view rejects development interventions on the whole. Rather, development is sees as an always-ongoing process, where local communities find better solutions when left alone, without distortions from the outside. Funds are not needed for this approach, but cases where a donors' Ministry for Energy is funding the polluters, and the same donors Ministry for Environment is funding activists to fight the polluters, should be avoided[^1]. 
 
-The literature on climate adaptation is large and growing rapidly. In this section I will outline the main ways climate adaptation is envisioned by the actors that 
-
-## Nexus {#sec-nexus}
-
-This approach, favored by UN organizations such as the Food and Agriculture Organization (FAO), highlights the linkages between the ecosystem and resilience, advocating for more 
-
-Through measures such as knowledge transfers, co-management of resorces and tree planting. This view promises win-win scenarios, as the interventions is thought to have positive effects on the farmer (and farmers familiy's) income, which then leads to a fortunes cycle. 
-
-This approach is squarly based in the participatory view, and has, as its goal, to 
-
-## Mainstreaming
-
-This view, favored by international NGOs[^2] is that climate change should be a part of all development assitance. 
-
-This approach is attempting to mainstream climate adaptation into all aspects of development. 

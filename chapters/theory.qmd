@@ -4,6 +4,24 @@ In this theory section, I will present the theoretical framework that informs th
 
 First, I will explore how the concept of security has evolved sine the World War 2, and how this leads to a form of securitization. Second, I will explain the different justifications for North-South interventions, arguing that there are four main types. Third, I will explain the main views of climate adaptation, and mapping them onto the intervention framework I have built earlier. Lastly, I will explore development and security's relation to the future, and explore new developments the critical literature.
 
-## Future visions
+## Securitization {#sec-securitization}
+
+Security is seen as combination of a security problem with a security solution [@waever1995]. Interestingly, it is the absence of security solutions that creates insecurity, not the presence of the threat. This idea makes perfect security impossible to achieve [@baldwin1997, p. 15]. It is a concept with deep historical roots, it has traditionally been associated with military power and state building, but has also included other values and other actors. The values security guards, what *is* secured, is subject for debate, and has changed throughout history and between contexts [@baldwin1997, p. 13]. 
+
+Since security is unachievable, and has a cost, it is no more than just another policy objective for those involved in politics to weigh against other issues, it has marginal value. The value of say, national security, always has to be valued against its costs, and other values, such as human rights [@baldwin1997, p. 16]. There are two main strains of security thinking; the realpolitik-paradigm, and the human security paradigm.
+
+The concept of security was extended in four directions, vertically, up to the international and down to the individual, and horizontally, from military threats to economic, social and other threats [@rothschild1995, p. 55]. The concept of human security came as the last in a long line of expansions to the notion of security [@paris2001, p. 88]. The realpolitik-paradigm was deemed to not fit the new post-cold war situation and the new wars that emerged. There was a need for a new framework to ensure the security of all people in the world [@undp1994, p. 49]. International politics was no longer a fight between the superpowers, and there was considerable fear the "new wars", by some seen as a different kind of organized violence taking hold [@kaldor2012, p. 1]. 
+
+To feel insecure is more connected to everyday worries and suffering, than it is international headline-grabbing crises [@undp1994, p. 34]. Threats against human security somewhere, is a threat to people everywhere [@undp1994, p. 46]. These failed states threaten the security of people everywhere, because the new threats would come from individuals and groups, not from nation states [@undp1994, p. 46]. 
+
+A central point to the understanding of security is the process of securitization. Here, a topic, event or other peace of politics is made into a security issue. Securitization is not simply to speak louder, but to change the language in witch an issue is discussed in a specific way [@waever1995]. This language often invokes life or death for the state or society, and often makes references to war [@waever1995]. Classic examples of this are "the war on terror", "the war on drugs", the "war on crime" and the "war on poverty" all not so proud examples from the US. 
+
+Since security is the combination of a security problem with a security solution, and the threats to security has expanded, it is possible to securitize virtually every aspect of society. Securitization has a massive potential to mobilize people to rally behind causes [@waever1995]. This can be seen in the ability to mobilize troops to fight in actual wars, for states to provide resources to a cause or to shift the debate around an issue.
+
+Securitization, with its references to war, often invokes the state as the provider of security [@waever1995]. As with the example of "war on drugs", it was not a war for the pharma-businesses to fight, nor was it because it was an health crisis. It was to enable the coercive powers of the state to now focus on a new issue, and to use laws, regulations, taxes, fines and incarceration to get it. Some scholars argue that one should only investigate the impacts of securitization, instead of weather or not an issue has been securitized [@owen2008, p. 447]. Other argues that securitization itself is defensive. It will reinforce the state of the world like it is today [@waever1995].
+
+Climate security is a securitization of the biosphere and, as I will explore later in this thesis, leads to a focus on the actions and relations between states, rather than other aspects of society. 
+
+## Alternative futures {#sec-futures}
 
 There are many different conceptualizations of the future. 

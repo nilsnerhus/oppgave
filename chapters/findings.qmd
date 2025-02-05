@@ -22,10 +22,6 @@ Some thing very visible nonetheless. *All* train projects were coded as climate 
 
 ## NAP findings
 
-The "real" data collection is a review of texts. Here, I am still unsure how to go about it. I can do this as an analysis in `R` as well [@silge2017], or I can choose to do this process manually, and just read them structurally while I take notes. With the text processing, I can have data on *all* published NAPs. 
+The "real" data collection is a review of texts. Here, I will create a structured topic model with the help of the `tidytext` `R`-package. This mathematical algorithm will incorporate the metadata for the documents, economy (low-/middle income), geography (region) and 
 
-
-
-## Case findings
-
-Then, to satisfy Michael's wishes, and to make sure the reader understands what is going on, I can find an "representative" example from the data I've extracted. From what I am thinking now, that is a sea wall around some big city in West-Africa, but it could turn out to be something else. 
+The output of this will be a set of topics, and the likelyhood of them being present in within the different categories. 
