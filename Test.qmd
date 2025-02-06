@@ -1,0 +1,13 @@
+---
+title: "Title"
+format:
+  html:
+    toc: true
+    reference-location: margin
+---
+
+> text [^note]
+
+[^note]: Footnote.
+
+^[note]
