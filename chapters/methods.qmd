@@ -1,4 +1,4 @@
-# Methods
+# Methods {#sec-methods}
 
 In this section, I explain the methods I will use to find data and to analyze it. 
 

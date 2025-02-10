@@ -1,4 +1,4 @@
-# Literature review
+# Literature review {#sec-lit}
 
 In this section, I will review the main strands of earlier research done in the field of climate adaptation.
 
@@ -11,6 +11,11 @@ Through measures such as knowledge transfers, co-management of resorces and tree
 This approach is squarly based in the participatory view, and has, as its goal, to 
 
 ## Mainstreaming {#sec-mainstream}
+
+@scoville-simonds2020 argues there are three specific political dimensions of the adaptation problem. These dimensions reflect the unequal distributions of power at diverse scales that underlie, 
+1) globally differentiated responsibility, 
+2) the uneven production of vulnerability, and, 
+3) unequal representation in adaptation decision-making.  [@scoville-simonds2020]
 
 The Anthropology of Development, as the critical analysis of development actors and their projects has a long history. Thinkers like @ferguson1994 and his analysis of the *Anti-politics machine* in Lesotho and the discourse of underdevelopment in Latin America have highlighted and spurred research into why development seems to always miss targets and fail in predictable ways.
 

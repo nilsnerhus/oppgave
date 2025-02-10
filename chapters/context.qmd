@@ -1,26 +1,12 @@
-# Introduction
+# Context {#sec-context}
 
-In January of 2025, as I am starting the process of writing this thesis, the people Los Angeles is feeling the extreme effects of a changing climate. As of today, 24 persons have died from the fires, and billions upon billions of assets have gone up in smoke. Irreplaceable art and music, stored in the homes of the elites that lived in Hollywood, are likely lost for ever.
+International climate change action is governed by the United Nations Framework Convention for Climate Change (UNFCCC). The Convention has annual Confrences of the Parties (COP) to the Convention, also known as climate summits. The first summit, known collovially as the Earth Summit, was held in Rio de Janeiro in 1992. The Earth Summit also ratified two other conventions, The Convention on Biological Diversity (CBD) and The United Nations Convention to Combat Desertification (UNCCD).
 
-As this thesis progresses, I will find more examples of climate disasters to write in this section. The floods in Spain are one good example to include. More likely than not, I should include the scenarios here, to give a taste of what is to come.
+The Summit established the concept of *Common, but differentiated, responsibilities*, highlighting Global North countries, defined in the 
 
-## Climate security
+Aid tracking was established at the Summit, known as the Rio markers, making it possible to code North-South aid as contributing towards the goals established in these conventions. This will be expanded on below [@sec-methods].
 
-Climate change is dangerous, unfair and already happening. Environmental security is a key pillar in the Human Security approach. Climate change is set to harm it.
-
-Something about the shifting geopolitics meaning that the green transition is also somehow becoming securitized, and that the global polity is more concerned with the security-frame of international relations. Global south adaptation becoming a central part of the climate discourse, and as I will expand on in later in this thesis, it is unclear what it actually entails.
-
-Climate security is a multi-level issue. Droughts, floods and other extremes caused by climate change could impact the livelihoods of many, and possible threaten peace and security in society at large. 
-
-Security is also concerned with anticipating and avoiding risk. This means looking into the future. 
-
-Climate adaptation is special because of its orientation to the future. It is a process of adaptation to risks of change. It is a reconstruction of the world to adapt to dangers that we do not know the full extent of. Most theory today assumes that climate adaptation can, and will come, as a win-win for people, climate and economy. 
-
-In Scandinavia, climate security (klimasikring) and climate adaptation (klimatilpasning) is used interchangebly. I will use climate adaptation thorughout the rest of the thesis, because this is the language of the UNFCCC. 
-
-## International climate change governance
-
-While mitigating climate change perhaps is most important, adapting (and shielding) people, industries and nations from the risks of climate change is growing in prominence. At the 28th Conference of the Parties (COP28) to the United Nations Framework Convention for Climate Change (UNFCCC) in Dubai, an agreement was signed that the parties should make $1300 billon available, every year, for climate adaptation. 
+While mitigating climate change perhaps is most important, adapting (and shielding) people, industries and nations from the risks of climate change is growing in prominence. At the 28th Conference of the Parties (COP28) to the United Nations Framework Convention for Climate Change (UNFCCC) in Dubai, an agreement was signed that the parties should make US $300 billon available, every year, for climate adaptation. 
 
 Governments and civil society organizations around the world welcomed this, as the poorest in the world are the most vulnerable to climate change. Climate adaptation is therefore possibly becoming the new interface for financial aid between the Global North and the Global South. Most of the discourse around climate adaptation assumes many win-win scenarios. 
 
@@ -40,6 +26,7 @@ The logic of the UNFCCC then becomes: All countries must cut their emissions. Th
 
 While the distinctions I present here are *true*, they are not popularly adapted, and as I will highligh in [@sec-nexus], many approaches to climate change seek to impact (or subvert) all pillars simultainously. 
 
+
 Climate change finance is a billion-dollar industry, and scholars claim climate adaptation is increasingly being funded with funds from other policy areas [@scoville-simonds2020]. The money is funneled into a growing amount of international funds dedicated to climate adaptation, and existing projects are being recast as adaptation projects [@dewan2022; @paprocki2018].
 
 This shift, and the shift to project work is well described in the literature, and something I will expand on below. Thus, the goal of this project is to better understand this shift on the global level, and attempt to chart out where climate adaptation is today, and how it will shape the future.
@@ -49,5 +36,3 @@ This will all sort under the *mitigation* pillar of the UNFCCC, the first of thr
 The second pillar, adopted in [say, 2015] is climate *adaptation*. It involves all measures taken to avoid the causes of global warming. Building sea walls to keep storm surges out of urban areas, shielding argiculture from exsessive rain
 
 The third of the UNFCCC, adpoted in [say, 2022] is *loss and damage*, conserning all damages from global warming that are beyond adaptation. This pillar is highly disputed, as it was originally proposed as a way of bringing a judicial understanding of climate justice into play, where countries could sue other countries for the losses and damages their emissions had caused. While this is not the understanding adapted by the UNFCCC, where it is just seen as another form of climate adaptation.
-
-

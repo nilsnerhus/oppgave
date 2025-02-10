@@ -1,4 +1,4 @@
-# Findings
+# Findings {#sec-findings}
 
 In this findings-section, I will present the results from the preliminary data collection I have done. It is by no means scientifically sound, nor it it reproducble, but it is something. I will use this data as a way of testing the structure of the thesis, and highlight my own lack of understanding.
 

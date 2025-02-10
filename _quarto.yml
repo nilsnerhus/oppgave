@@ -7,10 +7,11 @@ book:
   date: today
   downloads: [pdf,docx]
   chapters:
-    - index.qmd
     - part: "Introduction"
-      chapters: 
-        - chapters/intro.qmd
+      chapters:
+        - index.qmd
+        - chapters/motivation.qmd
+        - chapters/context.qmd
         - chapters/lit.qmd
         - chapters/scope.qmd
     - part: "Research design"

@@ -1,4 +1,4 @@
-# Theory
+# Theory {#sec-theory}
 
 In this theory section, I will present the theoretical framework that informs the analyzis later in the thesis. As a novel framework, it brings in movements in the fields of antrhopology, agronomy, economy, development, design, security and futurology, to better understand the complex and transdisiplinary concept of climate adaptation. 
 

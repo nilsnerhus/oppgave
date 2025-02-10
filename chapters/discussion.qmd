@@ -1,4 +1,4 @@
-# Discussion
+# Discussion {#sec-discussion}
 
 This section will be stuctured in three parts, one that discusses the research questions, and one that discusses the concepts that keep cropping up. Naturally, this section draws on the findings from all data collection. 
 
@@ -25,7 +25,7 @@ The donor decides what to fund, and as long as the international community is pi
 
 How does vulnerability relate to economic development? How does economic development relate to adaptation? Is this just normal development under a new name, mainstreaming? [@scoville-simonds2020].
 
-Remembering the categories from [@sec-dev], the focus on economic growth places those projects within the "Institutional development"-frame. This is different from the nexus approaches most found in the literature [@sec-nexus]. 
+Remembering the categories from, the focus on economic growth places those projects within the "Institutional development"-frame. This is different from the nexus approaches most found in the literature [@sec-nexus]. 
 
 ## Security
 
