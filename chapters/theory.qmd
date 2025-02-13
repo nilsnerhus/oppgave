@@ -1,5 +1,11 @@
 # Theory {#sec-theory}
 
+::: {.callout-warning}
+
+This section is outdated per 13.02. It is the epistemological and ontological approaches to development, design and future that should go here, securitization is not a part of it. 
+
+:::
+
 In this theory section, I will present the theoretical framework that informs the analyzis later in the thesis. As a novel framework, it brings in movements in the fields of antrhopology, agronomy, economy, development, design, security and futurology, to better understand the complex and transdisiplinary concept of climate adaptation. 
 
 First, I will explore how the concept of security has evolved sine the World War 2, and how this leads to a form of securitization. Second, I will explain the different justifications for North-South interventions, arguing that there are four main types. Third, I will explain the main views of climate adaptation, and mapping them onto the intervention framework I have built earlier. Lastly, I will explore development and security's relation to the future, and explore new developments the critical literature.

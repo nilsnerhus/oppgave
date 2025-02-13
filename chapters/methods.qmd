@@ -1,5 +1,11 @@
 # Methods {#sec-methods}
 
+::: {.callout-warning}
+
+This section is outdated per 13.02. Here, it is regression analysis and structured topic modelling that should be discussed
+
+:::
+
 In this section, I explain the methods I will use to find data and to analyze it. 
 
 First, I advocate for the mixed-methods design as a way of getting a better picture of climate adaptation, and explain the focus on the study on reports and reported uses of funds. 

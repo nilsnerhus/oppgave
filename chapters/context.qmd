@@ -1,38 +1,26 @@
 # Context {#sec-context}
 
-International climate change action is governed by the United Nations Framework Convention for Climate Change (UNFCCC). The Convention has annual Confrences of the Parties (COP) to the Convention, also known as climate summits. The first summit, known collovially as the Earth Summit, was held in Rio de Janeiro in 1992. The Earth Summit also ratified two other conventions, The Convention on Biological Diversity (CBD) and The United Nations Convention to Combat Desertification (UNCCD).
+International climate change action is governed by the United Nations Framework Convention for Climate Change (UNFCCC) [source]. The Convention has annual Conferences of the Parties (COP) to the Convention, also known as climate summits. The first summit, known colloquially as the Earth Summit, was held in Rio de Janeiro in 1992. The Earth Summit also created two other conventions, The Convention on Biological Diversity (CBD) and The United Nations Convention to Combat Desertification (UNCCD) [source].
 
-The Summit established the concept of *Common, but differentiated, responsibilities*, highlighting Global North countries, defined in the 
+The Summit established the concept of *Common, but differentiated, responsibilities*, highlighting Global North countries, defined in the convention as Annex I and Annex II countries. Here, industrialized countries are seen to have a greater responsibility for environmental destruction, and thus a greater responsibility to remedy it [source]. Official development assistance, an OECD measurement for foreign aid, was adapted to the Summit, known as the Rio markers, making it possible to code North-South aid as contributing towards the goals established in these conventions [source]. 
 
-Aid tracking was established at the Summit, known as the Rio markers, making it possible to code North-South aid as contributing towards the goals established in these conventions. This will be expanded on below [@sec-methods].
+The Kyoto summit in 1997 established climate mitigation as the first pillar of the UNFCCC [source]. Here, the level of greenhouse gasses was to be kept at a level below what was dangerous. The cuts that this entailed was to be done by the already industrialized countries. It also created a market for carbon, called "Flexibility mechanisms", where emissions could be traded from developing countries to industrialized countries [source]. In this way, developing countries that are under no obligation to cut their emissions, could sell carbon credits [source]. The Paris Agreement, adopted at COP21 in 2015, strengthened the commitment to mitigation, calling for a target to limit climate change to 1,5 degrees [source]. 
 
-While mitigating climate change perhaps is most important, adapting (and shielding) people, industries and nations from the risks of climate change is growing in prominence. At the 28th Conference of the Parties (COP28) to the United Nations Framework Convention for Climate Change (UNFCCC) in Dubai, an agreement was signed that the parties should make US $300 billon available, every year, for climate adaptation. 
+As the targets set in the Kyoto protocol were deemed inadequate to deal with the climate crisis, and Governments faced resistance from lobbyists and citizens, climate adaptation grew to prominence and was adapted as the second pillar at COP16 in Cancun in 2010 [source]. Climate adaptation are all measures to adapt to climate damages. In industrialized countries, adaptation usually entails managing surface runoff and in low-lying countries, sea-level level rise and storm surges, with a mix of mechanical- and nature-based interventions. In developing countries, this process is more complex and something I will explore further below [@sec-lit]. 
 
-Governments and civil society organizations around the world welcomed this, as the poorest in the world are the most vulnerable to climate change. Climate adaptation is therefore possibly becoming the new interface for financial aid between the Global North and the Global South. Most of the discourse around climate adaptation assumes many win-win scenarios. 
+Loss and damage grew more prominent in UNFCCC negotiation as new knowledge was produced and activism from small island developing states highlighted, that some nations disappear beneath the waves, if climate action was not intensified [source]. This led to both a sharpening of the original target from 1997, to a new one to limit global warming to 1,5° C, and the establishment of the loss and damage pillar [source]. 
 
-The UNFCCC has three pillars: Mitigation, adaptation and loss and damage [@hall2018]. 
+Loss and damage is meant to compensate for damages *beyond adaptation* [@janzen2021]. It is mainly understood in two ways. First, as a form of legal process, within domestic courts or under the UNFCCC umbrella. In this process, damages from an event are calculated, the contribution of climate change to the event is established, the responsibility for the emissions are attributed, and the damages are compensated [source]. Second, as a form of risk management, where risk is reduced through adaptation measures, transferred through insurance schemes and retained through resilience measures [source]. 
 
-The mitigation pillar has been a part of the UNFCCC since the Kyoto protocolls in [way back then], and is perhaps the most important part of the Convention. Since the Paris agreement (COP21) in 2015, all parties to the Convention has to submit Nationally Determined Contributions (NDCs) every five years.
+| COP | Place          | Date | Happening                                         |
+| --- | -------------- | ---- | ------------------------------------------------- |
+|     | Rio de Janeiro | 1992 | The UNFCCC is established                         |
+| 3   | Kyoto          | 1997 | The climate mitigation pillar is established      |
+|     | Cancun         | 2010 | The climate adaptaiton pillar is established      |
+| 21  | Paris          | 2015 | The climate loss and damage pillar is established |
+| 29  | Baku           | 2024 | $300 bn is pledged for climate adaptation         |
+: Timeline of the main climate summits {.striped .hover}
 
-Measures within the mitigation pillar span the whole economy, and is a process internal to every country, with the exeption of different carbon trading regimes, such as UN REDD+ or the European carbon trading system (ECTS). 
+The UNFCCC understands climate damages, all the negative effects of climate change, as a kind of spillover. Unmitigated emissions lead to damages, unadapted damages causes losses that have to be compensated. Since the UNFCCC, like most international agreements, is negotiated by countries that have to balance their need for strong policy action and future uncertainty, the process is ambiguous [@hall2018]. 
 
-Climate adapation is measures aimed at limiting the damage caused by unmitigated climate change. It is, in a sense, the spillovereffect from unsuccessful mitigation.
-
-Climate adaptation is at its simplest all infrastructure and change that is aimed at reducing the impacts of climate change [@ensor2009]. Some expand this understanding to include exploiting the opportunities climate change can bring with it [@vanhala2016]. This definition makes it possible to frame most infrastructure development as climate adaptation measures [@toussaint2021]. Climate adaptation is largely financed by the state where the infrastructure is built, although a larger degree of ODA is spent on climate adaptation related infrastructure [@dewan2022].
-
-Loss and damage is the newest pillar, and its distinction from climate adaptation is muddied. When it was first brought it up, it was intended as a formalized and legalized form of climate compensation. It was supposed to pay for losses and damages that occurred beyond the limits of adaptation [@janzen2021]. This is not the version adopted by the UNFCCC. Loss and damage is to be financed through the same channels as adaptation, and will be mainstreamed into development assistance [@scoville-simonds2020].
-
-The logic of the UNFCCC then becomes: All countries must cut their emissions. The impacts of unmitigated climate change must be adapted and what is beyond adaptation must be paid for as damages. 
-
-While the distinctions I present here are *true*, they are not popularly adapted, and as I will highligh in [@sec-nexus], many approaches to climate change seek to impact (or subvert) all pillars simultainously. 
-
-
-Climate change finance is a billion-dollar industry, and scholars claim climate adaptation is increasingly being funded with funds from other policy areas [@scoville-simonds2020]. The money is funneled into a growing amount of international funds dedicated to climate adaptation, and existing projects are being recast as adaptation projects [@dewan2022; @paprocki2018].
-
-This shift, and the shift to project work is well described in the literature, and something I will expand on below. Thus, the goal of this project is to better understand this shift on the global level, and attempt to chart out where climate adaptation is today, and how it will shape the future.
-
-This will all sort under the *mitigation* pillar of the UNFCCC, the first of three. All actions taken to avoid global warming and the following climate change, falls into this category. That also includes taxes on emissions and renewable power, as well as many other more or less effective measures. 
-
-The second pillar, adopted in [say, 2015] is climate *adaptation*. It involves all measures taken to avoid the causes of global warming. Building sea walls to keep storm surges out of urban areas, shielding argiculture from exsessive rain
-
-The third of the UNFCCC, adpoted in [say, 2022] is *loss and damage*, conserning all damages from global warming that are beyond adaptation. This pillar is highly disputed, as it was originally proposed as a way of bringing a judicial understanding of climate justice into play, where countries could sue other countries for the losses and damages their emissions had caused. While this is not the understanding adapted by the UNFCCC, where it is just seen as another form of climate adaptation.
+The Convention has room for multiple interpretations of most aspects of it, and there are two main ways of the relation between the pillars. The first one is that the goal is to *minimize the damage* as much as possible by mitigating as much as possible, and that adaptation and loss and damage are there as a safety precaution. The second is that there exists an *optimal combination of mitigation, adaptation, and loss and damage* that uses the resources more efficiently. 

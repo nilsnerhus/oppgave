@@ -13,7 +13,6 @@ book:
         - chapters/motivation.qmd
         - chapters/context.qmd
         - chapters/lit.qmd
-        - chapters/scope.qmd
     - part: "Research design"
       chapters:
         - chapters/theory.qmd
@@ -24,14 +23,18 @@ book:
         - chapters/discussion.qmd
     - chapters/conclusion.qmd
 
+cap-location: margin
 reference-location: margin
 bibliography: references.bib
 csl: apa.csl
 
+execute: 
+  echo: false
+  warning: false
+
 format:
   html:
     theme: cosmo
-    
   pdf:
     documentclass: scrreprt
     toc: true

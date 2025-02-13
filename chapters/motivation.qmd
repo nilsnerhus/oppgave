@@ -1,51 +1,59 @@
-# Motivation {#sec-motivation}
+# Introduction {#sec-intro}
 
 This thesis concludes five years spent at the University. Throughout this time, the world has changed dramatically:
 
-- In 2020, the pandemic struck. Most of the world experienced extensive lock-downs, a rise in crime and anti-social 
-- In 2022, Russia invaded Ukraine in blatant disregard of international law. This led to a reconfiguring of the global economy that we are only seeing the beginning of.
-- In 2024, Israel responded to Hamas' terror attact with a full scale invasion of Gaza. This has created a new landscape, where Israels leaders are wanted by the ICC, and 
-- Tensions are rising between China and Taiwan
+- In 2020, the pandemic struck. [...]
+- In 2022, Russia invaded Ukraine [...]
+- In 2024, Israel responded to Hamas' terror attack with a full scale invasion [...]
 
-With the reelection of Donald Trump as President in the USA, some have claimed we are seeing the end of the neoliberal era and of a unipolar, rule-based global order, with strong man politics taking over 
+At the same time, the world has started experiencing the results of 200 years of greenhouse emissions:
 
-At the same time, the world has started expirencing the results of 200 years of greenhouse emissions:
-
-- Flood in Germany and Spain
-- Sea level rise forcing Kiribati to buy land abroad
-- Wildfires in LA leading to the loss both culture and 
-- Land slides in Uganda?
+- Floods in Germany and Spain [...]
+- Kiribati to buy land abroad [...]
+- Wildfires in LA [...]
 
 As I will expand on in the next section this has led to changes in international climate change governance as well. 
 
 ## Climate security as Human Security
 
-Taken together, the possible end of the neoliberal world order and the rise of climate change as the central international problematic, climate security and all the different conceptualizations of it, are set to get a larger chunk of the North-South aid flows. 
+With the popularization of the Human Security framework by the United Nations Development Program (UNDP) in the 1990s, the understanding of security expanded from its historical roots focussing exclusively on sovereignty and the State. It expanded vertically, to include common goods such as ecosystems and the biosphere and individuals, and horizontally, to include food security, environment security and community security, amongst others.
 
-Safety is the absence of a security problem, while security is a security problem with a security solution. If there was no climate change, or we did not deem it a threat to our security, we would be climate safe.
+Security was conceptualized as "Freedom from want and freedom from fear". The idea was one person struggling somewhere, could be the one to create insecurity somewhere else. In this way, no one would be secure until everyone was secure. 
 
-With the popularization of the Human Security framework by the United Nations Development Programme (UNDP) in the 1990s, the understanding of security expanded from its historical roots focussing exclusivly on sovereinity and the State. It expanded vertically, to include common goods such as ecosystems and the biosphere and individuals, and horizontally, to include food security, enviornment security and community securty, amongst others.
+Climate change is set to inflict real losses and do real damage to the biosphere, countries and individuals. As climate change is a trans-scalar, global issues, adapting to it will similarly be trans-scalar and global. With its interdisciplinary and interconnected understanding of security, climate security fits well within the environmental security pillar of the Human Security framework one of the seven key pillars of the Human Security framework.
 
-Security was conceptualized as "Freedom from want and freedom from fear". The idea was one person struggling somewhere, could be the one to create insecurity somewhere else. 
+Climate adaptation is special because of its orientation to the future. It is unclear how severe, how often, in what kind and where the damages will come. It is a reconstruction without destruction. It relies on both the forecasts from climate science, as well as a specific understandings of the future, to decide what society is going to keep and discard. 
 
-As climate change is a trans-scalar, global issues, adapting to it will similarly be trans-scalar and global. With its interdisiplinary and interconnected understanding of security, climate security fits well within the environmental security pillar of the Human Security framework one of the seven key pillars of the Human Security framework. 
+How we decide to frame the risk, vulnerability and tool we use to safeguard ourself from the future, is an inherently ontological and epistemological question. Without a proper understanding of climate adaptation, we run the risk of maladaptation, where the vulnerability to climate damage is not minimized, just moved around. 
 
-Here, security is understood as something more than just a geopolitical and realpolitik, encompassing the security of ecosystems and of individuals. Climate security is a multi-level issue. Droughts, floods and other extremes caused by climate change could impact the livelihoods of many, and possible threaten peace and security in society at large. 
+## Scope
 
-## Futures unknown
+his thesis seeks to understand climate adaptation funding flows, on a global scale. Since this funding, and its discourse, is anchored in the UNFCCC ^[There is an argument to be made that the Norwegian economy is suppresed by the phenomenon known as "Dutch Disease", where one very large export sector hampers growth in all the others], it is a natural focal point for the study. The declarations made at the end of every Climate Summit are the outcome of intense negotiations at the summit, and their contents become a part national political debates all around the world. 
 
-It is a process of adaptation to risks of change. It is a reconstruction of the world to adapt to dangers that we do not know the full extent of. Most theory today assumes that climate adaptation can, and will come, as a win-win for people, climate and economy. 
+The UNFCCC is also the stage where climate-related are launched, and a meeting place for activists, lobbyists, decision-makers and experts. The National Adaptation plans are a part of this, where a World Bank supported project has 
 
-Climate adaptation is special because of its orientation to the future. It is a reconstruction without destruction. It relies on both the forecasts from climate science, as well as a specific understanding of the future. Climate science is based on increased risk to catastrophic events. As it is a global, multi-level issue this risk could be to virtually everything
+What is climate adaptation?
 
-Most of the literature on this assumes the neoliberal world order, even though the conceptualize it differently. These ontological and epistemological decitions, as I will expand on in @sec-theory, will shape which futures are chosen, and which futures are discarded. 
+- How has climate adaptation evolved at the UNFCCC?
+- What is the impact of cllimate adaptation on are North-South finance flows?
+- What are the most common climate adaptation interventions? What do they replace?
 
-This study, then, seeks to understand what climate adaptation is understood as today, and how it is seen in the future. 
+I intend to answer these question by analyzing flows in the OECD DAC CRS dataset ^[While it excludes fossil fuels from the future, it does not conceptually choose between technologies]. The first question would be answered by modelling the relationship between the climate adaptation marker and the funding flows. The second question will be answered in the same dataset, looking at the relationship between the OECD sectors and the marker. The last one will look at the relationship between development funders ^[See all these many sources that claim that climate adaptation could also be] and the climate adaptation marker. 
+
+How will climate adaptation shape the future?
+
+- What futures do climate adaptation projects have? What are their implications?
+- How are climate adaptation interventions justified? Who decides?
+- How could climate adaptation be reimagined? What are the alternatives?
+
+I intend to answer these questions by analyzing the English language National Adaptation Plans (NAPs) submitted at the UNFCCC. The analysis will be layered and aim to deconstruct the visions of the future expressed in the texts. I identify the key methphors underpinning the adaptation discourse.
+
+Lastly, based on these methaphors, I construct three scenarios for the future of climate adaptation. One where the trends continues as I found the first research question, one where *protection* is prioritized and one where *capacity* is prioritized.
 
 ## Structure of the thesis
 
-This thesis is structured in three parts. Following this motivation section, the introduction continues, laying out the context, earlier research and scope of the thesis. 
+This thesis is structured in three parts. Following this motivation section, the introduction continues, laying out the context, earlier research and scope of the thesis. [...]
 
-In the second part, the research design will be presented. There, I will explain the different ontological and epistemological views on the future, my emphasis on the *tools* of climate adaptation, and the methods I will use to 
+In the second part, the research design will be presented. There, I will explain the different ontological and epistemological views on the future and my regression analysis and structured topic models [...]
 
-In the third part, I will present the findings from my study and discuss how they should be understood as a part of the development and climate adaptation literature, before I conclude the thesis. 
+In the third part, I will present the findings from my study and discuss how they should be understood, before I conclude the thesis. [...]

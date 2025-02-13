@@ -1,9 +1,32 @@
+::: {.callout-warning}
+This text is a work in progress, and will evolve over time. Any part that ends with [...] is planned to have more done, and any [source] means that I know I have a source, but I need to dig through my literature notes first.
+
+The plan for the text is that every section has an argument, and that the arguments build on each other over the course of the text
+
+**Part 1 - Climate adaptation is an interesting case**
+
+- Motivation - Climate change is dangerous and will shape most other fields of study in the future
+- Context - Climate adaptation is an important part of the climate change discourse
+- Literature review - There are two main research paradigms, the adaptation nexus and the adaptation regime
+
+**Part 2 - The theory and methods are a good match for my case**
+
+- Theory - The ontological and epistemological critiques are an effective lens to see the climate adaptation through
+- Methods - Regression analysis and structured topic modelling are well suited to get data about climate adaptation that can be deconstructed with the chosen theory
+
+**Part 3 - Things done changed**
+
+- Findings - my findings are interesting and strong, I can confidently say something about the structure of climate adaptation aid, and the likelihood of topics in NAPs
+- Discussion - climate adaptation is shaped by different understandings of knowledge and the world, and the current one is unhelpful. 
+
+The chapters Abstract, Motivation, Scope, and Conclusion are to bind the text together, and do not have any specific arguments
+:::
 # Abstract {#sec-abstract .unnumbered }
 
-Climate adaptation shapes up to be the defining paradigm of the 21th century. This thesis seeks to understand the role climate adaptation plays today, and how it will shape the future. This will investigate this through a mixed-methods approach. 
+Climate adaptation is shaping up to be the defining paradigm of North-South relations in the 21st century. This thesis seeks to understand the role climate adaptation plays today, and how it plans to shape the future.
 
-First, it analyzes data from the OECD's Creditor Reporting System to see how North-South finance flows have changed over the last ten years. It finds that while the amount of aid tagged as climate adaptation is rising, it is not evenly dispersed across the board. This leads to a structural shift in aid, where a larger part of aid is out in construction, transport and energy. 
+The study is based on a mixed-methods approach. First, it analyzes data from the OECD's Creditor Reporting System to see how North-South finance flows have changed over the last ten years. It finds that while the amount of aid tagged as climate adaptation is rising, it is not evenly dispersed across the board. This leads to a structural shift in aid, where a larger part of aid is in [...], [...] and [...] -sectors. 
 
-Second, it analyzes the National Adaptation Plans submitted to the UNFCCC, through a Structured Topic Model. It finds that, despite the planned interventions amount to a total rewiring of the economy on all levels, they focus on the need for economic growth through infrastructure development. There are clear differences in climate adaptaiton flows 
+Second, it analyzes the National Adaptation Plans submitted to the UNFCCC, through a Structured Topic Model. It finds that the planned interventions are most likely to happen in [...], [...] and [...]. Third, it discusses why this might be the case, building on ontological and epistemological critiques in the fields of design-, development and future theory. 
 
 # Acknowledgements {.unnumbered}

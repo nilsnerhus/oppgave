@@ -1,45 +1,34 @@
 # Literature review {#sec-lit}
 
-In this section, I will review the main strands of earlier research done in the field of climate adaptation.
+As mentioned above [@sec-context], this section will present the two main strands of climate adaptation research. One is sympathetic, the adaptation nexus, while the other is critical, the adaptation regime. Climate adaptation is concerned with vulnerability to climate damages, and the main disagreement is in the production of vulnerability. 
 
-## Nexus approaches {#sec-nexus}
+The literature in this field maps onto the thinking in the field of development studies, where the study of interventions, projects that seek to change societies abroad, has a long theoretical history. 
 
-This approach, favored by UN organizations such as the Food and Agriculture Organization (FAO), highlights the linkages between the ecosystem and resilience, advocating for more 
+## Adaptation nexus
 
-Through measures such as knowledge transfers, co-management of resorces and tree planting. This view promises win-win scenarios, as the interventions is thought to have positive effects on the farmer (and farmers familiy's) income, which then leads to a fortunes cycle. 
+This approach has its roots in participatory movements in the 1990s, critiquing the then paradigm of top-down development research and practice, preoccupied with governmental institutions [@freire1970;@chambers1994]. The researcher was not to observe and report, but had the ethical responsibility to include and empower the communities they researched [@desai2006]. New methods were developed to better map communities and engage them in knowledge production, such as participatory rural appraisal [source]. 
 
-This approach is squarly based in the participatory view, and has, as its goal, to 
+The data collected was used with new analytical framework centering the individual and communities. These frameworks analyzed how livelihoods were stitched together with a mix of assets, endowments, capabilities [@sen2000], shaped by access [@ribot2003] and aspirations [@appadurai2004], amongst others. This gave valuable insight into how societies functioned, and sparked new forms of interventions, with a focus on co-management and knowledge transfer. 
 
-## Mainstreaming {#sec-mainstream}
+Human Security itself is part of this tradition, as it challenges the traditional realpolitik-paradigm and focuses security as "something more than the top-down military defense of state interests and territory" [@paris2001, p. p. 88]. It broadens the understanding of security; horizontally to include more threats and vertically to include more actors [@paris2001, p. 98]. 
 
-@scoville-simonds2020 argues there are three specific political dimensions of the adaptation problem. These dimensions reflect the unequal distributions of power at diverse scales that underlie, 
-1) globally differentiated responsibility, 
-2) the uneven production of vulnerability, and, 
-3) unequal representation in adaptation decision-making.  [@scoville-simonds2020]
+This strand of research has since become a part of the mainstream development discourse, and variations on the participatory methods being implemented by the largest aid organizations like the World Bank [source]. They see climate adaptation as just one policy area amongst all the others, and is searching for some key sectors and for synergies between them [source]. 
 
-The Anthropology of Development, as the critical analysis of development actors and their projects has a long history. Thinkers like @ferguson1994 and his analysis of the *Anti-politics machine* in Lesotho and the discourse of underdevelopment in Latin America have highlighted and spurred research into why development seems to always miss targets and fail in predictable ways.
+One example of this could be tree planting projects, that while their main purpose is carbon sequestration, the project could contribute in many ways:
 
-Scholars have recently begun the work of deconstructing the climate adaptation discourse. @paprocki2018 describes it as an *Adaptation regime* based on her field work in Bangladesh. She argues that some countries are constructed as climate vulnerable and therefore in need of climate adaptation and that this imaginary is closely related to other historical processes of colonialism. All societal issues are reduced to be climate related, and unavoidable. This dystopian imaginary builds the groundwork for extensive experimentation, since the dystopian outlook eliminates the possible downsides. This, she argues, leads to dispossession as land is taken for shrimp aquaculture and migration to the cities is promoted. The poor and vulnerable that were supposed to be helped, simply are not [@paprocki2018].
+- Economic development through the sale of carbon credits, food security through production of fruit
+- Gender equality by giving the responsibility for managing the trees to women
+- environmental security by providing shade with leaves and reduce soil erosion with roots. 
+- If the tree is planted as a part of a farming system as a form agroforestry, the wood could be seen as a form of long-term investment that could be harvested in 30 years. 
+
+The nexus understanding sees vulnerability as an individual's *lack* of certain skill, capability, or access to a resource. When the right resource is given, it is expected to start an upwards spiral, where outcomes will improve in all other fields as well. 
+
+## Adaptation regime 
+
+The adaptation regime has its roots in the deconstructionist anthropology of development [@lewis2006]. It is heavily influenced by the work of Michael Foucault, and critiques of the *discourse of development*. The discourse, as "a system of knowledge practices, technologies, and power relationships" that orders the relationships between rich and poor countries [@lewis2006, p. 4]. 
+
+The discourses that order the relationships between rich and poor countries change over time, and development had replaced civilization, just as civilization had replaced God before it [@ferguson1994]. 1 The seminal pieces here are @escobar1995's deconstruction of the development discourse in Latin-America and the start of a post-development field of study and @ferguson1994's deconstruction of development projects, and finding that the projects fail in predictable ways. 
+
+As nature and climate discourses grew to prominence, @agrawal2005 argued that the new relationships should be understood as a form of *environmentality*. @paprocki2018 describes it as an *Adaptation regime* based on her field work in Bangladesh. She argues that some countries are constructed as climate vulnerable and therefore in need of climate adaptation and that this imaginary is closely related to other historical processes of colonialism. All societal issues are reduced to be climate related, and unavoidable. This dystopian imaginary builds the groundwork for extensive experimentation, since the dystopian outlook eliminates the possible downsides. This, she argues, leads to dispossession as land is taken for shrimp aquaculture and migration to the cities is promoted. The poor and vulnerable that were supposed to be helped, simply are not [@paprocki2018].
 
 @dewan2022 further develops this, highlighting the building of dams and polders as flood protection. She argues the polders built as a climate adaptation measure, are the same as the old for flood protection, and are successful at acquiring funding. Climate adaptation was *the spice* that made their applications for funding work. The only issue was that the polders did not work. By blocking the seasonal flooding and draining, the rivers became silted and needed dredging, furthering the risk of floods [@dewan2022]. 
-
-This view, favored by international NGOs[^2] is that climate change should be a part of all development assitance. 
-
-This approach is attempting to mainstream climate adaptation into all aspects of development. 
-### North-south interventions {#sec-dev}
-
-There are four main ways of understanding the justifications for interventions by countries in the global north, in countries in the global south [@escobar2018]:
-
-- Institutional development
-- Participatory development
-- Security development
-- Alternative development
-
-This way of understanding is perhaps the most common, as it involved the World Bank, IMF and the other large multilateral institutions. It assumes that the issues countries face are somehow of their own making and a result of a history of oppression. Through better governance and improved infrastructure, costs of doing business will sink, and spur economic development. Funds will be dispersed at the national level, most often as loans, with conditions attached. These conditions could include the use of private sector instruments[^3], and mobilization of funds at the project level.
-
-The particapatory view is skeptical of the government, both as in its ability to represent its citizens, as well as implementing its policies. By engaging poor populations directly, funds would not be wasted in bureaucracy and corruption. Since funds can target the most vulnerable populations, they make life better. Funds will be dispersed in many of small-scale projects, mediated by an international network of NGOs. The communities that best understand donor preferences, get a larger part of aid flows. 
-
-The security view sees the era of rapid growth in international trade as over. The United States, Russia, China and the EU moving investment to allies and strategically important parts of the world, through mechanisms such as EU's Global Gateway and China's Belt and Road, aiming to sure up their value chains. Funds are either dispersed at the national level, as loans or grants, or through infrastructure deals, where the infrastructure is delivered already assembled. Consultation with other actors that the State is limited. 
-
-Perhaps the most radical on this list, influenced by post-development thinking, the alternative development view rejects development interventions on the whole. Rather, development is sees as an always-ongoing process, where local communities find better solutions when left alone, without distortions from the outside. Funds are not needed for this approach, but cases where a donors' Ministry for Energy is funding the polluters, and the same donors Ministry for Environment is funding activists to fight the polluters, should be avoided[^1]. 
-
