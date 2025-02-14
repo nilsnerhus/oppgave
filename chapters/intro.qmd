@@ -18,7 +18,7 @@ As I will expand on in the next section this has led to changes in international
 
 With the popularization of the Human Security framework by the United Nations Development Program (UNDP) in the 1990s, the understanding of security expanded from its historical roots focussing exclusively on sovereignty and the State. It expanded vertically, to include common goods such as ecosystems and the biosphere and individuals, and horizontally, to include food security, environment security and community security, amongst others.
 
-Security was conceptualized as "Freedom from want and freedom from fear". The idea was one person struggling somewhere, could be the one to create insecurity somewhere else. In this way, no one would be secure until everyone was secure. 
+Security was conceptualized as "Freedom from want and freedom from fear" [@undp1994, p. 36]. The idea was one person struggling somewhere, could be the one to create insecurity somewhere else. In this way, no one would be secure until everyone was secure. 
 
 Climate change is set to inflict real losses and do real damage to the biosphere, countries and individuals. As climate change is a trans-scalar, global issues, adapting to it will similarly be trans-scalar and global. With its interdisciplinary and interconnected understanding of security, climate security fits well within the environmental security pillar of the Human Security framework one of the seven key pillars of the Human Security framework.
 
@@ -28,31 +28,25 @@ How we decide to frame the risk, vulnerability and tool we use to safeguard ours
 
 ## Scope
 
-his thesis seeks to understand climate adaptation funding flows, on a global scale. Since this funding, and its discourse, is anchored in the UNFCCC ^[There is an argument to be made that the Norwegian economy is suppresed by the phenomenon known as "Dutch Disease", where one very large export sector hampers growth in all the others], it is a natural focal point for the study. The declarations made at the end of every Climate Summit are the outcome of intense negotiations at the summit, and their contents become a part national political debates all around the world. 
+This thesis seeks to understand climate adaptation funding flows, on a global scale. Since this funding, and its discourse, is anchored in the UNFCCC, it is a natural focal point for the study. The declarations made at the end of every Climate Summit are the outcome of intense negotiations at the summit, and their contents become a part national political debates all around the world [source]. 
 
-The UNFCCC is also the stage where climate-related are launched, and a meeting place for activists, lobbyists, decision-makers and experts. The National Adaptation plans are a part of this, where a World Bank supported project has 
+What *is* climate adaptation?
 
-What is climate adaptation?
-
-- How has climate adaptation evolved at the UNFCCC?
 - What is the impact of cllimate adaptation on are North-South finance flows?
 - What are the most common climate adaptation interventions? What do they replace?
 
-I intend to answer these question by analyzing flows in the OECD DAC CRS dataset ^[While it excludes fossil fuels from the future, it does not conceptually choose between technologies]. The first question would be answered by modelling the relationship between the climate adaptation marker and the funding flows. The second question will be answered in the same dataset, looking at the relationship between the OECD sectors and the marker. The last one will look at the relationship between development funders ^[See all these many sources that claim that climate adaptation could also be] and the climate adaptation marker. 
+I intend to answer these question by analyzing flows aid flows. The first question would be answered by modelling the relationship between the climate adaptation and the funding flows. The second question will be answered in the same dataset, looking at the relationship between sectors and the marker.
 
-How will climate adaptation shape the future?
+What *impact* will climate adaptation have?
 
 - What futures do climate adaptation projects have? What are their implications?
 - How are climate adaptation interventions justified? Who decides?
-- How could climate adaptation be reimagined? What are the alternatives?
 
-I intend to answer these questions by analyzing the English language National Adaptation Plans (NAPs) submitted at the UNFCCC. The analysis will be layered and aim to deconstruct the visions of the future expressed in the texts. I identify the key methphors underpinning the adaptation discourse.
-
-Lastly, based on these methaphors, I construct three scenarios for the future of climate adaptation. One where the trends continues as I found the first research question, one where *protection* is prioritized and one where *capacity* is prioritized.
+I intend to answer these questions by analyzing the National Adaptation Plans (NAPs) submitted at the UNFCCC. The texts will be analyzed through a Structured Topic Model. 
 
 ## Structure of the thesis
 
-This thesis is structured in three parts. Following this motivation section, the introduction continues, laying out the context, earlier research and scope of the thesis. [...]
+This thesis is structured in three parts. Following this introduction section, I present , laying out the context, earlier research and scope of the thesis. [...]
 
 In the second part, the research design will be presented. There, I will explain the different ontological and epistemological views on the future and my regression analysis and structured topic models [...]
 

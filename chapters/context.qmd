@@ -4,9 +4,15 @@ International climate change action is governed by the United Nations Framework 
 
 The Summit established the concept of *Common, but differentiated, responsibilities*, highlighting Global North countries, defined in the convention as Annex I and Annex II countries. Here, industrialized countries are seen to have a greater responsibility for environmental destruction, and thus a greater responsibility to remedy it [source]. Official development assistance, an OECD measurement for foreign aid, was adapted to the Summit, known as the Rio markers, making it possible to code North-South aid as contributing towards the goals established in these conventions [source]. 
 
+## Mitigation
+
 The Kyoto summit in 1997 established climate mitigation as the first pillar of the UNFCCC [source]. Here, the level of greenhouse gasses was to be kept at a level below what was dangerous. The cuts that this entailed was to be done by the already industrialized countries. It also created a market for carbon, called "Flexibility mechanisms", where emissions could be traded from developing countries to industrialized countries [source]. In this way, developing countries that are under no obligation to cut their emissions, could sell carbon credits [source]. The Paris Agreement, adopted at COP21 in 2015, strengthened the commitment to mitigation, calling for a target to limit climate change to 1,5 degrees [source]. 
 
+## Adaptation
+
 As the targets set in the Kyoto protocol were deemed inadequate to deal with the climate crisis, and Governments faced resistance from lobbyists and citizens, climate adaptation grew to prominence and was adapted as the second pillar at COP16 in Cancun in 2010 [source]. Climate adaptation are all measures to adapt to climate damages. In industrialized countries, adaptation usually entails managing surface runoff and in low-lying countries, sea-level level rise and storm surges, with a mix of mechanical- and nature-based interventions. In developing countries, this process is more complex and something I will explore further below [@sec-lit]. 
+
+## Loss and damage
 
 Loss and damage grew more prominent in UNFCCC negotiation as new knowledge was produced and activism from small island developing states highlighted, that some nations disappear beneath the waves, if climate action was not intensified [source]. This led to both a sharpening of the original target from 1997, to a new one to limit global warming to 1,5° C, and the establishment of the loss and damage pillar [source]. 
 
@@ -20,6 +26,8 @@ Loss and damage is meant to compensate for damages *beyond adaptation* [@janzen2
 | 21  | Paris          | 2015 | The climate loss and damage pillar is established |
 | 29  | Baku           | 2024 | $300 bn is pledged for climate adaptation         |
 : Timeline of the main climate summits {.striped .hover}
+
+## UNFCCC negotiations
 
 The UNFCCC understands climate damages, all the negative effects of climate change, as a kind of spillover. Unmitigated emissions lead to damages, unadapted damages causes losses that have to be compensated. Since the UNFCCC, like most international agreements, is negotiated by countries that have to balance their need for strong policy action and future uncertainty, the process is ambiguous [@hall2018]. 
 

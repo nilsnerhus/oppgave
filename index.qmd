@@ -5,9 +5,8 @@ The plan for the text is that every section has an argument, and that the argume
 
 **Part 1 - Climate adaptation is an interesting case**
 
-- Motivation - Climate change is dangerous and will shape most other fields of study in the future
 - Context - Climate adaptation is an important part of the climate change discourse
-- Literature review - There are two main research paradigms, the adaptation nexus and the adaptation regime
+- Literature review - There are two main research paradigms, the adaptation nexus and the adaptation regime.
 
 **Part 2 - The theory and methods are a good match for my case**
 
@@ -19,7 +18,7 @@ The plan for the text is that every section has an argument, and that the argume
 - Findings - my findings are interesting and strong, I can confidently say something about the structure of climate adaptation aid, and the likelihood of topics in NAPs
 - Discussion - climate adaptation is shaped by different understandings of knowledge and the world, and the current one is unhelpful. 
 
-The chapters Abstract, Motivation, Scope, and Conclusion are to bind the text together, and do not have any specific arguments
+The chapters Abstract, Introduction, and Conclusion are to bind the text together, and do not have any specific arguments
 :::
 # Abstract {#sec-abstract .unnumbered }
 

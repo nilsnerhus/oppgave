@@ -4,7 +4,7 @@ As mentioned above [@sec-context], this section will present the two main strand
 
 The literature in this field maps onto the thinking in the field of development studies, where the study of interventions, projects that seek to change societies abroad, has a long theoretical history. 
 
-## Adaptation nexus
+## Adaptation nexus {#sec-nexus}
 
 This approach has its roots in participatory movements in the 1990s, critiquing the then paradigm of top-down development research and practice, preoccupied with governmental institutions [@freire1970;@chambers1994]. The researcher was not to observe and report, but had the ethical responsibility to include and empower the communities they researched [@desai2006]. New methods were developed to better map communities and engage them in knowledge production, such as participatory rural appraisal [source]. 
 
@@ -16,16 +16,16 @@ This strand of research has since become a part of the mainstream development di
 
 One example of this could be tree planting projects, that while their main purpose is carbon sequestration, the project could contribute in many ways:
 
-- Economic development through the sale of carbon credits, food security through production of fruit
+- Economic security through the sale of carbon credits, and if the tree is planted as a part of a farming system as a form agroforestry, the wood could be seen as a form of long-term investment that could be harvested in 30 years
+- Food security through production of fruit
 - Gender equality by giving the responsibility for managing the trees to women
-- environmental security by providing shade with leaves and reduce soil erosion with roots. 
-- If the tree is planted as a part of a farming system as a form agroforestry, the wood could be seen as a form of long-term investment that could be harvested in 30 years. 
+- Environmental security by providing shade with leaves and reduce soil erosion with roots. 
 
 The nexus understanding sees vulnerability as an individual's *lack* of certain skill, capability, or access to a resource. When the right resource is given, it is expected to start an upwards spiral, where outcomes will improve in all other fields as well. 
 
-## Adaptation regime 
+## Adaptation regime {#sec-regime}
 
-The adaptation regime has its roots in the deconstructionist anthropology of development [@lewis2006]. It is heavily influenced by the work of Michael Foucault, and critiques of the *discourse of development*. The discourse, as "a system of knowledge practices, technologies, and power relationships" that orders the relationships between rich and poor countries [@lewis2006, p. 4]. 
+The adaptation regime has its roots in the deconstructionist anthropology of development [@lewis2006]. It is heavily influenced by the work of Michael Foucault, and critiques of the *discourse of development*. The discourse, as "a system of knowledge practices, technologies, and power relationships" that orders the relationships between people and institutions. [@lewis2006, p. 4]. 
 
 The discourses that order the relationships between rich and poor countries change over time, and development had replaced civilization, just as civilization had replaced God before it [@ferguson1994]. 1 The seminal pieces here are @escobar1995's deconstruction of the development discourse in Latin-America and the start of a post-development field of study and @ferguson1994's deconstruction of development projects, and finding that the projects fail in predictable ways. 
 
