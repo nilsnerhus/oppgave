@@ -8,7 +8,7 @@ book:
   downloads: [pdf,docx]
   chapters:
     - index.qmd
-    - chapters/introduction.qmd
+    - chapters/intro.qmd
     - part: "Climate adaptation"
       chapters:
         - chapters/context.qmd
