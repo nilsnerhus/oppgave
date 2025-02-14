@@ -1,4 +1,4 @@
-::: {.callout-warning}
+::: {.callout-warning collapse="true"}
 This text is a work in progress, and will evolve over time. Any part that ends with [...] is planned to have more done, and any [source] means that I know I have a source, but I need to dig through my literature notes first.
 
 The plan for the text is that every section has an argument, and that the arguments build on each other over the course of the text

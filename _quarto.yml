@@ -7,10 +7,10 @@ book:
   date: today
   downloads: [pdf,docx]
   chapters:
-    - part: "Introduction"
+    - index.qmd
+    - chapters/introduction.qmd
+    - part: "Climate adaptation"
       chapters:
-        - index.qmd
-        - chapters/motivation.qmd
         - chapters/context.qmd
         - chapters/lit.qmd
     - part: "Research design"
