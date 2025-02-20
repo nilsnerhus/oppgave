@@ -1,4 +1,4 @@
-# Literature review {#sec-lit}
+# Literature review: Nexus and regime {#sec-lit}
 
 As mentioned above [@sec-context], this section will present the two main strands of climate adaptation research. One is sympathetic, the adaptation nexus, while the other is critical, the adaptation regime. Climate adaptation is concerned with vulnerability to climate damages, and the main disagreement is in the production of vulnerability. 
 

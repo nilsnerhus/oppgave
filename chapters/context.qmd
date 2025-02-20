@@ -1,4 +1,4 @@
-# Context {#sec-context}
+# Context: Climate action {#sec-context}
 
 International climate change action is governed by the United Nations Framework Convention for Climate Change (UNFCCC) [source]. The Convention has annual Conferences of the Parties (COP) to the Convention, also known as climate summits. The first summit, known colloquially as the Earth Summit, was held in Rio de Janeiro in 1992. The Earth Summit also created two other conventions, The Convention on Biological Diversity (CBD) and The United Nations Convention to Combat Desertification (UNCCD) [source].
 

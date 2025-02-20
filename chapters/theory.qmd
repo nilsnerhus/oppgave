@@ -1,20 +1,37 @@
-# Theory {#sec-theory}
+# Theory: Pluriversal politics {#sec-theory}
 
-::: {.callout-warning}
+In this theory section, I will present the theoretical framework that informs the analyzis later in the thesis, based on Arturo Escobar's notion of the *pluriverse* [@escobar2018;@escobar2020]. 
 
-This section is outdated per 13.02. It is the epistemological and ontological approaches to development, design and future that should go here, securitization is not a part of it. 
+I will first present the defuturing as the central critique of the global system. 
 
-:::
+Then I will present ways of understanding the future, to understand the epistemological and ontological assumptions made when envisioning the future. 
 
-In this theory section, I will present the theoretical framework that informs the analyzis later in the thesis.
+Last, I will present the pluriverse as an alternative goal for development and climate adaptation. 
 
-First, I will explore how the concept of security has evolved sine the World War 2, and how this leads to a form of securitization. Second, I will explain the different justifications for North-South interventions, arguing that there are four main types. Third, I will explain the main views of climate adaptation, and mapping them onto the intervention framework I have built earlier. Lastly, I will explore development and security's relation to the future, and explore new developments the critical literature.
+## Defuturing
 
-The frameworks presented here builds on the adaptation regime [@sec-regime] and new 
+Remembering the discourses discussed in @sec-regime, the reigning discourses about the future, at least before the second election of Donald Trump in the USA, was one of neoliberalism/institutional development/technoscience.
 
-## Capitalist realism
+These ideological movements could be summed up in the statement by Margaret Thatcher, "There is no alternative", later repeated by other conservative and neoliberal politicians. They base their statement on a popular book by Fracis Fukuyama, "End of history", that argues that after the fall of the soviet union in the early 90s, humanity had decided on the best form of governance, and that was globalization, free markets, expert institutions and low regulation.
 
+This would lead to economic development, that again would start upward spirals as described in @sec-regime, leading to positive outcomes for all, even though the gains from a growing economy would be uneavenly spread. 
 
 ## Deconstruction of the future
 
+What this literature has in common is the idea that the future is not given, it is not faith. Rather, it is based on choices made, either concious or not. 
+
+The practice of future studies, foresight or forecast is based on assumptions about the future. 
+
+The assumption in the 'End of history' is that the future is an inevitable spread of markets, institutions and individualism. It assumes that there are no other ways of organizing society, no other goals than individual wealth.  
+
+Wh
+
+Some are epistemological, based on what kinds of information it is possible to know, and some are ontological, based on what kinds 
+
+The ontological take of Escobar, and others, is that the future, like the present, is a specific presentation of the past, rather than a natural cause of it.
+
+This way of thinking would also leave you 
+
+Poverty, for example, is not a 
+## Pluriverse
 

@@ -2,8 +2,9 @@ project:
     type: book
 
 book:
-  title: "Adapting the Future"
-  author: "Nils Nerhus Rørstad"
+  title: "COP-out"
+  subtitle: "A critical analysis of the illusions and realities of climate Adaptation"
+  author: "Nils Nerhus RC8rstad"
   date: today
   downloads: [pdf,docx]
   chapters:
