@@ -3,8 +3,8 @@ project:
 
 book:
   title: "COP-out"
-  subtitle: "A critical analysis of the illusions and realities of climate Adaptation"
-  author: "Nils Nerhus RC8rstad"
+  subtitle: "A critical analysis of the illusions and realities of climate adaptation"
+  author: "Nils Nerhus Rørstad"
   date: today
   downloads: [pdf,docx]
   chapters:

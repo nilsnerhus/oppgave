@@ -10,13 +10,11 @@ This approach has its roots in participatory movements in the 1990s, critiquing 
 
 The data collected was used with new analytical framework centering the individual and communities. These frameworks analyzed how livelihoods were stitched together with a mix of assets, endowments, capabilities [@sen2000], shaped by access [@ribot2003] and aspirations [@appadurai2004], amongst others. This gave valuable insight into how societies functioned, and sparked new forms of interventions, with a focus on co-management and knowledge transfer. 
 
-Human Security itself is part of this tradition, as it challenges the traditional realpolitik-paradigm and focuses security as "something more than the top-down military defense of state interests and territory" [@paris2001, p. p. 88]. It broadens the understanding of security; horizontally to include more threats and vertically to include more actors [@paris2001, p. 98]. 
-
 This strand of research has since become a part of the mainstream development discourse, and variations on the participatory methods being implemented by the largest aid organizations like the World Bank [source]. They see climate adaptation as just one policy area amongst all the others, and is searching for some key sectors and for synergies between them [source]. 
 
 One example of this could be tree planting projects, that while their main purpose is carbon sequestration, the project could contribute in many ways:
 
-- Economic security through the sale of carbon credits, and if the tree is planted as a part of a farming system as a form agroforestry, the wood could be seen as a form of long-term investment that could be harvested in 30 years
+- Economic security through the sale of forest carbon credits to the global north. If the tree is planted as a part of a farming system as a form agroforestry, the wood could be seen as a form of long-term investment that could be harvested in 30 years
 - Food security through production of fruit
 - Gender equality by giving the responsibility for managing the trees to women
 - Environmental security by providing shade with leaves and reduce soil erosion with roots. 
