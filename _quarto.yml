@@ -9,20 +9,20 @@ book:
   downloads: [pdf,docx]
   chapters:
     - index.qmd
-    - chapters/intro.qmd
+    - chapters/intro.qmd.md
     - part: "Climate adaptation"
       chapters:
-        - chapters/context.qmd
-        - chapters/lit.qmd
+        - chapters/context.qmd.md
+        - chapters/lit.qmd.md
     - part: "Research design"
       chapters:
-        - chapters/theory.qmd
-        - chapters/methods.qmd
+        - chapters/theory.qmd.md
+        - chapters/methods.qmd.md
     - part: "Analysis"
       chapters:
-        - chapters/findings.qmd
-        - chapters/discussion.qmd
-    - chapters/conclusion.qmd
+        - chapters/findings.qmd.md
+        - chapters/discussion.qmd.md
+    - chapters/conclusion.qmd.md
 
 cap-location: margin
 reference-location: margin
@@ -32,6 +32,7 @@ csl: apa.csl
 execute: 
   echo: false
   warning: false
+  freeze: auto
 
 format:
   html:
