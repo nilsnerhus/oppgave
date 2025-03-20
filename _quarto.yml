@@ -8,21 +8,21 @@ book:
   date: today
   downloads: [pdf,docx]
   chapters:
-    - index.qmd.md
-    - chapters/intro.qmd.md
+    - index.qmd
+    - chapters/intro.qmd
     - part: "Climate adaptation"
       chapters:
-        - chapters/context.qmd.md
-        - chapters/lit.qmd.md
+        - chapters/context.qmd
+        - chapters/lit.qmd
     - part: "Research design"
       chapters:
-        - chapters/theory.qmd.md
-        - chapters/methods.qmd.md
+        - chapters/theory.qmd
+        - chapters/methods.qmd
     - part: "Analysis"
       chapters:
-        - chapters/findings.qmd.md
-        - chapters/discussion.qmd.md
-    - chapters/conclusion.qmd.md
+        - chapters/findings.qmd
+        - chapters/discussion.qmd
+    - chapters/conclusion.qmd
 
 cap-location: margin
 reference-location: margin
