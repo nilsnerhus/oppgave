@@ -44,27 +44,6 @@ Using this prepared dataset, I will calculate entropy across various dimensions.
 
 I will also examine donor entropy to understand how consistently different donors allocate adaptation funding across sectors. For each major donor, the sectoral entropy of their adaptation portfolio will help identify patterns of consensus or divergence among donors. Finally, comparative entropy analyses between adaptation funding and general aid patterns will reveal whether climate adaptation represents a distinct discourse or simply mirrors existing aid patterns.
 
-For the calculation of sectoral entropy, I will use the following procedure:
-
-```{{r}}
-# Calculate proportions of adaptation funding by sector
-sector_proportions <- aid_data %>%
-  filter(adaptation_flag == 1) %>%
-  group_by(sector_group) %>%
-  summarize(total_log_amount = sum(log_amount, na.rm = TRUE)) %>%
-  mutate(proportion = total_log_amount / sum(total_log_amount))
-
-# Calculate Shannon entropy
-sectoral_entropy <- -sum(sector_proportions$proportion * 
-                         log2(sector_proportions$proportion), na.rm = TRUE)
-
-# Calculate maximum possible entropy for this number of categories
-max_entropy <- log2(nrow(sector_proportions))
-
-# Calculate relative entropy (normalized between 0 and 1)
-relative_entropy <- sectoral_entropy / max_entropy
-```
-
 To validate the entropy calculations, I will compare the results to randomized data to establish statistical significance, testing whether observed patterns of dissonance differ significantly from random chance [source]. This will involve creating multiple permutations of the dataset with randomly assigned adaptation flags and comparing the resulting entropy distributions to the observed values [source].
 
 A key limitation of this dataset is that it relies on self-reported data from donors, with potential inconsistencies in how adaptation is coded. Different donors may interpret the climate adaptation marker differently, leading to variations that reflect reporting practices rather than substantive differences in approach. However, this is appropriate for my study as I am interested in what is coded as climate adaptation to analyze what actors think, not the other way around.
@@ -82,34 +61,6 @@ To analyze discourse patterns in these documents, I will employ structural topic
 The focus of this analysis is not on the substantive content of the topics but rather on their distribution patterns across different document categories. The output of the STM analysis will provide the prevalence of each topic within each document and its correlation with document metadata, creating the probability distributions needed for entropy calculations.
 
 I will then convert these topic prevalences into probability distributions suitable for entropy calculation. For example, I might examine the distribution of topics within NAPs from different income groups:
-
-```{{r}}
-library(stm)
-library(tidyverse)
-
-# Extract topic proportions for each document
-topic_props <- nap_stm$theta
-
-# Calculate average topic distribution by income group
-topic_by_income <- data.frame(
-  topic_props,
-  income_group = nap_metadata$income_level
-) %>%
-  group_by(income_group) %>%
-  summarize(across(starts_with("X"), mean)) %>%
-  pivot_longer(cols = -income_group, 
-               names_to = "topic", 
-               values_to = "proportion")
-
-# Calculate entropy within each income group
-entropy_by_income <- topic_by_income %>%
-  group_by(income_group) %>%
-  summarize(
-    entropy = -sum(proportion * log2(proportion), na.rm = TRUE),
-    max_entropy = log2(n()),
-    relative_entropy = entropy / max_entropy
-  )
-```
 
 This approach will allow me to calculate intra-group entropy (within defined groups such as low-income countries), inter-group entropy (between different groups), and overall corpus entropy (across the entire collection of documents) [source].
 

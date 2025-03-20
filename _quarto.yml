@@ -25,9 +25,10 @@ book:
     - chapters/conclusion.qmd
 
 cap-location: margin
-reference-location: margin
 bibliography: references.bib
 csl: apa.csl
+code-overflow: wrap
+highlight-style: tango
 
 execute: 
   echo: false
@@ -37,6 +38,7 @@ execute:
 format:
   html:
     theme: cosmo
+    code-fold: true
   pdf:
     documentclass: scrreprt
     toc: true
