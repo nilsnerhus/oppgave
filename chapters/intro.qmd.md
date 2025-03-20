@@ -18,7 +18,7 @@ The focus of this thesis are the actions taken to adapt to climate change. The g
 
 This thesis takes a novel approach. It combines theories and concepts from the field of Anthropology of Development, with their epistemological critiques of development and development projects, with quantitative methods better known from other fields.
 
-## Climate security as Human Security
+## Climate security as Human Security {#sec-humsec}
 
 A central part of the discussion is vulnerability, risk, and security. Human Security, as an approach to research, challenges the traditional realpolitik-paradigm and focuses security as "something more than the top-down military defense of state interests and territory" [@paris2001, p. 88]. It broadens the understanding of security; horizontally to include more threats and vertically to include more actors [@paris2001, p. 98]. Importantly for climate adaptation, Human Security includes risks to the biosphere and the ecosystems the world relies on, as well as the concrete risk to the individual. The individual might now experience a greater risk to their food security, environmental security, community security and personal security [@undp1994]. 
 
