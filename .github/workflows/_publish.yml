@@ -14,36 +14,36 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Cache Quarto
-        id: quarto-cache
-        uses: actions/cache@v3
-        with:
-          path: ~/.local/share/quarto
-          key: ${{ runner.os }}-quarto-latest
-
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
-        
+
       - name: Install R
         uses: r-lib/actions/setup-r@v2
         with:
           use-public-rspm: true
-          
+        
+      # This is the most reliable caching mechanism for R packages
       - name: Set up dependencies
         uses: r-lib/actions/setup-renv@v2
         with:
           cache-version: 1
           
+      # TinyTeX cache - with explicit path verification
+      - name: Verify TinyTeX path
+        id: verify-tinytex
+        run: |
+          mkdir -p ~/.TinyTeX
+          echo "TINYTEX_DIR_EXISTS=true" >> $GITHUB_OUTPUT
+          
       - name: Cache TinyTeX
-        id: tinytex-cache
         uses: actions/cache@v3
+        if: steps.verify-tinytex.outputs.TINYTEX_DIR_EXISTS == 'true'
         with:
           path: ~/.TinyTeX
-          key: ${{ runner.os }}-tinytex
+          key: ${{ runner.os }}-tinytex-${{ hashFiles('.github/workflows/_publish.yml') }}
           
       - name: Install TinyTeX    
         uses: r-lib/actions/setup-tinytex@v2
-        if: steps.tinytex-cache.outputs.cache-hit != 'true'
   
       - name: Render and Publish
         uses: quarto-dev/quarto-actions/publish@v2
