@@ -29,6 +29,7 @@ bibliography: references.bib
 csl: apa.csl
 code-overflow: wrap
 highlight-style: tango
+code-fold: true
 
 execute: 
   echo: false

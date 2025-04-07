@@ -1,0 +1,34 @@
+---
+title: "Climate Adaptation Discourse Analysis"
+format:
+  pdf:
+    fig-format: pdf
+  html:
+    fig-format: svg
+---
+
+## Entropy Analysis
+
+```{r}
+#| label: fig-entropy
+#| fig-cap: "Entropy comparison between geographic regions and income groups."
+
+library(r2d3)
+
+# Your entropy data
+entropy_data <- list(
+  regions = list(
+    entropy = 0.72,
+    points = data.frame(x = c(...), y = c(...))
+  ),
+  income = list(
+    entropy = 0.35,
+    points = data.frame(x = c(...), y = c(...))
+  )
+)
+
+# Create visualization
+r2d3(data = entropy_data, script = "js/entropy_target.js", 
+     width = 800, height = 400, dependencies = "js/d3-path.min.js")
+```
+
