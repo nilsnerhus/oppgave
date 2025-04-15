@@ -15,8 +15,6 @@ library(stm)         # Structural Topic Modeling
 library(SnowballC)   # Word stemming
 library(countrycode) # Country standardization
 library(napr)        # NAP data
-}
-
 
 # =========================================================================
 # FUNCTION: preprocess_nap
@@ -59,9 +57,9 @@ preprocess_nap <- function(nap_data,
   return(processed_text)
 }
 
-# ========================
+# =========================================================================
 # FUNCTION: optimal_topics
-# ========================
+# =========================================================================
 
 optimal_topics <- function(processed_text, 
                            k_min = 5, 
@@ -166,7 +164,7 @@ optimal_topics <- function(processed_text,
 
 
 # ========================
-# FUNCTION: optimal_topics
+# FUNCTION: extract_topic_proportions
 # ========================
 
 extract_topic_proportions <- function(optimal_result, 
@@ -222,19 +220,10 @@ extract_topic_proportions <- function(optimal_result,
   # Standardize country information using countrycode
   result_df <- result_df %>%
     mutate(
-      # Extract year from date_posted
       Year = as.integer(substring(date_posted, 1, 4)),
-      
-      # Standardize country names
       Country = countrycode(country_name, "country.name", "country.name", nomatch = NULL),
-      
-      # Get World Bank region
       Region = countrycode(Country, "country.name", "region", nomatch = NULL),
-      
-      # Get income group
       Income = countrycode(Country, "country.name", "income.level", nomatch = NULL),
-      
-      # Extract Geography markers from ldc_sids_marker
       Geography = case_when(
         grepl("LDC", ldc_sids_marker) & grepl("SIDS", ldc_sids_marker) ~ "LDC, SIDS",
         grepl("LDC", ldc_sids_marker) ~ "LDC",
