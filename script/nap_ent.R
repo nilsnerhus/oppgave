@@ -1,16 +1,30 @@
-# ========================
+# NAP ENTROPY ANALYSIS FUNCTIONS
+# ==============================
+# Author: Nils Nerhus Rørstad
+# Created: April 2025
+# 
+# This script contains functions for processing National Adaptation Plans (NAPs),
+# performing structural topic modeling, and preparing data for entropy analysis.
+# Data is sourced from the napr package.
+
+# Load required packages
+library(dplyr)       # Data manipulation
+library(tidyr)       # Data reshaping
+library(tidytext)    # Text processing
+library(stm)         # Structural Topic Modeling
+library(SnowballC)   # Word stemming
+library(countrycode) # Country standardization
+library(napr)        # NAP data
+}
+
+
+# =========================================================================
 # FUNCTION: preprocess_nap
-# ========================
+# =========================================================================
 
 preprocess_nap <- function(nap_data, 
                            custom_stopwords = NULL, 
                            stem_words = FALSE) {
-  
-  # Load required packages
-  require(dplyr)
-  require(stringr)
-  require(tidytext)
-  require(SnowballC) # For stemming if needed
   
   # Validate inputs
   if (!"pdf_text" %in% names(nap_data)) {
@@ -54,14 +68,7 @@ optimal_topics <- function(processed_text,
                            k_max = 50, 
                            k_step = 5,
                            seed = 1234) {
-  
-  # Load required packages
-  require(dplyr)
-  require(ggplot2)
-  require(tidyr)
-  require(tidytext)
-  require(stm)
-  
+
   # Create DTM for STM
   # Convert from tidy format to document-term matrix
   words_count <- processed_text %>%
@@ -165,12 +172,6 @@ optimal_topics <- function(processed_text,
 extract_topic_proportions <- function(optimal_result, 
                                       final_k = NULL,
                                       include_top_terms = FALSE) {
-  
-  # Load required packages
-  require(dplyr)
-  require(tidyr)
-  require(stm)
-  require(countrycode)
   
   # Extract data from optimization results
   stm_data <- optimal_result$stm_data
