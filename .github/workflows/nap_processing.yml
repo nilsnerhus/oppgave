@@ -1,7 +1,7 @@
 name: NAP Topic Modeling
 
 on:
-  workflow_dispatch:
+  workflow_dispatch:  # Allows manual triggering from the GitHub UI
 
 jobs:
   run-topic-modeling:
@@ -16,9 +16,13 @@ jobs:
         
       - name: Set up renv
         uses: r-lib/actions/setup-renv@v2
-        
+        with:
+          cache-version: 1
+          
       - name: Create directories
-        run: mkdir -p cache results
+        run: |
+          mkdir -p results/data
+          mkdir -p results/plots
           
       - name: Source function files
         run: |
@@ -35,3 +39,7 @@ jobs:
         with:
           name: nap-topic-model-results
           path: results/
+          
+      - name: Save diagnostic plot
+        run: |
+          Rscript -e "if(file.exists('results/data/optimal_topics.rds')) { optimal_result <- readRDS('results/data/optimal_topics.rds'); ggsave('results/plots/topic_diagnostics.png', plot = optimal_result$plot, width = 10, height = 6, dpi = 300) }"

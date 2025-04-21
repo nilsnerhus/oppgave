@@ -1,13 +1,21 @@
+# =========================================================================
+# NAP Topic Modeling Function
+# =========================================================================
+# Purpose: Process topic model results for dissonance analysis
 
 # Load required packages
 library(dplyr)       # Data manipulation
 library(tidyr)       # Data reshaping
 library(tidytext)    # Text processing
-library(stm)         # Structural Topic Modeling
 
 topic_model <- function(optimal_result, 
-                                      final_k = NULL,
-                                      include_top_terms = FALSE) {
+                        final_k = NULL,
+                        include_model = TRUE) {
+  
+  # Validate input
+  if (!is.list(optimal_result) || !all(c("stm_data", "doc_meta", "best_k", "best_model") %in% names(optimal_result))) {
+    stop("Invalid input: Expected output from updated optimal_topics() function")
+  }
   
   # Extract data from optimization results
   stm_data <- optimal_result$stm_data
@@ -16,32 +24,46 @@ topic_model <- function(optimal_result,
   # Use provided k or best k from optimization
   k <- ifelse(is.null(final_k), optimal_result$best_k, final_k)
   
-  # Fit final STM model
-  cat(paste0("Fitting final model with k = ", k, "...\n"))
-  final_model <- stm(
-    documents = stm_data$documents,
-    vocab = stm_data$vocab,
-    K = k,
-    max.em.its = 100,
-    init.type = "Spectral",
-    seed = 1234,
-    verbose = FALSE
-  )
+  # Use the pre-computed model if k matches best_k, otherwise warn
+  if (is.null(final_k) || final_k == optimal_result$best_k) {
+    cat("Using pre-computed model with k =", optimal_result$best_k, "\n")
+    final_model <- optimal_result$best_model
+  } else {
+    warning("Requested k differs from optimal k. Pre-computed model will not be used.")
+    cat(paste0("Fitting new model with k = ", final_k, "...\n"))
+    final_model <- stm(
+      documents = stm_data$documents,
+      vocab = stm_data$vocab,
+      K = final_k,
+      max.em.its = 100,
+      init.type = "Spectral",
+      seed = 1234,
+      verbose = FALSE
+    )
+  }
   
   # Extract topic proportions (theta matrix)
   topic_props <- as.data.frame(final_model$theta)
   
   # Add document identifiers
-  topic_props$doc_id <- as.integer(rownames(topic_props))
+  topic_props$doc_id <- rownames(topic_props)
+  
+  # Ensure doc_id is in the same format in both dataframes for joining
+  if (is.numeric(doc_meta$doc_id) && !is.numeric(topic_props$doc_id)) {
+    topic_props$doc_id <- as.numeric(topic_props$doc_id)
+  } else if (is.character(doc_meta$doc_id) && !is.character(topic_props$doc_id)) {
+    topic_props$doc_id <- as.character(topic_props$doc_id)
+  }
   
   # Rename topic columns with simple numeric identifiers
   colnames(topic_props)[1:k] <- paste0("Topic_", 1:k)
   
-  # Store top terms for reference but don't use in labels
-  top_terms <- labelTopics(final_model, n = 5)
-  topic_labels <- sapply(1:k, function(i) {
-    paste(top_terms$frex[i,], collapse = ", ")
-  })
+  # Get available metadata columns
+  meta_cols <- setdiff(names(doc_meta), "doc_id")
+  
+  if (length(meta_cols) == 0) {
+    warning("No metadata columns found beyond doc_id")
+  }
   
   # Reshape to long format
   topic_props_long <- topic_props %>%
@@ -51,19 +73,38 @@ topic_model <- function(optimal_result,
       values_to = "Proportion"
     )
   
-  # Join with document metadata
+  # Join with document metadata, preserving all available metadata columns
   result_df <- topic_props_long %>%
     left_join(doc_meta, by = "doc_id")
   
-  # Select and rearrange columns for final output
-  final_df <- result_df %>%
-    select(date_posted, Country, Region, Income, Geography, Topic, Proportion)
+  # Extract topic labels for reference
+  top_terms <- labelTopics(final_model, n = 5)
+  topic_labels <- sapply(1:k, function(i) {
+    paste(top_terms$frex[i,], collapse = ", ")
+  })
+  names(topic_labels) <- paste0("Topic_", 1:k)
   
-  # Return the formatted data
-  return(list(
-    data = final_df,
-    model = final_model,
-    topic_labels = setNames(topic_labels, paste0("Topic_", 1:k))  # Store but don't use in main data
-  ))
+  # Prepare final output
+  output <- list(
+    data = result_df,
+    topic_labels = topic_labels
+  )
+  
+  # Include model if requested
+  if (include_model) {
+    output$model <- final_model
+  }
+  
+  # Add class for method dispatch
+  class(output) <- c("nap_topic_model", "list")
+  
+  # Provide guidance on using the output
+  cat("Model processing complete. Access results with:\n")
+  cat("- output$data: Data frame with topics and proportions\n")
+  cat("- output$topic_labels: Descriptive labels for each topic\n")
+  if (include_model) {
+    cat("- output$model: Full STM model object\n")
+  }
+  
+  return(output)
 }
-

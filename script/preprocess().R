@@ -9,16 +9,16 @@ library(tidyr)       # Data reshaping
 library(tidytext)    # Text processing
 library(stringr)     # String manipulation
 library(SnowballC)   # Word stemming
-library(napr)        # NAP data
+library(quanteda)    # For dfm creation
 
 preprocess <- function(nap_data, 
-                           custom_stopwords = NULL, 
-                           stem_words = FALSE,
-                           remove_punctuation = TRUE,
-                           min_doc_length = 50,
-                           min_word_count = 2,
-                           max_doc_proportion = 0.8,
-                           return_stats = FALSE) {
+                       custom_stopwords = NULL, 
+                       stem_words = FALSE,
+                       remove_punctuation = TRUE,
+                       min_doc_length = 50,
+                       min_word_count = 2,
+                       max_doc_proportion = 0.8,
+                       return_stats = FALSE) {
   
   # Validate inputs
   if (!is.data.frame(nap_data)) {
@@ -90,10 +90,10 @@ preprocess <- function(nap_data,
     count(doc_id) %>%
     filter(n >= min_doc_length)
   
-  # Warn if documents were removed
+  # Tell if documents were removed
   removed_docs <- setdiff(unique(processed_text$doc_id), doc_lengths$doc_id)
   if (length(removed_docs) > 0) {
-    warning(paste("Removed", length(removed_docs), 
+    cat(paste("Removed", length(removed_docs), 
                   "documents with fewer than", min_doc_length, "tokens"))
   }
   
@@ -103,7 +103,7 @@ preprocess <- function(nap_data,
   
   # Extract metadata columns if they exist
   metadata_cols <- intersect(
-    c("country_name", "region", "ldc_sids_marker", "date_posted"),
+    c("country_name", "region", "ldc_sids_marker", "date_posted", "Income", "Geography", "Country"),
     names(nap_data)
   )
   
@@ -116,35 +116,30 @@ preprocess <- function(nap_data,
     # Only keep metadata for documents that weren't filtered out
     metadata <- metadata %>%
       semi_join(doc_lengths, by = "doc_id")
-    
-    processed_text <- processed_text %>%
-      left_join(metadata, by = "doc_id")
+  } else {
+    metadata <- tibble(doc_id = unique(processed_text$doc_id))
   }
   
   cat("Creating document-term matrix from processed tokens...\n")
   
-  # Ensure doc_id is numeric
-  processed_text <- processed_text %>%
-    mutate(doc_id = as.integer(doc_id))
-  
-  # Word counts
+  # Create word counts
   word_counts <- processed_text %>%
     count(doc_id, word)
   
-  # Metadata
-  meta_cols <- setdiff(names(processed_text), "word")
-  meta <- processed_text %>%
-    select(all_of(meta_cols)) %>%
-    distinct(doc_id, .keep_all = TRUE)
-  
-  cat("Converting to STM format...\n")
-  
-  docs_dfm <- word_counts %>%
+  # Create document-feature matrix
+  dfm_object <- word_counts %>%
     cast_dfm(doc_id, word, n)
   
-  # Prepare return value with optional statistics
+  # Prepare result object
+  result <- list(
+    dfm = dfm_object,
+    metadata = metadata,
+    processed_tokens = processed_text
+  )
+  
+  # Add statistics if requested
   if (return_stats) {
-    stats <- list(
+    result$stats <- list(
       documents = list(
         initial = start_docs,
         final = n_distinct(processed_text$doc_id),
@@ -156,11 +151,14 @@ preprocess <- function(nap_data,
         removed = start_tokens - nrow(processed_text)
       ),
       vocabulary = list(
-        size = n_distinct(processed_text$word)
+        size = n_distinct(processed_text$word),
+        unique_terms = n_distinct(word_counts$word)
       )
     )
-    return(list(data = processed_text, stats = stats))
-  } else {
-    return(processed_text)
   }
+  
+  # Add class for method dispatch in subsequent functions
+  class(result) <- c("nap_processed", "list")
+  
+  return(result)
 }

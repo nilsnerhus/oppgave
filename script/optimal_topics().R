@@ -1,12 +1,13 @@
 # =========================================================================
 # NAP Optimal topics function
 # =========================================================================
-# Purpose: Find the optimal k-value for the NAPs
+# Purpose: Find the optimal k-value for topic modeling using NAP data
 
-optimal_topics <- function(processed_text, 
+optimal_topics <- function(processed_data, 
                            k_min = 10, 
                            k_max = 50, 
                            k_step = 10,
+                           final_iterations = 100,  # More iterations for final model
                            seed = 1234) {
   
   library(dplyr)
@@ -16,18 +17,35 @@ optimal_topics <- function(processed_text,
   library(tidyr)
   library(quanteda)
   
-  stm_docs <- convert(docs_dfm, to = "stm")
+  # Check if input has the expected format
+  if (!inherits(processed_data, "nap_processed")) {
+    stop("Input must be output from preprocess() function with class 'nap_processed'")
+  }
+  
+  # Extract components from the processed data
+  dfm_object <- processed_data$dfm
+  meta <- processed_data$metadata
+  
+  cat("Converting document-feature matrix to STM format...\n")
+  
+  # Convert dfm to STM format
+  stm_docs <- convert(dfm_object, to = "stm")
   documents <- stm_docs$documents
   vocab <- stm_docs$vocab
   
+  # Define range of k values to test
   k_values <- seq(k_min, k_max, by = k_step)
   
+  # Prepare results data frame and model storage
   model_results <- data.frame(
     k = integer(),
     semantic_coherence = numeric(),
     exclusivity = numeric(),
     score = numeric()
   )
+  
+  # Store all models in a list
+  all_models <- list()
   
   set.seed(seed)
   
@@ -41,7 +59,7 @@ optimal_topics <- function(processed_text,
         documents = documents,
         vocab = vocab,
         K = k,
-        max.em.its = 50,
+        max.em.its = 50,  # Use fewer iterations for search
         init.type = "Spectral",
         data = meta,
         seed = seed,
@@ -54,6 +72,9 @@ optimal_topics <- function(processed_text,
     
     if (!is.null(model_k)) {
       cat("Evaluating model...\n")
+      
+      # Store model in list
+      all_models[[as.character(k)]] <- model_k
       
       semantic_coherence <- tryCatch({
         mean(semanticCoherence(model_k, documents))
@@ -69,11 +90,14 @@ optimal_topics <- function(processed_text,
         NA
       })
       
+      # Combined score (we want high coherence and exclusivity)
+      combined_score <- semantic_coherence + exclusivity_score
+      
       model_results <- rbind(model_results, data.frame(
         k = k,
         semantic_coherence = semantic_coherence,
         exclusivity = exclusivity_score,
-        score = semantic_coherence + exclusivity_score
+        score = combined_score
       ))
     }
   }
@@ -82,13 +106,37 @@ optimal_topics <- function(processed_text,
     stop("All models failed. Please check your input data.")
   }
   
-  best_k <- model_results %>%
+  # Find best k based on combined score
+  best_model_info <- model_results %>%
     arrange(desc(score)) %>%
-    slice(1) %>%
-    pull(k)
+    slice(1)
   
+  best_k <- best_model_info$k
+  
+  cat(paste0("Best k value identified: ", best_k, "\n"))
+  
+  # Get the best model
+  best_model <- all_models[[as.character(best_k)]]
+  
+  # If requested, refine the best model with more iterations
+  if (final_iterations > 50) {
+    cat(paste0("Refining best model (k = ", best_k, ") with ", final_iterations, " iterations...\n"))
+    
+    best_model <- stm(
+      documents = documents,
+      vocab = vocab,
+      K = best_k,
+      max.em.its = final_iterations,
+      init.type = "Spectral",
+      data = meta,
+      seed = seed,
+      verbose = FALSE
+    )
+  }
+  
+  # Create diagnostic plot
   plot <- model_results %>%
-    pivot_longer(cols = c(semantic_coherence, exclusivity, held_out), 
+    pivot_longer(cols = c(semantic_coherence, exclusivity), 
                  names_to = "metric", 
                  values_to = "value") %>%
     ggplot(aes(x = k, y = value, color = metric)) +
@@ -104,8 +152,10 @@ optimal_topics <- function(processed_text,
     ) +
     theme_minimal()
   
+  # Return results as a structured object
   return(list(
     best_k = best_k,
+    best_model = best_model,  # Now including the best model
     diagnostics = model_results,
     plot = plot,
     stm_data = list(documents = documents, vocab = vocab),
