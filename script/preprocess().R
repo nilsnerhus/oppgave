@@ -1,41 +1,63 @@
+# =========================================================================
+# NAP PREPROCESSING FUNCTION
+# =========================================================================
+# Purpose: Process National Adaptation Plan documents for topic modeling
 
 # Load required packages
 library(dplyr)       # Data manipulation
 library(tidyr)       # Data reshaping
-library(stringr)     # Data stringing
 library(tidytext)    # Text processing
+library(stringr)     # String manipulation
 library(SnowballC)   # Word stemming
 library(napr)        # NAP data
 
 preprocess <- function(nap_data, 
                            custom_stopwords = NULL, 
-                           stem_words = FALSE) {
+                           stem_words = FALSE,
+                           remove_punctuation = TRUE,
+                           min_doc_length = 50,
+                           min_word_count = 2,
+                           max_doc_proportion = 0.8,
+                           return_stats = FALSE) {
   
-  # ---- Document preparation ----
-  cat("Starting preprocessing of", nrow(nap_data), "NAP documents\n")
+  # Validate inputs
+  if (!is.data.frame(nap_data)) {
+    stop("nap_data must be a data frame")
+  }
   
-  # Select only the columns we need and adding document ID
-  nap_data <- nap_data %>% 
-    select(country_name, pdf_text, date_posted)
-
-  nap_data <- nap_data %>% 
+  if (!"pdf_text" %in% names(nap_data)) {
+    stop("NAP data must contain a 'pdf_text' column")
+  }
+  
+  if (!is.null(custom_stopwords) && !is.character(custom_stopwords)) {
+    stop("custom_stopwords must be a character vector")
+  }
+  
+  # Assign consistent document IDs first
+  nap_data <- nap_data %>%
     mutate(doc_id = row_number())
   
-  cat("Added document IDs\n")
-  
-  # ---- Text tokenization and cleaning ----
-  cat("Tokenizing documents...\n")
+  # Process NAP text data - tokenize in one step
   processed_text <- nap_data %>%
-    unnest_tokens(word, pdf_text)
-  
-  cat("Removing stopwords and numbers...\n")
-  processed_text <- processed_text %>%
-    anti_join(get_stopwords(), by = "word") %>%
+    unnest_tokens(
+      word, 
+      pdf_text,
+      to_lower = TRUE,
+      strip_punct = remove_punctuation
+    ) %>%
+    # Remove numbers
     filter(!str_detect(word, "^[0-9]+$"))
   
+  # Track statistics
+  start_tokens <- nrow(processed_text)
+  start_docs <- n_distinct(processed_text$doc_id)
+  
+  # Remove standard stopwords
+  processed_text <- processed_text %>%
+    anti_join(get_stopwords(), by = "word")
+  
   # Remove custom stopwords if provided
-  if (!is.null(custom_stopwords)) {
-    cat("Removing", length(custom_stopwords), "custom stopwords...\n")
+  if (!is.null(custom_stopwords) && length(custom_stopwords) > 0) {
     custom_stops <- tibble(word = custom_stopwords)
     processed_text <- processed_text %>%
       anti_join(custom_stops, by = "word")
@@ -43,34 +65,81 @@ preprocess <- function(nap_data,
   
   # Apply stemming if requested
   if (stem_words) {
-    cat("Stemming words...\n")
     processed_text <- processed_text %>%
       mutate(word = wordStem(word))
   }
   
-  # Remove documents with too few tokens
-  min_tokens <- 10
+  # Filter words by frequency
+  word_doc_counts <- processed_text %>%
+    group_by(word) %>%
+    summarize(
+      doc_count = n_distinct(doc_id),
+      doc_prop = doc_count / start_docs,
+      .groups = "drop"
+    ) %>%
+    filter(
+      doc_count >= min_word_count,
+      doc_prop <= max_doc_proportion
+    )
   
-  doc_lengths <- processed_text %>%
-    count(doc_id)
+  processed_text <- processed_text %>%
+    semi_join(word_doc_counts, by = "word")
   
-  short_docs <- doc_lengths %>%
-    filter(n < min_tokens) %>%
-    left_join(processed_text %>% distinct(doc_id, country_name), by = "doc_id")
+  # Count words per document and filter out short documents
+  doc_lengths <- processed_text %>% 
+    count(doc_id) %>%
+    filter(n >= min_doc_length)
   
-  if (nrow(short_docs) > 0) {
-    cat("Removing", nrow(short_docs), "document(s) with too few tokens:\n")
-    short_docs %>%
-      mutate(msg = paste0("- doc_id ", doc_id, " (", country_name, "), ", n, " tokens")) %>%
-      pull(msg) %>%
-      cat(sep = "\n")
-    
-    processed_text <- processed_text %>%
-      filter(!(doc_id %in% short_docs$doc_id))
+  # Warn if documents were removed
+  removed_docs <- setdiff(unique(processed_text$doc_id), doc_lengths$doc_id)
+  if (length(removed_docs) > 0) {
+    warning(paste("Removed", length(removed_docs), 
+                  "documents with fewer than", min_doc_length, "tokens"))
   }
   
+  # Filter to keep only documents meeting the minimum length
+  processed_text <- processed_text %>%
+    semi_join(doc_lengths, by = "doc_id")
   
-  # Return the processed text data
-  cat("Preprocessing complete!\n")
-  return(processed_text)
+  # Extract metadata columns if they exist
+  metadata_cols <- intersect(
+    c("country_name", "region", "ldc_sids_marker", "date_posted"),
+    names(nap_data)
+  )
+  
+  # Merge with metadata if available
+  if (length(metadata_cols) > 0) {
+    metadata <- nap_data %>%
+      select(doc_id, all_of(metadata_cols)) %>%
+      distinct()
+    
+    # Only keep metadata for documents that weren't filtered out
+    metadata <- metadata %>%
+      semi_join(doc_lengths, by = "doc_id")
+    
+    processed_text <- processed_text %>%
+      left_join(metadata, by = "doc_id")
+  }
+  
+  # Prepare return value with optional statistics
+  if (return_stats) {
+    stats <- list(
+      documents = list(
+        initial = start_docs,
+        final = n_distinct(processed_text$doc_id),
+        removed = start_docs - n_distinct(processed_text$doc_id)
+      ),
+      tokens = list(
+        initial = start_tokens,
+        final = nrow(processed_text),
+        removed = start_tokens - nrow(processed_text)
+      ),
+      vocabulary = list(
+        size = n_distinct(processed_text$word)
+      )
+    )
+    return(list(data = processed_text, stats = stats))
+  } else {
+    return(processed_text)
+  }
 }
