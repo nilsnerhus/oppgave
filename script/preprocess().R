@@ -37,7 +37,7 @@ preprocess <- function(nap_data,
   nap_data <- nap_data %>%
     mutate(doc_id = row_number())
   
-  # Process NAP text data - tokenize in one step
+  # Process NAP text data
   processed_text <- nap_data %>%
     unnest_tokens(
       word, 
@@ -120,6 +120,27 @@ preprocess <- function(nap_data,
     processed_text <- processed_text %>%
       left_join(metadata, by = "doc_id")
   }
+  
+  cat("Creating document-term matrix from processed tokens...\n")
+  
+  # Ensure doc_id is numeric
+  processed_text <- processed_text %>%
+    mutate(doc_id = as.integer(doc_id))
+  
+  # Word counts
+  word_counts <- processed_text %>%
+    count(doc_id, word)
+  
+  # Metadata
+  meta_cols <- setdiff(names(processed_text), "word")
+  meta <- processed_text %>%
+    select(all_of(meta_cols)) %>%
+    distinct(doc_id, .keep_all = TRUE)
+  
+  cat("Converting to STM format...\n")
+  
+  docs_dfm <- word_counts %>%
+    cast_dfm(doc_id, word, n)
   
   # Prepare return value with optional statistics
   if (return_stats) {

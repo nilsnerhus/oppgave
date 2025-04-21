@@ -22,9 +22,10 @@ saveRDS(optimal_result, "results/data/optimal_topics.rds")
 # Extract topic proportions
 cat("Extracting topic proportions...\n")
 
+nap_ent <- topic_model(optimal_result)
+
 saveRDS(topic_props, "results/data/topic_proportions.rds")
 
-nap_ent <- topic_model(optimal_result)
 
 cat("Analysis complete.\n")
 

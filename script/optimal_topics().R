@@ -1,73 +1,85 @@
+# =========================================================================
+# NAP Optimal topics function
+# =========================================================================
+# Purpose: Find the optimal k-value for the NAPs
+
 optimal_topics <- function(processed_text, 
                            k_min = 10, 
                            k_max = 50, 
                            k_step = 10,
                            seed = 1234) {
   
-  # Gjenoppbygg tekst fra tokens
-  cat("Reconstructing documents from tokens...\n")
-  full_text <- processed_text %>%
-    group_by(doc_id) %>%
-    summarise(text = paste(word, collapse = " "), .groups = "drop")
+  library(dplyr)
+  library(tidytext)
+  library(stm)
+  library(ggplot2)
+  library(tidyr)
+  library(quanteda)
   
-  # Behold metadata (alle kolonner unntatt word)
-  meta_cols <- setdiff(names(processed_text), c("word"))
-  meta <- processed_text %>%
-    select(all_of(meta_cols)) %>%
-    distinct(doc_id, .keep_all = TRUE)
+  stm_docs <- convert(docs_dfm, to = "stm")
+  documents <- stm_docs$documents
+  vocab <- stm_docs$vocab
   
-  # Kombiner tekst og metadata
-  data_for_stm <- left_join(full_text, meta, by = "doc_id")
-  
-  # Preprosessering for STM
-  cat("Passing data to STM preprocessing...\n")
-  processed <- textProcessor(documents = data_for_stm$text, metadata = data_for_stm)
-  prep <- prepDocuments(processed$documents, processed$vocab, processed$meta)
-  
-  documents <- prep$documents
-  vocab <- prep$vocab
-  meta <- prep$meta
-  
-  # K-verdier
   k_values <- seq(k_min, k_max, by = k_step)
   
   model_results <- data.frame(
     k = integer(),
     semantic_coherence = numeric(),
     exclusivity = numeric(),
-    held_out = numeric(),
     score = numeric()
   )
   
   set.seed(seed)
   
   cat("Testing models with different numbers of topics...\n")
+  
   for (k in k_values) {
     cat(paste0("Fitting model with k = ", k, "...\n"))
     
-    model_k <- stm(
-      documents = documents,
-      vocab = vocab,
-      K = k,
-      max.em.its = 50,
-      init.type = "Spectral",
-      data = meta,
-      seed = seed,
-      verbose = FALSE
-    )
+    model_k <- tryCatch({
+      stm(
+        documents = documents,
+        vocab = vocab,
+        K = k,
+        max.em.its = 50,
+        init.type = "Spectral",
+        data = meta,
+        seed = seed,
+        verbose = FALSE
+      )
+    }, error = function(e) {
+      warning(paste("Model failed for k =", k, ":", e$message))
+      return(NULL)
+    })
     
-    heldout <- make.heldout(documents, vocab)
-    heldout_likelihood <- eval.heldout(model_k, heldout)
-    semantic_coherence <- mean(semanticCoherence(model_k, documents))
-    exclusivity_score <- mean(exclusivity(model_k))
-    
-    model_results <- rbind(model_results, data.frame(
-      k = k,
-      semantic_coherence = semantic_coherence,
-      exclusivity = exclusivity_score,
-      held_out = heldout_likelihood,
-      score = semantic_coherence + exclusivity_score
-    ))
+    if (!is.null(model_k)) {
+      cat("Evaluating model...\n")
+      
+      semantic_coherence <- tryCatch({
+        mean(semanticCoherence(model_k, documents))
+      }, error = function(e) {
+        warning("Semantic coherence failed: ", e$message)
+        NA
+      })
+      
+      exclusivity_score <- tryCatch({
+        mean(exclusivity(model_k))
+      }, error = function(e) {
+        warning("Exclusivity failed: ", e$message)
+        NA
+      })
+      
+      model_results <- rbind(model_results, data.frame(
+        k = k,
+        semantic_coherence = semantic_coherence,
+        exclusivity = exclusivity_score,
+        score = semantic_coherence + exclusivity_score
+      ))
+    }
+  }
+  
+  if (nrow(model_results) == 0) {
+    stop("All models failed. Please check your input data.")
   }
   
   best_k <- model_results %>%

@@ -55,24 +55,9 @@ topic_model <- function(optimal_result,
   result_df <- topic_props_long %>%
     left_join(doc_meta, by = "doc_id")
   
-  # Standardize country information using countrycode
-  result_df <- result_df %>%
-    mutate(
-      Year = as.integer(substring(date_posted, 1, 4)),
-      Country = countrycode(country_name, "country.name", "country.name", nomatch = NULL),
-      Region = countrycode(Country, "country.name", "region", nomatch = NULL),
-      Income = countrycode(Country, "country.name", "income.level", nomatch = NULL),
-      Geography = case_when(
-        grepl("LDC", ldc_sids_marker) & grepl("SIDS", ldc_sids_marker) ~ "LDC, SIDS",
-        grepl("LDC", ldc_sids_marker) ~ "LDC",
-        grepl("SIDS", ldc_sids_marker) ~ "SIDS",
-        TRUE ~ "-"
-      )
-    )
-  
   # Select and rearrange columns for final output
   final_df <- result_df %>%
-    select(Year, Country, Region, Income, Geography, Topic, Proportion)
+    select(date_posted, Country, Region, Income, Geography, Topic, Proportion)
   
   # Return the formatted data
   return(list(
