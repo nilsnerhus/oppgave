@@ -23,10 +23,22 @@ jobs:
         with:
           use-public-rspm: true
 
+      - name: Debug renv setup
+        run: |
+          ls -la
+          test -f renv.lock && echo "renv.lock exists" || echo "renv.lock NOT FOUND"
+          test -d renv && echo "renv directory exists" || echo "renv directory NOT FOUND"
+          test -f .Rprofile && echo ".Rprofile exists" || echo ".Rprofile NOT FOUND"
+          grep -q "renv" .Rprofile 2>/dev/null && echo "renv in Rprofile" || echo "renv NOT in Rprofile"
+
+      - name: Ensure .github directory exists with proper permissions
+        run: |
+          mkdir -p .github
+          chmod 755 .github
+
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          cache: true
-          cache-version: 1
+          working-directory: ${{ github.workspace }}
 
       - name: Cache TinyTeX
         id: tinytex-cache
