@@ -11,13 +11,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Set up R
+      - name: Set up R and R-dependencies
         uses: r-lib/actions/setup-r@v2
-        
-      - name: Set up renv
-        uses: r-lib/actions/setup-renv@v2
         with:
-          cache-version: 1
+          use-public-rspm: true
+
+        uses: r-lib/actions/setup-r-dependencies@v2
           
       - name: Create directories
         run: |
@@ -26,9 +25,9 @@ jobs:
           
       - name: Source function files
         run: |
-          Rscript -e "source('script/preprocess().R')"
-          Rscript -e "source('script/optimal_topics().R')"
-          Rscript -e "source('script/topic_model().R')"
+          Rscript script/preprocess.R
+          Rscript script/optimal_topics.R
+          Rscript script/topic_model.R
           
       - name: Run analysis script
         run: |
@@ -39,7 +38,3 @@ jobs:
         with:
           name: nap-topic-model-results
           path: results/
-          
-      - name: Save diagnostic plot
-        run: |
-          Rscript -e "if(file.exists('results/data/optimal_topics.rds')) { optimal_result <- readRDS('results/data/optimal_topics.rds'); ggsave('results/plots/topic_diagnostics.png', plot = optimal_result$plot, width = 10, height = 6, dpi = 300) }"
