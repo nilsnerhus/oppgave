@@ -15,7 +15,7 @@ jobs:
       - name: Check out repository
         uses: actions/checkout@v4
 
-      - name: Set up Quarto, R and R-dependencies
+      - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
 
       - name: Set up R
@@ -23,7 +23,7 @@ jobs:
         with:
           use-public-rspm: true
 
-      - name: Set up R
+      - name: Set up R dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
 
       - name: Cache TinyTeX
