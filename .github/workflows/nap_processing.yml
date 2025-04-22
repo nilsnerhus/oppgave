@@ -19,16 +19,11 @@ jobs:
       - name: Set up R-dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
           
-      - name: Create directories
-        run: |
-          mkdir -p results/data
-          mkdir -p results/plots
-          
       - name: Source function files
         run: |
-          Rscript script/preprocess.R
-          Rscript script/optimal_topics.R
-          Rscript script/topic_model.R
+          Rscript script/preprocess().R
+          Rscript script/optimal_topics().R
+          Rscript script/topic_model().R
           
       - name: Run analysis script
         run: |
