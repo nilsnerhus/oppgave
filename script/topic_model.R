@@ -10,6 +10,7 @@ library(tidytext)    # Text processing
 
 topic_model <- function(optimal_result, 
                         final_k = NULL,
+                        parallel = TRUE,
                         include_model = TRUE) {
   
   # Validate input
@@ -38,7 +39,8 @@ topic_model <- function(optimal_result,
       max.em.its = 100,
       init.type = "Spectral",
       seed = 1234,
-      verbose = FALSE
+      verbose = TRUE
+      parallel = parallel
     )
   }
   

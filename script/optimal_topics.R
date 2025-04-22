@@ -3,19 +3,21 @@
 # =========================================================================
 # Purpose: Find the optimal k-value for topic modeling using NAP data
 
+# Load required packages
+library(dplyr)
+library(tidytext)
+library(stm)
+library(ggplot2)
+library(tidyr)
+library(quanteda)
+
 optimal_topics <- function(processed_data, 
                            k_min = 10, 
                            k_max = 50, 
                            k_step = 10,
-                           final_iterations = 100,  # More iterations for final model
+                           final_iterations = 100,
+                           parallel = TRUE,
                            seed = 1234) {
-  
-  library(dplyr)
-  library(tidytext)
-  library(stm)
-  library(ggplot2)
-  library(tidyr)
-  library(quanteda)
   
   # Check if input has the expected format
   if (!inherits(processed_data, "nap_processed")) {
@@ -37,7 +39,7 @@ optimal_topics <- function(processed_data,
   k_values <- seq(k_min, k_max, by = k_step)
   
   # Prepare results data frame and model storage
-  model_results <- data.frame(
+  model_results <- tibble(
     k = integer(),
     semantic_coherence = numeric(),
     exclusivity = numeric(),
@@ -59,11 +61,12 @@ optimal_topics <- function(processed_data,
         documents = documents,
         vocab = vocab,
         K = k,
-        max.em.its = 50,  # Use fewer iterations for search
+        max.em.its = 100, 
         init.type = "Spectral",
         data = meta,
         seed = seed,
-        verbose = FALSE
+        verbose = TRUE
+        parallel = parallel
       )
     }, error = function(e) {
       warning(paste("Model failed for k =", k, ":", e$message))

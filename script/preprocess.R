@@ -91,11 +91,26 @@ preprocess <- function(nap_data,
     count(doc_id) %>%
     filter(n >= min_doc_length)
   
-  # Tell if documents were removed
-  removed_docs <- setdiff(unique(processed_text$doc_id), doc_lengths$doc_id)
-  if (length(removed_docs) > 0) {
-    cat(paste("Removed", length(removed_docs), 
-                  "documents with fewer than", min_doc_length, "tokens"))
+  # Track removed documents with country information
+  removed_doc_ids <- setdiff(unique(processed_text$doc_id), doc_lengths$doc_id)
+  
+  if (length(removed_doc_ids) > 0) {
+    # Get country names for removed documents
+    removed_countries <- nap_data %>%
+      filter(doc_id %in% removed_doc_ids) %>%
+      select(doc_id, country_name) %>% # Adjust column name if needed
+      distinct()
+    
+    # Print message about removed documents
+    cat(paste("Removed", length(removed_doc_ids), 
+              "documents with fewer than", min_doc_length, "tokens\n"))
+    
+    # Print information about which countries were removed
+    countries_list <- paste(removed_countries$country_name, collapse = ", ")
+    cat(paste("Countries removed:", countries_list, "\n"))
+  } else {
+    removed_countries <- tibble(doc_id = integer(), country_name = character())
+    cat("No documents were removed based on length criteria\n")
   }
   
   # Filter to keep only documents meeting the minimum length
