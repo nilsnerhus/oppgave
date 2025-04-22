@@ -10,6 +10,7 @@ library(tidytext)    # Text processing
 library(stringr)     # String manipulation
 library(SnowballC)   # Word stemming
 library(quanteda)    # For dfm creation
+library(napr)        # For data
 
 preprocess <- function(nap_data, 
                        custom_stopwords = NULL, 
