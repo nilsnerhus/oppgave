@@ -35,14 +35,22 @@ jobs:
             libproj-dev \
             libgeos-dev
 
+      - name: Cache renv
+        uses: actions/cache@v4
+        with:
+          path: ~/.local/share/renv
+          key: ${{ runner.os }}-renv-${{ hashFiles('**/renv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-renv-
+
       - name: Set up renv
         uses: r-lib/actions/setup-renv@v2
           
       - name: Source function files
         run: |
-          Rscript script/preprocess().R
-          Rscript script/optimal_topics().R
-          Rscript script/topic_model().R
+          Rscript script/preprocess.R
+          Rscript script/optimal_topics.R
+          Rscript script/topic_model.R
           
       - name: Run analysis script
         run: |
