@@ -25,6 +25,8 @@ jobs:
 
       - name: Set up R-environment
         uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          lockfile: "./renv.lock"
 
       - name: Cache TinyTeX
         id: tinytex-cache
