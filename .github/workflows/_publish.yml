@@ -23,8 +23,8 @@ jobs:
         with:
           use-public-rspm: true
 
-      - name: Set up R dependencies
-        uses: r-lib/actions/setup-r-dependencies@v2
+      - name: Set up renv
+        uses: r-lib/actions/setup-renv@v2
 
       - name: Cache TinyTeX
         id: tinytex-cache
