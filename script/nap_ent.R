@@ -6,9 +6,9 @@ dir.create("results/data", recursive = TRUE, showWarnings = FALSE)
 dir.create("results/plots", recursive = TRUE, showWarnings = FALSE)
 
 # Source function files if not already loaded
-if(!exists("preprocess")) source("script/preprocess().R")
-if(!exists("optimal_topics")) source("script/optimal_topics().R")
-if(!exists("topic_model")) source("script/topic_model().R")
+if(!exists("preprocess")) source("script/preprocess.R")
+if(!exists("optimal_topics")) source("script/optimal_topics.R")
+if(!exists("topic_model")) source("script/topic_model.R")
 
 cat("Starting NAP processing pipeline...\n")
 
