@@ -6,6 +6,8 @@ on:
 jobs:
   run-topic-modeling:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     
     steps:
       - name: Checkout repository
@@ -61,3 +63,17 @@ jobs:
         with:
           name: nap-topic-model-results
           path: results/
+          
+      - name: Commit and push results
+        run: |
+          # Configure Git
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # Add results to git and commit
+          git add results/
+          git commit -m "Update NAP analysis results [skip ci]" || echo "No changes to commit"
+          
+          # Push changes
+          git push https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref }}
+        continue-on-error: true
