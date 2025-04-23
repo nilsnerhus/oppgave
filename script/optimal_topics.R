@@ -99,8 +99,8 @@ optimal_topics <- function(processed_data,
         data = meta,
         seed = seed,
         verbose = TRUE,
-        parallel = parallel
-      )
+        cores = if(parallel) parallel::detectCores() - 1 else 1
+        )
     }, error = function(e) {
       warning(paste("Model failed for k =", k, ":", e$message))
       return(NULL)

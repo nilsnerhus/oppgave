@@ -74,8 +74,8 @@ topic_model <- function(optimal_result,
       init.type = "Spectral",
       seed = 1234,
       verbose = TRUE,
-      parallel = parallel
-    )
+      cores = if(parallel) parallel::detectCores() - 1 else 1  # Correct parameter with value
+      )
   }
   
   # Extract topic proportions (theta matrix)

@@ -37,3 +37,13 @@ saveRDS(topic_result, "results/data/topic_model.rds")
 
 cat("Topic modeling complete. Results saved to results/data/\n")
 cat("NAP processing pipeline completed successfully.\n")
+
+
+# Load the topic model results
+topic_result <- readRDS("results/data/topic_model.rds")
+
+# Access the topic proportions data frame
+topic_proportions <- topic_result$data
+
+# View the first few rows of the topic proportions
+head(topic_proportions)
