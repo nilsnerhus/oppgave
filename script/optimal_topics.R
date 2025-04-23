@@ -17,7 +17,6 @@ optimal_topics <- function(processed_data,
                            k_max = 50, 
                            k_step = 10,
                            final_iterations = 100,
-                           parallel = TRUE,
                            seed = 1234,
                            use_cache = TRUE,
                            cache_dir = "results/cache/optimal_topics") {
@@ -99,7 +98,6 @@ optimal_topics <- function(processed_data,
         data = meta,
         seed = seed,
         verbose = TRUE,
-        cores = if(parallel) parallel::detectCores() - 1 else 1
         )
     }, error = function(e) {
       warning(paste("Model failed for k =", k, ":", e$message))

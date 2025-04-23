@@ -11,7 +11,6 @@ library(digest)      # Cache
 
 topic_model <- function(optimal_result, 
                         final_k = NULL,
-                        parallel = TRUE,
                         include_model = TRUE,
                         use_cache = TRUE,
                         cache_dir = "results/cache/topic_model"
@@ -74,7 +73,6 @@ topic_model <- function(optimal_result,
       init.type = "Spectral",
       seed = 1234,
       verbose = TRUE,
-      cores = if(parallel) parallel::detectCores() - 1 else 1  # Correct parameter with value
       )
   }
   
