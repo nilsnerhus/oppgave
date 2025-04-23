@@ -9,8 +9,9 @@ library(tidyr)       # Data reshaping
 library(tidytext)    # Text processing
 library(stringr)     # String manipulation
 library(SnowballC)   # Word stemming
-library(quanteda)    # For dfm creation
-library(napr)        # For data
+library(quanteda)    # DFM creation
+library(napr)        # NAP data
+library(digest)      # Cache
 
 preprocess <- function(nap_data, 
                        custom_stopwords = NULL, 
@@ -19,7 +20,40 @@ preprocess <- function(nap_data,
                        min_doc_length = 50,
                        min_word_count = 2,
                        max_doc_proportion = 0.8,
-                       return_stats = FALSE) {
+                       return_stats = FALSE,
+                       use_cache = TRUE,
+                       cache_dir = "results/cache/preprocessed"){
+  
+  if (use_cache) {
+    dir.create(cache_dir, recursive = TRUE, showWarnings = FALSE)
+    
+    # Generate data fingerprint
+    data_hash <- digest(nap_data, algo = "md5")
+    
+    # Create a unique identifier for parameters
+    param_hash <- digest(list(
+      stem_words = stem_words,
+      remove_punctuation = remove_punctuation,
+      min_doc_length = min_doc_length,
+      min_word_count = min_word_count,
+      max_doc_proportion = max_doc_proportion,
+      custom_stopwords = custom_stopwords
+    ), algo = "md5")
+    
+    # Combined cache identifier
+    cache_id <- paste0(data_hash, "_", param_hash)
+    cache_path <- file.path(cache_dir, paste0("preprocess_", cache_id, ".rds"))
+    
+    if (file.exists(cache_path)) {
+      cat("Loading preprocessed data from cache...\n")
+      result <- readRDS(cache_path)
+      
+      # Add the data hash as an attribute for downstream functions
+      attr(result, "data_hash") <- data_hash
+      
+      return(result)
+    }
+  }
   
   # Validate inputs
   if (!is.data.frame(nap_data)) {
@@ -175,6 +209,15 @@ preprocess <- function(nap_data,
   
   # Add class for method dispatch in subsequent functions
   class(result) <- c("nap_processed", "list")
+  
+  # At the end, before return(result)
+  if (use_cache) {
+    attr(result, "data_hash") <- data_hash
+    
+    # Save to cache
+    cat("Saving preprocessed data to cache...\n")
+    saveRDS(result, cache_path)
+  }
   
   return(result)
 }

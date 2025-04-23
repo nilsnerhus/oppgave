@@ -7,11 +7,45 @@
 library(dplyr)       # Data manipulation
 library(tidyr)       # Data reshaping
 library(tidytext)    # Text processing
+library(digest)      # Cache
 
 topic_model <- function(optimal_result, 
                         final_k = NULL,
                         parallel = TRUE,
-                        include_model = TRUE) {
+                        include_model = TRUE,
+                        use_cache = TRUE,
+                        cache_dir = "results/cache/topic_model"
+                        ) {
+  
+  if (use_cache) {
+    dir.create(cache_dir, recursive = TRUE, showWarnings = FALSE)
+    
+    # Get the model k-value
+    k <- ifelse(is.null(final_k), optimal_result$best_k, final_k)
+    
+    # Get data hash from optimal result if available
+    if (!is.null(attr(optimal_result, "data_hash"))) {
+      data_hash <- attr(optimal_result, "data_hash")
+    } else {
+      # Generate hash from model data
+      data_hash <- digest(optimal_result$stm_data, algo = "md5")
+    }
+    
+    # Create parameter hash
+    param_hash <- digest(list(
+      k = k,
+      include_model = include_model
+    ), algo = "md5")
+    
+    # Create cache path
+    cache_id <- paste0(data_hash, "_", param_hash)
+    cache_path <- file.path(cache_dir, paste0("topic_model_", cache_id, ".rds"))
+    
+    if (file.exists(cache_path)) {
+      cat("Loading cached topic model results for k =", k, "...\n")
+      return(readRDS(cache_path))
+    }
+  }
   
   # Validate input
   if (!is.list(optimal_result) || !all(c("stm_data", "doc_meta", "best_k", "best_model") %in% names(optimal_result))) {
@@ -39,7 +73,7 @@ topic_model <- function(optimal_result,
       max.em.its = 100,
       init.type = "Spectral",
       seed = 1234,
-      verbose = TRUE
+      verbose = TRUE,
       parallel = parallel
     )
   }
@@ -106,6 +140,12 @@ topic_model <- function(optimal_result,
   cat("- output$topic_labels: Descriptive labels for each topic\n")
   if (include_model) {
     cat("- output$model: Full STM model object\n")
+  }
+  
+  if (use_cache) {
+    # Save results
+    cat("Saving topic model results to cache...\n")
+    saveRDS(output, cache_path)
   }
   
   return(output)

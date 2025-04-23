@@ -4,11 +4,12 @@
 # Purpose: Find the optimal k-value for topic modeling using NAP data
 
 # Load required packages
-library(dplyr)
-library(tidytext)
+library(dplyr)       # Data manipulation
+library(tidyr)       # Data reshaping
+library(tidytext)    # Text processing
+library(digest)      # Cache
 library(stm)
 library(ggplot2)
-library(tidyr)
 library(quanteda)
 
 optimal_topics <- function(processed_data, 
@@ -17,7 +18,39 @@ optimal_topics <- function(processed_data,
                            k_step = 10,
                            final_iterations = 100,
                            parallel = TRUE,
-                           seed = 1234) {
+                           seed = 1234,
+                           use_cache = TRUE,
+                           cache_dir = "results/cache/optimal_topics") {
+  
+  if (use_cache) {
+    dir.create(cache_dir, recursive = TRUE, showWarnings = FALSE)
+    
+    # Get data hash from processed data if available
+    if (inherits(processed_data, "nap_processed") && !is.null(attr(processed_data, "data_hash"))) {
+      data_hash <- attr(processed_data, "data_hash")
+    } else {
+      # Generate new hash if needed
+      data_hash <- digest(processed_data$dfm, algo = "md5")
+    }
+    
+    # Create parameter hash
+    param_hash <- digest(list(
+      k_min = k_min,
+      k_max = k_max,
+      k_step = k_step,
+      final_iterations = final_iterations,
+      seed = seed
+    ), algo = "md5")
+    
+    # Create cache path
+    cache_id <- paste0(data_hash, "_", param_hash)
+    cache_path <- file.path(cache_dir, paste0("optimal_topics_", cache_id, ".rds"))
+    
+    if (file.exists(cache_path)) {
+      cat("Loading cached topic model selection results...\n")
+      return(readRDS(cache_path))
+    }
+  }
   
   # Check if input has the expected format
   if (!inherits(processed_data, "nap_processed")) {
@@ -65,7 +98,7 @@ optimal_topics <- function(processed_data,
         init.type = "Spectral",
         data = meta,
         seed = seed,
-        verbose = TRUE
+        verbose = TRUE,
         parallel = parallel
       )
     }, error = function(e) {
@@ -154,6 +187,15 @@ optimal_topics <- function(processed_data,
       y = "Value"
     ) +
     theme_minimal()
+  
+  if (use_cache) {
+    # Pass along the data hash
+    attr(result, "data_hash") <- data_hash
+    
+    # Save results
+    cat("Saving topic model selection results to cache...\n")
+    saveRDS(result, cache_path)
+  }
   
   # Return results as a structured object
   return(list(
