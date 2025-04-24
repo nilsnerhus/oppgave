@@ -51,7 +51,7 @@ jobs:
           git config --local user.name "GitHub Action"
           
           # Add results to git and commit if there are changes
-          git add results/
+          git add data/
           git diff --cached --quiet || git commit -m "Update NAP analysis results [skip ci]"
           
           # Push changes to the correct branch
