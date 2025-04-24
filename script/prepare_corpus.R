@@ -4,19 +4,21 @@ library(dplyr)       # Data manipulation
 library(tidyr)       # Data reshaping
 library(tidytext)    # Text processing
 library(stringr)     # String manipulation
-library(SnowballC)   # Word stemming
+library(textstem)    # For lemmetization
 library(quanteda)    # DFM creation
 
 prepare_corpus <- function(text_data, 
                        text_column = "pdf_text",
                        custom_stopwords = NULL, 
                        stem_words = FALSE,
+                       lemmatize = TRUE,
+                       min_word_count = 2,
+                       min_word_length = 1,
                        remove_punctuation = TRUE,
                        min_doc_length = 50,
-                       min_word_count = 2,
                        max_doc_proportion = 0.8,
                        return_stats = FALSE,
-                       output_path = "data/corpus_dfm.rds") {
+                       output_path = "data/corpus.rds") {
   
   # Create output directory if it doesn't exist
   dir.create(dirname(output_path), recursive = TRUE, showWarnings = FALSE)
@@ -50,6 +52,11 @@ prepare_corpus <- function(text_data,
     # Remove numbers
     filter(!str_detect(word, "^[0-9]+$"))
   
+  # Filter by word length
+  cat(paste("Filtering words with", min_word_length, "or fewer characters...\n"))
+  processed_text <- processed_text %>%
+    filter(str_length(word) > min_word_length) 
+  
   # Track statistics
   start_tokens <- nrow(processed_text)
   start_docs <- n_distinct(processed_text$doc_id)
@@ -66,11 +73,18 @@ prepare_corpus <- function(text_data,
       anti_join(custom_stops, by = "word")
   }
   
-  # Apply stemming if requested
+  # Apply lemmatization
+  if (lemmatize) {
+    cat("Applying lemmatization...\n")
+    processed_text <- processed_text %>%
+      mutate(word = textstem::lemmatize_words(word))
+  }
+  
+  # Apply stemming
   if (stem_words) {
     cat("Applying word stemming...\n")
     processed_text <- processed_text %>%
-      mutate(word = wordStem(word))
+      mutate(word = textstem::stem_words(word))
   }
   
   cat("Filtering words by frequency...\n")

@@ -18,22 +18,22 @@ library(napr)
 data(nap_data)
 cat("Loaded NAP data with", nrow(nap_data), "documents\n")
 
+# Step 1.1: Load stopwords for nap_data
+nap_stops <- c("mr", "https", "la", "yet", "de", "i.e", "yr", "tion", "des", "8.5", "svg")
+
 # Step 2: Preprocess NAP documents
 cat("\n=== PREPROCESSING ===\n")
-corpus_dfm <- prepare_corpus(
-  nap_data, 
-  text_column = "pdf_text",
-)
+corpus <- prepare_corpus(nap_data, custom_stopwords = nap_stops)
 cat("Preprocessing complete\n")
 
 # Step 3: Find optimal topic count
 cat("\n=== FINDING OPTIMAL TOPIC COUNT ===\n")
-optimal_model <- find_best_k(corpus_dfm)
-cat("Optimal topic analysis complete. Best k:", optimal_model$best_k, "\n")
+best_k <- find_best_k(corpus)
+cat("Optimal topic analysis complete. Best k:", best_k$best_k, "\n")
 
 # Step 4: Generate final topic model
 cat("\n=== GENERATING FINAL TOPIC MODEL ===\n")
-topic_results <- extract_topic_props(optimal_model)
+topic_props <- extract_topic_props(corpus, k = 15)
 
 cat("\nNAP processing pipeline completed successfully!\n")
 cat("Results saved to the 'data' directory\n")
