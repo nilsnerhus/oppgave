@@ -60,16 +60,16 @@ jobs:
         run: |
           Rscript script/nap_ent.R
           
-- name: Commit and push results
-  run: |
-    # Configure Git
-    git config --local user.email "action@github.com"
-    git config --local user.name "GitHub Action"
-    
-    # Add results to git and commit if there are changes
-    git add results/
-    git diff --cached --quiet || git commit -m "Update NAP analysis results [skip ci]"
-    
-    # Push changes to the correct branch
-    git push https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref }}
-  continue-on-error: true
+      - name: Commit and push results
+        run: |
+          # Configure Git
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # Add results to git and commit if there are changes
+          git add results/
+          git diff --cached --quiet || git commit -m "Update NAP analysis results [skip ci]"
+          
+          # Push changes to the correct branch
+          git push https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref }}
+        continue-on-error: true
