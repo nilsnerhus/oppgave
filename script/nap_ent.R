@@ -33,7 +33,7 @@ cat("Optimal topic analysis complete. Best k:", best_k$best_k, "\n")
 
 # Step 4: Generate final topic model
 cat("\n=== GENERATING FINAL TOPIC MODEL ===\n")
-topic_props <- extract_topic_props(corpus, k = 15)
+topic_props <- extract_topic_props(best_k)
 
 cat("\nNAP processing pipeline completed successfully!\n")
 cat("Results saved to the 'data' directory\n")
