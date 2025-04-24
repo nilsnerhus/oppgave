@@ -6,6 +6,7 @@ library(stm)         # Structural Topic Models
 
 extract_topic_props <- function(input, 
                         k = NULL,
+                        best_k_path = "data/best_k.rds",
                         output_path = "data/topic_props.rds") {
   
   # Create output directory if it doesn't exist
@@ -35,13 +36,13 @@ extract_topic_props <- function(input,
           K = k,
           max.em.its = 100,
           init.type = "Spectral",
-          seed = 1234,
+          seed = 1234
         )
       } else {
         stop("Cannot create new model with different k: stm_data not available in input")
       }
     }
-  } else if (is.list(input) && all(c("dfm", "metadata", "stm_data", "corpus") %in% names(input))) {
+  } else if (is.list(input) && all(c("dfm", "metadata", "stm_data") %in% names(input))) {
     # Input is from preprocess
     cat("Creating model from preprocessed data\n")
     
@@ -64,7 +65,7 @@ extract_topic_props <- function(input,
       K = k,
       max.em.its = 100,
       init.type = "Spectral",
-      seed = 1234,
+      seed = 1234
     )
   } else {
     stop("Invalid input: Expected output from preprocess() or optimal_topics() functions")
@@ -83,9 +84,6 @@ extract_topic_props <- function(input,
   } else if (is.character(metadata$doc_id) && !is.character(topic_props$doc_id)) {
     topic_props$doc_id <- as.character(topic_props$doc_id)
   }
-  
-  # Rename topic columns with simple numeric identifiers
-  colnames(topic_props)[1:k] <- paste0("Topic_", 1:k)
   
   # Rename topic columns with simple numeric identifiers
   colnames(topic_props)[1:k] <- paste0("Topic_", 1:k)

@@ -10,13 +10,22 @@ find_best_k <- function(input,
                            k_max = 120, 
                            k_step = 5,
                            seed = 1234,
-                           output_path = "data/optimal_topics.rds") {
+                           corpus_path = "data/corpus.rds",
+                           output_path = "data/best_k.rds") {
   
   # Create output directory if it doesn't exist
   dir.create(dirname(output_path), recursive = TRUE, showWarnings = FALSE)
   
-  # Check if input has the expected format (from preprocess function)
-  if (!is.list(input) || !all(c("dfm", "metadata", "stm_data") %in% names(input))) {
+  # Check if we need to load corpus from file
+  if (!is.null(corpus_path) && file.exists(corpus_path)) {
+    corpus <- readRDS(corpus_path)
+  } else {
+    # Use the provided input object as the corpus
+    corpus <- input
+  }
+  
+  # Check if corpus has the expected format
+  if (!is.list(corpus) || !all(c("dfm", "metadata", "stm_data") %in% names(corpus))) {
     stop("Input must be output from preprocess() function")
   }
   
