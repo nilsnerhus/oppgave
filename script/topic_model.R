@@ -141,10 +141,14 @@ topic_model <- function(optimal_result,
   }
   
   if (use_cache) {
+    # Add data hash to output object
+    attr(output, "data_hash") <- data_hash
+    
     # Save results
     cat("Saving topic model results to cache...\n")
     saveRDS(output, cache_path)
   }
+  
   
   return(output)
 }

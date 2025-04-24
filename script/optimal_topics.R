@@ -185,6 +185,15 @@ optimal_topics <- function(processed_data,
       y = "Value"
     ) +
     theme_minimal()
+
+  result <- list(
+    best_k = best_k,
+    best_model = best_model,  # Now including the best model
+    diagnostics = model_results,
+    plot = plot,
+    stm_data = list(documents = documents, vocab = vocab),
+    doc_meta = meta
+  )
   
   if (use_cache) {
     # Pass along the data hash
@@ -195,13 +204,5 @@ optimal_topics <- function(processed_data,
     saveRDS(result, cache_path)
   }
   
-  # Return results as a structured object
-  return(list(
-    best_k = best_k,
-    best_model = best_model,  # Now including the best model
-    diagnostics = model_results,
-    plot = plot,
-    stm_data = list(documents = documents, vocab = vocab),
-    doc_meta = meta
-  ))
+  return(result)
 }
