@@ -1,7 +1,15 @@
+# =========================================================================
+# NAP Topic Modeling Function
+# =========================================================================
+# Purpose: Create an entropy value for any distribution given
+
+# Load required packages
 library(dplyr)
 library(rlang)
 
-dissonance <- function(data, value_col = "Proportion", filter = NULL, by = NULL) {
+dissonance <- function(data, value_col = "Proportion", 
+                       filter = NULL, 
+                       by = NULL) {
   value_sym <- sym(value_col)
   
   if (!is.null(filter)) {
