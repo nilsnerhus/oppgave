@@ -1,49 +1,40 @@
-# nap_ent.R - NAP Topic Modeling Script
-# This script runs the topic modeling pipeline with wide k-value testing
+# =========================================================================
+# NAP TOPIC MODELING PIPELINE
+# =========================================================================
+# Purpose: Orchestrate the processing of NAP documents through the entire pipeline
 
-# Create output directories
-dir.create("results/data", recursive = TRUE, showWarnings = FALSE)
-dir.create("results/plots", recursive = TRUE, showWarnings = FALSE)
+# Create output directory
+dir.create("data", recursive = TRUE, showWarnings = FALSE)
 
 # Source function files if not already loaded
-if(!exists("preprocess")) source("script/preprocess.R")
-if(!exists("optimal_topics")) source("script/optimal_topics.R")
-if(!exists("topic_model")) source("script/topic_model.R")
+if(!exists("prepare_corpus")) source("script/prepare_corpus.R")
+if(!exists("find_best_k")) source("script/find_best_k.R")
+if(!exists("topic_model")) source("script/extract_topic_props.R")
 
 cat("Starting NAP processing pipeline...\n")
 
-# Step 1: Preprocess NAP documents
-cat("Preprocessing NAP documents...\n")
-processed_data <- preprocess(nap_data)
-saveRDS(processed_data, "results/data/processed_nap.rds")
-cat("Preprocessing complete. Results saved.\n")
+# Step 1: Load NAP data
+library(napr)
+data(nap_data)
+cat("Loaded NAP data with", nrow(nap_data), "documents\n")
 
-# Step 2: Find optimal topic count across wide range
-cat("Finding optimal topic count across wide range...\n")
-optimal_result <- optimal_topics(
-  processed_data, 
-  k_min = 5,        # Start with 5 topics
-  k_max = 100,      # Test up to 100 topics
-  k_step = 5,       # Test every 5 topics
-  final_iterations = 150  # More iterations for final model
+# Step 2: Preprocess NAP documents
+cat("\n=== PREPROCESSING ===\n")
+corpus_dfm <- prepare_corpus(
+  nap_data, 
+  text_column = "pdf_text",
 )
-saveRDS(optimal_result, "results/data/optimal_topics.rds")
-cat("Optimal topics analysis complete. Best k:", optimal_result$best_k, "\n")
+cat("Preprocessing complete\n")
 
-# Step 3: Extract topic proportions from optimal model
-cat("Processing optimal topic model...\n")
-topic_result <- topic_model(optimal_result)
-saveRDS(topic_result, "results/data/topic_model.rds")
+# Step 3: Find optimal topic count
+cat("\n=== FINDING OPTIMAL TOPIC COUNT ===\n")
+optimal_model <- find_best_k(corpus_dfm)
+cat("Optimal topic analysis complete. Best k:", optimal_model$best_k, "\n")
 
-cat("Topic modeling complete. Results saved to results/data/\n")
-cat("NAP processing pipeline completed successfully.\n")
+# Step 4: Generate final topic model
+cat("\n=== GENERATING FINAL TOPIC MODEL ===\n")
+topic_results <- extract_topic_props(optimal_model)
 
-
-# Load the topic model results
-topic_result <- readRDS("results/data/topic_model.rds")
-
-# Access the topic proportions data frame
-topic_proportions <- topic_result$data
-
-# View the first few rows of the topic proportions
-head(topic_proportions)
+cat("\nNAP processing pipeline completed successfully!\n")
+cat("Results saved to the 'data' directory\n")
+cat("Use readRDS() to load any of the saved files for further analysis\n")
