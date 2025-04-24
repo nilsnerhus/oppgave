@@ -12,22 +12,16 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
+        
       - name: Test commit from GitHub Actions
         run: |
-          # Konfigurer Git
           git config --local user.email "action@github.com"
           git config --local user.name "GitHub Action"
-      
-          # Lag en testfil
+          
           echo "Test commit" >> test.txt
-      
-          # Commit og push
           git add test.txt
           git commit -m "Test commit from GitHub Actions"
           git push https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:${{ github.ref }}
-      continue-on-error: true
-
 
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
