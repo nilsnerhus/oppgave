@@ -31,6 +31,9 @@ extract_pdfs <- function(
   # Start timing
   start_time <- Sys.time()
   
+  # Import the pipe operator
+  `%>%` <- magrittr::`%>%`
+  
   # Create output directory if needed
   ensure_directory(output_path)
   
