@@ -1,7 +1,27 @@
-# Purpose: Add metadata to a table based on the country name
-
-library(dplyr)
-library(wbstats)
+#' @title Add metadata to NAP country data
+#' @description Enhances NAP country data with standardized metadata from World Bank 
+#'   and custom country classifications. Standardizes country names, adds ISO codes,
+#'   parses dates, and adds region, income level, and special status indicators (LLDC,
+#'   SIDS, LDC).
+#'   
+#' @param data A dataframe containing country NAP data
+#' @param match_col Column name in data containing country names (default: "country_name")
+#' @param date_col Column name in data containing dates (default: "date_posted")
+#' @param lldc_list Character vector of ISO3C codes for landlocked developing countries
+#' @param sids_list Character vector of ISO3C codes for small island developing states
+#' @param ldc_list Character vector of ISO3C codes for least developed countries
+#' @param output_path File path to save the processed data (default: "data/nap_data.rds")
+#' 
+#' @return A list containing:
+#'   \item{data}{Enhanced dataframe with added metadata}
+#'   \item{metadata}{Processing statistics and timestamps}
+#'   \item{diagnostics}{Validation results and issues encountered}
+#'
+#' @examples
+#' \dontrun{
+#' # Add metadata to NAP data
+#' nap_data <- add_metadata(pdfs, sids_list = sids, lldc_list = lldc, ldc_list = ldc)
+#' }
 
 add_metadata <- function(
     data, 
@@ -10,45 +30,134 @@ add_metadata <- function(
     lldc_list = NULL,          # Optional LLDC list
     sids_list = NULL,          # Optional SIDS list
     ldc_list = NULL,           # Optional LDC list
-    output_file = "data/nap_data.rds"
+    output_path = "data/nap_data.rds"
 ) {
-  # Input validation
-  if (!is.data.frame(data)) stop("Input must be a dataframe")
-  if (nrow(data) == 0) stop("Input dataframe has no rows")
-  if (!match_col %in% names(data)) stop(paste("Input is missing required column:", match_col))
+  # Start timing
+  start_time <- Sys.time()
+  
+  # Create output directory if needed
+  ensure_directory(output_path)
+  
+  # Initialize diagnostics tracking
+  diagnostics <- list(
+    unmatched_countries = character(),
+    unparsed_dates = character(),
+    issues = character()
+  )
+  
+  ## --- Input validation -------------------------------------------------------
+  log_message("Validating input data", "add_metadata")
+  
+  if (!is.data.frame(data)) {
+    error_msg <- "Input must be a dataframe"
+    diagnostics$issues <- c(diagnostics$issues, error_msg)
+    log_message(error_msg, "add_metadata", "ERROR")
+    
+    return(create_result(
+      data = NULL,
+      metadata = list(
+        timestamp = Sys.time(),
+        success = FALSE
+      ),
+      diagnostics = diagnostics
+    ))
+  }
+  
+  if (nrow(data) == 0) {
+    error_msg <- "Input dataframe has no rows"
+    diagnostics$issues <- c(diagnostics$issues, error_msg)
+    log_message(error_msg, "add_metadata", "ERROR")
+    
+    return(create_result(
+      data = NULL,
+      metadata = list(
+        timestamp = Sys.time(),
+        success = FALSE
+      ),
+      diagnostics = diagnostics
+    ))
+  }
+  
+  if (!match_col %in% names(data)) {
+    error_msg <- paste("Input is missing required column:", match_col)
+    diagnostics$issues <- c(diagnostics$issues, error_msg)
+    log_message(error_msg, "add_metadata", "ERROR")
+    
+    return(create_result(
+      data = NULL,
+      metadata = list(
+        timestamp = Sys.time(),
+        success = FALSE
+      ),
+      diagnostics = diagnostics
+    ))
+  }
   
   # Create a copy of the input data
   result <- data
   
-  # Get World Bank country data for basic metadata
-  message("Fetching World Bank country data...")
-  wb_countries <- wbstats::wb_countries() %>%
-    select(iso3c, country, region, income_level)
+  ## --- Fetch World Bank data --------------------------------------------------
+  log_message("Fetching World Bank country data", "add_metadata")
   
-  # Add common country name variations to improve matching
-  country_lookup <- wb_countries %>%
-    select(country, iso3c) %>%
-    bind_rows(
-      tibble::tibble(
-        country = c(
-          "Czechia", "North Korea", "South Korea", "Russia", "Taiwan", 
-          "Bolivia", "Venezuela", "Tanzania", "Syria", "Vietnam",
-          "Democratic Republic of Congo", "United States", "UK", "Britain", "Saint Lucia", "St. Lucia",
-          "Saint Vincent and the Grenadines", "St. Vincent and the Grenadines",
-          "State of Palestine", "Palestine"
-        ),
-        iso3c = c(
-          "CZE", "PRK", "KOR", "RUS", "TWN", 
-          "BOL", "VEN", "TZA", "SYR", "VNM",
-          "COD", "USA", "GBR", "GBR", "LCA", "LCA", 
-          "VCT", "VCT",
-          "PSE", "PSE"
-        )
+  wb_countries <- time_operation({
+    tryCatch({
+      wb_data <- wbstats::wb_countries()
+      wb_data <- dplyr::select(wb_data, iso3c, country, region, income_level)
+      wb_data
+    }, error = function(e) {
+      error_msg <- paste("Failed to fetch World Bank data:", e$message)
+      diagnostics$issues <<- c(diagnostics$issues, error_msg)
+      log_message(error_msg, "add_metadata", "ERROR")
+      NULL
+    })
+  }, "add_metadata")
+  
+  if (is.null(wb_countries)) {
+    return(create_result(
+      data = NULL,
+      metadata = list(
+        timestamp = start_time,
+        success = FALSE
+      ),
+      diagnostics = diagnostics
+    ))
+  }
+  
+  ## --- Build country lookup table ---------------------------------------------
+  log_message("Building country name lookup table", "add_metadata")
+  
+  country_lookup <- time_operation({
+    # First select columns from WB data
+    lookup_wb <- dplyr::select(wb_countries, country, iso3c)
+    
+    # Create custom variations dataframe
+    variations <- tibble::tibble(
+      country = c(
+        "Czechia", "North Korea", "South Korea", "Russia", "Taiwan", 
+        "Bolivia", "Venezuela", "Tanzania", "Syria", "Vietnam",
+        "Democratic Republic of Congo", "United States", "UK", "Britain", "Saint Lucia", "St. Lucia",
+        "Saint Vincent and the Grenadines", "St. Vincent and the Grenadines",
+        "State of Palestine", "Palestine"
+      ),
+      iso3c = c(
+        "CZE", "PRK", "KOR", "RUS", "TWN", 
+        "BOL", "VEN", "TZA", "SYR", "VNM",
+        "COD", "USA", "GBR", "GBR", "LCA", "LCA", 
+        "VCT", "VCT",
+        "PSE", "PSE"
       )
     )
+    
+    # Combine the two sources
+    dplyr::bind_rows(lookup_wb, variations)
+  }, "add_metadata")
   
-  # Match countries to ISO codes
+  ## --- Match countries to ISO codes -------------------------------------------
+  log_message("Matching countries to ISO codes", "add_metadata")
+  
   result$iso3c <- NA_character_
+  match_count <- 0
+  
   for (i in 1:nrow(result)) {
     # Try exact match first
     match_idx <- which(tolower(country_lookup$country) == tolower(result[[match_col]][i]))
@@ -67,27 +176,34 @@ add_metadata <- function(
     # Assign ISO code if match found
     if (length(match_idx) > 0) {
       result$iso3c[i] <- country_lookup$iso3c[match_idx[1]]
+      match_count <- match_count + 1
     }
   }
   
-  # Report unmatched countries
+  ## --- Track unmatched countries ----------------------------------------------
   unmatched <- which(is.na(result$iso3c))
   if (length(unmatched) > 0) {
-    message("Could not match these countries to ISO codes:")
-    for (i in unmatched) {
-      message("  - ", result[[match_col]][i])
+    diagnostics$unmatched_countries <- result[[match_col]][unmatched]
+    log_message(paste("Could not match", length(unmatched), "countries to ISO codes"), "add_metadata", "WARNING")
+    
+    for (i in 1:min(length(unmatched), 5)) {
+      log_message(paste("  -", result[[match_col]][unmatched[i]]), "add_metadata")
+    }
+    
+    if (length(unmatched) > 5) {
+      log_message(paste("  - ...and", length(unmatched) - 5, "more"), "add_metadata")
     }
   }
   
-  # Parse dates if a date column is specified
+  ## --- Parse dates if needed --------------------------------------------------
+  parsed_count <- 0
   if (!is.null(date_col) && date_col %in% names(result)) {
-    message("Standardizing dates from '", date_col, "' column...")
+    log_message(paste("Standardizing dates from", date_col, "column"), "add_metadata")
     
-    # Simple function to parse dates in various formats
+    # Initialize date column
     result$date_standardized <- NA
-    parsed_count <- 0
     
-    message("Attempting to parse", nrow(result), "dates")
+    log_message(paste("Attempting to parse", nrow(result), "dates"), "add_metadata")
     for (i in 1:nrow(result)) {
       if (!is.na(result[[date_col]][i])) {
         # Try different date formats
@@ -104,54 +220,64 @@ add_metadata <- function(
           # Format as human-readable string "YYYY-MM-DD"
           result$date_standardized[i] <- format(parsed_date, format = "%Y-%m-%d")
           parsed_count <- parsed_count + 1
+        } else {
+          diagnostics$unparsed_dates <- c(diagnostics$unparsed_dates, result[[date_col]][i])
         }
       }
     }
-    message("  • Successfully parsed", parsed_count, "dates")
-    
-    # Report date parsing issues as before...
-  }
+    log_message(paste("Successfully parsed", parsed_count, "dates"), "add_metadata")
     
     # Report date parsing issues
     date_issues <- which(is.na(result$date_standardized) & !is.na(result[[date_col]]))
     if (length(date_issues) > 0) {
-      message("  • Could not parse", length(date_issues), "dates:")
-      for (i in 1:min(5, length(date_issues))) {  # Show at most 5 examples
-        message("    - ", result[[date_col]][date_issues[i]])
+      log_message(paste("Could not parse", length(date_issues), "dates:"), "add_metadata", "WARNING")
+      for (i in 1:min(5, length(date_issues))) {
+        log_message(paste("  -", result[[date_col]][date_issues[i]]), "add_metadata")
       }
       if (length(date_issues) > 5) {
-        message("    - ... and ", length(date_issues) - 5, " more")
+        log_message(paste("  - ...and", length(date_issues) - 5, "more"), "add_metadata")
       }
     }
+    
+    # Rename standardized date column
+    if ("date_standardized" %in% names(result)) {
+      result <- dplyr::rename(result, date = date_standardized)
+    }
+  }
   
-  # Join with World Bank country data
-  result <- result %>%
-    left_join(wb_countries, by = "iso3c")
+  ## --- Join with World Bank country data --------------------------------------
+  log_message("Joining with World Bank country data", "add_metadata")
+  
+  result <- dplyr::left_join(result, wb_countries, by = "iso3c")
+  
+  ## --- Add special country classifications ------------------------------------
   
   # Add LLDC indicator if provided
   if (!is.null(lldc_list)) {
-    message("Adding LLDC classifications...")
+    log_message("Adding LLDC classifications", "add_metadata")
     result$is_lldc <- result$iso3c %in% lldc_list
   }
   
   # Add SIDS indicator if provided
   if (!is.null(sids_list)) {
-    message("Adding SIDS classifications...")
+    log_message("Adding SIDS classifications", "add_metadata")
     result$is_sids <- result$iso3c %in% sids_list
   }
   
   # Add LDC indication if provided
   if (!is.null(ldc_list)) {
-    message("Adding LDC classifications...")
+    log_message("Adding LDC classifications", "add_metadata")
     result$is_ldc <- result$iso3c %in% ldc_list
   }
   
-# Rename columns for clarity and standardize names
-  result <- result %>%
-    rename(
-      country_iso3c = iso3c,
-      wb_income_level = income_level
-    )
+  ## --- Rename and reorder columns ---------------------------------------------
+  log_message("Standardizing column names and order", "add_metadata")
+  
+  # Rename columns for clarity and standardize names
+  result <- dplyr::rename(result,
+                          country_iso3c = iso3c,
+                          wb_income_level = income_level
+  )
   
   # Handle country name standardization
   # If 'country' exists from World Bank join, use it to update country_name
@@ -164,11 +290,6 @@ add_metadata <- function(
     }
     # Remove duplicate country column
     result$country <- NULL
-  }
-  
-  if (!is.null(date_col) && "date_standardized" %in% names(result)) {
-    result <- result %>%
-      rename(date = date_standardized)
   }
   
   # Reorder columns in a more intuitive way
@@ -188,25 +309,43 @@ add_metadata <- function(
   col_order <- intersect(col_order, names(result))
   result <- result[, col_order]
   
-  # Save results if output_file is specified
-  if (!is.null(output_file)) {
-    # Create directories if needed
-    dir_path <- dirname(output_file)
-    if (!dir.exists(dir_path)) {
-      dir.create(dir_path, recursive = TRUE)
-    }
-    
-    saveRDS(result, output_file)
-    message("Saved metadata to ", output_file)
+  ## --- Calculate processing time ----------------------------------------------
+  end_time <- Sys.time()
+  processing_time <- as.numeric(difftime(end_time, start_time, units = "secs"))
+  
+  ## --- Save results if specified ----------------------------------------------
+  if (!is.null(output_path)) {
+    saveRDS(result, output_path)
+    log_message(paste("Saved metadata to", output_path), "add_metadata")
   }
   
-  # Clear completion message
-  message("✓ Metadata processing complete!")
-  message("  • ", nrow(result), " records processed")
-  if (!is.null(date_col)) {
-    date_success <- sum(!is.na(result$date))
-    message("  • ", date_success, "/", nrow(result), " dates successfully parsed (", 
-            round(date_success/nrow(result)*100), "%)")
+  ## --- Prepare and return final result ----------------------------------------
+  metadata <- list(
+    records_processed = nrow(data),
+    countries_matched = match_count,
+    dates_parsed = parsed_count,
+    date_parsing_success_rate = if(parsed_count > 0 && !is.null(date_col)) 
+      round(parsed_count/sum(!is.na(data[[date_col]]))*100, 1) else NA,
+    timestamp = start_time,
+    processing_time_sec = processing_time,
+    success = TRUE
+  )
+  
+  # Log completion message
+  success_msg <- paste("Successfully processed", nrow(result), "records")
+  if (!is.null(date_col) && "date" %in% names(result)) {
+    success_msg <- paste0(
+      success_msg, 
+      " (", parsed_count, "/", sum(!is.na(data[[date_col]])), 
+      " dates parsed, ", metadata$date_parsing_success_rate, "%)"
+    )
   }
-  return(result)
+  log_message(success_msg, "add_metadata")
+  
+  # Return standardized result
+  return(create_result(
+    data = result,
+    metadata = metadata,
+    diagnostics = diagnostics
+  ))
 }

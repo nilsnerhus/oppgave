@@ -20,7 +20,7 @@ exclude_countries <- c("Uruguay") # Does not have a national plan, just many sec
 web <- scrape_web(exclude_countries = exclude_countries)
 
 # Step 2: Extract the pdfs from the web
-pdfs <- extract_pdfs(web)
+pdfs <- extract_pdfs(web$data)
 
 # Step 3: Add metadata
 ## Define lists of SIDS and LLDC countries, since no public repositories keep the information
@@ -42,14 +42,14 @@ ldc <- c("AFG", "AGO", "BGD", "BEN", "BFA", "BDP", "BOL", "BIH", "BWA", "CAF",
          "MYS", "MOZ", "NPL", "NER", "NGA", "PRY", "PNG", "SGP", "SOM", "SDN", 
          "TGO", "TON", "TJK", "UGA", "UZB", "VUT", "YEM", "ZMB", "ZWE")
 
-metadata <- add_metadata(pdfs, sids_list = sids, lldc_list = lldc, ldc_list = ldc)
+metadata <- add_metadata(pdfs$data, sids_list = sids, lldc_list = lldc, ldc_list = ldc)
 
 # Step 4: Prepare corpus
 nap_stops <- c("mr", "https", "la", "yet", "de", "i.e", "yr", "tion", "des", "8.5", "svg")
-corpus <- prepare_corpus(metadata, custom_stopwords = nap_stops)
+corpus <- prepare_corpus(metadata$data, custom_stopwords = nap_stops)
 
 # Step 5: Find optimal topic count
-best_k <- find_best_k(corpus)
+best_k <- find_best_k(corpus$data)
 
 # Step 6: Extract topic proportions
-topic_props <- extract_topic_props(best_k)
+topic_props <- extract_topic_props(best_k$data)

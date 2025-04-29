@@ -1,124 +1,289 @@
-# Purpose: Process topic model results for analysis
+#' @title Extract topic proportions from topic model
+#' @description Processes a structural topic model to extract document-topic 
+#'   proportions and topic labels, preparing them for analysis. Can work with
+#'   either a pre-fit model or create a new one with specified parameters.
+#'
+#' @param input Either output from optimal_topics() or prepare_corpus() functions
+#' @param k Number of topics to use (default: NULL, uses best_k from input if available)
+#' @param best_k_path Path to load best k result if needed (default: "data/best_k.rds")
+#' @param output_path Path to save results (default: "data/topic_props.rds")
+#'
+#' @return A list containing:
+#'   \item{data}{Topic proportions data frame, topic labels, and model object}
+#'   \item{metadata}{Information about topics and processing details}
+#'   \item{diagnostics}{Processing issues and model validation information}
+#'
+#' @examples
+#' \dontrun{
+#' # Extract topic proportions using best k from optimization
+#' topic_props <- extract_topic_props(best_k_result)
+#' 
+#' # Force a specific number of topics
+#' topic_props <- extract_topic_props(corpus_data, k = 50)
+#' }
 
-library(dplyr)       # Data manipulation
-library(tidyr)       # Data reshaping
-library(stm)         # Structural Topic Models
-
-extract_topic_props <- function(input, 
-                        k = NULL,
-                        best_k_path = "data/best_k.rds",
-                        output_path = "data/topic_props.rds") {
+extract_topic_props <- function(
+    input, 
+    k = NULL,
+    best_k_path = "data/best_k.rds",
+    output_path = "data/topic_props.rds"
+) {
+  # Start timing
+  start_time <- Sys.time()
   
-  # Create output directory if it doesn't exist
-  dir.create(dirname(output_path), recursive = TRUE, showWarnings = FALSE)
+  # Create output directory if needed
+  ensure_directory(output_path)
   
-  # Determine input type and extract necessary components
-  if (is.list(input) && "best_model" %in% names(input)) {
-    # Input is from optimal_topics
-    cat("Using best model from optimal_topics output\n")
-    model <- input$best_model
-    metadata <- input$metadata
-    
-    # Use provided k or best k from optimization
-    if (is.null(k)) {
-      k <- input$best_k
-      cat("Using optimal k value:", k, "\n")
-    } else if (k != input$best_k) {
-      warning("Provided k value differs from optimal k. Creating new model.")
-      cat("Fitting new model with k =", k, "...\n")
+  # Initialize diagnostics tracking
+  diagnostics <- list(
+    processing_issues = character(),
+    model_validation = list()
+  )
+  
+  ## --- Input validation and determination ------------------------------------
+  log_message("Determining input type and extracting components", "extract_topic_props")
+  
+  # Variables we need to extract
+  model <- NULL
+  metadata <- NULL
+  stm_data <- NULL
+  input_type <- NULL
+  
+  tryCatch({
+    # Determine input type and extract necessary components
+    if (is.list(input) && "best_model" %in% names(input)) {
+      # Input is from optimal_topics
+      log_message("Using best model from optimal_topics output", "extract_topic_props")
+      model <- input$best_model
+      metadata <- input$metadata
+      input_type <- "optimal_topics"
       
-      # Use stm_data from input if available
-      if ("stm_data" %in% names(input) && 
-          all(c("documents", "vocab") %in% names(input$stm_data))) {
-        model <- stm(
-          documents = input$stm_data$documents,
-          vocab = input$stm_data$vocab,
+      # Store stm_data if available
+      if ("stm_data" %in% names(input)) {
+        stm_data <- input$stm_data
+      }
+      
+      # Use provided k or best k from optimization
+      if (is.null(k)) {
+        if ("best_k" %in% names(input)) {
+          k <- input$best_k
+          log_message(paste("Using optimal k value:", k), "extract_topic_props")
+        } else {
+          stop("Could not determine k value from input")
+        }
+      } else if (k != input$best_k) {
+        log_message(paste("Provided k value", k, "differs from optimal k", input$best_k), 
+                    "extract_topic_props", "WARNING")
+        
+        # Need stm_data to create new model
+        if (is.null(stm_data) || !all(c("documents", "vocab") %in% names(stm_data))) {
+          stop("Cannot create new model with different k: stm_data not available in input")
+        }
+        
+        # Will create new model below
+        model <- NULL
+      }
+    } else if (is.list(input) && all(c("dfm", "metadata", "stm_data") %in% names(input))) {
+      # Input is from preprocess
+      log_message("Creating model from preprocessed data", "extract_topic_props")
+      metadata <- input$metadata
+      stm_data <- input$stm_data
+      input_type <- "preprocess"
+      
+      # Require explicit k value
+      if (is.null(k)) {
+        # Try to load best k from file
+        if (file.exists(best_k_path)) {
+          best_k_result <- readRDS(best_k_path)
+          if ("best_k" %in% names(best_k_result)) {
+            k <- best_k_result$best_k
+            log_message(paste("Using k value from best_k file:", k), "extract_topic_props")
+          } else {
+            stop("When using preprocessed data directly, k must be explicitly specified or best_k file must be available")
+          }
+        } else {
+          stop("When using preprocessed data directly, k must be explicitly specified or best_k file must be available")
+        }
+      } else {
+        log_message(paste("Using provided k value:", k), "extract_topic_props")
+      }
+      
+      # Will create model below
+      model <- NULL
+    } else {
+      stop("Invalid input: Expected output from preprocess() or optimal_topics() functions")
+    }
+  }, error = function(e) {
+    log_message(paste("Input validation error:", e$message), "extract_topic_props", "ERROR")
+    stop(e$message)
+  })
+  
+  ## --- Create model if needed ------------------------------------------------
+  if (is.null(model)) {
+    log_message(paste("Fitting model with k =", k), "extract_topic_props")
+    
+    # Check we have required data
+    if (is.null(stm_data) || !all(c("documents", "vocab") %in% names(stm_data))) {
+      log_message("Missing required stm_data components", "extract_topic_props", "ERROR")
+      stop("Cannot create model: missing documents or vocabulary")
+    }
+    
+    # Fit the model
+    model <- time_operation({
+      tryCatch({
+        stm::stm(
+          documents = stm_data$documents,
+          vocab = stm_data$vocab,
           K = k,
           max.em.its = 100,
           init.type = "Spectral",
           seed = 1234
         )
-      } else {
-        stop("Cannot create new model with different k: stm_data not available in input")
-      }
-    }
-  } else if (is.list(input) && all(c("dfm", "metadata", "stm_data") %in% names(input))) {
-    # Input is from preprocess
-    cat("Creating model from preprocessed data\n")
-    
-    # Extract necessary components
-    stm_data <- input$stm_data
-    metadata <- input$metadata
-    
-    # Require explicit k value
-    if (is.null(k)) {
-      stop("When using preprocessed data directly, k must be explicitly specified")
-    } else {
-      cat("Using provided k value:", k, "\n")
-    }
-    
-    # Create model
-    cat("Fitting model...\n")
-    model <- stm(
-      documents = stm_data$documents,
-      vocab = stm_data$vocab,
-      K = k,
-      max.em.its = 100,
-      init.type = "Spectral",
-      seed = 1234
-    )
-  } else {
-    stop("Invalid input: Expected output from preprocess() or optimal_topics() functions")
+      }, error = function(e) {
+        log_message(paste("Model fitting error:", e$message), "extract_topic_props", "ERROR")
+        diagnostics$processing_issues <- c(diagnostics$processing_issues, 
+                                           paste("Model fitting failed:", e$message))
+        stop(e$message)
+      })
+    }, "extract_topic_props")
   }
   
-  # Extract topic proportions (theta matrix)
-  cat("Extracting topic proportions...\n")
-  topic_props <- as.data.frame(model$theta)
+  ## --- Extract topic proportions ---------------------------------------------
+  log_message("Extracting topic proportions", "extract_topic_props")
+  
+  topic_props <- tryCatch({
+    as.data.frame(model$theta)
+  }, error = function(e) {
+    log_message(paste("Topic proportion extraction error:", e$message), 
+                "extract_topic_props", "ERROR")
+    diagnostics$processing_issues <- c(diagnostics$processing_issues, 
+                                       paste("Topic proportion extraction failed:", e$message))
+    stop(e$message)
+  })
   
   # Add document identifiers
   topic_props$doc_id <- rownames(topic_props)
   
   # Ensure doc_id types match - convert to the same type as in metadata
-  if (is.numeric(metadata$doc_id) && !is.numeric(topic_props$doc_id)) {
-    topic_props$doc_id <- as.numeric(topic_props$doc_id)
-  } else if (is.character(metadata$doc_id) && !is.character(topic_props$doc_id)) {
-    topic_props$doc_id <- as.character(topic_props$doc_id)
+  if (!is.null(metadata)) {
+    if (is.numeric(metadata$doc_id) && !is.numeric(topic_props$doc_id)) {
+      topic_props$doc_id <- as.numeric(topic_props$doc_id)
+    } else if (is.character(metadata$doc_id) && !is.character(topic_props$doc_id)) {
+      topic_props$doc_id <- as.character(topic_props$doc_id)
+    }
   }
   
   # Rename topic columns with simple numeric identifiers
   colnames(topic_props)[1:k] <- paste0("Topic_", 1:k)
   
-  # Reshape to long format
+  ## --- Reshape to long format ------------------------------------------------
+  log_message("Reshaping to long format", "extract_topic_props")
+  
   topic_props_long <- topic_props %>%
-    pivot_longer(
-      cols = starts_with("Topic_"),
+    tidyr::pivot_longer(
+      cols = dplyr::starts_with("Topic_"),
       names_to = "Topic",
       values_to = "Proportion"
     )
   
-  # Join with document metadata
-  result_df <- topic_props_long %>%
-    left_join(metadata, by = "doc_id")
+  ## --- Join with document metadata ------------------------------------------
+  if (!is.null(metadata)) {
+    log_message("Joining with document metadata", "extract_topic_props")
+    
+    result_df <- topic_props_long %>%
+      dplyr::left_join(metadata, by = "doc_id")
+  } else {
+    result_df <- topic_props_long
+  }
   
-  # Extract topic labels for reference
-  cat("Generating topic labels...\n")
-  top_terms <- labelTopics(model, n = 5)
-  topic_labels <- sapply(1:k, function(i) {
-    paste(top_terms$frex[i,], collapse = ", ")
+  ## --- Extract topic labels -------------------------------------------------
+  log_message("Generating topic labels", "extract_topic_props")
+  
+  top_terms <- tryCatch({
+    stm::labelTopics(model, n = 5)
+  }, error = function(e) {
+    log_message(paste("Topic labeling error:", e$message), 
+                "extract_topic_props", "WARNING")
+    diagnostics$processing_issues <- c(diagnostics$processing_issues, 
+                                       paste("Topic labeling failed:", e$message))
+    NULL
   })
-  names(topic_labels) <- paste0("Topic_", 1:k)
   
-  # Prepare final output
-  result <- list(
+  if (!is.null(top_terms)) {
+    topic_labels <- sapply(1:k, function(i) {
+      paste(top_terms$frex[i,], collapse = ", ")
+    })
+    names(topic_labels) <- paste0("Topic_", 1:k)
+  } else {
+    topic_labels <- setNames(rep("Unknown", k), paste0("Topic_", 1:k))
+  }
+  
+  ## --- Perform validation checks --------------------------------------------
+  log_message("Validating results", "extract_topic_props")
+  
+  # Basic validation checks
+  validation <- list(
+    doc_count = nrow(topic_props),
+    topics = k,
+    avg_props_sum = mean(rowSums(topic_props[, 1:k])),
+    missing_metadata = if (!is.null(metadata)) {
+      sum(is.na(match(topic_props$doc_id, metadata$doc_id)))
+    } else {
+      NA
+    }
+  )
+  
+  # Check if proportions sum to approximately 1
+  if (abs(validation$avg_props_sum - 1) > 0.01) {
+    log_message(paste("Topic proportions don't sum to 1 (average sum:", 
+                      round(validation$avg_props_sum, 3), ")"),
+                "extract_topic_props", "WARNING")
+    diagnostics$processing_issues <- c(diagnostics$processing_issues,
+                                       paste("Topic proportions don't sum to 1"))
+  }
+  
+  # Check for missing metadata
+  if (!is.na(validation$missing_metadata) && validation$missing_metadata > 0) {
+    log_message(paste(validation$missing_metadata, "documents missing metadata"),
+                "extract_topic_props", "WARNING")
+    diagnostics$processing_issues <- c(diagnostics$processing_issues,
+                                       paste(validation$missing_metadata, "documents missing metadata"))
+  }
+  
+  diagnostics$model_validation <- validation
+  
+  ## --- Prepare final output -------------------------------------------------
+  result_data <- list(
     data = result_df,
     topic_labels = topic_labels,
     model = model
   )
   
-  # Save results
-  cat("Saving topic model results to", output_path, "...\n")
-  saveRDS(result, output_path)
+  # Calculate processing time
+  end_time <- Sys.time()
+  processing_time <- as.numeric(difftime(end_time, start_time, units = "secs"))
   
-  cat("Topic modeling complete!\n")
-  return(result)
+  # Prepare metadata
+  result_metadata <- list(
+    timestamp = start_time,
+    processing_time_sec = processing_time,
+    input_type = input_type,
+    topics = k,
+    documents = nrow(topic_props),
+    success = TRUE
+  )
+  
+  ## --- Save results ---------------------------------------------------------
+  log_message(paste("Saving topic model results to", output_path), "extract_topic_props")
+  saveRDS(result_data, output_path)
+  
+  log_message(paste("Topic modeling complete!", k, "topics extracted for", 
+                    nrow(topic_props), "documents"),
+              "extract_topic_props")
+  
+  return(create_result(
+    data = result_data,
+    metadata = result_metadata,
+    diagnostics = diagnostics
+  ))
 }

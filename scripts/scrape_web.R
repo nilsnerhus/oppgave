@@ -112,7 +112,7 @@ scrape_web <- function(
   }
   
   ## --- Find and select table --------------------------------------------------
-  tables <- page_html %>% rvest::html_nodes("table")
+  tables <- rvest::html_nodes(page_html, "table")
   
   if (length(tables) == 0) {
     log_message("No tables found, returning empty results", "scrape_web", "WARNING")
@@ -145,7 +145,7 @@ scrape_web <- function(
   table_html <- tables[[table_index]]
   
   ## --- Parse table rows -------------------------------------------------------
-  rows <- table_html %>% rvest::html_nodes("tr")
+  rows <- rvest::html_nodes(table_html, "tr")
   
   if (length(rows) == 0) {
     log_message("Selected table has no rows", "scrape_web", "WARNING")
@@ -185,7 +185,7 @@ scrape_web <- function(
   
   ## --- Loop through rows ------------------------------------------------------
   for (i in seq_along(rows)) {
-    cells <- rows[[i]] %>% rvest::html_nodes("td")
+    cells <- rvest::html_nodes(rows[[i]], "td")
     
     if (length(cells) < max(name_col, date_col, link_col)) {
       log_message(paste("Skipping row", i, "(too few columns)"), "scrape_web", "WARNING")
@@ -193,8 +193,8 @@ scrape_web <- function(
       next
     }
     
-    country_name <- cells[[name_col]] %>% rvest::html_text(trim = TRUE)
-    date_posted <- cells[[date_col]] %>% rvest::html_text(trim = TRUE)
+    country_name <- rvest::html_text(cells[[name_col]], trim = TRUE)
+    date_posted <- rvest::html_text(cells[[date_col]], trim = TRUE)
     
     # Check if country is in the exclude list (case-insensitive)
     if (!is.null(exclude_countries) && tolower(country_name) %in% exclude_countries) {
@@ -206,11 +206,11 @@ scrape_web <- function(
     pdf_link <- NULL
     
     ## Try to find direct English PDF links first
-    links <- cells[[link_col]] %>% rvest::html_nodes("a")
+    links <- rvest::html_nodes(cells[[link_col]], "a")
     
     for (link in links) {
-      href <- link %>% rvest::html_attr("href")
-      link_text <- link %>% rvest::html_text(trim = TRUE)
+      href <- rvest::html_attr(link, "href")
+      link_text <- rvest::html_text(link, trim = TRUE)
       
       if (is.na(href) || href == "") next
       
@@ -228,11 +228,11 @@ scrape_web <- function(
     
     ## If no link found, try spans inside links
     if (is.null(pdf_link)) {
-      spans <- cells[[link_col]] %>% rvest::html_nodes("a span")
+      spans <- rvest::html_nodes(cells[[link_col]], "a span")
       for (span in spans) {
-        span_text <- span %>% rvest::html_text(trim = TRUE)
+        span_text <- rvest::html_text(span, trim = TRUE)
         if (grepl("english", span_text, ignore.case = TRUE)) {
-          parent_link <- span %>% rvest::html_node(xpath = "..") %>% rvest::html_attr("href")
+          parent_link <- rvest::html_attr(rvest::html_node(span, xpath = ".."), "href")
           if (!is.na(parent_link) && parent_link != "") {
             is_pdf <- grepl("\\.pdf$", parent_link, ignore.case = TRUE)
             if (is_pdf) {
@@ -278,6 +278,9 @@ scrape_web <- function(
     row_count = length(rows),
     success = TRUE
   )
+  
+  # Import the pipe operator
+  `%>%` <- magrittr::`%>%`
   
   # Return standardized result
   return(create_result(

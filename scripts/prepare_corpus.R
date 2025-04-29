@@ -1,193 +1,307 @@
-# Purpose: Process text documents for topic modeling
+#' @title Prepare text corpus for topic modeling
+#' @description Processes raw text documents into a structured corpus suitable for
+#'   topic modeling analysis. Handles tokenization, stop word removal, stemming/lemmatization,
+#'   and creates a document-feature matrix.
+#'
+#' @param text_data Data frame containing text documents
+#' @param text_column Name of column containing document text (default: "pdf_text")
+#' @param custom_stopwords Additional stop words to remove (default: NULL)
+#' @param stem_words Whether to apply stemming (default: FALSE)
+#' @param lemmatize Whether to apply lemmatization (default: TRUE)
+#' @param min_word_count Minimum document frequency for terms (default: 2)
+#' @param min_word_length Minimum character length for terms (default: 1)
+#' @param remove_punctuation Whether to strip punctuation (default: TRUE)
+#' @param min_doc_length Minimum tokens required per document (default: 50)
+#' @param max_doc_proportion Maximum proportion of docs a term can appear in (default: 0.8)
+#' @param output_path Path to save processed corpus (default: "data/corpus.rds")
+#'
+#' @return A list containing:
+#'   \item{data}{List with dfm, metadata, tokens and stm_data elements}
+#'   \item{metadata}{Processing information including document and token counts}
+#'   \item{diagnostics}{Information about removed documents and processing issues}
+#'
+#' @examples
+#' \dontrun{
+#' corpus <- prepare_corpus(nap_data, custom_stopwords = c("https", "fig"))
+#' }
 
-library(dplyr)       # Data manipulation
-library(tidyr)       # Data reshaping
-library(tidytext)    # Text processing
-library(stringr)     # String manipulation
-library(textstem)    # For lemmetization
-library(quanteda)    # DFM creation
-
-prepare_corpus <- function(text_data, 
-                       text_column = "pdf_text",
-                       custom_stopwords = NULL, 
-                       stem_words = FALSE,
-                       lemmatize = TRUE,
-                       min_word_count = 2,
-                       min_word_length = 1,
-                       remove_punctuation = TRUE,
-                       min_doc_length = 50,
-                       max_doc_proportion = 0.8,
-                       return_stats = FALSE,
-                       output_path = "data/corpus.rds") {
+prepare_corpus <- function(
+    text_data, 
+    text_column = "pdf_text",
+    custom_stopwords = NULL, 
+    stem_words = FALSE,
+    lemmatize = TRUE,
+    min_word_count = 2,
+    min_word_length = 1,
+    remove_punctuation = TRUE,
+    min_doc_length = 50,
+    max_doc_proportion = 0.8,
+    output_path = "data/corpus.rds"
+) {
+  # Start timing
+  start_time <- Sys.time()
   
-  # Create output directory if it doesn't exist
-  dir.create(dirname(output_path), recursive = TRUE, showWarnings = FALSE)
+  # Create output directory if needed
+  ensure_directory(output_path)
   
-  # Validate inputs
-  if (!is.data.frame(text_data)) {
-    stop("text_data must be a data frame")
-  }
+  # Initialize diagnostics tracking
+  diagnostics <- list(
+    removed_documents = list(),
+    processing_issues = character(),
+    token_stats = list()
+  )
   
-  if (!text_column %in% names(text_data)) {
-    stop(paste("text_data must contain a", text_column, "column"))
-  }
+  ## --- Input validation -------------------------------------------------------
+  log_message("Validating input parameters", "prepare_corpus")
   
-  if (!is.null(custom_stopwords) && !is.character(custom_stopwords)) {
-    stop("custom_stopwords must be a character vector")
-  }
+  tryCatch({
+    validate_input(text_data, c(text_column), "prepare_corpus")
+    
+    if (!is.null(custom_stopwords) && !is.character(custom_stopwords)) {
+      stop("custom_stopwords must be a character vector")
+    }
+    
+    if (!is.numeric(min_word_count) || min_word_count < 1) {
+      stop("min_word_count must be a positive integer")
+    }
+    
+    if (!is.numeric(min_word_length) || min_word_length < 1) {
+      stop("min_word_length must be a positive integer")
+    }
+    
+    if (!is.numeric(min_doc_length) || min_doc_length < 1) {
+      stop("min_doc_length must be a positive integer")
+    }
+    
+    if (!is.numeric(max_doc_proportion) || max_doc_proportion <= 0 || max_doc_proportion > 1) {
+      stop("max_doc_proportion must be between 0 and 1")
+    }
+  }, error = function(e) {
+    log_message(paste("Validation error:", e$message), "prepare_corpus", "ERROR")
+    stop(e$message)
+  })
   
-  # Assign consistent document IDs first
+  ## --- Assign document IDs ----------------------------------------------------
+  log_message("Assigning document IDs", "prepare_corpus")
+  
   text_data <- text_data %>%
-    mutate(doc_id = row_number())
+    dplyr::mutate(doc_id = dplyr::row_number())
   
-  # Process text data
-  cat("Tokenizing documents...\n")
-  processed_text <- text_data %>%
-    unnest_tokens(
-      word, 
-      !!sym(text_column),
-      to_lower = TRUE,
-      strip_punct = remove_punctuation
-    ) %>%
-    # Remove numbers
-    filter(!str_detect(word, "^[0-9]+$"))
+  start_docs <- nrow(text_data)
+  diagnostics$token_stats$initial_docs <- start_docs
   
-  # Filter by word length
-  cat(paste("Filtering words with", min_word_length, "or fewer characters...\n"))
-  processed_text <- processed_text %>%
-    filter(str_length(word) > min_word_length) 
+  ## --- Tokenize documents -----------------------------------------------------
+  log_message("Tokenizing documents", "prepare_corpus")
   
-  # Track statistics
+  processed_text <- tryCatch({
+    text_data %>%
+      tidytext::unnest_tokens(
+        word, 
+        !!rlang::sym(text_column),
+        to_lower = TRUE,
+        strip_punct = remove_punctuation
+      ) %>%
+      # Remove numbers
+      dplyr::filter(!stringr::str_detect(word, "^[0-9]+$"))
+  }, error = function(e) {
+    log_message(paste("Tokenization error:", e$message), "prepare_corpus", "ERROR")
+    diagnostics$processing_issues <- c(diagnostics$processing_issues, 
+                                       paste("Tokenization failed:", e$message))
+    stop(e$message)
+  })
+  
+  # Track initial token count
   start_tokens <- nrow(processed_text)
-  start_docs <- n_distinct(processed_text$doc_id)
+  diagnostics$token_stats$initial_tokens <- start_tokens
   
-  cat("Removing stopwords...\n")
+  ## --- Filter by word length --------------------------------------------------
+  log_message(paste("Filtering words with", min_word_length, "or fewer characters"), 
+              "prepare_corpus")
+  
+  processed_text <- processed_text %>%
+    dplyr::filter(stringr::str_length(word) > min_word_length)
+  
+  ## --- Remove stopwords ------------------------------------------------------
+  log_message("Removing stopwords", "prepare_corpus")
+  
   # Remove standard stopwords
   processed_text <- processed_text %>%
-    anti_join(get_stopwords(), by = "word")
+    dplyr::anti_join(tidytext::get_stopwords(), by = "word")
   
   # Remove custom stopwords if provided
   if (!is.null(custom_stopwords) && length(custom_stopwords) > 0) {
-    custom_stops <- tibble(word = custom_stopwords)
+    custom_stops <- tibble::tibble(word = custom_stopwords)
     processed_text <- processed_text %>%
-      anti_join(custom_stops, by = "word")
+      dplyr::anti_join(custom_stops, by = "word")
   }
   
-  # Apply lemmatization
+  ## --- Apply lemmatization or stemming ---------------------------------------
   if (lemmatize) {
-    cat("Applying lemmatization...\n")
+    log_message("Applying lemmatization", "prepare_corpus")
     processed_text <- processed_text %>%
-      mutate(word = textstem::lemmatize_words(word))
+      dplyr::mutate(word = textstem::lemmatize_words(word))
   }
   
-  # Apply stemming
   if (stem_words) {
-    cat("Applying word stemming...\n")
+    log_message("Applying word stemming", "prepare_corpus")
     processed_text <- processed_text %>%
-      mutate(word = textstem::stem_words(word))
+      dplyr::mutate(word = textstem::stem_words(word))
   }
   
-  cat("Filtering words by frequency...\n")
-  # Filter words by frequency
+  ## --- Filter words by frequency ---------------------------------------------
+  log_message("Filtering words by frequency", "prepare_corpus")
+  
   word_doc_counts <- processed_text %>%
-    group_by(word) %>%
-    summarize(
-      doc_count = n_distinct(doc_id),
+    dplyr::group_by(word) %>%
+    dplyr::summarize(
+      doc_count = dplyr::n_distinct(doc_id),
       doc_prop = doc_count / start_docs,
       .groups = "drop"
     ) %>%
-    filter(
+    dplyr::filter(
       doc_count >= min_word_count,
       doc_prop <= max_doc_proportion
     )
   
   processed_text <- processed_text %>%
-    semi_join(word_doc_counts, by = "word")
+    dplyr::semi_join(word_doc_counts, by = "word")
   
-  # Count words per document and filter out short documents
+  ## --- Filter documents by length ---------------------------------------------
+  log_message("Filtering documents by length", "prepare_corpus")
+  
   doc_lengths <- processed_text %>% 
-    count(doc_id) %>%
-    filter(n >= min_doc_length)
+    dplyr::count(doc_id) %>%
+    dplyr::filter(n >= min_doc_length)
   
   # Track removed documents with country information
   removed_doc_ids <- setdiff(unique(processed_text$doc_id), doc_lengths$doc_id)
   
   if (length(removed_doc_ids) > 0) {
-    cat(paste("Removed", length(removed_doc_ids), 
-              "documents with fewer than", min_doc_length, "tokens\n"))
-  } else {
-    cat("No documents were removed based on length criteria\n")
+    log_message(paste("Removed", length(removed_doc_ids), 
+                      "documents with fewer than", min_doc_length, "tokens"),
+                "prepare_corpus", "WARNING")
+    
+    # Get country names for removed documents if available
+    if ("country_name" %in% names(text_data)) {
+      removed_info <- text_data %>%
+        dplyr::filter(doc_id %in% removed_doc_ids) %>%
+        dplyr::select(doc_id, country_name)
+      
+      diagnostics$removed_documents <- as.list(setNames(
+        removed_info$country_name, paste0("doc_", removed_info$doc_id)))
+    } else {
+      diagnostics$removed_documents <- list(ids = removed_doc_ids)
+    }
   }
   
   # Filter to keep only documents meeting the minimum length
   processed_text <- processed_text %>%
-    semi_join(doc_lengths, by = "doc_id")
+    dplyr::semi_join(doc_lengths, by = "doc_id")
   
-  # Extract metadata columns if they exist (grab all columns except text_column)
+  ## --- Extract metadata columns -----------------------------------------------
   metadata_cols <- setdiff(names(text_data), text_column)
   
   # Merge with metadata if available
   if (length(metadata_cols) > 0) {
     metadata <- text_data %>%
-      select(doc_id, all_of(metadata_cols)) %>%
-      distinct()
+      dplyr::select(doc_id, dplyr::all_of(metadata_cols)) %>%
+      dplyr::distinct()
     
     # Only keep metadata for documents that weren't filtered out
     metadata <- metadata %>%
-      semi_join(doc_lengths, by = "doc_id")
+      dplyr::semi_join(doc_lengths, by = "doc_id")
   } else {
-    metadata <- tibble(doc_id = unique(processed_text$doc_id))
+    metadata <- tibble::tibble(doc_id = unique(processed_text$doc_id))
   }
   
-  cat("Creating document-feature matrix...\n")
+  ## --- Create document-feature matrix -----------------------------------------
+  log_message("Creating document-feature matrix", "prepare_corpus")
   
   # Create word counts
   word_counts <- processed_text %>%
-    count(doc_id, word)
+    dplyr::count(doc_id, word)
   
   # Create document-feature matrix
-  dfm_object <- word_counts %>%
-    cast_dfm(doc_id, word, n)
+  dfm_object <- tryCatch({
+    word_counts %>%
+      tidytext::cast_dfm(doc_id, word, n)
+  }, error = function(e) {
+    log_message(paste("DFM creation error:", e$message), "prepare_corpus", "ERROR")
+    diagnostics$processing_issues <- c(diagnostics$processing_issues, 
+                                       paste("DFM creation failed:", e$message))
+    stop(e$message)
+  })
   
-  # Prepare result object
-  result <- list(
+  ## --- Convert to STM format --------------------------------------------------
+  log_message("Converting to STM format", "prepare_corpus")
+  
+  stm_docs <- tryCatch({
+    quanteda::convert(dfm_object, to = "stm")
+  }, error = function(e) {
+    log_message(paste("STM conversion error:", e$message), "prepare_corpus", "ERROR")
+    diagnostics$processing_issues <- c(diagnostics$processing_issues, 
+                                       paste("STM conversion failed:", e$message))
+    stop(e$message)
+  })
+  
+  ## --- Prepare result ---------------------------------------------------------
+  final_tokens <- nrow(processed_text)
+  final_docs <- nrow(metadata)
+  final_terms <- length(stm_docs$vocab)
+  
+  # Update token statistics
+  diagnostics$token_stats$final_tokens <- final_tokens
+  diagnostics$token_stats$final_docs <- final_docs
+  diagnostics$token_stats$removed_tokens <- start_tokens - final_tokens
+  diagnostics$token_stats$removed_docs <- start_docs - final_docs
+  diagnostics$token_stats$vocabulary_size <- final_terms
+  
+  # Create core data result
+  result_data <- list(
     dfm = dfm_object,
     metadata = metadata,
-    tokens = processed_text
-  )
-  
-  # Add statistics if requested
-  if (return_stats) {
-    result$stats <- list(
-      documents = list(
-        initial = start_docs,
-        final = n_distinct(processed_text$doc_id),
-        removed = start_docs - n_distinct(processed_text$doc_id)
-      ),
-      tokens = list(
-        initial = start_tokens,
-        final = nrow(processed_text),
-        removed = start_tokens - nrow(processed_text)
-      ),
-      vocabulary = list(
-        size = n_distinct(processed_text$word),
-        unique_terms = n_distinct(word_counts$word)
-      )
+    tokens = processed_text,
+    stm_data = list(
+      documents = stm_docs$documents,
+      vocab = stm_docs$vocab
     )
-  }
-  
-  # Convert to STM format for direct use in topic modeling
-  cat("Converting to STM format...\n")
-  stm_docs <- convert(dfm_object, to = "stm")
-  result$stm_data <- list(
-    documents = stm_docs$documents,
-    vocab = stm_docs$vocab
   )
   
-  # Save the result
-  cat("Saving processed corpus to", output_path, "...\n")
-  saveRDS(result, output_path)
+  # Calculate processing time
+  end_time <- Sys.time()
+  processing_time <- as.numeric(difftime(end_time, start_time, units = "secs"))
   
-  cat("Preprocessing complete!\n")
-  return(result)
+  # Create metadata
+  result_metadata <- list(
+    timestamp = start_time,
+    processing_time_sec = processing_time,
+    original_docs = start_docs,
+    final_docs = final_docs,
+    original_tokens = start_tokens,
+    final_tokens = final_tokens,
+    vocabulary_size = final_terms,
+    processing_options = list(
+      lemmatize = lemmatize,
+      stem_words = stem_words,
+      min_word_count = min_word_count,
+      min_word_length = min_word_length,
+      min_doc_length = min_doc_length,
+      max_doc_proportion = max_doc_proportion
+    )
+  )
+  
+  ## --- Save the result --------------------------------------------------------
+  log_message(paste("Saving processed corpus to", output_path), "prepare_corpus")
+  
+  saveRDS(result_data, output_path)
+  
+  log_message(sprintf("Processing complete: %d docs, %d tokens, %d terms", 
+                      final_docs, final_tokens, final_terms), 
+              "prepare_corpus")
+  
+  return(create_result(
+    data = result_data,
+    metadata = result_metadata,
+    diagnostics = diagnostics
+  ))
 }

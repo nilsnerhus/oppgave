@@ -1,45 +1,134 @@
-# Purpose: Extracting the text from pdfs where the link is known
-
-library(polite)
-library(httr)
-library(pdftools)
-
+#' @title Extract text from NAP PDF documents
+#' @description Downloads and extracts the text content from National Adaptation Plan
+#'   PDF documents using links obtained from the NAP Central website. Handles 
+#'   connection errors and extraction issues.
+#'
+#' @param scraped_website Data frame containing country names, dates, and PDF links
+#' @param pdf_dir Directory to temporarily store downloaded PDFs (default: "data")
+#' @param output_path Path to save the extracted text data (default: "data/pdfs.rds")
+#' @param respect_robots_txt Whether to follow robots.txt rules (default: TRUE)
+#'
+#' @return A list containing:
+#'   \item{data}{Data frame with country_name, date_posted, and pdf_text columns}
+#'   \item{metadata}{Processing information including timing and success rates}
+#'   \item{diagnostics}{Information about errors encountered during processing}
+#'
+#' @examples
+#' \dontrun{
+#' # First scrape the website
+#' web_data <- scrape_web()
+#' 
+#' # Then extract PDF content
+#' pdf_data <- extract_pdfs(web_data)
+#' }
 
 extract_pdfs <- function(
     scraped_website, 
     pdf_dir = "data",
-    output_file = "data/pdfs.rds",
+    output_path = "data/pdfs.rds",
     respect_robots_txt = TRUE
 )  {
+  # Start timing
+  start_time <- Sys.time()
+  
+  # Create output directory if needed
+  ensure_directory(output_path)
+  
+  # Initialize diagnostics tracking
+  diagnostics <- list(
+    download_errors = character(),
+    extraction_errors = character(),
+    processing_issues = character()
+  )
   
   ## --- Input validation -------------------------------------------------------
+  log_message("Validating input data", "extract_pdfs")
+  
   required_cols <- c("country_name", "pdf_link", "date_posted")
   missing_cols <- setdiff(required_cols, names(scraped_website))
   
-  if (!is.data.frame(scraped_website)) stop("scraped_website must be a dataframe")
-  if (nrow(scraped_website) == 0) stop("scraped_website has no rows")
-  if (length(missing_cols) > 0) stop("scraped_website is missing required columns: ", paste(missing_cols, collapse = ", "))
-  if (!is.character(pdf_dir)) stop("pdf_dir must be a character string")
-  
-  # Create PDF directory if it doesn't exist
-  if (!dir.exists(pdf_dir)) {
-    dir.create(pdf_dir, recursive = TRUE)
-    message("Created directory: ", pdf_dir)
+  if (!is.data.frame(scraped_website)) {
+    error_msg <- "scraped_website must be a dataframe"
+    diagnostics$processing_issues <- c(diagnostics$processing_issues, error_msg)
+    log_message(error_msg, "extract_pdfs", "ERROR")
+    
+    return(create_result(
+      data = NULL,
+      metadata = list(
+        timestamp = Sys.time(),
+        success = FALSE
+      ),
+      diagnostics = diagnostics
+    ))
   }
   
-  # Initialize results tibble and error collection
+  if (nrow(scraped_website) == 0) {
+    error_msg <- "scraped_website has no rows"
+    diagnostics$processing_issues <- c(diagnostics$processing_issues, error_msg)
+    log_message(error_msg, "extract_pdfs", "ERROR")
+    
+    return(create_result(
+      data = NULL,
+      metadata = list(
+        timestamp = Sys.time(),
+        success = FALSE
+      ),
+      diagnostics = diagnostics
+    ))
+  }
+  
+  if (length(missing_cols) > 0) {
+    error_msg <- paste("scraped_website is missing required columns:", paste(missing_cols, collapse = ", "))
+    diagnostics$processing_issues <- c(diagnostics$processing_issues, error_msg)
+    log_message(error_msg, "extract_pdfs", "ERROR")
+    
+    return(create_result(
+      data = NULL,
+      metadata = list(
+        timestamp = Sys.time(),
+        success = FALSE
+      ),
+      diagnostics = diagnostics
+    ))
+  }
+  
+  if (!is.character(pdf_dir)) {
+    error_msg <- "pdf_dir must be a character string"
+    diagnostics$processing_issues <- c(diagnostics$processing_issues, error_msg)
+    log_message(error_msg, "extract_pdfs", "ERROR")
+    
+    return(create_result(
+      data = NULL,
+      metadata = list(
+        timestamp = Sys.time(),
+        success = FALSE
+      ),
+      diagnostics = diagnostics
+    ))
+  }
+  
+  ## --- Create PDF directory if needed -----------------------------------------
+  if (!dir.exists(pdf_dir)) {
+    dir.create(pdf_dir, recursive = TRUE)
+    log_message(paste("Created directory:", pdf_dir), "extract_pdfs")
+  }
+  
+  ## --- Initialize results tibble ----------------------------------------------
   results <- tibble::tibble(
     country_name = character(),
     date_posted = character(),
     pdf_text = character()
   )
   
-  errors <- character()
+  ## --- Process each NAP -------------------------------------------------------
+  successful_downloads <- 0
+  successful_extractions <- 0
   
-  # Process each NAP
+  log_message(paste("Processing", nrow(scraped_website), "NAP documents"), "extract_pdfs")
+  
   for (i in 1:nrow(scraped_website)) {
     country <- scraped_website$country_name[i]
-    message(i, " of ", nrow(scraped_website), ": ", country)
+    log_message(paste(i, "of", nrow(scraped_website), ":", country), "extract_pdfs")
     
     # Create safe filename
     safe_country <- tolower(gsub("[^a-zA-Z0-9]", "_", country))
@@ -52,7 +141,7 @@ extract_pdfs <- function(
     }
     
     # Download PDF using polite
-    message("Downloading PDF...")
+    log_message("Downloading PDF...", "extract_pdfs")
     download_success <- FALSE
     
     tryCatch({
@@ -78,54 +167,110 @@ extract_pdfs <- function(
       # Check if download was successful
       if (httr::status_code(response) == 200 && file.exists(pdf_path) && file.size(pdf_path) > 0) {
         download_success <- TRUE
-        message("Download successful!")
+        successful_downloads <- successful_downloads + 1
+        log_message("Download successful!", "extract_pdfs")
       } else {
-        errors <- c(errors, paste("Failed to download PDF for", country))
-        message("Download failed")
+        error_msg <- paste("Failed to download PDF for", country)
+        diagnostics$download_errors <- c(diagnostics$download_errors, error_msg)
+        log_message(error_msg, "extract_pdfs", "WARNING")
       }
     }, error = function(e) {
-      errors <- c(errors, paste("Error downloading PDF for", country, ":", e$message))
-      message("Download error: ", e$message)
+      error_msg <- paste("Error downloading PDF for", country, ":", e$message)
+      diagnostics$download_errors <- c(diagnostics$download_errors, error_msg)
+      log_message(paste("Download error:", e$message), "extract_pdfs", "WARNING")
     })
     
     # Extract text if download was successful
     if (download_success) {
       tryCatch({
-        message("Extracting text...")
-        text <- pdf_text(pdf_path)
+        log_message("Extracting text...", "extract_pdfs")
+        text <- pdftools::pdf_text(pdf_path)
         
         # Add to results
-        results <- rbind(results, tibble::tibble(
-          country_name = country,
-          date_posted = scraped_website$date_posted[i],
-          pdf_text = paste(text, collapse = "\n\n")
-        ))
+        results <- tibble::add_row(results,
+                                   country_name = country,
+                                   date_posted = scraped_website$date_posted[i],
+                                   pdf_text = paste(text, collapse = "\n\n")
+        )
         
-        message("Text extraction successful!")
+        successful_extractions <- successful_extractions + 1
+        log_message("Text extraction successful!", "extract_pdfs")
         
         # Delete PDF after extraction if needed
         if (file.remove(pdf_path)) {
-          message("PDF deleted successfully")
+          log_message("PDF deleted successfully", "extract_pdfs")
         } else {
-          warning("Could not delete PDF file: ", pdf_path)
+          log_message("Could not delete PDF file: ", pdf_path, "extract_pdfs", "WARNING")
         }
       }, error = function(e) {
-        errors <- c(errors, paste("Error extracting text from PDF for", country, ":", e$message))
-        message("Text extraction error: ", e$message)
+        error_msg <- paste("Error extracting text from PDF for", country, ":", e$message)
+        diagnostics$extraction_errors <- c(diagnostics$extraction_errors, error_msg)
+        log_message(paste("Text extraction error:", e$message), "extract_pdfs", "WARNING")
       })
     }
   }
   
-  # Report errors
-  if (length(errors) > 0) {
-    message("\n", length(errors), " errors encountered:")
-    for (error in errors) {
-      message("- ", error)
+  ## --- Calculate processing time ----------------------------------------------
+  end_time <- Sys.time()
+  processing_time <- as.numeric(difftime(end_time, start_time, units = "secs"))
+  
+  ## --- Report errors ----------------------------------------------------------
+  total_errors <- length(diagnostics$download_errors) + length(diagnostics$extraction_errors)
+  
+  if (total_errors > 0) {
+    log_message(paste(total_errors, "errors encountered:"), "extract_pdfs", "WARNING")
+    
+    if (length(diagnostics$download_errors) > 0) {
+      log_message(paste("Download errors:", length(diagnostics$download_errors)), "extract_pdfs", "WARNING")
+      for (i in 1:min(5, length(diagnostics$download_errors))) {
+        log_message(paste("  -", diagnostics$download_errors[i]), "extract_pdfs")
+      }
+      if (length(diagnostics$download_errors) > 5) {
+        log_message(paste("  - ...and", length(diagnostics$download_errors) - 5, "more"), "extract_pdfs")
+      }
+    }
+    
+    if (length(diagnostics$extraction_errors) > 0) {
+      log_message(paste("Extraction errors:", length(diagnostics$extraction_errors)), "extract_pdfs", "WARNING")
+      for (i in 1:min(5, length(diagnostics$extraction_errors))) {
+        log_message(paste("  -", diagnostics$extraction_errors[i]), "extract_pdfs")
+      }
+      if (length(diagnostics$extraction_errors) > 5) {
+        log_message(paste("  - ...and", length(diagnostics$extraction_errors) - 5, "more"), "extract_pdfs")
+      }
     }
   }
   
-  message("Successfully processed ", nrow(results), " of ", nrow(scraped_website), " NAPs")
-  message("Final results saved to ", output_file)
+  ## --- Save results if any ----------------------------------------------------
+  if (nrow(results) > 0) {
+    saveRDS(results, output_path)
+    log_message(paste("Saved", nrow(results), "NAP extractions to", output_path), "extract_pdfs")
+  } else {
+    log_message("No NAP extractions to save", "extract_pdfs", "WARNING")
+    diagnostics$processing_issues <- c(diagnostics$processing_issues, "No NAP extractions completed successfully")
+  }
   
-  return(results)
+  ## --- Prepare and return final result ----------------------------------------
+  metadata <- list(
+    timestamp = start_time,
+    processing_time_sec = processing_time,
+    total_documents = nrow(scraped_website),
+    successful_downloads = successful_downloads,
+    successful_extractions = successful_extractions,
+    download_success_rate = round(successful_downloads / nrow(scraped_website) * 100, 1),
+    extraction_success_rate = if (successful_downloads > 0) round(successful_extractions / successful_downloads * 100, 1) else 0,
+    overall_success_rate = round(successful_extractions / nrow(scraped_website) * 100, 1),
+    success = nrow(results) > 0
+  )
+  
+  # Log completion message
+  log_message(paste("Successfully processed", successful_extractions, "of", nrow(scraped_website), "NAPs", 
+                    sprintf("(%.1f%%)", metadata$overall_success_rate)), "extract_pdfs")
+  
+  # Return standardized result
+  return(create_result(
+    data = results,
+    metadata = metadata,
+    diagnostics = diagnostics
+  ))
 }
