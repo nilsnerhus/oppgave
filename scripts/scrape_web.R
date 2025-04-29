@@ -1,9 +1,25 @@
-# Purpose: Scraping public websites and identifying their pdf-links
-
-library(dplyr)
-library(polite)
-library(rvest)
-library(httr)
+#' @title Scrape NAP documents from website
+#' @description Scrapes the UNFCCC NAP Central website to extract National Adaptation Plans
+#'   document links and metadata. Focuses on extracting English language PDFs.
+#'
+#' @param url URL of the website to scrape (default: "https://napcentral.org/submitted-naps")
+#' @param name_col Column index containing country names (default: 2)
+#' @param date_col Column index containing publication dates (default: 6)
+#' @param link_col Column index containing document links (default: 5)
+#' @param table_index Index of the table to extract from the page (default: 1)
+#' @param has_header Whether the table has a header row (default: TRUE)
+#' @param exclude_countries Vector of country names to exclude (default: NULL)
+#' @param output_path Path to save results (default: "data/scraped_website.rds")
+#'
+#' @return A list containing:
+#'   \item{data}{Data frame with country_name, date_posted, and pdf_link columns}
+#'   \item{metadata}{Processing information including timestamp and statistics}
+#'   \item{diagnostics}{Information about excluded countries and processing issues}
+#'
+#' @examples
+#' \dontrun{
+#' nap_data <- scrape_web(exclude_countries = c("Uruguay"))
+#' }
 
 scrape_web <- function(
     url = "https://napcentral.org/submitted-naps", 
@@ -13,14 +29,32 @@ scrape_web <- function(
     table_index = 1,
     has_header = TRUE,
     exclude_countries = NULL,
-    output_file = "data/scraped_website.rds"
+    output_path = "data/scraped_website.rds"
 ) {
+  # Start timing
+  start_time <- Sys.time()
+  
+  # Create output directory if needed
+  ensure_directory(output_path)
+  
+  # Initialize diagnostics tracking
+  diagnostics <- list(
+    excluded_countries = 0,
+    skipped_rows = 0,
+    processing_issues = character()
+  )
   
   ## --- Input validation -------------------------------------------------------
-  if (!is.numeric(name_col) || name_col <= 0) stop("name_col must be a positive number")
-  if (!is.numeric(date_col) || date_col <= 0) stop("date_col must be a positive number")
-  if (!is.numeric(link_col) || link_col <= 0) stop("link_col must be a positive number")
-  if (!is.numeric(table_index) || table_index <= 0) stop("table_index must be a positive number")
+  log_message("Validating input parameters", "scrape_web")
+  
+  if (!is.numeric(name_col) || name_col <= 0) 
+    stop("name_col must be a positive number")
+  if (!is.numeric(date_col) || date_col <= 0) 
+    stop("date_col must be a positive number")
+  if (!is.numeric(link_col) || link_col <= 0) 
+    stop("link_col must be a positive number")
+  if (!is.numeric(table_index) || table_index <= 0) 
+    stop("table_index must be a positive number")
   
   # Convert exclude_countries to lowercase for case-insensitive matching
   exclude_countries <- tolower(exclude_countries)
@@ -33,7 +67,8 @@ scrape_web <- function(
   )
   
   ## --- Connect to website -----------------------------------------------------
-  message("Connecting to ", url)
+  log_message(paste("Connecting to", url), "scrape_web")
+  
   session <- try(polite::bow(
     url = url,
     user_agent = "napr (nnrorstad@gmail.com)",
@@ -41,25 +76,69 @@ scrape_web <- function(
   ), silent = TRUE)
   
   if (inherits(session, "try-error")) {
-    stop("Failed to connect to the website.")
+    error_msg <- "Failed to connect to the website"
+    diagnostics$processing_issues <- c(diagnostics$processing_issues, error_msg)
+    log_message(error_msg, "scrape_web", "ERROR")
+    
+    # Return early with error information
+    return(create_result(
+      data = results,
+      metadata = list(
+        url = url,
+        timestamp = Sys.time(),
+        success = FALSE
+      ),
+      diagnostics = diagnostics
+    ))
   }
   
   page_html <- try(polite::scrape(session), silent = TRUE)
   
   if (inherits(page_html, "try-error")) {
-    stop("Failed to scrape the website content.")
+    error_msg <- "Failed to scrape the website content"
+    diagnostics$processing_issues <- c(diagnostics$processing_issues, error_msg)
+    log_message(error_msg, "scrape_web", "ERROR")
+    
+    # Return early with error information
+    return(create_result(
+      data = results,
+      metadata = list(
+        url = url,
+        timestamp = Sys.time(),
+        success = FALSE
+      ),
+      diagnostics = diagnostics
+    ))
   }
   
   ## --- Find and select table --------------------------------------------------
   tables <- page_html %>% rvest::html_nodes("table")
   
   if (length(tables) == 0) {
-    message("No tables found, returning empty results")
-    return(results)
+    log_message("No tables found, returning empty results", "scrape_web", "WARNING")
+    diagnostics$processing_issues <- c(diagnostics$processing_issues, "No tables found on page")
+    
+    return(create_result(
+      data = results,
+      metadata = list(
+        url = url,
+        timestamp = Sys.time(),
+        success = FALSE
+      ),
+      diagnostics = diagnostics
+    ))
   }
   
   if (table_index > length(tables)) {
-    message("Table index ", table_index, " too high (only ", length(tables), " tables). Using first table.")
+    log_message(
+      paste("Table index", table_index, "too high (only", length(tables), "tables). Using first table."),
+      "scrape_web", 
+      "WARNING"
+    )
+    diagnostics$processing_issues <- c(
+      diagnostics$processing_issues, 
+      paste("Table index too high, defaulted to first table")
+    )
     table_index <- 1
   }
   
@@ -69,15 +148,26 @@ scrape_web <- function(
   rows <- table_html %>% rvest::html_nodes("tr")
   
   if (length(rows) == 0) {
-    message("Selected table has no rows")
-    return(results)
+    log_message("Selected table has no rows", "scrape_web", "WARNING")
+    diagnostics$processing_issues <- c(diagnostics$processing_issues, "Selected table has no rows")
+    
+    return(create_result(
+      data = results,
+      metadata = list(
+        url = url,
+        timestamp = Sys.time(),
+        table_count = length(tables),
+        success = FALSE
+      ),
+      diagnostics = diagnostics
+    ))
   }
   
   if (has_header && length(rows) > 1) {
     rows <- rows[-1]
   }
   
-  message("Processing ", length(rows), " rows")
+  log_message(paste("Processing", length(rows), "rows"), "scrape_web")
   
   ## --- Helper inside: make absolute URL ---------------------------------------
   make_absolute_url <- function(href, base_url) {
@@ -98,7 +188,8 @@ scrape_web <- function(
     cells <- rows[[i]] %>% rvest::html_nodes("td")
     
     if (length(cells) < max(name_col, date_col, link_col)) {
-      message("Skipping row ", i, " (too few columns)")
+      log_message(paste("Skipping row", i, "(too few columns)"), "scrape_web", "WARNING")
+      diagnostics$skipped_rows <- diagnostics$skipped_rows + 1
       next
     }
     
@@ -107,7 +198,8 @@ scrape_web <- function(
     
     # Check if country is in the exclude list (case-insensitive)
     if (!is.null(exclude_countries) && tolower(country_name) %in% exclude_countries) {
-      message("Skipping excluded country: ", country_name)
+      log_message(paste("Skipping excluded country:", country_name), "scrape_web")
+      diagnostics$excluded_countries <- diagnostics$excluded_countries + 1
       next
     }
     
@@ -160,18 +252,37 @@ scrape_web <- function(
         date_posted = date_posted,
         pdf_link = pdf_link
       )
-      message("Added English PDF for: ", country_name)
+      log_message(paste("Added English PDF for:", country_name), "scrape_web")
     }
   } 
   
+  ## --- Calculate processing time ----------------------------------------------
+  end_time <- Sys.time()
+  processing_time <- as.numeric(difftime(end_time, start_time, units = "secs"))
+  
   ## --- Save results -----------------------------------------------------------
   if (nrow(results) > 0) {
-    saveRDS(results, output_file)
-    message("Saved ", nrow(results), " entries to ", output_file)
+    saveRDS(results, output_path)
+    log_message(paste("Saved", nrow(results), "entries to", output_path), "scrape_web")
   } else {
-    message("No entries to save")
+    log_message("No entries to save", "scrape_web", "WARNING")
+    diagnostics$processing_issues <- c(diagnostics$processing_issues, "No valid NAP entries found")
   }
   
-  ## --- Return -----------------------------------------------------------------
-  return(results)
+  ## --- Prepare and return final result ----------------------------------------
+  metadata <- list(
+    url = url,
+    timestamp = start_time,
+    processing_time_sec = processing_time,
+    table_count = length(tables),
+    row_count = length(rows),
+    success = TRUE
+  )
+  
+  # Return standardized result
+  return(create_result(
+    data = results,
+    metadata = metadata,
+    diagnostics = diagnostics
+  ))
 }
