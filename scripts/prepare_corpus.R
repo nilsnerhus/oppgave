@@ -296,15 +296,26 @@ prepare_corpus <- function(
   ## --- Save the result --------------------------------------------------------
   log_message(paste("Saving processed corpus to", output_path), "prepare_corpus")
   
-  saveRDS(result_data, output_path)
+  # Make the result also directly compatible with find_best_k by including key elements 
+  # at the top level (for backward compatibility) while still using the new structure
+  final_result <- list(
+    # New standardized result structure
+    data = result_data,
+    metadata = result_metadata,
+    diagnostics = diagnostics,
+    
+    # Direct access for compatibility (same object references, not copies)
+    dfm = result_data$dfm,
+    metadata = result_data$metadata,
+    stm_data = result_data$stm_data,
+    tokens = result_data$tokens
+  )
+  
+  saveRDS(final_result, output_path)
   
   log_message(sprintf("Processing complete: %d docs, %d tokens, %d terms", 
                       final_docs, final_tokens, final_terms), 
               "prepare_corpus")
   
-  return(create_result(
-    data = result_data,
-    metadata = result_metadata,
-    diagnostics = diagnostics
-  ))
+  return(final_result)
 }

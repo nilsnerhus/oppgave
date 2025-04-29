@@ -49,7 +49,7 @@ nap_stops <- c("mr", "https", "la", "yet", "de", "i.e", "yr", "tion", "des", "8.
 corpus <- prepare_corpus(nap_data$data, custom_stopwords = nap_stops)
 
 # Step 5: Find optimal topic count
-best_k <- find_best_k(corpus$stm_data)
+best_k <- find_best_k(corpus$data)
 
 # Step 6: Extract topic proportions
 topic_props <- extract_topic_props(best_k$data)
