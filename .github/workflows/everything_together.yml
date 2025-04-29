@@ -39,7 +39,7 @@ jobs:
           
       - name: Run the functions
         run: |
-          Rscript script/nap_ent.R
+          Rscript scripts/everything_together.R
           
       - name: Commit and push results
         run: |
