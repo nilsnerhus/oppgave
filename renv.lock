@@ -2408,37 +2408,6 @@
       "NeedsCompilation": "no",
       "Repository": "RSPM"
     },
-    "napr": {
-      "Package": "napr",
-      "Version": "0.1.0",
-      "Source": "GitHub",
-      "Title": "Scraped access to all NAPs published",
-      "Authors@R": "person(\"Nils\", \"R<U+00F8>rstad\", , \"202302046@post.au.dk\", role = c(\"aut\", \"cre\"))",
-      "Description": "A package providing access to National Adaptation Plans (NAPs) from the UNFCCC NAP Central website. Contains pre-processed text data from NAP documents, regularly updated via GitHub Actions, with functions to access the latest versions when needed.",
-      "License": "MIT + file LICENSE",
-      "Depends": [
-        "R (>= 3.5.0)"
-      ],
-      "Imports": [
-        "tibble"
-      ],
-      "Suggests": [
-        "knitr",
-        "rmarkdown"
-      ],
-      "Encoding": "UTF-8",
-      "LazyData": "true",
-      "Roxygen": "list(markdown = TRUE)",
-      "RoxygenNote": "7.3.2",
-      "Author": "Nils R<U+00F8>rstad [aut, cre]",
-      "Maintainer": "Nils R<U+00F8>rstad <202302046@post.au.dk>",
-      "RemoteType": "github",
-      "RemoteUsername": "nilsnerhus",
-      "RemoteRepo": "napr",
-      "RemoteRef": "main",
-      "RemoteSha": "115ba0cd2826624b5e4969a0bbc8832ef8e8d05d",
-      "RemoteHost": "api.github.com"
-    },
     "nlme": {
       "Package": "nlme",
       "Version": "3.1-168",
