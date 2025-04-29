@@ -34,6 +34,9 @@ scrape_web <- function(
   # Start timing
   start_time <- Sys.time()
   
+  # Import the pipe operator
+  `%>%` <- magrittr::`%>%`
+  
   # Create output directory if needed
   ensure_directory(output_path)
   
@@ -278,9 +281,6 @@ scrape_web <- function(
     row_count = length(rows),
     success = TRUE
   )
-  
-  # Import the pipe operator
-  `%>%` <- magrittr::`%>%`
   
   # Return standardized result
   return(create_result(
