@@ -17,10 +17,10 @@ if(!exists("topic_model")) source("scripts/extract_topic_props.R")
 
 # Step 1: Scrape the UNFCCC website
 exclude_countries <- c("Uruguay") # Does not have a national plan, just many sectoral
-web <- scrape_web(exclude_countries = exclude_countries)
+web <- web_cache(scrape_web, exclude_countries = exclude_countries)
 
 # Step 2: Extract the pdfs from the web
-pdfs <- extract_pdfs(web$data)
+pdfs <- auto_cache(extract_pdfs,web$data)
 
 # Step 3: Add metadata
 ## Define lists of SIDS and LLDC countries, since no public repositories keep the information
@@ -42,14 +42,14 @@ ldc <- c("AFG", "AGO", "BGD", "BEN", "BFA", "BDP", "BOL", "BIH", "BWA", "CAF",
          "MYS", "MOZ", "NPL", "NER", "NGA", "PRY", "PNG", "SGP", "SOM", "SDN", 
          "TGO", "TON", "TJK", "UGA", "UZB", "VUT", "YEM", "ZMB", "ZWE")
 
-nap_data <- add_metadata(pdfs$data, sids_list = sids, lldc_list = lldc, ldc_list = ldc)
+nap_data <- auto_cache(add_metadata, pdfs$data, sids_list = sids, lldc_list = lldc, ldc_list = ldc)
 
 # Step 4: Prepare corpus
 nap_stops <- c("mr", "https", "la", "yet", "de", "i.e", "yr", "tion", "des", "8.5", "svg")
-corpus <- prepare_corpus(nap_data$data, custom_stopwords = nap_stops)
+corpus <- auto_cache(prepare_corpus, nap_data$data, custom_stopwords = nap_stops)
 
 # Step 5: Find optimal topic count
-best_k <- find_best_k(corpus$data)
+best_k <- auto_cache(find_best_k, corpus$data)
 
 # Step 6: Extract topic proportions
-topic_props <- extract_topic_props(best_k$data)
+topic_props <- auto_cache(extract_topic_props, best_k$data)
