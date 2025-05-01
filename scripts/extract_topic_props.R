@@ -48,7 +48,7 @@ extract_topic_props <- function(
   
   # Variables we need to extract
   model <- NULL
-  metadata <- NULL
+  doc_metadata <- NULL  # Changed name to avoid confusion
   stm_data <- NULL
   input_type <- NULL
   
@@ -58,11 +58,22 @@ extract_topic_props <- function(
       # Input is from optimal_topics
       log_message("Using best model from optimal_topics output", "extract_topic_props")
       model <- input$best_model
-      metadata <- input$metadata
+      
+      # Extract the correct metadata (document metadata inside data, not processing metadata)
+      if ("data" %in% names(input) && "metadata" %in% names(input$data)) {
+        metadata <- input$data$metadata  # Get document metadata from inside data
+        log_message("Found document metadata in input$data$metadata", "extract_topic_props")
+      } else {
+        metadata <- input$metadata  # Fallback to old behavior
+        log_message("Using metadata from input$metadata (may not be document metadata)", "extract_topic_props")
+      }
+      
       input_type <- "optimal_topics"
       
-      # Store stm_data if available
-      if ("stm_data" %in% names(input)) {
+      # Similarly fix stm_data extraction
+      if ("data" %in% names(input) && "stm_data" %in% names(input$data)) {
+        stm_data <- input$data$stm_data
+      } else if ("stm_data" %in% names(input)) {
         stm_data <- input$stm_data
       }
       
@@ -193,8 +204,17 @@ extract_topic_props <- function(
   if (!is.null(metadata)) {
     log_message("Joining with document metadata", "extract_topic_props")
     
-    result_df <- topic_props_long %>%
-      dplyr::left_join(metadata, by = "doc_id")
+    # Add debug info about metadata
+    log_message(paste("Metadata class:", class(metadata)[1]), "extract_topic_props")
+    
+    # Ensure metadata is a data frame before joining
+    if (is.data.frame(metadata)) {
+      result_df <- topic_props_long %>%
+        dplyr::left_join(metadata, by = "doc_id", copy = TRUE)
+    } else {
+      log_message("Metadata is not a data frame, skipping join", "extract_topic_props", "WARNING")
+      result_df <- topic_props_long
+    }
   } else {
     result_df <- topic_props_long
   }
@@ -203,7 +223,7 @@ extract_topic_props <- function(
   log_message("Generating topic labels", "extract_topic_props")
   
   top_terms <- tryCatch({
-    stm::labelTopics(model, n = 5)
+    stm::labelTopics(model, n = 1)
   }, error = function(e) {
     log_message(paste("Topic labeling error:", e$message), 
                 "extract_topic_props", "WARNING")

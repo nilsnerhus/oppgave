@@ -116,37 +116,144 @@ time_operation <- function(expr, func_name = NULL) {
   return(result)
 }
 
-#' @title Check cache and conditionally execute function
-#' @description Checks if a cached result exists and is newer than dependencies
-#' @param cache_path Path to look for cached result
-#' @param dependencies Files that the result depends on
-#' @param recreate_fn Function to call if cache needs to be refreshed
-#' @return The cached or freshly created result
-use_cache <- function(cache_path, dependencies = NULL, recreate_fn) {
-  should_recreate <- FALSE
+#' @title Automatic function caching
+#' @description Caches function results based on automatic hashing of all inputs
+#' @param func The function to execute if cache is invalid
+#' @param ... All arguments to pass to the function
+#' @param cache_path Optional custom path to store/retrieve cached results
+#' @return The function result (either from cache or newly generated)
+auto_cache <- function(func, ..., cache_path = NULL) {
+  # Get function name for default cache path
+  func_name <- deparse(substitute(func))
   
-  # Check if cache exists
-  if (!file.exists(cache_path)) {
-    should_recreate <- TRUE
-  } else if (!is.null(dependencies)) {
-    # Check if any dependency is newer than cache
-    cache_mtime <- file.info(cache_path)$mtime
-    for (dep in dependencies) {
-      if (file.exists(dep) && file.info(dep)$mtime > cache_mtime) {
-        should_recreate <- TRUE
-        break
-      }
+  # Set default cache path based on function name if not provided
+  if (is.null(cache_path)) {
+    cache_path <- file.path("data", paste0(func_name, ".rds"))
+  }
+  
+  # Get all arguments
+  args <- list(...)
+  
+  # Calculate hash of current args
+  current_hash <- digest::digest(args, algo = "md5")
+  
+  # Create directory if needed
+  ensure_directory(cache_path)
+  
+  # Check if cache and hash exist
+  hash_path <- paste0(cache_path, ".hash")
+  cache_valid <- FALSE
+  
+  if (file.exists(cache_path) && file.exists(hash_path)) {
+    # Compare with stored hash
+    stored_hash <- readLines(hash_path, warn = FALSE)[1]
+    
+    if (current_hash == stored_hash) {
+      cache_valid <- TRUE
     }
   }
   
-  # Either load cache or recreate
-  if (should_recreate) {
-    log_message(paste("Creating", basename(cache_path)))
-    result <- recreate_fn()
+  if (cache_valid) {
+    log_message(paste("Using cached result from", basename(cache_path)))
+    return(readRDS(cache_path))
+  } else {
+    log_message(paste("Computing new result for", basename(cache_path)))
+    result <- do.call(func, args)
+    saveRDS(result, cache_path)
+    
+    # Update the hash
+    writeLines(current_hash, hash_path)
+    
+    return(result)
+  }
+}
+
+#' @title Check for web content changes
+#' @description Monitors a web page for changes by checking table content
+#' @param func The function to execute if content has changed
+#' @param ... Arguments to pass to the function
+#' @param url URL of the webpage to check
+#' @param cache_path Path to the cached data (defaults to data/func_name.rds)
+#' @param table_index Index of the table to monitor (default: 1)
+#' @return The function result (either from cache or newly computed)
+web_cache <- function(func, ..., url = "https://napcentral.org/submitted-naps", 
+                              cache_path = NULL, table_index = 1) {
+  # Get function name for default cache path
+  func_name <- deparse(substitute(func))
+  
+  # Set default cache path based on function name if not provided
+  if (is.null(cache_path)) {
+    cache_path <- file.path("data", paste0(func_name, ".rds"))
+  }
+  
+  # Check if cache exists
+  if (!file.exists(cache_path)) {
+    log_message("No cache found, need to fetch data")
+    # Need to fetch data
+    result <- do.call(func, list(...))
+    saveRDS(result, cache_path)
+    return(result)
+  }
+  
+  # Content-based check
+  size_path <- paste0(cache_path, ".size")
+  content_changed <- FALSE
+  
+  tryCatch({
+    # Do a quick scrape to check the content
+    session <- polite::bow(url = url)
+    quick_html <- polite::scrape(session)
+    tables <- rvest::html_nodes(quick_html, "table")
+    
+    if (length(tables) >= table_index) {
+      # Get the table and count rows as a proxy for content
+      table_html <- tables[[table_index]]
+      rows <- rvest::html_nodes(table_html, "tr")
+      current_row_count <- length(rows)
+      
+      # Calculate a simple content signature
+      row_texts <- sapply(rows, rvest::html_text)
+      content_signature <- digest::digest(row_texts)
+      
+      # Check against previous signature if available
+      if (file.exists(size_path)) {
+        previous_data <- readLines(size_path, warn = FALSE)
+        if (length(previous_data) >= 2) {
+          previous_row_count <- as.numeric(previous_data[1])
+          previous_signature <- previous_data[2]
+          
+          # Check if content changed
+          if (current_row_count != previous_row_count || 
+              content_signature != previous_signature) {
+            content_changed <- TRUE
+            log_message("Web content has changed")
+          }
+        }
+      } else {
+        # No previous data, assume content changed
+        content_changed <- TRUE
+      }
+      
+      # Save current data for future comparison
+      writeLines(c(as.character(current_row_count), content_signature), size_path)
+    } else {
+      # Table not found, assume content changed
+      content_changed <- TRUE
+    }
+  }, error = function(e) {
+    log_message(paste("Error checking web content:", e$message), "web_cache", "WARNING")
+    # On error, default to needing fresh data to be safe
+    content_changed <- TRUE
+  })
+  
+  if (content_changed) {
+    # Content changed, need to fetch new data
+    result <- do.call(func, list(...))
     saveRDS(result, cache_path)
     return(result)
   } else {
-    log_message(paste("Using cached", basename(cache_path)))
+    log_message("Web content unchanged, using cached data")
+    # Use cached data
     return(readRDS(cache_path))
   }
 }
