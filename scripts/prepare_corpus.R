@@ -292,10 +292,7 @@ prepare_corpus <- function(
       max_doc_proportion = max_doc_proportion
     )
   )
-  
-  ## --- Save the result --------------------------------------------------------
-  log_message(paste("Saving processed corpus to", output_path), "prepare_corpus")
-  
+
   # Make the result also directly compatible with find_best_k by including key elements 
   # at the top level (for backward compatibility) while still using the new structure
   final_result <- list(
@@ -310,8 +307,6 @@ prepare_corpus <- function(
     stm_data = result_data$stm_data,
     tokens = result_data$tokens
   )
-  
-  saveRDS(final_result, output_path)
   
   log_message(sprintf("Processing complete: %d docs, %d tokens, %d terms", 
                       final_docs, final_tokens, final_terms), 

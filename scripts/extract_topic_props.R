@@ -54,78 +54,94 @@ extract_topic_props <- function(
   
   tryCatch({
     # Determine input type and extract necessary components
-    if (is.list(input) && "best_model" %in% names(input)) {
-      # Input is from optimal_topics
-      log_message("Using best model from optimal_topics output", "extract_topic_props")
-      model <- input$best_model
-      
-      # Extract the correct metadata (document metadata inside data, not processing metadata)
-      if ("data" %in% names(input) && "metadata" %in% names(input$data)) {
-        metadata <- input$data$metadata  # Get document metadata from inside data
-        log_message("Found document metadata in input$data$metadata", "extract_topic_props")
-      } else {
-        metadata <- input$metadata  # Fallback to old behavior
-        log_message("Using metadata from input$metadata (may not be document metadata)", "extract_topic_props")
-      }
-      
-      input_type <- "optimal_topics"
-      
-      # Similarly fix stm_data extraction
-      if ("data" %in% names(input) && "stm_data" %in% names(input$data)) {
-        stm_data <- input$data$stm_data
-      } else if ("stm_data" %in% names(input)) {
-        stm_data <- input$stm_data
-      }
-      
-      # Use provided k or best k from optimization
-      if (is.null(k)) {
-        if ("best_k" %in% names(input)) {
-          k <- input$best_k
-          log_message(paste("Using optimal k value:", k), "extract_topic_props")
+    if (is.list(input)) {
+      # Case 1: Input has direct model object
+      if ("best_model" %in% names(input)) {
+        log_message("Using best model from input", "extract_topic_props")
+        model <- input$best_model
+        input_type <- "optimal_topics"
+        
+        # Case 2: Input has path to model file
+      } else if ("best_model_path" %in% names(input) && is.character(input$best_model_path)) {
+        model_path <- input$best_model_path
+        log_message(paste("Found model path:", model_path), "extract_topic_props")
+        
+        if (file.exists(model_path)) {
+          model <- readRDS(model_path)
+          log_message("Successfully loaded model from file", "extract_topic_props")
         } else {
-          stop("Could not determine k value from input")
+          log_message(paste("Model file not found:", model_path), "extract_topic_props", "WARNING")
         }
-      } else if (k != input$best_k) {
-        log_message(paste("Provided k value", k, "differs from optimal k", input$best_k), 
-                    "extract_topic_props", "WARNING")
-        
-        # Need stm_data to create new model
-        if (is.null(stm_data) || !all(c("documents", "vocab") %in% names(stm_data))) {
-          stop("Cannot create new model with different k: stm_data not available in input")
-        }
-        
-        # Will create new model below
-        model <- NULL
+        input_type <- "optimal_topics"
       }
-    } else if (is.list(input) && all(c("dfm", "metadata", "stm_data") %in% names(input))) {
-      # Input is from preprocess
-      log_message("Creating model from preprocessed data", "extract_topic_props")
-      metadata <- input$metadata
-      stm_data <- input$stm_data
-      input_type <- "preprocess"
       
-      # Require explicit k value
-      if (is.null(k)) {
-        # Try to load best k from file
-        if (file.exists(best_k_path)) {
-          best_k_result <- readRDS(best_k_path)
-          if ("best_k" %in% names(best_k_result)) {
-            k <- best_k_result$best_k
-            log_message(paste("Using k value from best_k file:", k), "extract_topic_props")
+      # Extract metadata (works for both cases above)
+      if (input_type == "optimal_topics") {
+        # Try to get metadata from the correct location
+        if ("data" %in% names(input) && "metadata" %in% names(input$data)) {
+          metadata <- input$data$metadata  # Get document metadata from inside data
+          log_message("Found document metadata in input$data$metadata", "extract_topic_props")
+        } else if ("metadata" %in% names(input)) {
+          metadata <- input$metadata  # Fallback to old behavior
+          log_message("Using metadata from input$metadata", "extract_topic_props")
+        }
+        
+        # Similarly extract stm_data
+        if ("data" %in% names(input) && "stm_data" %in% names(input$data)) {
+          stm_data <- input$data$stm_data
+        } else if ("stm_data" %in% names(input)) {
+          stm_data <- input$stm_data
+        }
+        
+        # Use provided k or best k from optimization
+        if (is.null(k)) {
+          if ("best_k" %in% names(input)) {
+            k <- input$best_k
+            log_message(paste("Using optimal k value:", k), "extract_topic_props")
+          } else {
+            stop("Could not determine k value from input")
+          }
+        } else if (!is.null(input$best_k) && k != input$best_k) {
+          log_message(paste("Provided k value", k, "differs from optimal k", input$best_k), 
+                      "extract_topic_props", "WARNING")
+        }
+      }
+      
+      # Case 3: Input is from preprocess
+      if (is.null(model) && all(c("dfm", "metadata", "stm_data") %in% names(input))) {
+        log_message("Input appears to be preprocessed data", "extract_topic_props")
+        metadata <- input$metadata
+        stm_data <- input$stm_data
+        input_type <- "preprocess"
+        
+        # Require explicit k value
+        if (is.null(k)) {
+          # Try to load best k from file
+          if (file.exists(best_k_path)) {
+            best_k_result <- readRDS(best_k_path)
+            if ("best_k" %in% names(best_k_result)) {
+              k <- best_k_result$best_k
+              log_message(paste("Using k value from best_k file:", k), "extract_topic_props")
+            } else {
+              stop("When using preprocessed data directly, k must be explicitly specified or best_k file must be available")
+            }
           } else {
             stop("When using preprocessed data directly, k must be explicitly specified or best_k file must be available")
           }
         } else {
-          stop("When using preprocessed data directly, k must be explicitly specified or best_k file must be available")
+          log_message(paste("Using provided k value:", k), "extract_topic_props")
         }
-      } else {
-        log_message(paste("Using provided k value:", k), "extract_topic_props")
       }
-      
-      # Will create model below
-      model <- NULL
-    } else {
+    }
+    
+    # Final validation
+    if (is.null(input_type)) {
       stop("Invalid input: Expected output from preprocess() or optimal_topics() functions")
+    }
+    
+    # Ensure we have the data we need to proceed
+    if (is.null(model) && (is.null(stm_data) || !all(c("documents", "vocab") %in% names(stm_data)))) {
+      stop("Cannot create model: missing documents or vocabulary data")
     }
   }, error = function(e) {
     log_message(paste("Input validation error:", e$message), "extract_topic_props", "ERROR")
@@ -295,10 +311,6 @@ extract_topic_props <- function(
     documents = nrow(topic_props),
     success = TRUE
   )
-  
-  ## --- Save results ---------------------------------------------------------
-  log_message(paste("Saving topic model results to", output_path), "extract_topic_props")
-  saveRDS(result_data, output_path)
   
   log_message(paste("Topic modeling complete!", k, "topics extracted for", 
                     nrow(topic_props), "documents"),
