@@ -45,7 +45,7 @@ ldc <- c("AFG", "AGO", "BGD", "BEN", "BFA", "BDP", "BOL", "BIH", "BWA", "CAF",
 nap_data <- auto_cache(add_metadata, pdfs$data, sids_list = sids, lldc_list = lldc, ldc_list = ldc)
 
 # Step 4: Prepare corpus
-nap_stops <- c("mr", "https", "http", la", "yet", "de", "i.e", "yr", "tion", "des", "svg")
+nap_stops <- c("mr", "https", "http", "la", "yet", "de", "i.e", "yr", "tion", "des", "svg")
 corpus <- auto_cache(prepare_corpus, nap_data$data, custom_stopwords = nap_stops)
 
 # Step 5: Find optimal topic count
