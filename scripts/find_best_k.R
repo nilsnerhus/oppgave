@@ -264,11 +264,13 @@ find_best_k <- function(
     metrics_by_k = model_results
   )
   
-  ## --- Save result -----------------------------------------------------------
-  log_message(paste("Saving optimal model to", output_path), "find_best_k")
-  saveRDS(result_data, output_path)
-  
   log_message(paste("Optimal topic selection complete! Best k =", best_k), "find_best_k")
+
+  # Split the model from the results to avoid large files in Git
+  model_path <- gsub("\\.rds$", ".model.rds", output_path)
+  saveRDS(best_model, model_path)  # Save model separately
+  result_data$best_model <- NULL  # Remove from main result
+  result_data$best_model_path <- model_path  # Store path instead
   
   return(create_result(
     data = result_data,

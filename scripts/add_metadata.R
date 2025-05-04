@@ -316,12 +316,6 @@ add_metadata <- function(
   end_time <- Sys.time()
   processing_time <- as.numeric(difftime(end_time, start_time, units = "secs"))
   
-  ## --- Save results if specified ----------------------------------------------
-  if (!is.null(output_path)) {
-    saveRDS(result, output_path)
-    log_message(paste("Saved metadata to", output_path), "add_metadata")
-  }
-  
   ## --- Prepare and return final result ----------------------------------------
   metadata <- list(
     records_processed = nrow(data),

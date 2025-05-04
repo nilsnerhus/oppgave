@@ -263,15 +263,6 @@ scrape_web <- function(
   end_time <- Sys.time()
   processing_time <- as.numeric(difftime(end_time, start_time, units = "secs"))
   
-  ## --- Save results -----------------------------------------------------------
-  if (nrow(results) > 0) {
-    saveRDS(results, output_path)
-    log_message(paste("Saved", nrow(results), "entries to", output_path), "scrape_web")
-  } else {
-    log_message("No entries to save", "scrape_web", "WARNING")
-    diagnostics$processing_issues <- c(diagnostics$processing_issues, "No valid NAP entries found")
-  }
-  
   ## --- Prepare and return final result ----------------------------------------
   metadata <- list(
     url = url,

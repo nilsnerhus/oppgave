@@ -244,15 +244,6 @@ extract_pdfs <- function(
     }
   }
   
-  ## --- Save results if any ----------------------------------------------------
-  if (nrow(results) > 0) {
-    saveRDS(results, output_path)
-    log_message(paste("Saved", nrow(results), "NAP extractions to", output_path), "extract_pdfs")
-  } else {
-    log_message("No NAP extractions to save", "extract_pdfs", "WARNING")
-    diagnostics$processing_issues <- c(diagnostics$processing_issues, "No NAP extractions completed successfully")
-  }
-  
   ## --- Prepare and return final result ----------------------------------------
   metadata <- list(
     timestamp = start_time,
