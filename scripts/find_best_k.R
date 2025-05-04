@@ -31,7 +31,7 @@
 find_best_k <- function(
     input,
     k_min = 20, 
-    k_max = 200, 
+    k_max = 120, 
     k_step = 5,
     complexity = 0.02,
     max_iterations = 75,
@@ -123,29 +123,43 @@ find_best_k <- function(
     stop(error_msg)
   }
   
-  ## --- Prepare document split for perplexity evaluation ---------------------
-  if (perplexity > 0) {
-    log_message("Splitting documents for perplexity evaluation", "find_best_k")
+  ## --- Prepare held-out data if using perplexity -----------------------------
+  heldout_data <- NULL
+  use_perplexity <- perplexity > 0
+  
+  if (use_perplexity) {
+    log_message("Creating held-out data structure for perplexity evaluation", "find_best_k")
     
-    # Set seed for reproducibility
-    set.seed(seed)
-    
-    # Get total document count
-    n_docs <- length(stm_data$documents)
-    
-    # Generate indices for training set
-    train_idx <- sample(n_docs, size = floor(n_docs * (1 - held_out_proportion)))
-    
-    # Create training and test document sets
-    train_documents <- stm_data$documents[train_idx]
-    test_documents <- stm_data$documents[-train_idx]
-    
-    log_message(paste("Using", length(train_documents), "documents for training and", 
-                      length(test_documents), "for testing"), "find_best_k")
-  } else {
-    # If perplexity not used, use all documents for training
-    train_documents <- stm_data$documents
-    test_documents <- NULL
+    # Prepare held-out data using STM's make.heldout function
+    tryCatch({
+      # Set seed for reproducibility
+      if (!is.null(seed)) set.seed(seed)
+      
+      # Create held-out data
+      heldout_data <- stm::make.heldout(
+        documents = stm_data$documents,
+        vocab = stm_data$vocab,
+        proportion = held_out_proportion,
+        seed = seed
+      )
+      
+      # Update documents to use the held-out version
+      stm_data$documents <- heldout_data$documents
+      
+      log_message(paste("Successfully created held-out data with", 
+                        held_out_proportion * 100, "% of words held out"), 
+                  "find_best_k")
+    }, error = function(e) {
+      log_message(paste("Failed to create held-out data:", e$message), 
+                  "find_best_k", "WARNING")
+      diagnostics$processing_issues <- c(
+        diagnostics$processing_issues,
+        paste("Held-out data creation failed:", e$message)
+      )
+      
+      # Disable perplexity if we can't create held-out data
+      use_perplexity <- FALSE
+    })
   }
   
   ## --- Prepare for model testing ---------------------------------------------
@@ -160,8 +174,7 @@ find_best_k <- function(
     coherence = numeric(),
     exclusivity = numeric(),
     perplexity = numeric(),
-    penalty = numeric(),
-    score = numeric()
+    penalty = numeric()
   )
   
   # Storage for models
@@ -180,7 +193,7 @@ find_best_k <- function(
     # Fit the model
     model_k <- tryCatch({
       stm::stm(
-        documents = train_documents,
+        documents = stm_data$documents,
         vocab = stm_data$vocab,
         K = k,
         max.em.its = max_iterations,
@@ -200,7 +213,7 @@ find_best_k <- function(
       # Calculate coherence if enabled
       coherence_val <- if (coherence > 0) {
         tryCatch({
-          mean(stm::semanticCoherence(model_k, train_documents))
+          mean(stm::semanticCoherence(model_k, stm_data$documents))
         }, error = function(e) {
           log_message(paste("Coherence calculation failed:", e$message), 
                       "find_best_k", "WARNING")
@@ -231,13 +244,14 @@ find_best_k <- function(
         0
       }
       
-      # Calculate perplexity if enabled and we have test documents
-      perplexity_val <- if (perplexity > 0 && !is.null(test_documents)) {
+      # Calculate perplexity if enabled and we have held-out data
+      perplexity_val <- if (use_perplexity && !is.null(heldout_data)) {
         tryCatch({
-          # Evaluate held-out likelihood
-          heldout <- stm::eval.heldout(model_k, test_documents)
-          # Extract perplexity (lower is better)
-          exp(-1 * mean(heldout$likelihood))
+          # Evaluate held-out likelihood using STM's eval.heldout function
+          heldout_eval <- stm::eval.heldout(model_k, heldout_data$missing)
+          
+          # Convert to perplexity (lower is better)
+          exp(-1 * heldout_eval$expected.heldout)
         }, error = function(e) {
           log_message(paste("Perplexity calculation failed:", e$message), 
                       "find_best_k", "WARNING")
@@ -290,46 +304,44 @@ find_best_k <- function(
     ))
   }
   
-  # Normalize metrics if enabled
-  if (normalize) {
-    log_message("Normalizing metrics for comparison", "find_best_k")
-    
-    model_results <- model_results %>%
-      dplyr::mutate(
-        coherence_norm = if (coherence > 0) {
-          (coherence - min(coherence, na.rm = TRUE)) / 
-            (max(coherence, na.rm = TRUE) - min(coherence, na.rm = TRUE))
-        } else {
-          0
-        },
-        exclusivity_norm = if (exclusivity > 0) {
-          (exclusivity - min(exclusivity, na.rm = TRUE)) / 
-            (max(exclusivity, na.rm = TRUE) - min(exclusivity, na.rm = TRUE))
-        } else {
-          0
-        },
-        perplexity_norm = if (perplexity > 0 && !all(is.na(perplexity))) {
-          # Invert since lower perplexity is better
-          1 - (perplexity - min(perplexity, na.rm = TRUE)) / 
-            (max(perplexity, na.rm = TRUE) - min(perplexity, na.rm = TRUE))
-        } else {
-          0
-        }
-      )
-    
-    # Calculate combined score
-    model_results$score <- (coherence * model_results$coherence_norm) +
-      (exclusivity * model_results$exclusivity_norm) +
-      (perplexity * model_results$perplexity_norm) -
-      model_results$penalty
-  } else {
-    # Without normalization, use raw values
-    # For perplexity, lower is better so we invert its contribution
-    model_results$score <- (coherence * model_results$coherence) +
-      (exclusivity * model_results$exclusivity) -
-      (perplexity * model_results$perplexity) -
-      model_results$penalty
+  # Normalize metrics
+  log_message("Normalizing metrics for comparison", "find_best_k")
+  
+  # Helper function to normalize a column
+  normalize_col <- function(x) {
+    if (length(x) <= 1 || all(is.na(x)) || (max(x, na.rm = TRUE) == min(x, na.rm = TRUE))) {
+      return(rep(0, length(x)))
+    }
+    result <- (x - min(x, na.rm = TRUE)) / (max(x, na.rm = TRUE) - min(x, na.rm = TRUE))
+    result[is.na(result)] <- 0
+    return(result)
   }
+  
+  # Add normalized columns
+  if (coherence > 0) {
+    model_results$coherence_norm <- normalize_col(model_results$coherence)
+  } else {
+    model_results$coherence_norm <- 0
+  }
+  
+  if (exclusivity > 0) {
+    model_results$exclusivity_norm <- normalize_col(model_results$exclusivity)
+  } else {
+    model_results$exclusivity_norm <- 0
+  }
+  
+  if (use_perplexity) {
+    # For perplexity, lower is better, so invert
+    model_results$perplexity_norm <- 1 - normalize_col(model_results$perplexity)
+  } else {
+    model_results$perplexity_norm <- 0
+  }
+  
+  # Calculate combined score
+  model_results$score <- (coherence * model_results$coherence_norm) +
+    (exclusivity * model_results$exclusivity_norm) +
+    (perplexity * model_results$perplexity_norm) -
+    model_results$penalty
   
   # Find best k
   best_model_info <- model_results %>%
@@ -393,57 +405,33 @@ find_best_k <- function(
   
   best_idx <- which(model_results$k == best_k)
   
-  if (normalize) {
-    metric_contributions <- tibble::tibble(
-      metric = c("Coherence", "Exclusivity", "Perplexity", "Complexity Penalty"),
-      raw_value = c(
-        model_results$coherence[best_idx],
-        model_results$exclusivity[best_idx],
-        model_results$perplexity[best_idx],
-        model_results$penalty[best_idx]
-      ),
-      normalized_value = c(
-        model_results$coherence_norm[best_idx],
-        model_results$exclusivity_norm[best_idx],
-        model_results$perplexity_norm[best_idx],
-        NA
-      ),
-      weight = c(
-        coherence,
-        exclusivity,
-        perplexity,
-        1.0
-      ),
-      contribution = c(
-        coherence * model_results$coherence_norm[best_idx],
-        exclusivity * model_results$exclusivity_norm[best_idx],
-        perplexity * model_results$perplexity_norm[best_idx],
-        -model_results$penalty[best_idx]
-      )
+  metric_contributions <- tibble::tibble(
+    metric = c("Coherence", "Exclusivity", "Perplexity", "Complexity Penalty"),
+    raw_value = c(
+      model_results$coherence[best_idx],
+      model_results$exclusivity[best_idx],
+      model_results$perplexity[best_idx],
+      model_results$penalty[best_idx]
+    ),
+    normalized_value = c(
+      model_results$coherence_norm[best_idx],
+      model_results$exclusivity_norm[best_idx],
+      model_results$perplexity_norm[best_idx],
+      NA
+    ),
+    weight = c(
+      coherence,
+      exclusivity,
+      perplexity,
+      1.0
+    ),
+    contribution = c(
+      coherence * model_results$coherence_norm[best_idx],
+      exclusivity * model_results$exclusivity_norm[best_idx],
+      perplexity * model_results$perplexity_norm[best_idx],
+      -model_results$penalty[best_idx]
     )
-  } else {
-    metric_contributions <- tibble::tibble(
-      metric = c("Coherence", "Exclusivity", "Perplexity", "Complexity Penalty"),
-      raw_value = c(
-        model_results$coherence[best_idx],
-        model_results$exclusivity[best_idx],
-        model_results$perplexity[best_idx],
-        model_results$penalty[best_idx]
-      ),
-      weight = c(
-        coherence,
-        exclusivity,
-        perplexity,
-        1.0
-      ),
-      contribution = c(
-        coherence * model_results$coherence[best_idx],
-        exclusivity * model_results$exclusivity[best_idx],
-        -perplexity * model_results$perplexity[best_idx],
-        -model_results$penalty[best_idx]
-      )
-    )
-  }
+  )
   
   ## --- Prepare result --------------------------------------------------------
   # Calculate processing time
