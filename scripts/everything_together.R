@@ -49,7 +49,7 @@ nap_stops <- c("mr", "https", "http", "la", "yet", "de", "i.e", "yr", "tion", "d
 corpus <- auto_cache(prepare_corpus, nap_data$data, custom_stopwords = nap_stops)
 
 # Step 5: Find optimal topic count
-best_k <- auto_cache(find_best_k, corpus$data, k_min = 20, k_max = 30, k_step = 10) #simpler now
+best_k <- auto_cache(find_best_k, corpus$data)
 
 # Step 6: Extract topic proportions
 topic_props <- auto_cache(extract_topic_props, best_k$data)
