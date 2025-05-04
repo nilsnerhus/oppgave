@@ -48,7 +48,7 @@ extract_topic_props <- function(
   
   # Variables we need to extract
   model <- NULL
-  doc_metadata <- NULL  # Changed name to avoid confusion
+  doc_metadata <- NULL  # Using consistent variable name throughout
   stm_data <- NULL
   input_type <- NULL
   
@@ -78,22 +78,12 @@ extract_topic_props <- function(
       # Extract metadata (works for both cases above)
       if (input_type == "optimal_topics") {
         # Try to get metadata from the correct location
-        if ("data" %in% names(input) && is.list(input$data) && "metadata" %in% names(input$data) && 
-            is.data.frame(input$data$metadata)) {
+        if ("data" %in% names(input) && "metadata" %in% names(input$data)) {
           doc_metadata <- input$data$metadata  # Get document metadata from inside data
           log_message("Found document metadata in input$data$metadata", "extract_topic_props")
-        } else if ("metadata" %in% names(input) && is.data.frame(input$metadata)) {
+        } else if ("metadata" %in% names(input)) {
           doc_metadata <- input$metadata  # Fallback to old behavior
           log_message("Using metadata from input$metadata", "extract_topic_props")
-        } else {
-          # Try other locations
-          if ("dfm" %in% names(input)) {
-            # Check if corpus metadata is directly available
-            if ("corpus_metadata" %in% names(input) && is.data.frame(input$corpus_metadata)) {
-              doc_metadata <- input$corpus_metadata
-              log_message("Using metadata from corpus_metadata", "extract_topic_props")
-            }
-          }
         }
         
         # Similarly extract stm_data
@@ -108,6 +98,9 @@ extract_topic_props <- function(
           if ("best_k" %in% names(input)) {
             k <- input$best_k
             log_message(paste("Using optimal k value:", k), "extract_topic_props")
+          } else if ("data" %in% names(input) && "best_k" %in% names(input$data)) {
+            k <- input$data$best_k
+            log_message(paste("Using optimal k value from data:", k), "extract_topic_props")
           } else {
             stop("Could not determine k value from input")
           }
@@ -120,7 +113,7 @@ extract_topic_props <- function(
       # Case 3: Input is from preprocess
       if (is.null(model) && all(c("dfm", "metadata", "stm_data") %in% names(input))) {
         log_message("Input appears to be preprocessed data", "extract_topic_props")
-        metadata <- input$metadata
+        doc_metadata <- input$metadata  # Consistent variable name
         stm_data <- input$stm_data
         input_type <- "preprocess"
         
@@ -132,6 +125,9 @@ extract_topic_props <- function(
             if ("best_k" %in% names(best_k_result)) {
               k <- best_k_result$best_k
               log_message(paste("Using k value from best_k file:", k), "extract_topic_props")
+            } else if ("data" %in% names(best_k_result) && "best_k" %in% names(best_k_result$data)) {
+              k <- best_k_result$data$best_k
+              log_message(paste("Using k value from best_k file data:", k), "extract_topic_props")
             } else {
               stop("When using preprocessed data directly, k must be explicitly specified or best_k file must be available")
             }
@@ -205,10 +201,10 @@ extract_topic_props <- function(
   topic_props$doc_id <- rownames(topic_props)
   
   # Ensure doc_id types match - convert to the same type as in metadata
-  if (!is.null(metadata)) {
-    if (is.numeric(metadata$doc_id) && !is.numeric(topic_props$doc_id)) {
+  if (!is.null(doc_metadata)) {
+    if (is.numeric(doc_metadata$doc_id) && !is.numeric(topic_props$doc_id)) {
       topic_props$doc_id <- as.numeric(topic_props$doc_id)
-    } else if (is.character(metadata$doc_id) && !is.character(topic_props$doc_id)) {
+    } else if (is.character(doc_metadata$doc_id) && !is.character(topic_props$doc_id)) {
       topic_props$doc_id <- as.character(topic_props$doc_id)
     }
   }
@@ -227,14 +223,21 @@ extract_topic_props <- function(
     )
   
   ## --- Join with document metadata ------------------------------------------
-  if (!is.null(doc_metadata) && is.data.frame(doc_metadata)) {
+  if (!is.null(doc_metadata)) {
     log_message("Joining with document metadata", "extract_topic_props")
+    
+    # Add debug info about metadata
     log_message(paste("Metadata class:", class(doc_metadata)[1]), "extract_topic_props")
     
-    result_df <- topic_props_long %>%
-      dplyr::left_join(doc_metadata, by = "doc_id", copy = TRUE)
+    # Ensure metadata is a data frame before joining
+    if (is.data.frame(doc_metadata)) {
+      result_df <- topic_props_long %>%
+        dplyr::left_join(doc_metadata, by = "doc_id", copy = TRUE)
+    } else {
+      log_message("Metadata is not a data frame, skipping join", "extract_topic_props", "WARNING")
+      result_df <- topic_props_long
+    }
   } else {
-    log_message("Metadata is not available as a data frame, skipping join", "extract_topic_props", "WARNING")
     result_df <- topic_props_long
   }
   
@@ -268,8 +271,8 @@ extract_topic_props <- function(
     doc_count = nrow(topic_props),
     topics = k,
     avg_props_sum = mean(rowSums(topic_props[, 1:k])),
-    missing_metadata = if (!is.null(metadata)) {
-      sum(is.na(match(topic_props$doc_id, metadata$doc_id)))
+    missing_metadata = if (!is.null(doc_metadata)) {
+      sum(is.na(match(topic_props$doc_id, doc_metadata$doc_id)))
     } else {
       NA
     }

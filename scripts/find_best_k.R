@@ -119,9 +119,39 @@ find_best_k <- function(
     }, "find_best_k")
     
     if (!is.null(model_k)) {
+      # Check for convergence issues
+      bound_history <- model_k$convergence$bound
+      n_iter <- length(bound_history)
+      
+      # Check if maximum iterations were reached
+      reached_max_iter <- n_iter >= 75  # Using the same value as max.em.its above
+      
+      # Calculate rate of change in last few iterations
+      if (n_iter > 5) {
+        final_changes <- diff(tail(bound_history, 6))
+        avg_change <- mean(abs(final_changes))
+        
+        # If still changing significantly at end, probably hasn't converged
+        if (avg_change > 1e-3 || reached_max_iter) {
+          # Add to diagnostics
+          convergence_warning <- sprintf(
+            "Model k=%d may not have fully converged (iterations: %d, change rate: %.6f)",
+            k, n_iter, avg_change
+          )
+          log_message(convergence_warning, "find_best_k", "WARNING")
+          
+          diagnostics$model_comparisons[[paste0("k_", k, "_convergence")]] <- list(
+            iterations_used = n_iter,
+            reached_max = reached_max_iter,
+            final_change_rate = avg_change,
+            recommended_iter = 150
+          )
+        }
+      }
+      
       log_message("Evaluating model quality", "find_best_k")
       
-      ## --- Calculate Semantic Coherence -----------------------------------
+      # Calculate semantic coherence
       semantic_coherence <- tryCatch({
         mean(stm::semanticCoherence(model_k, stm_data$documents))
       }, error = function(e) {
@@ -134,7 +164,7 @@ find_best_k <- function(
         NA_real_
       })
       
-      ## --- Calculate Exclusivity ------------------------------------------
+      # Calculate exclusivity
       exclusivity_score <- tryCatch({
         mean(stm::exclusivity(model_k))
       }, error = function(e) {
@@ -147,16 +177,8 @@ find_best_k <- function(
         NA_real_
       })
       
-      ## --- Calculate Complexity Penalty -----------------------------------
-      # Penalize complexity more strongly for small corpora
-      docs_count <- length(stm_data$documents)
-      complexity_penalty <- log(k) * (0.1 * k / docs_count)
-      
-      ## --- Calculate Combined Score ---------------------------------------
-      # Balance coherence, exclusivity, and complexity for distribution analysis
-      combined_score <- semantic_coherence + 
-        exclusivity_score * 1.2 -  # Slightly emphasize exclusivity
-        complexity_penalty         # Penalize excessive complexity
+      # Combined score (higher is better)
+      combined_score <- semantic_coherence + exclusivity_score
       
       # Add to results
       model_results <- dplyr::bind_rows(
@@ -165,7 +187,6 @@ find_best_k <- function(
           k = k,
           semantic_coherence = semantic_coherence,
           exclusivity = exclusivity_score,
-          complexity_penalty = complexity_penalty,
           score = combined_score
         )
       )
@@ -262,11 +283,35 @@ find_best_k <- function(
       documents = stm_data$documents,
       vocab = stm_data$vocab,
       K = best_k,
-      max.em.its = 100,  # More iterations for final model
+      max.em.its = 150,
       init.type = "Spectral",
       seed = seed
     )
   }, "find_best_k")
+  
+  # Final convergence check for the best model
+  if (!is.null(best_model)) {
+    bound_history <- best_model$convergence$bound
+    n_iter <- length(bound_history)
+    reached_max_iter <- n_iter >= 100 # or whatever max.em.its is for final model
+    
+    if (n_iter > 5) {
+      final_changes <- diff(tail(bound_history, 6))
+      avg_change <- mean(abs(final_changes))
+      
+      if (avg_change > 1e-4 || reached_max_iter) {
+        recommended_iter <- max(150, round(max.em.its * 1.5))
+        log_message(sprintf(
+          "WARNING: Best model (k=%d) may need more iterations for full convergence.\n  Current: %d iterations, change rate: %.6f\n  Recommended: %d iterations",
+          best_k, n_iter, avg_change, recommended_iter
+        ), "find_best_k", "WARNING")
+        
+        # Add to result metadata
+        result_metadata$convergence_issues <- TRUE
+        result_metadata$recommended_iterations <- recommended_iter
+      }
+    }
+  }
   
   ## --- Prepare result --------------------------------------------------------
   # Calculate processing time
