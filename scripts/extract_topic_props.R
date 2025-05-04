@@ -78,12 +78,22 @@ extract_topic_props <- function(
       # Extract metadata (works for both cases above)
       if (input_type == "optimal_topics") {
         # Try to get metadata from the correct location
-        if ("data" %in% names(input) && "metadata" %in% names(input$data)) {
-          metadata <- input$data$metadata  # Get document metadata from inside data
+        if ("data" %in% names(input) && is.list(input$data) && "metadata" %in% names(input$data) && 
+            is.data.frame(input$data$metadata)) {
+          doc_metadata <- input$data$metadata  # Get document metadata from inside data
           log_message("Found document metadata in input$data$metadata", "extract_topic_props")
-        } else if ("metadata" %in% names(input)) {
-          metadata <- input$metadata  # Fallback to old behavior
+        } else if ("metadata" %in% names(input) && is.data.frame(input$metadata)) {
+          doc_metadata <- input$metadata  # Fallback to old behavior
           log_message("Using metadata from input$metadata", "extract_topic_props")
+        } else {
+          # Try other locations
+          if ("dfm" %in% names(input)) {
+            # Check if corpus metadata is directly available
+            if ("corpus_metadata" %in% names(input) && is.data.frame(input$corpus_metadata)) {
+              doc_metadata <- input$corpus_metadata
+              log_message("Using metadata from corpus_metadata", "extract_topic_props")
+            }
+          }
         }
         
         # Similarly extract stm_data
@@ -217,21 +227,14 @@ extract_topic_props <- function(
     )
   
   ## --- Join with document metadata ------------------------------------------
-  if (!is.null(metadata)) {
+  if (!is.null(doc_metadata) && is.data.frame(doc_metadata)) {
     log_message("Joining with document metadata", "extract_topic_props")
+    log_message(paste("Metadata class:", class(doc_metadata)[1]), "extract_topic_props")
     
-    # Add debug info about metadata
-    log_message(paste("Metadata class:", class(metadata)[1]), "extract_topic_props")
-    
-    # Ensure metadata is a data frame before joining
-    if (is.data.frame(metadata)) {
-      result_df <- topic_props_long %>%
-        dplyr::left_join(metadata, by = "doc_id", copy = TRUE)
-    } else {
-      log_message("Metadata is not a data frame, skipping join", "extract_topic_props", "WARNING")
-      result_df <- topic_props_long
-    }
+    result_df <- topic_props_long %>%
+      dplyr::left_join(doc_metadata, by = "doc_id", copy = TRUE)
   } else {
+    log_message("Metadata is not available as a data frame, skipping join", "extract_topic_props", "WARNING")
     result_df <- topic_props_long
   }
   
