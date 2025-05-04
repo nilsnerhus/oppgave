@@ -103,15 +103,24 @@ prepare_corpus <- function(
         !!rlang::sym(text_column),
         to_lower = TRUE,
         strip_punct = remove_punctuation
-      ) %>%
-      # Remove numbers
-      dplyr::filter(!stringr::str_detect(word, "^[0-9]+$"))
+      )
   }, error = function(e) {
     log_message(paste("Tokenization error:", e$message), "prepare_corpus", "ERROR")
     diagnostics$processing_issues <- c(diagnostics$processing_issues, 
                                        paste("Tokenization failed:", e$message))
     stop(e$message)
   })
+  
+  ## --- Handle numbers ----------------------------------------------------------
+  log_message("Filtering numeric content", "prepare_corpus")
+  
+  processed_text <- processed_text %>%
+    # Remove pure numeric tokens (with optional commas and decimals)
+    dplyr::filter(!stringr::str_detect(word, "^\\d+([,.]\\d+)*$")) %>%
+    # Remove decimal numbers (e.g., .123, 0.123)
+    dplyr::filter(!stringr::str_detect(word, "^[0-9]*\\.[0-9]+$")) %>%
+    # Remove comma-separated numbers (e.g., 123,456)
+    dplyr::filter(!stringr::str_detect(word, "^[0-9]{1,3}(,[0-9]{3})+$"))
   
   # Track initial token count
   start_tokens <- nrow(processed_text)

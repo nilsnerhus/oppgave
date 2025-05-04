@@ -45,11 +45,11 @@ ldc <- c("AFG", "AGO", "BGD", "BEN", "BFA", "BDP", "BOL", "BIH", "BWA", "CAF",
 nap_data <- auto_cache(add_metadata, pdfs$data, sids_list = sids, lldc_list = lldc, ldc_list = ldc)
 
 # Step 4: Prepare corpus
-nap_stops <- c("mr", "https", "la", "yet", "de", "i.e", "yr", "tion", "des", "8.5", "svg")
+nap_stops <- c("mr", "https", "http", la", "yet", "de", "i.e", "yr", "tion", "des", "svg")
 corpus <- auto_cache(prepare_corpus, nap_data$data, custom_stopwords = nap_stops)
 
 # Step 5: Find optimal topic count
-best_k <- auto_cache(find_best_k, corpus$data, k_min = 100, k_max = 300, k_step = 50)
+best_k <- auto_cache(find_best_k, corpus$data, k_min = 20, k_max = 100, k_step = 5)
 
 # Step 6: Extract topic proportions
 topic_props <- auto_cache(extract_topic_props, best_k$data)
