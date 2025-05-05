@@ -197,17 +197,16 @@ extract_topic_props <- function(
     stop(e$message)
   })
   
+  # Get actual number of topics from the model
+  actual_topics <- ncol(topic_props)
+  if (actual_topics != k) {
+    log_message(paste("WARNING: Expected", k, "topics but model has", actual_topics, 
+                      "topics. Adjusting to match model."), "extract_topic_props", "WARNING")
+    k <- actual_topics
+  }
+  
   # Add document identifiers
   topic_props$doc_id <- rownames(topic_props)
-  
-  # Ensure doc_id types match - convert to the same type as in metadata
-  if (!is.null(doc_metadata)) {
-    if (is.numeric(doc_metadata$doc_id) && !is.numeric(topic_props$doc_id)) {
-      topic_props$doc_id <- as.numeric(topic_props$doc_id)
-    } else if (is.character(doc_metadata$doc_id) && !is.character(topic_props$doc_id)) {
-      topic_props$doc_id <- as.character(topic_props$doc_id)
-    }
-  }
   
   # Rename topic columns with simple numeric identifiers
   colnames(topic_props)[1:k] <- paste0("Topic_", 1:k)
