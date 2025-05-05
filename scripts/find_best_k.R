@@ -31,7 +31,7 @@
 find_best_k <- function(
     input,
     k_min = 20, 
-    k_max = 120, 
+    k_max = 60, 
     k_step = 5,
     complexity = 0.02,
     max_iterations = 75,
