@@ -268,10 +268,11 @@ prepare_corpus <- function(
   diagnostics$token_stats$removed_docs <- start_docs - final_docs
   diagnostics$token_stats$vocabulary_size <- final_terms
   
-  # Create core data result
+  # Create core data result - include country_metadata inside result_data
   result_data <- list(
     dfm = dfm_object,
-    metadata = metadata,
+    metadata = metadata,  # This contains country metadata
+    country_metadata = metadata,  # Add explicitly as country_metadata
     tokens = processed_text,
     stm_data = list(
       documents = stm_docs$documents,
@@ -283,7 +284,7 @@ prepare_corpus <- function(
   end_time <- Sys.time()
   processing_time <- as.numeric(difftime(end_time, start_time, units = "secs"))
   
-  # Create metadata
+  # Create metadata about the processing
   result_metadata <- list(
     timestamp = start_time,
     processing_time_sec = processing_time,
@@ -301,15 +302,13 @@ prepare_corpus <- function(
       max_doc_proportion = max_doc_proportion
     )
   )
-
-  # Make the result also directly compatible with find_best_k by including key elements 
+  
+  # Make the result also compatible with find_best_k by including key elements
   # at the top level (for backward compatibility) while still using the new structure
-  # Modify the final result structure
   final_result <- list(
-    # New standardized result structure with clear naming
+    # New standardized result structure
     data = result_data,
-    model_metadata = result_metadata,  # Rename to model_metadata
-    country_metadata = metadata,       # Explicitly include country_metadata
+    metadata = result_metadata,
     diagnostics = diagnostics,
     
     # Direct access for compatibility (same object references, not copies)
@@ -322,6 +321,6 @@ prepare_corpus <- function(
   log_message(sprintf("Processing complete: %d docs, %d tokens, %d terms", 
                       final_docs, final_tokens, final_terms), 
               "prepare_corpus")
-
+  
   return(final_result)
 }
