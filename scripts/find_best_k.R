@@ -62,36 +62,72 @@ find_best_k <- function(
     model_comparisons = list()
   )
   
-  ## --- Input validation ------------------------------------------------------
-  log_message("Validating input parameters", "find_best_k")
+  ## --- Input validation and determination ------------------------------------
+  log_message("Determining input type and extracting components", "find_best_k")
+  
+  # Variables we need to extract
+  model <- NULL
+  country_metadata <- NULL  # Renamed from doc_metadata for clarity
+  stm_data <- NULL
+  input_type <- NULL
   
   tryCatch({
-    # Validate k parameters
-    if (!is.numeric(k_min) || k_min <= 0) 
-      stop("k_min must be a positive number")
-    if (!is.numeric(k_max) || k_max <= k_min) 
-      stop("k_max must be greater than k_min")
-    if (!is.numeric(k_step) || k_step <= 0) 
-      stop("k_step must be a positive number")
-    if (!is.numeric(complexity) || complexity < 0)
-      stop("complexity must be a non-negative number")
-    if (!is.numeric(max_iterations) || max_iterations <= 0)
-      stop("max_iterations must be a positive number")
-    
-    # Check input structure
-    if ("data" %in% names(input) && is.list(input$data) && 
-        all(c("dfm", "metadata", "stm_data") %in% names(input$data))) {
-      # New standardized structure
-      log_message("Found corpus in standard nested format", "find_best_k")
-    } else if (all(c("dfm", "metadata", "stm_data") %in% names(input))) {
-      # Legacy format
-      log_message("Found corpus in legacy format", "find_best_k")
-    } else {
-      stop("Input missing required components: dfm, metadata, or stm_data")
+    # Determine input type and extract necessary components
+    if (is.list(input)) {
+      # Extract country_metadata first - try different potential locations
+      if ("country_metadata" %in% names(input)) {
+        country_metadata <- input$country_metadata
+        log_message("Found country_metadata directly", "find_best_k")
+      } else if ("data" %in% names(input) && "metadata" %in% names(input$data)) {
+        country_metadata <- input$data$metadata
+        log_message("Found country_metadata in input$data$metadata", "find_best_k")
+      } else if ("metadata" %in% names(input)) {
+        country_metadata <- input$metadata
+        log_message("Using legacy metadata from input$metadata", "find_best_k")
+      }
+      
+      # Case 1: Input has direct model object
+      if ("best_model" %in% names(input)) {
+        log_message("Using best model from input", "find_best_k")
+        model <- input$best_model
+        input_type <- "optimal_topics"
+        
+        # Case 2: Input has path to model file
+      } else if ("best_model_path" %in% names(input) && is.character(input$best_model_path)) {
+        model_path <- input$best_model_path
+        log_message(paste("Found model path:", model_path), "find_best_k")
+        
+        if (file.exists(model_path)) {
+          model <- readRDS(model_path)
+          log_message("Successfully loaded model from file", "find_best_k")
+        } else {
+          log_message(paste("Model file not found:", model_path), "find_best_k", "WARNING")
+        }
+        input_type <- "optimal_topics"
+      }
+      
+      # Similarly extract stm_data
+      if ("data" %in% names(input) && "stm_data" %in% names(input$data)) {
+        stm_data <- input$data$stm_data
+      } else if ("stm_data" %in% names(input)) {
+        stm_data <- input$stm_data
+      }
+      
+      # Use provided k or best k from optimization
+      if (is.null(k)) {
+        if ("best_k" %in% names(input)) {
+          k <- input$best_k
+          log_message(paste("Using optimal k value:", k), "find_best_k")
+        } else if ("data" %in% names(input) && "best_k" %in% names(input$data)) {
+          k <- input$data$best_k
+          log_message(paste("Using optimal k value from data:", k), "find_best_k")
+        } else {
+          stop("Could not determine k value from input")
+        }
+      }
     }
-    
   }, error = function(e) {
-    log_message(paste("Validation error:", e$message), "find_best_k", "ERROR")
+    log_message(paste("Input validation error:", e$message), "find_best_k", "ERROR")
     stop(e$message)
   })
   
@@ -434,18 +470,14 @@ find_best_k <- function(
   )
   
   ## --- Prepare result --------------------------------------------------------
-  # Calculate processing time
-  end_time <- Sys.time()
-  processing_time <- as.numeric(difftime(end_time, start_time, units = "secs"))
-  
-  # Prepare result data
+  # Prepare result data with clear naming
   result_data <- list(
     best_k = best_k,
     best_model = best_model,
     diagnostics = model_results,
     plots = plots,
     metric_contributions = metric_contributions,
-    document_metadata = document_metadata,
+    country_metadata = country_metadata,  # Renamed for clarity
     stm_data = list(
       vocab = stm_data$vocab, 
       documents = stm_data$documents
@@ -453,7 +485,7 @@ find_best_k <- function(
   )
   
   # Prepare result metadata
-  result_metadata <- list(
+  model_metadata <- list(  # Renamed for clarity
     timestamp = start_time,
     processing_time_sec = processing_time,
     k_min = k_min,
@@ -490,13 +522,10 @@ find_best_k <- function(
   result_data$best_model <- NULL  # Remove from main result
   result_data$best_model_path <- model_path  # Store path instead
   
-  # Clean up memory
-  rm(all_models)
-  gc()
-  
   return(create_result(
     data = result_data,
-    metadata = result_metadata,
-    diagnostics = diagnostics
+    metadata = model_metadata,  # Renamed
+    diagnostics = diagnostics,
+    country_metadata = country_metadata  # Explicitly include country_metadata
   ))
 }

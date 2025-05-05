@@ -304,10 +304,12 @@ prepare_corpus <- function(
 
   # Make the result also directly compatible with find_best_k by including key elements 
   # at the top level (for backward compatibility) while still using the new structure
+  # Modify the final result structure
   final_result <- list(
-    # New standardized result structure
+    # New standardized result structure with clear naming
     data = result_data,
-    metadata = result_metadata,
+    model_metadata = result_metadata,  # Rename to model_metadata
+    country_metadata = metadata,       # Explicitly include country_metadata
     diagnostics = diagnostics,
     
     # Direct access for compatibility (same object references, not copies)
@@ -320,6 +322,6 @@ prepare_corpus <- function(
   log_message(sprintf("Processing complete: %d docs, %d tokens, %d terms", 
                       final_docs, final_tokens, final_terms), 
               "prepare_corpus")
-  
+
   return(final_result)
 }

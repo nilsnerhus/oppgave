@@ -48,13 +48,28 @@ extract_topic_props <- function(
   
   # Variables we need to extract
   model <- NULL
-  doc_metadata <- NULL  # Using consistent variable name throughout
+  country_metadata <- NULL  # Renamed for clarity
   stm_data <- NULL
   input_type <- NULL
   
   tryCatch({
     # Determine input type and extract necessary components
     if (is.list(input)) {
+      # Extract country_metadata first - try different potential locations
+      if ("country_metadata" %in% names(input)) {
+        country_metadata <- input$country_metadata
+        log_message("Found country_metadata directly", "extract_topic_props")
+      } else if ("data" %in% names(input) && "country_metadata" %in% names(input$data)) {
+        country_metadata <- input$data$country_metadata
+        log_message("Found country_metadata in input$data$country_metadata", "extract_topic_props")
+      } else if ("data" %in% names(input) && "metadata" %in% names(input$data)) {
+        country_metadata <- input$data$metadata  # Legacy format
+        log_message("Found country_metadata as metadata in input$data$metadata", "extract_topic_props")
+      } else if ("metadata" %in% names(input)) {
+        country_metadata <- input$metadata  # Legacy format
+        log_message("Using legacy metadata from input$metadata", "extract_topic_props")
+      }
+      
       # Case 1: Input has direct model object
       if ("best_model" %in% names(input)) {
         log_message("Using best model from input", "extract_topic_props")
@@ -75,85 +90,31 @@ extract_topic_props <- function(
         input_type <- "optimal_topics"
       }
       
-      # Extract metadata (works for both cases above)
-      if (input_type == "optimal_topics") {
-        # Try to get metadata from the correct location
-        if ("data" %in% names(input) && "metadata" %in% names(input$data)) {
-          doc_metadata <- input$data$metadata  # Get document metadata from inside data
-          log_message("Found document metadata in input$data$metadata", "extract_topic_props")
-        } else if ("metadata" %in% names(input)) {
-          doc_metadata <- input$metadata  # Fallback to old behavior
-          log_message("Using metadata from input$metadata", "extract_topic_props")
-        }
-        
-        # Similarly extract stm_data
-        if ("data" %in% names(input) && "stm_data" %in% names(input$data)) {
-          stm_data <- input$data$stm_data
-        } else if ("stm_data" %in% names(input)) {
-          stm_data <- input$stm_data
-        }
-        
-        # Use provided k or best k from optimization
-        if (is.null(k)) {
-          if ("best_k" %in% names(input)) {
-            k <- input$best_k
-            log_message(paste("Using optimal k value:", k), "extract_topic_props")
-          } else if ("data" %in% names(input) && "best_k" %in% names(input$data)) {
-            k <- input$data$best_k
-            log_message(paste("Using optimal k value from data:", k), "extract_topic_props")
-          } else {
-            stop("Could not determine k value from input")
-          }
-        } else if (!is.null(input$best_k) && k != input$best_k) {
-          log_message(paste("Provided k value", k, "differs from optimal k", input$best_k), 
-                      "extract_topic_props", "WARNING")
-        }
+      # Similarly extract stm_data
+      if ("data" %in% names(input) && "stm_data" %in% names(input$data)) {
+        stm_data <- input$data$stm_data
+      } else if ("stm_data" %in% names(input)) {
+        stm_data <- input$stm_data
       }
       
-      # Case 3: Input is from preprocess
-      if (is.null(model) && all(c("dfm", "metadata", "stm_data") %in% names(input))) {
-        log_message("Input appears to be preprocessed data", "extract_topic_props")
-        doc_metadata <- input$metadata  # Consistent variable name
-        stm_data <- input$stm_data
-        input_type <- "preprocess"
-        
-        # Require explicit k value
-        if (is.null(k)) {
-          # Try to load best k from file
-          if (file.exists(best_k_path)) {
-            best_k_result <- readRDS(best_k_path)
-            if ("best_k" %in% names(best_k_result)) {
-              k <- best_k_result$best_k
-              log_message(paste("Using k value from best_k file:", k), "extract_topic_props")
-            } else if ("data" %in% names(best_k_result) && "best_k" %in% names(best_k_result$data)) {
-              k <- best_k_result$data$best_k
-              log_message(paste("Using k value from best_k file data:", k), "extract_topic_props")
-            } else {
-              stop("When using preprocessed data directly, k must be explicitly specified or best_k file must be available")
-            }
-          } else {
-            stop("When using preprocessed data directly, k must be explicitly specified or best_k file must be available")
-          }
+      # Use provided k or best k from optimization
+      if (is.null(k)) {
+        if ("best_k" %in% names(input)) {
+          k <- input$best_k
+          log_message(paste("Using optimal k value:", k), "extract_topic_props")
+        } else if ("data" %in% names(input) && "best_k" %in% names(input$data)) {
+          k <- input$data$best_k
+          log_message(paste("Using optimal k value from data:", k), "extract_topic_props")
         } else {
-          log_message(paste("Using provided k value:", k), "extract_topic_props")
+          stop("Could not determine k value from input")
         }
       }
-    }
-    
-    # Final validation
-    if (is.null(input_type)) {
-      stop("Invalid input: Expected output from preprocess() or optimal_topics() functions")
-    }
-    
-    # Ensure we have the data we need to proceed
-    if (is.null(model) && (is.null(stm_data) || !all(c("documents", "vocab") %in% names(stm_data)))) {
-      stop("Cannot create model: missing documents or vocabulary data")
     }
   }, error = function(e) {
     log_message(paste("Input validation error:", e$message), "extract_topic_props", "ERROR")
     stop(e$message)
   })
-  
+
   ## --- Create model if needed ------------------------------------------------
   if (is.null(model)) {
     log_message(paste("Fitting model with k =", k), "extract_topic_props")
@@ -222,18 +183,18 @@ extract_topic_props <- function(
     )
   
   ## --- Join with document metadata ------------------------------------------
-  if (!is.null(doc_metadata)) {
-    log_message("Joining with document metadata", "extract_topic_props")
+  if (!is.null(country_metadata)) {
+    log_message("Joining with country metadata", "extract_topic_props")
     
     # Add debug info about metadata
-    log_message(paste("Metadata class:", class(doc_metadata)[1]), "extract_topic_props")
+    log_message(paste("Country metadata class:", class(country_metadata)[1]), "extract_topic_props")
     
     # Ensure metadata is a data frame before joining
-    if (is.data.frame(doc_metadata)) {
+    if (is.data.frame(country_metadata)) {
       result_df <- topic_props_long %>%
-        dplyr::left_join(doc_metadata, by = "doc_id", copy = TRUE)
+        dplyr::left_join(country_metadata, by = "doc_id", copy = TRUE)
     } else {
-      log_message("Metadata is not a data frame, skipping join", "extract_topic_props", "WARNING")
+      log_message("Country metadata is not a data frame, skipping join", "extract_topic_props", "WARNING")
       result_df <- topic_props_long
     }
   } else {
@@ -308,7 +269,7 @@ extract_topic_props <- function(
   processing_time <- as.numeric(difftime(end_time, start_time, units = "secs"))
   
   # Prepare metadata
-  result_metadata <- list(
+  model_metadata <- list(  # Renamed for clarity
     timestamp = start_time,
     processing_time_sec = processing_time,
     input_type = input_type,
@@ -323,7 +284,8 @@ extract_topic_props <- function(
   
   return(create_result(
     data = result_data,
-    metadata = result_metadata,
-    diagnostics = diagnostics
+    metadata = model_metadata,  # Renamed
+    diagnostics = diagnostics,
+    country_metadata = country_metadata  # Explicitly retain country_metadata
   ))
 }
