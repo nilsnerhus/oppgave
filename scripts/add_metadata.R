@@ -317,7 +317,7 @@ add_metadata <- function(
   processing_time <- as.numeric(difftime(end_time, start_time, units = "secs"))
   
   ## --- Prepare and return final result ----------------------------------------
-  metadata <- list(
+  model_metadata <- list(
     records_processed = nrow(data),
     countries_matched = match_count,
     dates_parsed = parsed_count,
@@ -334,15 +334,16 @@ add_metadata <- function(
     success_msg <- paste0(
       success_msg, 
       " (", parsed_count, "/", sum(!is.na(data[[date_col]])), 
-      " dates parsed, ", metadata$date_parsing_success_rate, "%)"
+      " dates parsed, ", model_metadata$date_parsing_success_rate, "%)"
     )
   }
   log_message(success_msg, "add_metadata")
   
-  # Return standardized result
+  # Return standardized result with renamed metadata
   return(create_result(
     data = result,
-    metadata = metadata,
-    diagnostics = diagnostics
+    metadata = model_metadata,  # Keep the existing model metadata
+    diagnostics = diagnostics,
+    country_metadata = result  # Add country_metadata as its own element
   ))
 }

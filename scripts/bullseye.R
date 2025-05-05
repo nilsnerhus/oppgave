@@ -1,52 +1,119 @@
-library(ggplot2)
-library(ggforce)
-library(dplyr)
-library(rlang)
+#' @title Create a bullseye visualization of dominance
+#' @description Generates a bullseye/shooting target visualization where points 
+#'   are distributed based on a dominance value. Higher dominance values (closer to 1)
+#'   result in points clustered toward the center, while lower values (closer to 0)
+#'   result in points scattered throughout the target.
+#'
+#' @param dominance_value Numeric value between 0 and 1 representing the dominance measure
+#' @param n_points Number of points to plot (default: 10)
+#' @param title Optional title for the plot
+#' @param subtitle Optional subtitle (dominance value will be shown if not provided)
+#' @param seed Random seed for reproducibility (default: NULL)
+#'
+#' @return A ggplot object with the bullseye visualization
+#'
+#' @examples
+#' # Create bullseye with high dominance (clustered points)
+#' bullseye(0.85, title = "Income Groups")
+#' 
+#' # Create bullseye with low dominance (scattered points)
+#' bullseye(0.3, title = "Geographic Regions")
 
-bullseye <- function(entropy_value,
-                     n_points = 10,
-                     title = NULL,
-                     subtitle = NULL,
-                     caption = NULL,
-                     seed = NULL) {
+bullseye <- function(
+    dominance_value,
+    n_points = 10,
+    title = NULL,
+    subtitle = NULL,
+    seed = 1234
+) {
   
-  if (!is.numeric(entropy_value) || entropy_value < 0 || entropy_value > 1) {
-    stop("Entropy value must be a number between 0 and 1.")
+  # Validate input
+  if (!is.numeric(dominance_value) || dominance_value < 0 || dominance_value > 1) {
+    stop("Dominance value must be a number between 0 and 1.")
   }
   
+  # Set seed for reproducibility if provided
   if (!is.null(seed)) set.seed(seed)
   
-  # Generate points
-  points <- tibble(
-    angle = runif(n_points, 0, 2 * pi),
-    radius = sqrt(runif(n_points, 0, 1)) * entropy_value^0.5,  # more spread at high entropy
+  # Import required packages if needed
+  `%>%` <- magrittr::`%>%`
+  
+  # Create rings for the bullseye
+  # 10 total levels: 9 rings plus center circle
+  rings <- tibble::tibble(
+    r = seq(0.1, 1, length.out = 10),
+    # Rings 7-10 (inner) are black, rings 1-6 (outer) are white
+    fill = ifelse(r >= 0.45, "white", "black"),
+    # All rings have outlines
+    color = "black",
+    # Inverse outline color for black rings
+    outline = ifelse(r >= 0.45, "black", "white")
+  )
+  
+  # Define parameters for the logistic transition function
+  midpoint <- 0.7  # Transition centered at dominance=0.4
+  steepness <- 12  # Fairly steep transition
+  
+  # Generate points based on dominance value
+  points <- tibble::tibble(
+    # Assign sectors for the points
+    sector = ceiling(seq(1, n_points) / n_points * 8),
+    
+    # Calculate sector-based angles
+    # When dominance is low, points stay more within their sector
+    # When dominance is high, sector boundaries matter less
+    sector_angle = sector * 2 * pi / 8,
+    angle_variance = dominance_value * 2 * pi + (1 - dominance_value) * pi/4,
+    angle = sector_angle + runif(n_points, -angle_variance/2, angle_variance/2),
+    
+    # Calculate alpha using logistic function for better transition control
+    # This creates more distinction between 0.2-0.3 but similar clustering for 0.4-0.6
+    alpha = 1 + 19 / (1 + exp(-steepness * (dominance_value - midpoint))),
+    beta = 1.2,  # Slightly lower beta for more spread at low dominance
+    
+    # Generate radii from beta distribution
+    radius = rbeta(n_points, shape1 = beta, shape2 = alpha),
+    
+    # Convert to Cartesian coordinates
     x = radius * cos(angle),
     y = radius * sin(angle)
   )
   
-  # Create rings
-  rings <- tibble(
-    r = seq(0.2, 1, by = 0.2),
-    fill = rep(c("white", "gray90"), length.out = 5)
-  )
-  
-  # Plot
-  ggplot() +
-    geom_circle(data = rings, aes(x0 = 0, y0 = 0, r = r, fill = I(fill)),
-                color = "gray60", linewidth = 0.3, show.legend = FALSE) +
-    geom_point(data = points, aes(x = x, y = y),
-               shape = 21, fill = "black", color = "white", stroke = 0.3, size = 2.5) +
-    coord_fixed() +
-    labs(
-      title = title %||% "Entropy Visualization",
-      subtitle = subtitle %||% paste0("Dissonance: ", round(entropy_value, 2)),
-      caption = caption
+  # Create the plot
+  ggplot2::ggplot() +
+    # Draw the rings from outside to inside (reverse order)
+    ggforce::geom_circle(
+      data = rings %>% dplyr::arrange(desc(r)), 
+      ggplot2::aes(
+        x0 = 0, y0 = 0, r = r, 
+        color = I(outline),
+        fill = I(fill)
+      ),
+      linewidth = 0.3
     ) +
-    theme_void(base_family = "sans") +
-    theme(
-      plot.title = element_text(size = 14, face = "bold"),
-      plot.subtitle = element_text(size = 11),
-      plot.caption = element_text(size = 8, hjust = 0),
-      plot.margin = margin(10, 10, 10, 10)
+    # Add the points
+    ggplot2::geom_point(
+      data = points, 
+      ggplot2::aes(x = x, y = y),
+      shape = 21, 
+      fill = "black", 
+      color = "white", 
+      stroke = 0.3, 
+      size = 2.5
+    ) +
+    # Ensure circular appearance
+    ggplot2::coord_fixed() +
+    # Set plot labels
+    ggplot2::labs(
+      title = title,
+      subtitle = subtitle %||% paste0("Dominance: ", round(dominance_value, 2))
+    ) +
+    # Remove axes and background
+    ggplot2::theme_void(base_family = "sans") +
+    # Style text elements
+    ggplot2::theme(
+      plot.title = ggplot2::element_text(size = 14, face = "bold", hjust = 0.5),
+      plot.subtitle = ggplot2::element_text(size = 11, hjust = 0.5),
+      plot.margin = ggplot2::margin(10, 10, 10, 10)
     )
 }
