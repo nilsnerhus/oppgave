@@ -62,75 +62,45 @@ find_best_k <- function(
     model_comparisons = list()
   )
   
-  ## --- Input validation and determination ------------------------------------
-  log_message("Determining input type and extracting components", "find_best_k")
+  ## --- Input validation ------------------------------------------------------
+  log_message("Validating input from prepare_corpus", "find_best_k")
   
   # Variables we need to extract
   model <- NULL
-  country_metadata <- NULL  # Renamed from doc_metadata for clarity
+  country_metadata <- NULL
   stm_data <- NULL
-  input_type <- NULL
   
   tryCatch({
-    # Determine input type and extract necessary components
-    if (is.list(input)) {
-      # Extract country_metadata first - try different potential locations
-      if ("country_metadata" %in% names(input)) {
-        country_metadata <- input$country_metadata
-        log_message("Found country_metadata directly", "find_best_k")
-      } else if ("data" %in% names(input) && "metadata" %in% names(input$data)) {
-        country_metadata <- input$data$metadata
-        log_message("Found country_metadata in input$data$metadata", "find_best_k")
-      } else if ("metadata" %in% names(input)) {
-        country_metadata <- input$metadata
-        log_message("Using legacy metadata from input$metadata", "find_best_k")
-      }
-      
-      # Case 1: Input has direct model object
-      if ("best_model" %in% names(input)) {
-        log_message("Using best model from input", "find_best_k")
-        model <- input$best_model
-        input_type <- "optimal_topics"
-        
-        # Case 2: Input has path to model file
-      } else if ("best_model_path" %in% names(input) && is.character(input$best_model_path)) {
-        model_path <- input$best_model_path
-        log_message(paste("Found model path:", model_path), "find_best_k")
-        
-        if (file.exists(model_path)) {
-          model <- readRDS(model_path)
-          log_message("Successfully loaded model from file", "find_best_k")
-        } else {
-          log_message(paste("Model file not found:", model_path), "find_best_k", "WARNING")
-        }
-        input_type <- "optimal_topics"
-      }
-      
-      # Similarly extract stm_data
-      if ("data" %in% names(input) && "stm_data" %in% names(input$data)) {
-        stm_data <- input$data$stm_data
-      } else if ("stm_data" %in% names(input)) {
-        stm_data <- input$stm_data
-      }
-      
-      # Use provided k or best k from optimization
-      if (is.null(k)) {
-        if ("best_k" %in% names(input)) {
-          k <- input$best_k
-          log_message(paste("Using optimal k value:", k), "find_best_k")
-        } else if ("data" %in% names(input) && "best_k" %in% names(input$data)) {
-          k <- input$data$best_k
-          log_message(paste("Using optimal k value from data:", k), "find_best_k")
-        } else {
-          stop("Could not determine k value from input")
-        }
-      }
+    # Validate it's a list with the expected structure
+    if (!is.list(input) || !all(c("data", "metadata", "diagnostics") %in% names(input))) {
+      stop("Input must be the complete output from prepare_corpus()")
     }
+    
+    # Extract stm_data from the data component
+    if (!("stm_data" %in% names(input$data))) {
+      stop("Input is missing stm_data in the data component")
+    }
+    stm_data <- input$data$stm_data
+    
+    # Validate stm_data structure
+    if (!all(c("documents", "vocab") %in% names(stm_data))) {
+      stop("stm_data is missing required components: documents or vocab")
+    }
+    
+    # Extract country metadata
+    if ("metadata" %in% names(input$data)) {
+      country_metadata <- input$data$metadata
+      log_message("Found country metadata in input$data$metadata", "find_best_k")
+    } else {
+      log_message("No country metadata found in input", "find_best_k", "WARNING")
+      country_metadata <- NULL
+    }
+    
   }, error = function(e) {
     log_message(paste("Input validation error:", e$message), "find_best_k", "ERROR")
     stop(e$message)
   })
-  
+
   ## --- Extract components ----------------------------------------------------
   log_message("Extracting corpus components", "find_best_k")
   

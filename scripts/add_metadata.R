@@ -339,11 +339,10 @@ add_metadata <- function(
   }
   log_message(success_msg, "add_metadata")
   
-  # Return standardized result with renamed metadata
+  # Return standardized result - the result already contains country metadata
   return(create_result(
     data = result,
-    metadata = model_metadata,  # Keep the existing model metadata
-    diagnostics = diagnostics,
-    country_metadata = result  # Add country_metadata as its own element
+    metadata = model_metadata,
+    diagnostics = diagnostics
   ))
 }

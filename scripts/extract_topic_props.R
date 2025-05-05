@@ -57,7 +57,7 @@ extract_topic_props <- function(
     if (is.list(input)) {
       # Extract country_metadata first - try different potential locations
       if ("country_metadata" %in% names(input)) {
-        country_metadata <- input$country_metadata
+        country_metadata <- input$data$country_metadata
         log_message("Found country_metadata directly", "extract_topic_props")
       } else if ("data" %in% names(input) && "country_metadata" %in% names(input$data)) {
         country_metadata <- input$data$country_metadata
@@ -114,7 +114,7 @@ extract_topic_props <- function(
     log_message(paste("Input validation error:", e$message), "extract_topic_props", "ERROR")
     stop(e$message)
   })
-
+  
   ## --- Create model if needed ------------------------------------------------
   if (is.null(model)) {
     log_message(paste("Fitting model with k =", k), "extract_topic_props")
