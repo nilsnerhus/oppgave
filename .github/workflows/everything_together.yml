@@ -25,12 +25,24 @@ jobs:
         with:
           use-public-rspm: true
 
-      - name: Install system dependencies from renv.lock
+      - name: Set up system dependencies
         run: |
-          Rscript -e 'if(!requireNamespace("remotes", quietly = TRUE)) install.packages("remotes")'
-          Rscript -e 'remotes::install_github("r-lib/sysreqs")'
-          Rscript -e 'writeLines(sysreqs::sysreq_commands("renv.lock"), "sysreqs.sh")'
-          bash sysreqs.sh
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libcurl4-openssl-dev \
+            libssl-dev \
+            libxml2-dev \
+            libfontconfig1-dev \
+            libfreetype6-dev \
+            libharfbuzz-dev \
+            libfribidi-dev \
+            libpng-dev \
+            libtiff5-dev \
+            libjpeg-dev \
+            libpoppler-cpp-dev \
+            libgdal-dev \
+            libproj-dev \
+            libgeos-dev
 
       - name: Set up renv
         uses: r-lib/actions/setup-renv@v2
