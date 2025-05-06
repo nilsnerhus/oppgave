@@ -48,66 +48,58 @@ extract_topic_props <- function(
   
   # Variables we need to extract
   model <- NULL
-  country_metadata <- NULL  # Renamed for clarity
+  country_metadata <- NULL
   stm_data <- NULL
   input_type <- NULL
   
   tryCatch({
-    # Determine input type and extract necessary components
-    if (is.list(input)) {
-      # Extract country_metadata first - try different potential locations
-      if ("country_metadata" %in% names(input)) {
-        country_metadata <- input$data$country_metadata
-        log_message("Found country_metadata directly", "extract_topic_props")
-      } else if ("data" %in% names(input) && "country_metadata" %in% names(input$data)) {
-        country_metadata <- input$data$country_metadata
-        log_message("Found country_metadata in input$data$country_metadata", "extract_topic_props")
-      } else if ("data" %in% names(input) && "metadata" %in% names(input$data)) {
-        country_metadata <- input$data$metadata  # Legacy format
-        log_message("Found country_metadata as metadata in input$data$metadata", "extract_topic_props")
-      } else if ("metadata" %in% names(input)) {
-        country_metadata <- input$metadata  # Legacy format
-        log_message("Using legacy metadata from input$metadata", "extract_topic_props")
-      }
+    # Validate input structure
+    if (!is.list(input) || !("data" %in% names(input))) {
+      stop("Input must be a list with a 'data' component")
+    }
+    
+    # Extract country metadata from standard location
+    if ("country_metadata" %in% names(input$data)) {
+      country_metadata <- input$data$country_metadata
+      log_message("Found country metadata in standard location", "extract_topic_props")
+    } else {
+      log_message("No country metadata found in input", "extract_topic_props", "WARNING")
+      country_metadata <- NULL
+    }
+    
+    # Handle best model scenarios
+    if ("best_model" %in% names(input$data)) {
+      model <- input$data$best_model
+      input_type <- "optimal_topics"
+      log_message("Found model in input$data$best_model", "extract_topic_props")
+    } else if ("best_model_path" %in% names(input$data)) {
+      model_path <- input$data$best_model_path
+      log_message(paste("Found model path:", model_path), "extract_topic_props")
       
-      # Case 1: Input has direct model object
-      if ("best_model" %in% names(input)) {
-        log_message("Using best model from input", "extract_topic_props")
-        model <- input$best_model
+      if (file.exists(model_path)) {
+        model <- readRDS(model_path)
+        log_message("Successfully loaded model from file", "extract_topic_props")
         input_type <- "optimal_topics"
-        
-        # Case 2: Input has path to model file
-      } else if ("best_model_path" %in% names(input) && is.character(input$best_model_path)) {
-        model_path <- input$best_model_path
-        log_message(paste("Found model path:", model_path), "extract_topic_props")
-        
-        if (file.exists(model_path)) {
-          model <- readRDS(model_path)
-          log_message("Successfully loaded model from file", "extract_topic_props")
-        } else {
-          log_message(paste("Model file not found:", model_path), "extract_topic_props", "WARNING")
-        }
-        input_type <- "optimal_topics"
+      } else {
+        log_message(paste("Model file not found:", model_path), "extract_topic_props", "WARNING")
       }
-      
-      # Similarly extract stm_data
-      if ("data" %in% names(input) && "stm_data" %in% names(input$data)) {
-        stm_data <- input$data$stm_data
-      } else if ("stm_data" %in% names(input)) {
-        stm_data <- input$stm_data
-      }
-      
-      # Use provided k or best k from optimization
-      if (is.null(k)) {
-        if ("best_k" %in% names(input)) {
-          k <- input$best_k
-          log_message(paste("Using optimal k value:", k), "extract_topic_props")
-        } else if ("data" %in% names(input) && "best_k" %in% names(input$data)) {
-          k <- input$data$best_k
-          log_message(paste("Using optimal k value from data:", k), "extract_topic_props")
-        } else {
-          stop("Could not determine k value from input")
-        }
+    }
+    
+    # Get stm_data
+    if ("stm_data" %in% names(input$data)) {
+      stm_data <- input$data$stm_data
+      log_message("Found stm_data in standard location", "extract_topic_props")
+    } else {
+      log_message("No stm_data found in input", "extract_topic_props", "WARNING")
+    }
+    
+    # Get k value
+    if (is.null(k)) {
+      if ("best_k" %in% names(input$data)) {
+        k <- input$data$best_k
+        log_message(paste("Using optimal k value:", k), "extract_topic_props")
+      } else {
+        stop("Could not determine k value from input")
       }
     }
   }, error = function(e) {
@@ -189,6 +181,11 @@ extract_topic_props <- function(
     # Add debug info about metadata
     log_message(paste("Country metadata class:", class(country_metadata)[1]), "extract_topic_props")
     
+    # Ensure doc_id is the same type in both data frames
+    # Convert both to character type to ensure compatibility
+    topic_props_long$doc_id <- as.character(topic_props_long$doc_id)
+    country_metadata$doc_id <- as.character(country_metadata$doc_id)
+    
     # Ensure metadata is a data frame before joining
     if (is.data.frame(country_metadata)) {
       result_df <- topic_props_long %>%
@@ -231,8 +228,8 @@ extract_topic_props <- function(
     doc_count = nrow(topic_props),
     topics = k,
     avg_props_sum = mean(rowSums(topic_props[, 1:k])),
-    missing_metadata = if (!is.null(doc_metadata)) {
-      sum(is.na(match(topic_props$doc_id, doc_metadata$doc_id)))
+    missing_metadata = if (!is.null(country_metadata)) {
+      sum(is.na(match(topic_props$doc_id, country_metadata$doc_id)))
     } else {
       NA
     }
@@ -285,7 +282,6 @@ extract_topic_props <- function(
   return(create_result(
     data = result_data,
     metadata = model_metadata,  # Renamed
-    diagnostics = diagnostics,
-    country_metadata = country_metadata  # Explicitly retain country_metadata
+    diagnostics = diagnostics
   ))
 }

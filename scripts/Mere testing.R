@@ -1,20 +1,22 @@
 if(!exists("utils")) source("scripts/utils.R")
-if(!exists("find_dominance")) source("scripts/find_dominance.R")
+if(!exists("find_dissonance")) source("scripts/find_dissonance.R")
 if(!exists("bullseye")) source("scripts/bullseye.R")
 
+df_long <- readRDS("data/extract_topic_props.rds")
+df <- df_long$data$data
 
-# Load the topic proportions data
-topic_props <- readRDS("data/extract_topic_props.rds")
+# Calculate dissonance
+dissonance <- find_dissonance(df, value_col = "Proportion")
+dissonance
 
-# Extract just the data component if using your standardized result structure
-topic_data <- topic_props$data$data
+vis <- bullseye(dissonance)
 
-# Calculate dominance
-dominance <- find_dominance(
-  data = topic_data,
-  value_col = "Proportion"
-)
-dominance
+vis
 
-dom_africa <- find_dominance(topic_data, filter_col = "region")
+dis_africa <- find_dominance(topic_data, filter_col = "region", filter_value = "Sub-Saharan Africa")
 
+vis_africa <- bullseye(dis_africa)
+
+vis_africa
+
+dis_sids <- find_dom
