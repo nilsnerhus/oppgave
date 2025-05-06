@@ -100,7 +100,7 @@ find_best_k <- function(
     log_message(paste("Input validation error:", e$message), "find_best_k", "ERROR")
     stop(e$message)
   })
-
+  
   ## --- Extract components ----------------------------------------------------
   log_message("Extracting corpus components", "find_best_k")
   
@@ -111,15 +111,6 @@ find_best_k <- function(
   } else {
     # Legacy format
     stm_data <- input$stm_data
-  }
-  
-  # Extract document_metadata, handling both formats
-  if ("data" %in% names(input) && "metadata" %in% names(input$data)) {
-    # New nested format
-    document_metadata <- input$data$metadata
-  } else {
-    # Legacy format
-    document_metadata <- input$metadata
   }
   
   # Final validation that we have the necessary components
@@ -440,14 +431,18 @@ find_best_k <- function(
   )
   
   ## --- Prepare result --------------------------------------------------------
-  # Prepare result data with clear naming
+  # Calculate processing time first
+  end_time <- Sys.time()
+  processing_time <- as.numeric(difftime(end_time, start_time, units = "secs"))
+  
+  # Then prepare result data with clear naming
   result_data <- list(
     best_k = best_k,
     best_model = best_model,
     diagnostics = model_results,
     plots = plots,
     metric_contributions = metric_contributions,
-    country_metadata = country_metadata,  # Renamed for clarity
+    country_metadata = country_metadata,  # Include country metadata
     stm_data = list(
       vocab = stm_data$vocab, 
       documents = stm_data$documents
@@ -455,9 +450,9 @@ find_best_k <- function(
   )
   
   # Prepare result metadata
-  model_metadata <- list(  # Renamed for clarity
+  model_metadata <- list(
     timestamp = start_time,
-    processing_time_sec = processing_time,
+    processing_time_sec = processing_time,  # Now this is defined
     k_min = k_min,
     k_max = k_max,
     k_step = k_step,
@@ -494,8 +489,7 @@ find_best_k <- function(
   
   return(create_result(
     data = result_data,
-    metadata = model_metadata,  # Renamed
-    diagnostics = diagnostics,
-    country_metadata = country_metadata  # Explicitly include country_metadata
+    metadata = model_metadata,
+    diagnostics = diagnostics
   ))
 }
