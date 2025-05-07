@@ -1,12 +1,2 @@
 # Findings {#sec-findings}
 
-In this findings-section, I will present the results from the data collection I have done.
-
-Er denne laggy, eller var det bare sånn. Aha, dette kan jeg egentlig bli vant til. 
-
-Gidder jeg å ha ridian her? 
-
-
-Jeg trenger litt fler plugins for å skrive, kanskje aller mest de som har med citekeys å gjøre. Hadde vært digg med Git også, men det har vært så sykt kronglete.
-
-Gleder meg til jeg får skald opp å kjøre.

@@ -19,5 +19,7 @@ Even through the text is the main part of the thesis, strong visualizations are 
 - Development of climate related keywords in the academic literature (not created)
 - Timeline for main events in climate adaptation (not created)
 - Some geographical visualization, unsure what (not created)
+- Topic modelling in text, where words are highlighted in different colors
+- Topic modelling, where the latent distrobution is highlighted
 
 The text is written in a "confident" voice. Methodological issues are presented as impacting choices and enhancing the rigour of the text, not to take away from the conclusions
