@@ -16,7 +16,7 @@ if(!exists("find_best_k")) source("scripts/find_best_k.R")
 if(!exists("topic_model")) source("scripts/extract_topic_props.R")
 
 # Step 1: Scrape the UNFCCC website
-exclude_countries <- c("Uruguay") # Does not have a national plan, just many sectoral
+exclude_countries <- c("Uruguay", "Israel", "Kuwait", "Trinidad and Tobago") # Uruguay has no national plan, just sectoral, and the others are high income countries
 web <- web_cache(scrape_web, exclude_countries = exclude_countries)
 
 # Step 2: Extract the pdfs from the web
@@ -49,7 +49,7 @@ nap_stops <- c("mr", "https", "http", "la", "yet", "de", "i.e", "yr", "tion", "d
 corpus <- auto_cache(prepare_corpus, nap_data$data, custom_stopwords = nap_stops)
 
 # Step 5: Find optimal topic count
-best_k <- auto_cache(find_best_k, corpus, k_min = 30, k_max = 40, k_step = 10)
+best_k <- auto_cache(find_best_k, corpus, complexity = 0)
 
 # Step 6: Extract topic proportions
 topic_props <- auto_cache(extract_topic_props, best_k)
