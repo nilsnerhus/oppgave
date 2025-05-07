@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>5&nbsp; Methods – 100 billion dollar COP-out</title>
+<title>3&nbsp; Literature review: Nexus and regime – 100 billion dollar COP-out</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,7 +20,27 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -30,8 +50,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="../site_libs/quarto-search/fuse.min.js"></script>
 <script src="../site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="../">
-<link href="../chapters/findings.html" rel="next">
-<link href="../chapters/theory.html" rel="prev">
+<link href="../text/theory.html" rel="next">
+<link href="../text/context.html" rel="prev">
 <script src="../site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="../site_libs/quarto-html/popper.min.js"></script>
@@ -41,7 +61,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-ea6fd3121155f662d4b42a67aec36ccf.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-066cce8253e1a14c701789fc0662be8b.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-b2033468e119ccaea2196a0302b458ae.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -70,35 +90,6 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 </head>
 
@@ -111,7 +102,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/theory.html">Research design</a></li><li class="breadcrumb-item"><a href="../chapters/methods.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../text/context.html">Climate adaptation</a></li><li class="breadcrumb-item"><a href="../text/lit.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Literature review: Nexus and regime</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -163,7 +154,7 @@ window.Quarto = {
 </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/intro.html" class="sidebar-item-text sidebar-link">
+  <a href="../text/intro.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
   </div>
 </li>
@@ -178,13 +169,13 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/context.html" class="sidebar-item-text sidebar-link">
+  <a href="../text/context.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Context: Climate action</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/lit.html" class="sidebar-item-text sidebar-link">
+  <a href="../text/lit.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Literature review: Nexus and regime</span></span></a>
   </div>
 </li>
@@ -201,13 +192,13 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/theory.html" class="sidebar-item-text sidebar-link">
+  <a href="../text/theory.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Theory: Adaptation for the future</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/methods.html" class="sidebar-item-text sidebar-link active">
+  <a href="../text/methods.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods</span></span></a>
   </div>
 </li>
@@ -224,13 +215,13 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/findings.html" class="sidebar-item-text sidebar-link">
+  <a href="../text/findings.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Findings</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/discussion.html" class="sidebar-item-text sidebar-link">
+  <a href="../text/discussion.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Discussion</span></span></a>
   </div>
 </li>
@@ -238,7 +229,7 @@ window.Quarto = {
   </li>
         <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../chapters/conclusion.html" class="sidebar-item-text sidebar-link">
+  <a href="../text/conclusion.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Conclusion</span></span></a>
   </div>
 </li>
@@ -252,19 +243,17 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#the-dissonance-index" id="toc-the-dissonance-index" class="nav-link active" data-scroll-target="#the-dissonance-index"><span class="header-section-number">5.1</span> The dissonance index</a></li>
-  <li><a href="#oecd-creditor-reporting-system" id="toc-oecd-creditor-reporting-system" class="nav-link" data-scroll-target="#oecd-creditor-reporting-system"><span class="header-section-number">5.2</span> OECD creditor reporting system</a></li>
-  <li><a href="#unfccc-national-adaptation-plans" id="toc-unfccc-national-adaptation-plans" class="nav-link" data-scroll-target="#unfccc-national-adaptation-plans"><span class="header-section-number">5.3</span> UNFCCC National adaptation plans</a></li>
-  <li><a href="#entropy-calculations" id="toc-entropy-calculations" class="nav-link" data-scroll-target="#entropy-calculations"><span class="header-section-number">5.4</span> Entropy calculations</a></li>
+  <li><a href="#sec-nexus" id="toc-sec-nexus" class="nav-link active" data-scroll-target="#sec-nexus"><span class="header-section-number">3.1</span> Adaptation nexus</a></li>
+  <li><a href="#sec-regime" id="toc-sec-regime" class="nav-link" data-scroll-target="#sec-regime"><span class="header-section-number">3.2</span> Adaptation regime</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../chapters/theory.html">Research design</a></li><li class="breadcrumb-item"><a href="../chapters/methods.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../text/context.html">Climate adaptation</a></li><li class="breadcrumb-item"><a href="../text/lit.html"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Literature review: Nexus and regime</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span id="sec-methods" class="quarto-section-identifier"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods</span></span></h1>
+<h1 class="title"><span id="sec-lit" class="quarto-section-identifier"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Literature review: Nexus and regime</span></span></h1>
 </div>
 
 
@@ -281,59 +270,68 @@ window.Quarto = {
 </header>
 
 
-<p>In this section, I explain the methods I will use to find and analyze data on climate adaptation discourse. First, I discuss the development of the Dissonance Index as the core analytical contribution of this thesis. Second, I explain the OECD CRS dataset, how it is prepared and analyzed using entropy calculations. Third, I explain the National Adaptation Plans at the UNFCCC, how they are prepared and analyzed through structural topic modeling. Finally, I describe how entropy calculations will be unified to create comparative measures of discourse fragmentation.</p>
-<p>All data will be analyzed with the free and open-source statistical program <code>R</code> with the help of packages in the <code>tidyverse</code>. All source files for this project are available in a <a href="https://github.com/nilsnerhus/oppgave">GitHub repository</a> and the documents are automatically produced in HTML, PDF, and DOCX when changes are pushed to the repository and posted on <a href="https://nilsnerhus.github.io/oppgave/">the Internet</a>.</p>
-<section id="the-dissonance-index" class="level2" data-number="5.1">
-<h2 data-number="5.1" class="anchored" data-anchor-id="the-dissonance-index"><span class="header-section-number">5.1</span> The dissonance index</h2>
-<p>The central contribution of this thesis is the development and application of a “Dissonance Index” that quantifies the degree of variation in how climate adaptation is conceptualized by different actors within the global aid system.</p>
-<p>The Dissonance Index draws from information theory, specifically using Shannon entropy as the foundational measurement. Entropy, originally developed by Claude Shannon in 1948, measures the unpredictability or randomness in a system. When applied to discourse analysis, higher entropy values indicate greater dissonance (more diversity in conceptualizations), while lower entropy values indicate lower dissonance (more consensus in conceptualizations).</p>
-<p>Mathematically, Shannon entropy is calculated as:</p>
-<p><span class="math display">\[H = -\sum_{i=1}^{n} p(x_i) \log_2 p(x_i)\]</span></p>
-<p>Where:</p>
+<p>As mentioned above <a href="context.html" class="quarto-xref"><span>Chapter 2</span></a>, this section will present the two main strands of climate adaptation research. One is sympathetic, the adaptation nexus, while the other is critical, the adaptation regime. Climate adaptation is concerned with vulnerability to climate damages, and the main disagreement is in the production of vulnerability.</p>
+<p>The literature in this field maps onto the thinking in the field of development studies, where the study of interventions, projects that seek to change societies abroad, has a long theoretical history.</p>
+<section id="sec-nexus" class="level2" data-number="3.1">
+<h2 data-number="3.1" class="anchored" data-anchor-id="sec-nexus"><span class="header-section-number">3.1</span> Adaptation nexus</h2>
+<p>This approach has its roots in participatory movements in the 1990s, critiquing the then paradigm of top-down development research and practice, preoccupied with governmental institutions <span class="citation" data-cites="freire1970 chambers1994">(<a href="conclusion.html#ref-chambers1994" role="doc-biblioref">Chambers, 1994</a>; <a href="conclusion.html#ref-freire1970" role="doc-biblioref">Freire, 1970</a>)</span>. The researcher was not to observe and report, but had the ethical responsibility to include and empower the communities they researched <span class="citation" data-cites="desai2006">(<a href="conclusion.html#ref-desai2006" role="doc-biblioref">Desai &amp; Potter, 2006</a>)</span>. New methods were developed to better map communities and engage them in knowledge production, such as participatory rural appraisal [source].</p>
+<p>The data collected was used with new analytical framework centering the individual and communities. These frameworks analyzed how livelihoods were stitched together with a mix of assets, endowments, capabilities <span class="citation" data-cites="sen2000">(<a href="conclusion.html#ref-sen2000" role="doc-biblioref">Sen, 2000</a>)</span>, shaped by access <span class="citation" data-cites="ribot2003">(<a href="conclusion.html#ref-ribot2003" role="doc-biblioref">Ribot &amp; Peluso, 2003</a>)</span> and aspirations <span class="citation" data-cites="appadurai2004">(<a href="conclusion.html#ref-appadurai2004" role="doc-biblioref">Appadurai, 2004</a>)</span>, amongst others. This gave valuable insight into how societies functioned, and sparked new forms of interventions, with a focus on co-management and knowledge transfer.</p>
+<p>This strand of research has since become a part of the mainstream development discourse, and variations on the participatory methods being implemented by the largest aid organizations like the World Bank [source]. They see climate adaptation as just one policy area amongst all the others, and is searching for some key sectors and for synergies between them [source].</p>
+<p>One example of this could be tree planting projects, that while their main purpose is carbon sequestration, the project could contribute in many ways:</p>
 <ul>
-<li><span class="math inline">\(H\)</span> is the entropy value</li>
-<li><span class="math inline">\(p(x_i)\)</span> is the probability of category <span class="math inline">\(i\)</span> occurring</li>
-<li><span class="math inline">\(n\)</span> is the number of possible categories</li>
+<li>Economic security through the sale of forest carbon credits to the global north. If the tree is planted as a part of a farming system as a form agroforestry, the wood could be seen as a form of long-term investment that could be harvested in 30 years</li>
+<li>Food security through production of fruit</li>
+<li>Gender equality by giving the responsibility for managing the trees to women</li>
+<li>Environmental security by providing shade with leaves and reduce soil erosion with roots.</li>
 </ul>
-<p>For example, if climate adaptation funding were perfectly evenly distributed across 16 sectors, each sector would receive 6.25% of the funding. The entropy calculation would be:</p>
-<p><span class="math display">\[H = -16 \times (0.0625 \times \log_2 0.0625) = 4\]</span></p>
-<p>This represents maximum entropy for a system with 16 categories. If funding were concentrated in just one sector (100%), the entropy would be 0, indicating complete consensus. To normalize entropy values across datasets with different numbers of categories, I will use relative entropy, calculated as:</p>
-<p><span class="math display">\[H_{rel} = \frac{H}{H_{max}} = \frac{H}{\log_2 n}\]</span></p>
-<p>This scales entropy to a value between 0 and 1, where 0 represents complete concentration (minimum dissonance) and 1 represents perfect dispersion (maximum dissonance). This normalization will allow for direct comparison between different dimensions of analysis (sectors, regions, etc.) and between different datasets (OECD CRS and NAPs).</p>
-<p>This approach attempts to bridge quantitative methods with post-structural critique from the anthropology of development, offering an empirical basis for examining discourse centralization in climate adaptation.</p>
+<p>The nexus understanding sees vulnerability as an individual’s <em>lack</em> of certain skill, capability, or access to a resource. When the right resource is given, it is expected to start an upwards spiral, where outcomes will improve in all other fields as well.</p>
 </section>
-<section id="oecd-creditor-reporting-system" class="level2" data-number="5.2">
-<h2 data-number="5.2" class="anchored" data-anchor-id="oecd-creditor-reporting-system"><span class="header-section-number">5.2</span> OECD creditor reporting system</h2>
-<p>The OECD Creditor Reporting System is a collection of self-reported activities by members of the OECD. This reporting is, to the member states and officials who report, a serious exercise, but it is not coordinated beyond the guidance the OECD gives [source]. The data I analyze covers the period from 2010 to 2023, during which donors have been able to mark projects as relevant to climate adaptation using the Rio markers system [source].</p>
-<p>For the OECD data analysis, I begin by extracting all project-level data where climate adaptation is marked as either a “principal” (marker value 2) or “significant” (marker value 1) objective [source]. I convert adaptation markers to binary flags (1 for any adaptation relevance, 0 for none) and log-transform disbursement amounts to account for the wide range of funding magnitudes.</p>
-<p>The data will be organized according to the standardized sector groups defined by the OECD, such as Education, Health, Water &amp; Sanitation, Transport &amp; Storage, Energy, Agriculture, Environmental Protection, and others [source]. This sectoral classification follows the official OECD purpose codes and provides a consistent framework for analyzing how adaptation funding is distributed across different domains.</p>
-<p>Using this prepared dataset, I will calculate entropy across various dimensions. The sectoral entropy measure will reveal how evenly or unevenly climate adaptation funding is distributed across sectors, with higher entropy values indicating more dispersed funding and lower values suggesting concentration in specific sectors. Similarly, geographic entropy will assess the concentration of adaptation funding across recipient countries and regions by grouping recipients by region and income level using World Bank classifications.</p>
-<p>I will also examine donor entropy to understand how consistently different donors allocate adaptation funding across sectors. For each major donor, the sectoral entropy of their adaptation portfolio will help identify patterns of consensus or divergence among donors. Finally, comparative entropy analyses between adaptation funding and general aid patterns will reveal whether climate adaptation represents a distinct discourse or simply mirrors existing aid patterns.</p>
-<p>To validate the entropy calculations, I will compare the results to randomized data to establish statistical significance, testing whether observed patterns of dissonance differ significantly from random chance [source]. This will involve creating multiple permutations of the dataset with randomly assigned adaptation flags and comparing the resulting entropy distributions to the observed values [source].</p>
-<p>A key limitation of this dataset is that it relies on self-reported data from donors, with potential inconsistencies in how adaptation is coded. Different donors may interpret the climate adaptation marker differently, leading to variations that reflect reporting practices rather than substantive differences in approach. However, this is appropriate for my study as I am interested in what is coded as climate adaptation to analyze what actors think, not the other way around.</p>
-</section>
-<section id="unfccc-national-adaptation-plans" class="level2" data-number="5.3">
-<h2 data-number="5.3" class="anchored" data-anchor-id="unfccc-national-adaptation-plans"><span class="header-section-number">5.3</span> UNFCCC National adaptation plans</h2>
-<p>The National Adaptation Plans (NAPs) are created through collaboration between various government actors and climate adaptation projects within international organizations like the World Bank [source]. In this study, these documents represent recipient countries’ official conceptualizations of climate adaptation and their planned responses.</p>
-<p>For the NAP analysis, I will collect all available NAPs submitted to the UNFCCC, which comprises 45 English language documents. Some of the plans are written in other languages and not available in English. I will then preprocess the text through tokenization, removal of stopwords, stemming, and creating a document-term matrix.</p>
-<p>Each document will be tagged with metadata including country income level, geographic region and special status (SIDS, LDC, neither). This metadata will serve as the basis for grouping documents when calculating entropy measures.</p>
-<p>To analyze discourse patterns in these documents, I will employ structural topic modeling (STM) using the <code>stm</code> package in R. Unlike traditional topic modeling, STM incorporates document metadata as covariates, allowing me to examine how topics correlate with factors like income level or regional location. I will determine the optimal number of topics (likely between 50-60) through model fit statistics including semantic coherence, exclusivity, and held-out likelihood.</p>
-<p>The focus of this analysis is not on the substantive content of the topics but rather on their distribution patterns across different document categories. The output of the STM analysis will provide the prevalence of each topic within each document and its correlation with document metadata, creating the probability distributions needed for entropy calculations.</p>
-<p>I will then convert these topic prevalences into probability distributions suitable for entropy calculation. For example, I might examine the distribution of topics within NAPs from different income groups:</p>
-<p>This approach will allow me to calculate intra-group entropy (within defined groups such as low-income countries), inter-group entropy (between different groups), and overall corpus entropy (across the entire collection of documents) [source].</p>
-<p>Higher intra-group entropy would indicate more diverse conceptualizations of adaptation within that group, while lower values would suggest greater consensus. Large differences between intra-group and inter-group entropy would indicate distinctive discourse patterns associated with particular groups [source].</p>
-<p>To ensure the reliability of topic models, I will use cross-validation by splitting the NAP corpus into training and testing sets to verify that identified topics are stable across different subsets of documents. I will also vary the parameters of topic models (number of topics, priors, etc.) to ensure findings are not artifacts of specific model settings [source].</p>
-<p>A significant limitation in this approach is that NAPs represent official government perspectives and may not capture grassroots or local conceptualizations of adaptation. Power dynamics influence which perspectives are represented in official documents, potentially obscuring alternative or marginalized viewpoints. Additionally, topic modeling requires interpretive decisions in determining the meaning of topics, which may introduce researcher bias. Despite these limitations, the analysis of NAPs provides valuable insight into how recipient countries officially conceptualize climate adaptation, which is central to understanding discourse patterns in international climate governance.</p>
-</section>
-<section id="entropy-calculations" class="level2" data-number="5.4">
-<h2 data-number="5.4" class="anchored" data-anchor-id="entropy-calculations"><span class="header-section-number">5.4</span> Entropy calculations</h2>
-<p>The final methodological step will be to unify the entropy calculations from both datasets to create a comprehensive picture of adaptation discourse fragmentation. This will allow me to compare the degree of centralization or diversification across different dimensions and between different actor types [source].</p>
-<p>For each dimension of analysis (sectors, regions, topics, etc.), I will calculate and report absolute entropy values, relative entropy (normalized to 0-1 scale), benchmark comparisons between adaptation and general aid, and statistical significance based on comparison to random distributions.</p>
-<p>To interpret these values, I will establish general thresholds for categorizing levels of discourse dissonance. Values between 0.00-0.33 indicate low dissonance with high consensus and centralized discourse. Values between 0.34-0.66 represent moderate dissonance with partial consensus. Values between 0.67-1.00 show high dissonance with low consensus and highly decentralized discourse [source].</p>
-<p>The combination of entropy measurements across different datasets and dimensions will provide a comprehensive picture of how centralized or fragmented climate adaptation discourse is in global governance [source]. This directly connects to the theoretical framework by empirically assessing the degree to which adaptation discourse reflects a diversity of epistemological and ontological positions or the dominance of a singular, “anglobal” discourse.</p>
-<p>By focusing deliberately on official discourse in policy documents and funding decisions, this methodology does not seek to uncover some “true” or “authentic” local perspective on adaptation. Rather, it aims to establish how fragmented the official discourse actually is and along what lines this fragmentation occurs [source]. This focus on formal discourse is appropriate given that these official conceptualizations shape funding flows, policy priorities, and ultimately, the material reality of adaptation interventions.</p>
+<section id="sec-regime" class="level2" data-number="3.2">
+<h2 data-number="3.2" class="anchored" data-anchor-id="sec-regime"><span class="header-section-number">3.2</span> Adaptation regime</h2>
+<p>The adaptation regime has its roots in the deconstructionist anthropology of development <span class="citation" data-cites="lewis2006">(<a href="conclusion.html#ref-lewis2006" role="doc-biblioref">Lewis &amp; Mosse, 2006</a>)</span>. It is heavily influenced by the work of Michael Foucault, and critiques of the <em>discourse of development</em>. The discourse, as “a system of knowledge practices, technologies, and power relationships” that orders the relationships between people and institutions. <span class="citation" data-cites="lewis2006">(<a href="conclusion.html#ref-lewis2006" role="doc-biblioref">Lewis &amp; Mosse, 2006, p. 4</a>)</span>.</p>
+<p>The discourses that order the relationships between rich and poor countries change over time, and development had replaced civilization, just as civilization had replaced God before it <span class="citation" data-cites="ferguson1994">(<a href="conclusion.html#ref-ferguson1994" role="doc-biblioref">Ferguson, 1994</a>)</span>. 1 The seminal pieces here are <span class="citation" data-cites="escobar1995">Escobar (<a href="conclusion.html#ref-escobar1995" role="doc-biblioref">1995</a>)</span>’s deconstruction of the development discourse in Latin-America and the start of a post-development field of study and <span class="citation" data-cites="ferguson1994">Ferguson (<a href="conclusion.html#ref-ferguson1994" role="doc-biblioref">1994</a>)</span>’s deconstruction of development projects, and finding that the projects fail in predictable ways.</p>
+<p>As nature and climate discourses grew to prominence, <span class="citation" data-cites="agrawal2005">Agrawal (<a href="conclusion.html#ref-agrawal2005" role="doc-biblioref">2005</a>)</span> argued that the new relationships should be understood as a form of <em>environmentality</em>. <span class="citation" data-cites="paprocki2018">Paprocki (<a href="conclusion.html#ref-paprocki2018" role="doc-biblioref">2018</a>)</span> describes it as an <em>Adaptation regime</em> based on her field work in Bangladesh. She argues that some countries are constructed as climate vulnerable and therefore in need of climate adaptation and that this imaginary is closely related to other historical processes of colonialism. All societal issues are reduced to be climate related, and unavoidable. This dystopian imaginary builds the groundwork for extensive experimentation, since the dystopian outlook eliminates the possible downsides. This, she argues, leads to dispossession as land is taken for shrimp aquaculture and migration to the cities is promoted. The poor and vulnerable that were supposed to be helped, simply are not <span class="citation" data-cites="paprocki2018">(<a href="conclusion.html#ref-paprocki2018" role="doc-biblioref">Paprocki, 2018</a>)</span>.</p>
+<p><span class="citation" data-cites="dewan2022">Dewan (<a href="conclusion.html#ref-dewan2022" role="doc-biblioref">2022</a>)</span> further develops this, highlighting the building of dams and polders as flood protection. She argues the polders built as a climate adaptation measure, are the same as the old for flood protection, and are successful at acquiring funding. Climate adaptation was <em>the spice</em> that made their applications for funding work. The only issue was that the polders did not work. By blocking the seasonal flooding and draining, the rivers became silted and needed dredging, furthering the risk of floods <span class="citation" data-cites="dewan2022">(<a href="conclusion.html#ref-dewan2022" role="doc-biblioref">Dewan, 2022</a>)</span>.</p>
 
 
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list" style="display: none">
+<div id="ref-agrawal2005" class="csl-entry" role="listitem">
+Agrawal, A. (2005). <em>Environmentality: Technologies of government and the making of subjects</em>. Duke University Press.
+</div>
+<div id="ref-appadurai2004" class="csl-entry" role="listitem">
+Appadurai, A. (2004). The capacity to aspire: Culture and the terms of recognition. <em>Culture and Public Action</em>.
+</div>
+<div id="ref-chambers1994" class="csl-entry" role="listitem">
+Chambers, R. (1994). Participatory rural appraisal (PRA): Challenges, potentials and paradigm. <em>World Development</em>, <em>22</em>(10), 1437–1454. <a href="https://doi.org/10.1016/0305-750X(94)90030-2">https://doi.org/10.1016/0305-750X(94)90030-2</a>
+</div>
+<div id="ref-desai2006" class="csl-entry" role="listitem">
+Desai, V., &amp; Potter, R. B. (Eds.). (2006). <em>Doing development research</em> (1. publ). SAGE.
+</div>
+<div id="ref-dewan2022" class="csl-entry" role="listitem">
+Dewan, C. (2022). <span>“Climate change as a spice”</span>: Brokering environmental knowledge in bangladesh’s development industry. <em>Ethnos</em>, <em>87</em>(3), 538–559. <a href="https://doi.org/10.1080/00141844.2020.1788109">https://doi.org/10.1080/00141844.2020.1788109</a>
+</div>
+<div id="ref-escobar1995" class="csl-entry" role="listitem">
+Escobar, A. (1995). <em>Encountering development: The making and unmaking of the third world</em> (STU - Student edition). Princeton University Press. <a href="https://www.jstor.org/stable/j.ctt7rtgw">https://www.jstor.org/stable/j.ctt7rtgw</a>
+</div>
+<div id="ref-ferguson1994" class="csl-entry" role="listitem">
+Ferguson, J. (1994). <em>The anti-politics machine: "Development," depoliticization, and bureaucratic power in lesotho</em>. University of Minnesota Press.
+</div>
+<div id="ref-freire1970" class="csl-entry" role="listitem">
+Freire, P. (1970). <em>Pedagogy of the oppressed</em> (Repr). Bloomsbury.
+</div>
+<div id="ref-lewis2006" class="csl-entry" role="listitem">
+Lewis, D., &amp; Mosse, D. (2006). Theoretical approaches to brokerage and translation in development. In <em>Development brokers and translators: The ethnography of aid and agencies</em>. Kumarian Press.
+</div>
+<div id="ref-paprocki2018" class="csl-entry" role="listitem">
+Paprocki, K. (2018). Threatening dystopias: Development and adaptation regimes in bangladesh. <em>Annals of the American Association of Geographers</em>, <em>108</em>(4), 955–973. <a href="https://doi.org/10.1080/24694452.2017.1406330">https://doi.org/10.1080/24694452.2017.1406330</a>
+</div>
+<div id="ref-ribot2003" class="csl-entry" role="listitem">
+Ribot, J. C., &amp; Peluso, N. L. (2003). A theory of access. <em>Rural Sociology</em>, <em>68</em>(2), 153–181. <a href="https://doi.org/10.1111/j.1549-0831.2003.tb00133.x">https://doi.org/10.1111/j.1549-0831.2003.tb00133.x</a>
+</div>
+<div id="ref-sen2000" class="csl-entry" role="listitem">
+Sen, A. (2000). <em>Development as freedom</em> (1. Anchor Books ed). Anchor Books.
+</div>
+</div>
 </section>
 
 </main> <!-- /main -->
@@ -738,13 +736,13 @@ window.Quarto = {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../chapters/theory.html" class="pagination-link" aria-label="Theory: Adaptation for the future">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Theory: Adaptation for the future</span></span>
+      <a href="../text/context.html" class="pagination-link" aria-label="Context: Climate action">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Context: Climate action</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="../chapters/findings.html" class="pagination-link" aria-label="Findings">
-        <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Findings</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="../text/theory.html" class="pagination-link" aria-label="Theory: Adaptation for the future">
+        <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Theory: Adaptation for the future</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>

@@ -10,8 +10,8 @@
     ]
   },
   {
-    "objectID": "chapters/intro.html",
-    "href": "chapters/intro.html",
+    "objectID": "text/intro.html",
+    "href": "text/intro.html",
     "title": "1  Introduction",
     "section": "",
     "text": "1.1 Climate security as Human Security\nThis thesis concludes five years spent at the University. Throughout this time, the world has changed dramatically:\nAt the same time, the world has started experiencing the results of 200 years of greenhouse emissions:\nThe focus of this thesis are the actions taken to adapt to climate change. The goal is not to predict the future, but rather to better understand what the actors in this space, NGOs, academics, or governments think climate adaptation means. As well as to understand their room for maneuver and what they plan to do today, and in the future.\nThis thesis takes a novel approach. It combines theories and concepts from the field of Anthropology of Development, with their epistemological critiques of development and development projects, with quantitative methods better known from other fields.\nA central part of the discussion is vulnerability, risk, and security. Human Security, as an approach to research, challenges the traditional realpolitik-paradigm and focuses security as “something more than the top-down military defense of state interests and territory” (Paris, 2001, p. 88). It broadens the understanding of security; horizontally to include more threats and vertically to include more actors (Paris, 2001, p. 98). Importantly for climate adaptation, Human Security includes risks to the biosphere and the ecosystems the world relies on, as well as the concrete risk to the individual. The individual might now experience a greater risk to their food security, environmental security, community security and personal security (UNDP, 1994).\nThe critique of development from the perspective of the anthropology of development is that interventions rarely eliminate vulnerabilities. Rather, vulnerabilities are shifted from one group to another, from one scale to another or from one place to another (Eriksen et al., 2021; Scoville-Simonds et al., 2020). Climate adaptation is special because of its orientation to the future. It is unclear how severe, how often, in what kind and where the damages will come. It is a reconstruction without destruction that relies on both the forecasts from climate science, and a specific understanding of the future, to decide what society is going to keep and discard. How we decide to frame the risk, vulnerability, and tool we use to safeguard ourselves from the future, is an inherently ontological and epistemological question. Without a proper understanding of climate adaptation, we run the risk of maladaptation, where the vulnerability to climate damage is not minimized, just moved around.",
@@ -20,8 +20,8 @@
     ]
   },
   {
-    "objectID": "chapters/intro.html#scope",
-    "href": "chapters/intro.html#scope",
+    "objectID": "text/intro.html#scope",
+    "href": "text/intro.html#scope",
     "title": "1  Introduction",
     "section": "1.2 Scope",
     "text": "1.2 Scope\nThis thesis seeks to understand climate adaptation funding flows, on a global scale. Since this funding, and its discourse, is anchored in the UNFCCC, it is a natural focal point for the study. The declarations made at the end of every Climate Summit are the outcome of intense negotiations at the summit, and their contents become a part national political debates all around the world [source].\nWhat is climate adaptation?\n\nWhat is the impact of climate adaptation on are North-South finance flows?\nWhat are the most common climate adaptation interventions? What do they replace?\n\nWhat impact will climate adaptation have?\n\nWhat futures do climate adaptation projects have? What are their implications?\nHow are climate adaptation interventions justified? Who decides?",
@@ -30,8 +30,8 @@
     ]
   },
   {
-    "objectID": "chapters/intro.html#structure-of-the-thesis",
-    "href": "chapters/intro.html#structure-of-the-thesis",
+    "objectID": "text/intro.html#structure-of-the-thesis",
+    "href": "text/intro.html#structure-of-the-thesis",
     "title": "1  Introduction",
     "section": "1.3 Structure of the thesis",
     "text": "1.3 Structure of the thesis\nThis thesis is structured in three parts. Following this introduction, I present climate adaptation as a part of the international structure for climate change governance Chapter 2. Then, I present the two main understandings of climate adaptation in the scientific literature Chapter 3.\nIn the second part, I present the research design. Here, I explain the different ontological and epistemological views on the future and how they can be analyzed Chapter 4, before I present my data collection and analysis through regression and structured topic models Chapter 5.\nIn the last part, I will present the findings from my study Chapter 6 and discuss how they should be understood Chapter 7, before I conclude the thesis Chapter 8.\n\n\n\n\nEriksen, S., Schipper, E. L. F., Scoville-Simonds, M., Vincent, K., Adam, H. N., Brooks, N., Harding, B., Khatri, D., Lenaerts, L., Liverman, D., Mills-Novoa, M., Mosberg, M., Movik, S., Muok, B., Nightingale, A., Ojha, H., Sygna, L., Taylor, M., Vogel, C., & West, J. J. (2021). Adaptation interventions and their effect on vulnerability in developing countries: Help, hindrance or irrelevance? World Development, 141, 105383. https://doi.org/10.1016/j.worlddev.2020.105383\n\n\nParis, R. (2001). Human security: Paradigm shift or hot air? International Security, 26(2), 87–102. https://www.jstor.org/stable/3092123\n\n\nScoville-Simonds, M., Jamali, H., & Hufty, M. (2020). The hazards of mainstreaming: Climate change adaptation politics in three dimensions. World Development, 125, 1–10. https://doi.org/10.1016/j.worlddev.2019.104683\n\n\nUNDP. (1994). Human development report 1994. In Human Development Reports. United Nations. https://hdr.undp.org/content/human-development-report-1994",
@@ -40,8 +40,8 @@
     ]
   },
   {
-    "objectID": "chapters/context.html",
-    "href": "chapters/context.html",
+    "objectID": "text/context.html",
+    "href": "text/context.html",
     "title": "2  Context: Climate action",
     "section": "",
     "text": "2.1 Mitigation\nInternational climate change action is governed by the United Nations Framework Convention for Climate Change (UNFCCC) [source]. The Convention has annual Conferences of the Parties (COP) to the Convention, also known as climate summits. The first summit, known colloquially as the Earth Summit, was held in Rio de Janeiro in 1992. The Earth Summit also created two other conventions, The Convention on Biological Diversity (CBD) and The United Nations Convention to Combat Desertification (UNCCD) [source].\nThe Summit established the concept of Common, but differentiated, responsibilities, highlighting Global North countries, defined in the convention as Annex I and Annex II countries. Here, industrialized countries are seen to have a greater responsibility for environmental destruction, and thus a greater responsibility to remedy it [source]. Official development assistance, an OECD measurement for foreign aid, was adapted to the Summit, known as the Rio markers, making it possible to code North-South aid as contributing towards the goals established in these conventions [source].\nThe Kyoto summit in 1997 established climate mitigation as the first pillar of the UNFCCC [source]. Here, the level of greenhouse gasses was to be kept at a level below what was dangerous to the biosphere. The cuts that this entailed was to be done by the already industrialized countries, as they were historically responsible for the emissions. It also created a market for carbon, called “Flexibility mechanisms”, where emissions could be traded from developing countries to industrialized countries [source]. In this way, developing countries that are under no obligation to cut their emissions, could sell carbon credits [source]. The Paris Agreement, adopted at COP21 in 2015, strengthened the commitment to mitigation, calling for a target to limit climate change to 1,5 degrees [source].",
@@ -51,8 +51,8 @@
     ]
   },
   {
-    "objectID": "chapters/context.html#adaptation",
-    "href": "chapters/context.html#adaptation",
+    "objectID": "text/context.html#adaptation",
+    "href": "text/context.html#adaptation",
     "title": "2  Context: Climate action",
     "section": "2.2 Adaptation",
     "text": "2.2 Adaptation\nAs the targets set in the Kyoto protocol were deemed inadequate to deal with the climate crisis, and Governments faced resistance to mitigation measures from lobbyists and citizens, climate adaptation became more visible and was adapted as the second pillar at COP16 in Cancun in 2010 [source]. Climate adaptation are all measures to reduce climate damages. In industrialized countries, adaptation usually means managing surface runoff and in low-lying countries, sea-level level rise and storm surges, with a mix of mechanical- and nature-based interventions. In developing countries, this process is more complex and something I will explore further below Chapter 3.",
@@ -62,8 +62,8 @@
     ]
   },
   {
-    "objectID": "chapters/context.html#loss-and-damage",
-    "href": "chapters/context.html#loss-and-damage",
+    "objectID": "text/context.html#loss-and-damage",
+    "href": "text/context.html#loss-and-damage",
     "title": "2  Context: Climate action",
     "section": "2.3 Loss and damage",
     "text": "2.3 Loss and damage\nLoss and damage grew more prominent in UNFCCC negotiation as new knowledge was produced and activism from small island developing states highlighted, that some nations could disappear due to sea level rise, if climate action was not intensified [source]. This led to both a sharpening of the original target from 1997, to a new one to limit global warming to 1,5° C, and the establishment of the loss and damage pillar [source].\nLoss and damage is meant to compensate for damages beyond adaptation (Janzen et al., 2021). It is mainly understood in two ways. First, as a form of legal process, within domestic courts or under the UNFCCC umbrella. In this process, damages from an event are calculated, the contribution of climate change to the event is established, the responsibility for the emissions are attributed, and the damages are compensated [source]. Second, as a form of risk management, where risk is reduced through adaptation measures, transferred through insurance schemes and retained through resilience measures [source].\n\nTimeline of the main climate summits\n\n\n\n\n\n\n\n\nCOP\nPlace\nDate\nHappening\n\n\n\n\n\nRio de Janeiro\n1992\nThe UNFCCC is established\n\n\n3\nKyoto\n1997\nThe climate mitigation pillar is established\n\n\n10\nCancun\n2010\nThe climate adaptaiton pillar is established\n\n\n21\nParis\n2015\nThe climate loss and damage pillar is established\n\n\n29\nBaku\n2024\n$300 bn is pledged for climate adaptation",
@@ -73,8 +73,8 @@
     ]
   },
   {
-    "objectID": "chapters/context.html#unfccc-negotiations",
-    "href": "chapters/context.html#unfccc-negotiations",
+    "objectID": "text/context.html#unfccc-negotiations",
+    "href": "text/context.html#unfccc-negotiations",
     "title": "2  Context: Climate action",
     "section": "2.4 UNFCCC negotiations",
     "text": "2.4 UNFCCC negotiations\nThe UNFCCC understands climate damages, all the negative effects of climate change, as a kind of spillover effect. Unmitigated emissions lead to damages, unadapted damages causes losses that have to be compensated. Since the UNFCCC, like most international agreements, is negotiated by countries that have to balance their need for strong policy action and future uncertainty, the process is ambiguous (Hall & Persson, 2018). Many see the relationship between climate action and economic growth as opposites, resisting binding agreements and preferring unsubstatiaded goals.\nThe Convention has room for multiple interpretations of most aspects of it, and there are two main ways of the relation between the pillars. The first one is that the goal is to minimize the damage as much as possible by mitigating as much as possible, and that adaptation and loss and damage are there as a safety precaution. The second is that there exists an optimal combination of mitigation, adaptation, and loss and damage that uses the resources more efficiently.\n\n\n\n\nHall, N., & Persson, Å. (2018). Global climate adaptation governance: Why is it not legally binding? European Journal of International Relations, 24(3), 540–566. https://doi.org/10.1177/1354066117725157\n\n\nJanzen, S., Emerton, L., van der Geest, K., Narvaez, L., & Sebesvari, Z. (2021). Assessing losses and damages to ecosystem services: Current state and opportunities for the warsaw international mechanism under the UNFCCC. Climate Policy, 21(7), 912–926. https://doi.org/10.1080/14693062.2021.1947177",
@@ -84,8 +84,8 @@
     ]
   },
   {
-    "objectID": "chapters/lit.html",
-    "href": "chapters/lit.html",
+    "objectID": "text/lit.html",
+    "href": "text/lit.html",
     "title": "3  Literature review: Nexus and regime",
     "section": "",
     "text": "3.1 Adaptation nexus\nAs mentioned above Chapter 2, this section will present the two main strands of climate adaptation research. One is sympathetic, the adaptation nexus, while the other is critical, the adaptation regime. Climate adaptation is concerned with vulnerability to climate damages, and the main disagreement is in the production of vulnerability.\nThe literature in this field maps onto the thinking in the field of development studies, where the study of interventions, projects that seek to change societies abroad, has a long theoretical history.\nThis approach has its roots in participatory movements in the 1990s, critiquing the then paradigm of top-down development research and practice, preoccupied with governmental institutions (Chambers, 1994; Freire, 1970). The researcher was not to observe and report, but had the ethical responsibility to include and empower the communities they researched (Desai & Potter, 2006). New methods were developed to better map communities and engage them in knowledge production, such as participatory rural appraisal [source].\nThe data collected was used with new analytical framework centering the individual and communities. These frameworks analyzed how livelihoods were stitched together with a mix of assets, endowments, capabilities (Sen, 2000), shaped by access (Ribot & Peluso, 2003) and aspirations (Appadurai, 2004), amongst others. This gave valuable insight into how societies functioned, and sparked new forms of interventions, with a focus on co-management and knowledge transfer.\nThis strand of research has since become a part of the mainstream development discourse, and variations on the participatory methods being implemented by the largest aid organizations like the World Bank [source]. They see climate adaptation as just one policy area amongst all the others, and is searching for some key sectors and for synergies between them [source].\nOne example of this could be tree planting projects, that while their main purpose is carbon sequestration, the project could contribute in many ways:\nThe nexus understanding sees vulnerability as an individual’s lack of certain skill, capability, or access to a resource. When the right resource is given, it is expected to start an upwards spiral, where outcomes will improve in all other fields as well.",
@@ -95,8 +95,8 @@
     ]
   },
   {
-    "objectID": "chapters/lit.html#sec-nexus",
-    "href": "chapters/lit.html#sec-nexus",
+    "objectID": "text/lit.html#sec-nexus",
+    "href": "text/lit.html#sec-nexus",
     "title": "3  Literature review: Nexus and regime",
     "section": "",
     "text": "Economic security through the sale of forest carbon credits to the global north. If the tree is planted as a part of a farming system as a form agroforestry, the wood could be seen as a form of long-term investment that could be harvested in 30 years\nFood security through production of fruit\nGender equality by giving the responsibility for managing the trees to women\nEnvironmental security by providing shade with leaves and reduce soil erosion with roots.",
@@ -106,8 +106,8 @@
     ]
   },
   {
-    "objectID": "chapters/lit.html#sec-regime",
-    "href": "chapters/lit.html#sec-regime",
+    "objectID": "text/lit.html#sec-regime",
+    "href": "text/lit.html#sec-regime",
     "title": "3  Literature review: Nexus and regime",
     "section": "3.2 Adaptation regime",
     "text": "3.2 Adaptation regime\nThe adaptation regime has its roots in the deconstructionist anthropology of development (Lewis & Mosse, 2006). It is heavily influenced by the work of Michael Foucault, and critiques of the discourse of development. The discourse, as “a system of knowledge practices, technologies, and power relationships” that orders the relationships between people and institutions. (Lewis & Mosse, 2006, p. 4).\nThe discourses that order the relationships between rich and poor countries change over time, and development had replaced civilization, just as civilization had replaced God before it (Ferguson, 1994). 1 The seminal pieces here are Escobar (1995)’s deconstruction of the development discourse in Latin-America and the start of a post-development field of study and Ferguson (1994)’s deconstruction of development projects, and finding that the projects fail in predictable ways.\nAs nature and climate discourses grew to prominence, Agrawal (2005) argued that the new relationships should be understood as a form of environmentality. Paprocki (2018) describes it as an Adaptation regime based on her field work in Bangladesh. She argues that some countries are constructed as climate vulnerable and therefore in need of climate adaptation and that this imaginary is closely related to other historical processes of colonialism. All societal issues are reduced to be climate related, and unavoidable. This dystopian imaginary builds the groundwork for extensive experimentation, since the dystopian outlook eliminates the possible downsides. This, she argues, leads to dispossession as land is taken for shrimp aquaculture and migration to the cities is promoted. The poor and vulnerable that were supposed to be helped, simply are not (Paprocki, 2018).\nDewan (2022) further develops this, highlighting the building of dams and polders as flood protection. She argues the polders built as a climate adaptation measure, are the same as the old for flood protection, and are successful at acquiring funding. Climate adaptation was the spice that made their applications for funding work. The only issue was that the polders did not work. By blocking the seasonal flooding and draining, the rivers became silted and needed dredging, furthering the risk of floods (Dewan, 2022).\n\n\n\n\nAgrawal, A. (2005). Environmentality: Technologies of government and the making of subjects. Duke University Press.\n\n\nAppadurai, A. (2004). The capacity to aspire: Culture and the terms of recognition. Culture and Public Action.\n\n\nChambers, R. (1994). Participatory rural appraisal (PRA): Challenges, potentials and paradigm. World Development, 22(10), 1437–1454. https://doi.org/10.1016/0305-750X(94)90030-2\n\n\nDesai, V., & Potter, R. B. (Eds.). (2006). Doing development research (1. publ). SAGE.\n\n\nDewan, C. (2022). “Climate change as a spice”: Brokering environmental knowledge in bangladesh’s development industry. Ethnos, 87(3), 538–559. https://doi.org/10.1080/00141844.2020.1788109\n\n\nEscobar, A. (1995). Encountering development: The making and unmaking of the third world (STU - Student edition). Princeton University Press. https://www.jstor.org/stable/j.ctt7rtgw\n\n\nFerguson, J. (1994). The anti-politics machine: \"Development,\" depoliticization, and bureaucratic power in lesotho. University of Minnesota Press.\n\n\nFreire, P. (1970). Pedagogy of the oppressed (Repr). Bloomsbury.\n\n\nLewis, D., & Mosse, D. (2006). Theoretical approaches to brokerage and translation in development. In Development brokers and translators: The ethnography of aid and agencies. Kumarian Press.\n\n\nPaprocki, K. (2018). Threatening dystopias: Development and adaptation regimes in bangladesh. Annals of the American Association of Geographers, 108(4), 955–973. https://doi.org/10.1080/24694452.2017.1406330\n\n\nRibot, J. C., & Peluso, N. L. (2003). A theory of access. Rural Sociology, 68(2), 153–181. https://doi.org/10.1111/j.1549-0831.2003.tb00133.x\n\n\nSen, A. (2000). Development as freedom (1. Anchor Books ed). Anchor Books.",
@@ -117,8 +117,8 @@
     ]
   },
   {
-    "objectID": "chapters/theory.html",
-    "href": "chapters/theory.html",
+    "objectID": "text/theory.html",
+    "href": "text/theory.html",
     "title": "4  Theory: Adaptation for the future",
     "section": "",
     "text": "4.1 Adaptation as a discourse about the future\nIn this theory section, I present the theoretical framework that informs the analysis later in the thesis, drawing on critical perspectives from anthropology of development, future studies, and post-structural theory.\nI first examine adaptation as a discourse about the future, to understand how climate adaptation constructs particular visions of what is to come. Then I present ways of understanding the future through critical future studies, examining how epistemological and ontological assumptions shape possible futures. Finally, I discuss the anglobal discourse and defuturing as the central critique of the global system and its implications for climate adaptation.\nClimate adaptation is fundamentally oriented toward the future. Unlike climate mitigation, which seeks to prevent future impacts by reducing emissions in the present, adaptation accepts that some climate impacts are inevitable and focuses on preparing for them.\nWhen governments and development agencies plan adaptation interventions, they are not simply responding to objective climate projections. They are engaging in what can be called “anticipatory governance” (Guston, 2014) - creating institutions, practices, and discourses that attempt to manage uncertain futures. The ways these futures are imagined and prioritized are inherently political, reflecting power dynamics in global climate governance.\nAs the adaptation regime literature makes clear Section 3.2, the construction of countries as “climate vulnerable” establishes particular relationships between donors and recipients. These relationships shape how adaptation needs are articulated and which interventions are deemed appropriate. The discourse of adaptation thus becomes a site where future possibilities are opened or foreclosed [source].\nThe Dissonance Index methodology I develop in this thesis provides a way to empirically analyze this discourse. By measuring the variation in how adaptation is conceptualized across different actors, sectors, and contexts, we can begin to understand the degree of fragmentation or centralization in global adaptation discourse. Greater fragmentation would indicate more diverse understandings of what adaptation means and how it should be pursued, reflecting a greater plurality of epistemological and ontological positions.",
@@ -128,8 +128,8 @@
     ]
   },
   {
-    "objectID": "chapters/theory.html#epistemological-and-ontological-foundations-of-possible-futures",
-    "href": "chapters/theory.html#epistemological-and-ontological-foundations-of-possible-futures",
+    "objectID": "text/theory.html#epistemological-and-ontological-foundations-of-possible-futures",
+    "href": "text/theory.html#epistemological-and-ontological-foundations-of-possible-futures",
     "title": "4  Theory: Adaptation for the future",
     "section": "4.2 Epistemological and ontological foundations of possible futures",
     "text": "4.2 Epistemological and ontological foundations of possible futures\nCritical future studies examines how futures are imagined, constructed, and materialized through social and political processes. A central insight from this field is that what futures are deemed possible depends fundamentally on epistemological and ontological assumptions about the world [source].\nEpistemologically, how we claim to know the world shapes what kinds of futures seem reasonable or possible. Different knowledge systems—whether scientific, indigenous, religious, or otherwise—generate different understandings of how change occurs and what possibilities exist. These epistemological differences are not merely academic; they materially affect which future visions are privileged and which are marginalized in policy discourse [source].\nOntologically, different understandings of what the world is shape future visions in profound ways. Ontological assumptions concern fundamental questions about agency (who or what can act), causality (how change happens), and the nature of time and space themselves. Different cultural and philosophical traditions offer diverse ontological frameworks that structure how futures are imagined and enacted [source].\nThese epistemological and ontological assumptions are rarely made explicit in policy documents or funding decisions. However, they fundamentally shape which future possibilities are considered viable and which are dismissed as unrealistic or impractical [source].\nThe Dissonance Index allows us to analyze the degree to which these diverse epistemological and ontological perspectives are present in adaptation discourse. Higher fragmentation in the discourse would indicate greater epistemological and ontological plurality - more diverse ways of knowing and being in relation to futures. Lower fragmentation would suggest the dominance of particular ways of knowing and being, limiting the range of futures considered legitimate or feasible [source].",
@@ -139,8 +139,8 @@
     ]
   },
   {
-    "objectID": "chapters/theory.html#the-anglobal-discourse-and-defuturing",
-    "href": "chapters/theory.html#the-anglobal-discourse-and-defuturing",
+    "objectID": "text/theory.html#the-anglobal-discourse-and-defuturing",
+    "href": "text/theory.html#the-anglobal-discourse-and-defuturing",
     "title": "4  Theory: Adaptation for the future",
     "section": "4.3 The anglobal discourse and defuturing",
     "text": "4.3 The anglobal discourse and defuturing\nThe third key element of this theoretical framework is the concept of the “anglobal discourse” (Sun & Song, 2025) - a term that I use here to connect various post-structural critiques of Western-dominated global systems including technoscience (Slaughter, 2024), Western capitalist modernity (Escobar, 2018), neoliberalism (Escobar, 1995) and capitalist realism (Goode & Godhe, 2017).\nThe anglobal discourse main characteristic is this context is its connection to the concept of “defuturing” (Fry, 2019). Defuturing refers to practices, systems, and discourses that actively reduce the range of possible futures. When dominant discourses naturalize certain pathways while making alternatives seem impossible or unreasonable, they engage in defuturing—actively diminishing rather than expanding future possibilities (Escobar, 2020).\nWe see this defuturing at work in climate policy when adaptation becomes, as Dewan describes, merely “the spice” added to conventional infrastructure projects to secure funding (Dewan, 2022). The fundamental assumptions about what development should look like remain unchanged, with climate considerations merely grafted onto existing models (Paprocki, 2018). Similarly, when climate vulnerability is framed primarily as a technical problem requiring technical solutions, deeper questions about the political and economic systems that produce vulnerability are sidelined [source].\nThe anglobal discourse is characterized by low fragmentation - a high degree of centralization and uniformity in how futures are conceptualized. This uniformity constrains the range of possible futures that can be imagined and pursued. By contrast, higher fragmentation in discourse would indicate more diverse understandings of the future, potentially allowing for approaches that challenge or exist outside the anglobal discourse [source].\nThe Dissonance Index methodology connects directly to these theoretical concerns. By measuring variation in adaptation discourse across different actors and contexts, we can assess to what extent current adaptation governance reflects a diversity of epistemological and ontological positions or the dominance of the anglobal discourse. Low dissonance (high consensus) in adaptation discourse across diverse contexts would indicate the dominance of the anglobal discourse and its associated defuturing effects. High dissonance would suggest greater epistemological and ontological plurality, potentially enabling a wider range of future possibilities.\nThis theoretical framework positions the empirical analysis that follows as an intervention in debates about whose futures matter in climate adaptation governance. By examining patterns of centralization or diversification in adaptation discourse, we can better understand how power operates through the construction of futures and begin to identify spaces where alternative pathways might emerge.\n\n\n\n\nDewan, C. (2022). “Climate change as a spice”: Brokering environmental knowledge in bangladesh’s development industry. Ethnos, 87(3), 538–559. https://doi.org/10.1080/00141844.2020.1788109\n\n\nEscobar, A. (1995). Encountering development: The making and unmaking of the third world (STU - Student edition). Princeton University Press. https://www.jstor.org/stable/j.ctt7rtgw\n\n\nEscobar, A. (2018). Designs for the pluriverse: Radical interdependence, autonomy, and the making of worlds. Duke University Press.\n\n\nEscobar, A. (2020). Pluriversal politics: The real and the possible. Duke University Press.\n\n\nFry, T. (2019). Design futuring in a borderland of postdevelopment. In Postdevelopment in practice. Routledge.\n\n\nGoode, L., & Godhe, M. (2017). Beyond capitalist realism – why we need critical future studies. Culture Unbound, 9(1, 1), 108–129. https://doi.org/10.3384/cu.2000.1525.1790615\n\n\nGuston, D. H. (2014). Understanding “anticipatory governance.” Social Studies of Science, 44(2), 218–242. https://doi.org/10.1177/0306312713508669\n\n\nPaprocki, K. (2018). Threatening dystopias: Development and adaptation regimes in bangladesh. Annals of the American Association of Geographers, 108(4), 955–973. https://doi.org/10.1080/24694452.2017.1406330\n\n\nSlaughter, R. A. (2024). Human agency and the technoscientific dilemma: Contesting the role of technology in shaping our collective futures. Futures, 161, 103377. https://doi.org/10.1016/j.futures.2024.103377\n\n\nSun, S., & Song, W. (2025). Anglobal knowledge and reimagined geographies of provincialization: The anglosphere as missing “area” in area studies. Globalizations, 1–19. https://doi.org/10.1080/14747731.2025.2469393",
@@ -150,8 +150,8 @@
     ]
   },
   {
-    "objectID": "chapters/methods.html",
-    "href": "chapters/methods.html",
+    "objectID": "text/methods.html",
+    "href": "text/methods.html",
     "title": "5  Methods",
     "section": "",
     "text": "5.1 The dissonance index\nIn this section, I explain the methods I will use to find and analyze data on climate adaptation discourse. First, I discuss the development of the Dissonance Index as the core analytical contribution of this thesis. Second, I explain the OECD CRS dataset, how it is prepared and analyzed using entropy calculations. Third, I explain the National Adaptation Plans at the UNFCCC, how they are prepared and analyzed through structural topic modeling. Finally, I describe how entropy calculations will be unified to create comparative measures of discourse fragmentation.\nAll data will be analyzed with the free and open-source statistical program R with the help of packages in the tidyverse. All source files for this project are available in a GitHub repository and the documents are automatically produced in HTML, PDF, and DOCX when changes are pushed to the repository and posted on the Internet.\nThe central contribution of this thesis is the development and application of a “Dissonance Index” that quantifies the degree of variation in how climate adaptation is conceptualized by different actors within the global aid system.\nThe Dissonance Index draws from information theory, specifically using Shannon entropy as the foundational measurement. Entropy, originally developed by Claude Shannon in 1948, measures the unpredictability or randomness in a system. When applied to discourse analysis, higher entropy values indicate greater dissonance (more diversity in conceptualizations), while lower entropy values indicate lower dissonance (more consensus in conceptualizations).\nMathematically, Shannon entropy is calculated as:\n\\[H = -\\sum_{i=1}^{n} p(x_i) \\log_2 p(x_i)\\]\nWhere:\nFor example, if climate adaptation funding were perfectly evenly distributed across 16 sectors, each sector would receive 6.25% of the funding. The entropy calculation would be:\n\\[H = -16 \\times (0.0625 \\times \\log_2 0.0625) = 4\\]\nThis represents maximum entropy for a system with 16 categories. If funding were concentrated in just one sector (100%), the entropy would be 0, indicating complete consensus. To normalize entropy values across datasets with different numbers of categories, I will use relative entropy, calculated as:\n\\[H_{rel} = \\frac{H}{H_{max}} = \\frac{H}{\\log_2 n}\\]\nThis scales entropy to a value between 0 and 1, where 0 represents complete concentration (minimum dissonance) and 1 represents perfect dispersion (maximum dissonance). This normalization will allow for direct comparison between different dimensions of analysis (sectors, regions, etc.) and between different datasets (OECD CRS and NAPs).\nThis approach attempts to bridge quantitative methods with post-structural critique from the anthropology of development, offering an empirical basis for examining discourse centralization in climate adaptation.",
@@ -161,8 +161,8 @@
     ]
   },
   {
-    "objectID": "chapters/methods.html#the-dissonance-index",
-    "href": "chapters/methods.html#the-dissonance-index",
+    "objectID": "text/methods.html#the-dissonance-index",
+    "href": "text/methods.html#the-dissonance-index",
     "title": "5  Methods",
     "section": "",
     "text": "\\(H\\) is the entropy value\n\\(p(x_i)\\) is the probability of category \\(i\\) occurring\n\\(n\\) is the number of possible categories",
@@ -172,8 +172,8 @@
     ]
   },
   {
-    "objectID": "chapters/methods.html#oecd-creditor-reporting-system",
-    "href": "chapters/methods.html#oecd-creditor-reporting-system",
+    "objectID": "text/methods.html#oecd-creditor-reporting-system",
+    "href": "text/methods.html#oecd-creditor-reporting-system",
     "title": "5  Methods",
     "section": "5.2 OECD creditor reporting system",
     "text": "5.2 OECD creditor reporting system\nThe OECD Creditor Reporting System is a collection of self-reported activities by members of the OECD. This reporting is, to the member states and officials who report, a serious exercise, but it is not coordinated beyond the guidance the OECD gives [source]. The data I analyze covers the period from 2010 to 2023, during which donors have been able to mark projects as relevant to climate adaptation using the Rio markers system [source].\nFor the OECD data analysis, I begin by extracting all project-level data where climate adaptation is marked as either a “principal” (marker value 2) or “significant” (marker value 1) objective [source]. I convert adaptation markers to binary flags (1 for any adaptation relevance, 0 for none) and log-transform disbursement amounts to account for the wide range of funding magnitudes.\nThe data will be organized according to the standardized sector groups defined by the OECD, such as Education, Health, Water & Sanitation, Transport & Storage, Energy, Agriculture, Environmental Protection, and others [source]. This sectoral classification follows the official OECD purpose codes and provides a consistent framework for analyzing how adaptation funding is distributed across different domains.\nUsing this prepared dataset, I will calculate entropy across various dimensions. The sectoral entropy measure will reveal how evenly or unevenly climate adaptation funding is distributed across sectors, with higher entropy values indicating more dispersed funding and lower values suggesting concentration in specific sectors. Similarly, geographic entropy will assess the concentration of adaptation funding across recipient countries and regions by grouping recipients by region and income level using World Bank classifications.\nI will also examine donor entropy to understand how consistently different donors allocate adaptation funding across sectors. For each major donor, the sectoral entropy of their adaptation portfolio will help identify patterns of consensus or divergence among donors. Finally, comparative entropy analyses between adaptation funding and general aid patterns will reveal whether climate adaptation represents a distinct discourse or simply mirrors existing aid patterns.\nTo validate the entropy calculations, I will compare the results to randomized data to establish statistical significance, testing whether observed patterns of dissonance differ significantly from random chance [source]. This will involve creating multiple permutations of the dataset with randomly assigned adaptation flags and comparing the resulting entropy distributions to the observed values [source].\nA key limitation of this dataset is that it relies on self-reported data from donors, with potential inconsistencies in how adaptation is coded. Different donors may interpret the climate adaptation marker differently, leading to variations that reflect reporting practices rather than substantive differences in approach. However, this is appropriate for my study as I am interested in what is coded as climate adaptation to analyze what actors think, not the other way around.",
@@ -183,8 +183,8 @@
     ]
   },
   {
-    "objectID": "chapters/methods.html#unfccc-national-adaptation-plans",
-    "href": "chapters/methods.html#unfccc-national-adaptation-plans",
+    "objectID": "text/methods.html#unfccc-national-adaptation-plans",
+    "href": "text/methods.html#unfccc-national-adaptation-plans",
     "title": "5  Methods",
     "section": "5.3 UNFCCC National adaptation plans",
     "text": "5.3 UNFCCC National adaptation plans\nThe National Adaptation Plans (NAPs) are created through collaboration between various government actors and climate adaptation projects within international organizations like the World Bank [source]. In this study, these documents represent recipient countries’ official conceptualizations of climate adaptation and their planned responses.\nFor the NAP analysis, I will collect all available NAPs submitted to the UNFCCC, which comprises 45 English language documents. Some of the plans are written in other languages and not available in English. I will then preprocess the text through tokenization, removal of stopwords, stemming, and creating a document-term matrix.\nEach document will be tagged with metadata including country income level, geographic region and special status (SIDS, LDC, neither). This metadata will serve as the basis for grouping documents when calculating entropy measures.\nTo analyze discourse patterns in these documents, I will employ structural topic modeling (STM) using the stm package in R. Unlike traditional topic modeling, STM incorporates document metadata as covariates, allowing me to examine how topics correlate with factors like income level or regional location. I will determine the optimal number of topics (likely between 50-60) through model fit statistics including semantic coherence, exclusivity, and held-out likelihood.\nThe focus of this analysis is not on the substantive content of the topics but rather on their distribution patterns across different document categories. The output of the STM analysis will provide the prevalence of each topic within each document and its correlation with document metadata, creating the probability distributions needed for entropy calculations.\nI will then convert these topic prevalences into probability distributions suitable for entropy calculation. For example, I might examine the distribution of topics within NAPs from different income groups:\nThis approach will allow me to calculate intra-group entropy (within defined groups such as low-income countries), inter-group entropy (between different groups), and overall corpus entropy (across the entire collection of documents) [source].\nHigher intra-group entropy would indicate more diverse conceptualizations of adaptation within that group, while lower values would suggest greater consensus. Large differences between intra-group and inter-group entropy would indicate distinctive discourse patterns associated with particular groups [source].\nTo ensure the reliability of topic models, I will use cross-validation by splitting the NAP corpus into training and testing sets to verify that identified topics are stable across different subsets of documents. I will also vary the parameters of topic models (number of topics, priors, etc.) to ensure findings are not artifacts of specific model settings [source].\nA significant limitation in this approach is that NAPs represent official government perspectives and may not capture grassroots or local conceptualizations of adaptation. Power dynamics influence which perspectives are represented in official documents, potentially obscuring alternative or marginalized viewpoints. Additionally, topic modeling requires interpretive decisions in determining the meaning of topics, which may introduce researcher bias. Despite these limitations, the analysis of NAPs provides valuable insight into how recipient countries officially conceptualize climate adaptation, which is central to understanding discourse patterns in international climate governance.",
@@ -194,8 +194,8 @@
     ]
   },
   {
-    "objectID": "chapters/methods.html#entropy-calculations",
-    "href": "chapters/methods.html#entropy-calculations",
+    "objectID": "text/methods.html#entropy-calculations",
+    "href": "text/methods.html#entropy-calculations",
     "title": "5  Methods",
     "section": "5.4 Entropy calculations",
     "text": "5.4 Entropy calculations\nThe final methodological step will be to unify the entropy calculations from both datasets to create a comprehensive picture of adaptation discourse fragmentation. This will allow me to compare the degree of centralization or diversification across different dimensions and between different actor types [source].\nFor each dimension of analysis (sectors, regions, topics, etc.), I will calculate and report absolute entropy values, relative entropy (normalized to 0-1 scale), benchmark comparisons between adaptation and general aid, and statistical significance based on comparison to random distributions.\nTo interpret these values, I will establish general thresholds for categorizing levels of discourse dissonance. Values between 0.00-0.33 indicate low dissonance with high consensus and centralized discourse. Values between 0.34-0.66 represent moderate dissonance with partial consensus. Values between 0.67-1.00 show high dissonance with low consensus and highly decentralized discourse [source].\nThe combination of entropy measurements across different datasets and dimensions will provide a comprehensive picture of how centralized or fragmented climate adaptation discourse is in global governance [source]. This directly connects to the theoretical framework by empirically assessing the degree to which adaptation discourse reflects a diversity of epistemological and ontological positions or the dominance of a singular, “anglobal” discourse.\nBy focusing deliberately on official discourse in policy documents and funding decisions, this methodology does not seek to uncover some “true” or “authentic” local perspective on adaptation. Rather, it aims to establish how fragmented the official discourse actually is and along what lines this fragmentation occurs [source]. This focus on formal discourse is appropriate given that these official conceptualizations shape funding flows, policy priorities, and ultimately, the material reality of adaptation interventions.",
@@ -205,8 +205,8 @@
     ]
   },
   {
-    "objectID": "chapters/findings.html",
-    "href": "chapters/findings.html",
+    "objectID": "text/findings.html",
+    "href": "text/findings.html",
     "title": "6  Findings",
     "section": "",
     "text": "In this findings-section, I will present the results from the data collection I have done.\nEr denne laggy, eller var det bare sånn. Aha, dette kan jeg egentlig bli vant til.\nGidder jeg å ha ridian her?\nJeg trenger litt fler plugins for å skrive, kanskje aller mest de som har med citekeys å gjøre. Hadde vært digg med Git også, men det har vært så sykt kronglete.\nGleder meg til jeg får skald opp å kjøre.",
@@ -216,8 +216,8 @@
     ]
   },
   {
-    "objectID": "chapters/discussion.html",
-    "href": "chapters/discussion.html",
+    "objectID": "text/discussion.html",
+    "href": "text/discussion.html",
     "title": "7  Discussion",
     "section": "",
     "text": "7.1 What is a climate adaptation?\nThis section will be stuctured in three parts, one that discusses the research questions, and one that discusses the concepts that keep cropping up. Naturally, this section draws on the findings from all data collection.\nA climate adaptation project is a road building project. It is located in a large, donor-darlig country in Western Africa.\nThis is for two possible reasons:\nRoads are, in most Global South settings, the same as transportation. Having access to the road network, as many millions of Africans are without, is important. Both to be viwsible to the State and international community (Ferguson, 1994), and to have access to markets for goods and labor. With the increase in\nAt the same time, highways are very strongly connected to the idea of the American dream, and a specific kind of freedom. This understanding of freedom is powerful to the ruling class in the countries, and as the highways are being built around the western world every day. They are easily understood by funding agencies, as most of them are based in, or have staff familiar with, the USA. Economic growth is highlighted in the NAPs as central to adaptation, as more money in the bank (or pocket) reduces vulnerability to all risks.\nThe donor decides what to fund, and as long as the international community is picking up the tab for climate change related ills, governments spend the money elsewhere or not at all.",
@@ -227,8 +227,8 @@
     ]
   },
   {
-    "objectID": "chapters/discussion.html#what-is-a-climate-adaptation",
-    "href": "chapters/discussion.html#what-is-a-climate-adaptation",
+    "objectID": "text/discussion.html#what-is-a-climate-adaptation",
+    "href": "text/discussion.html#what-is-a-climate-adaptation",
     "title": "7  Discussion",
     "section": "",
     "text": "Roads are ubiqutous\nHighways are a popular imaginary",
@@ -238,8 +238,8 @@
     ]
   },
   {
-    "objectID": "chapters/discussion.html#how-will-climate-adaptation-shape-the-future",
-    "href": "chapters/discussion.html#how-will-climate-adaptation-shape-the-future",
+    "objectID": "text/discussion.html#how-will-climate-adaptation-shape-the-future",
+    "href": "text/discussion.html#how-will-climate-adaptation-shape-the-future",
     "title": "7  Discussion",
     "section": "7.2 How will climate adaptation shape the future?",
     "text": "7.2 How will climate adaptation shape the future?",
@@ -249,8 +249,8 @@
     ]
   },
   {
-    "objectID": "chapters/discussion.html#vulnerability-and-adaptation",
-    "href": "chapters/discussion.html#vulnerability-and-adaptation",
+    "objectID": "text/discussion.html#vulnerability-and-adaptation",
+    "href": "text/discussion.html#vulnerability-and-adaptation",
     "title": "7  Discussion",
     "section": "7.3 Vulnerability and adaptation",
     "text": "7.3 Vulnerability and adaptation\nHow does vulnerability relate to economic development? How does economic development relate to adaptation? Is this just normal development under a new name, mainstreaming? (Scoville-Simonds et al., 2020).\nRemembering the categories from, the focus on economic growth places those projects within the “Institutional development”-frame. This is different from the nexus approaches most found in the literature Section 3.1.",
@@ -260,8 +260,8 @@
     ]
   },
   {
-    "objectID": "chapters/discussion.html#security",
-    "href": "chapters/discussion.html#security",
+    "objectID": "text/discussion.html#security",
+    "href": "text/discussion.html#security",
     "title": "7  Discussion",
     "section": "7.4 Security",
     "text": "7.4 Security\nThe security problems highlighted (or created) by climate change.",
@@ -271,8 +271,8 @@
     ]
   },
   {
-    "objectID": "chapters/discussion.html#alternatives",
-    "href": "chapters/discussion.html#alternatives",
+    "objectID": "text/discussion.html#alternatives",
+    "href": "text/discussion.html#alternatives",
     "title": "7  Discussion",
     "section": "7.5 Alternatives",
     "text": "7.5 Alternatives\nA human - and not infrastructure - centered climate adaptation? That will look way more like\n\n\n\n\nFerguson, J. (1994). The anti-politics machine: \"Development,\" depoliticization, and bureaucratic power in lesotho. University of Minnesota Press.\n\n\nScoville-Simonds, M., Jamali, H., & Hufty, M. (2020). The hazards of mainstreaming: Climate change adaptation politics in three dimensions. World Development, 125, 1–10. https://doi.org/10.1016/j.worlddev.2019.104683",
@@ -282,8 +282,8 @@
     ]
   },
   {
-    "objectID": "chapters/conclusion.html",
-    "href": "chapters/conclusion.html",
+    "objectID": "text/conclusion.html",
+    "href": "text/conclusion.html",
     "title": "8  Conclusion",
     "section": "",
     "text": "Enda mer test, nå begynner jeg nesten å gå lei. Neinei, det er så mye mer jeg kan gjøre!\n\nReferences\n\n\nAgrawal, A. (2005). Environmentality: Technologies of government and\nthe making of subjects. Duke University Press.\n\n\nAppadurai, A. (2004). The capacity to aspire: Culture and the terms of\nrecognition. Culture and Public Action.\n\n\nChambers, R. (1994). Participatory rural appraisal (PRA): Challenges,\npotentials and paradigm. World Development, 22(10),\n1437–1454. https://doi.org/10.1016/0305-750X(94)90030-2\n\n\nDesai, V., & Potter, R. B. (Eds.). (2006). Doing development\nresearch (1. publ). SAGE.\n\n\nDewan, C. (2022). “Climate change as a spice”: Brokering\nenvironmental knowledge in bangladesh’s development industry.\nEthnos, 87(3), 538–559. https://doi.org/10.1080/00141844.2020.1788109\n\n\nEriksen, S., Schipper, E. L. F., Scoville-Simonds, M., Vincent, K.,\nAdam, H. N., Brooks, N., Harding, B., Khatri, D., Lenaerts, L.,\nLiverman, D., Mills-Novoa, M., Mosberg, M., Movik, S., Muok, B.,\nNightingale, A., Ojha, H., Sygna, L., Taylor, M., Vogel, C., & West,\nJ. J. (2021). Adaptation interventions and their effect on vulnerability\nin developing countries: Help, hindrance or irrelevance? World\nDevelopment, 141, 105383. https://doi.org/10.1016/j.worlddev.2020.105383\n\n\nEscobar, A. (1995). Encountering development: The making and\nunmaking of the third world (STU - Student edition). Princeton\nUniversity Press. https://www.jstor.org/stable/j.ctt7rtgw\n\n\nEscobar, A. (2018). Designs for the pluriverse: Radical\ninterdependence, autonomy, and the making of worlds. Duke\nUniversity Press.\n\n\nEscobar, A. (2020). Pluriversal politics: The real and the\npossible. Duke University Press.\n\n\nFerguson, J. (1994). The anti-politics machine: \"Development,\"\ndepoliticization, and bureaucratic power in lesotho. University of\nMinnesota Press.\n\n\nFreire, P. (1970). Pedagogy of the oppressed (Repr).\nBloomsbury.\n\n\nFry, T. (2019). Design futuring in a borderland of postdevelopment. In\nPostdevelopment in practice. Routledge.\n\n\nGoode, L., & Godhe, M. (2017). Beyond capitalist realism – why we\nneed critical future studies. Culture Unbound, 9(1,\n1), 108–129. https://doi.org/10.3384/cu.2000.1525.1790615\n\n\nGuston, D. H. (2014). Understanding “anticipatory\ngovernance.” Social Studies of Science, 44(2),\n218–242. https://doi.org/10.1177/0306312713508669\n\n\nHall, N., & Persson, Å. (2018). Global climate adaptation\ngovernance: Why is it not legally binding? European Journal of\nInternational Relations, 24(3), 540–566. https://doi.org/10.1177/1354066117725157\n\n\nJanzen, S., Emerton, L., van der Geest, K., Narvaez, L., &\nSebesvari, Z. (2021). Assessing losses and damages to ecosystem\nservices: Current state and opportunities for the warsaw international\nmechanism under the UNFCCC. Climate Policy, 21(7),\n912–926. https://doi.org/10.1080/14693062.2021.1947177\n\n\nLewis, D., & Mosse, D. (2006). Theoretical approaches to brokerage\nand translation in development. In Development brokers and\ntranslators: The ethnography of aid and agencies. Kumarian Press.\n\n\nPaprocki, K. (2018). Threatening dystopias: Development and adaptation\nregimes in bangladesh. Annals of the American Association of\nGeographers, 108(4), 955–973. https://doi.org/10.1080/24694452.2017.1406330\n\n\nParis, R. (2001). Human security: Paradigm shift or hot air?\nInternational Security, 26(2), 87–102. https://www.jstor.org/stable/3092123\n\n\nRibot, J. C., & Peluso, N. L. (2003). A theory of access. Rural\nSociology, 68(2), 153–181. https://doi.org/10.1111/j.1549-0831.2003.tb00133.x\n\n\nScoville-Simonds, M., Jamali, H., & Hufty, M. (2020). The hazards of\nmainstreaming: Climate change adaptation politics in three dimensions.\nWorld Development, 125, 1–10. https://doi.org/10.1016/j.worlddev.2019.104683\n\n\nSen, A. (2000). Development as freedom (1. Anchor Books ed).\nAnchor Books.\n\n\nSlaughter, R. A. (2024). Human agency and the technoscientific dilemma:\nContesting the role of technology in shaping our collective futures.\nFutures, 161, 103377. https://doi.org/10.1016/j.futures.2024.103377\n\n\nSun, S., & Song, W. (2025). Anglobal knowledge and reimagined\ngeographies of provincialization: The anglosphere as missing\n“area” in area studies. Globalizations, 1–19. https://doi.org/10.1080/14747731.2025.2469393\n\n\nUNDP. (1994). Human development report 1994. In Human Development\nReports. United Nations. https://hdr.undp.org/content/human-development-report-1994",
