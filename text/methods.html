@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>5&nbsp; Methods – 100 billion dollar COP-out</title>
+<title>5&nbsp; Methods: Dominance index – 100 billion dollar COP-out</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,7 +20,27 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="../site_libs/quarto-nav/quarto-nav.js"></script>
@@ -70,35 +90,6 @@ ul.task-list li input[type="checkbox"] {
   }
 }</script>
 
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN") {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 </head>
 
@@ -111,7 +102,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../text/theory.html">Research design</a></li><li class="breadcrumb-item"><a href="../text/methods.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../text/theory.html">Research design</a></li><li class="breadcrumb-item"><a href="../text/methods.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods: Dominance index</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -202,13 +193,13 @@ window.Quarto = {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../text/theory.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Theory: Adaptation for the future</span></span></a>
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Theory: Development Ontology and Epistemological Diversity</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../text/methods.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods</span></span></a>
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods: Dominance index</span></span></a>
   </div>
 </li>
       </ul>
@@ -252,19 +243,19 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#the-dissonance-index" id="toc-the-dissonance-index" class="nav-link active" data-scroll-target="#the-dissonance-index"><span class="header-section-number">5.1</span> The dissonance index</a></li>
-  <li><a href="#oecd-creditor-reporting-system" id="toc-oecd-creditor-reporting-system" class="nav-link" data-scroll-target="#oecd-creditor-reporting-system"><span class="header-section-number">5.2</span> OECD creditor reporting system</a></li>
-  <li><a href="#unfccc-national-adaptation-plans" id="toc-unfccc-national-adaptation-plans" class="nav-link" data-scroll-target="#unfccc-national-adaptation-plans"><span class="header-section-number">5.3</span> UNFCCC National adaptation plans</a></li>
-  <li><a href="#entropy-calculations" id="toc-entropy-calculations" class="nav-link" data-scroll-target="#entropy-calculations"><span class="header-section-number">5.4</span> Entropy calculations</a></li>
+  <li><a href="#corpus-collection-and-preparation" id="toc-corpus-collection-and-preparation" class="nav-link active" data-scroll-target="#corpus-collection-and-preparation"><span class="header-section-number">5.1</span> Corpus collection and preparation</a></li>
+  <li><a href="#structural-topic-modeling" id="toc-structural-topic-modeling" class="nav-link" data-scroll-target="#structural-topic-modeling"><span class="header-section-number">5.2</span> Structural topic modeling</a></li>
+  <li><a href="#dominance-index-calculation" id="toc-dominance-index-calculation" class="nav-link" data-scroll-target="#dominance-index-calculation"><span class="header-section-number">5.3</span> Dominance Index calculation</a></li>
+  <li><a href="#visualization-and-interpretation" id="toc-visualization-and-interpretation" class="nav-link" data-scroll-target="#visualization-and-interpretation"><span class="header-section-number">5.4</span> Visualization and interpretation</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../text/theory.html">Research design</a></li><li class="breadcrumb-item"><a href="../text/methods.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../text/theory.html">Research design</a></li><li class="breadcrumb-item"><a href="../text/methods.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods: Dominance index</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span id="sec-methods" class="quarto-section-identifier"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods</span></span></h1>
+<h1 class="title"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods: Dominance index</span></h1>
 </div>
 
 
@@ -281,59 +272,181 @@ window.Quarto = {
 </header>
 
 
-<p>In this section, I explain the methods I will use to find and analyze data on climate adaptation discourse. First, I discuss the development of the Dissonance Index as the core analytical contribution of this thesis. Second, I explain the OECD CRS dataset, how it is prepared and analyzed using entropy calculations. Third, I explain the National Adaptation Plans at the UNFCCC, how they are prepared and analyzed through structural topic modeling. Finally, I describe how entropy calculations will be unified to create comparative measures of discourse fragmentation.</p>
-<p>All data will be analyzed with the free and open-source statistical program <code>R</code> with the help of packages in the <code>tidyverse</code>. All source files for this project are available in a <a href="https://github.com/nilsnerhus/oppgave">GitHub repository</a> and the documents are automatically produced in HTML, PDF, and DOCX when changes are pushed to the repository and posted on <a href="https://nilsnerhus.github.io/oppgave/">the Internet</a>.</p>
-<section id="the-dissonance-index" class="level2" data-number="5.1">
-<h2 data-number="5.1" class="anchored" data-anchor-id="the-dissonance-index"><span class="header-section-number">5.1</span> The dissonance index</h2>
-<p>The central contribution of this thesis is the development and application of a “Dissonance Index” that quantifies the degree of variation in how climate adaptation is conceptualized by different actors within the global aid system.</p>
-<p>The Dissonance Index draws from information theory, specifically using Shannon entropy as the foundational measurement. Entropy, originally developed by Claude Shannon in 1948, measures the unpredictability or randomness in a system. When applied to discourse analysis, higher entropy values indicate greater dissonance (more diversity in conceptualizations), while lower entropy values indicate lower dissonance (more consensus in conceptualizations).</p>
-<p>Mathematically, Shannon entropy is calculated as:</p>
-<p><span class="math display">\[H = -\sum_{i=1}^{n} p(x_i) \log_2 p(x_i)\]</span></p>
+<p>To analyze discourse centralization in climate adaptation, I develop a methodological approach centered around the “Dominance Index”—a measurement tool for quantifying the degree to which adaptation discourse is concentrated around particular topics or perspectives. This approach combines structural topic modeling of National Adaptation Plans with calculations of topic dominance to identify patterns in how adaptation is conceptualized across different contexts.</p>
+<p>The methodology bridges critical theoretical perspectives with quantitative text analysis, creating an interdisciplinary approach that can systematically analyze discourse patterns across a substantial corpus of documents. Rather than assuming either complete homogeneity or radical diversity in adaptation discourse, this approach enables empirical assessment of the degree to which discourse reflects epistemological plurality or monoculture across different contexts.</p>
+<p>This methodological approach can measure the distribution of topics across documents and document groups, identifying patterns of concentration or dispersion. However, it cannot directly measure epistemological diversity—topic distribution serves as a proxy that requires careful interpretation. The approach does not capture discourse elements that may not be reflected in word co-occurrence patterns, such as rhetorical structures, implicit assumptions, or visual elements of the documents.</p>
+<p>The primary corpus consists of National Adaptation Plans (NAPs) submitted to the UNFCCC—official policy documents that outline countries’ approaches to climate adaptation. These documents represent a particularly revealing window into adaptation discourse because they are produced through standardized international frameworks while addressing context-specific national priorities. The NAPs are prepared by national governments in consultation with various stakeholders and experts, and they outline adaptation priorities, strategies, and planned actions.</p>
+<p>This corpus provides several advantages for comparative analysis. First, NAPs follow a relatively standardized format defined by UNFCCC guidelines, creating a consistent basis for comparison across countries. Second, they represent official national positions rather than individual perspectives, making them relevant for understanding national-level discourse patterns. Third, they cover a diverse range of countries across different regions, income levels, and vulnerability profiles, enabling meaningful comparative analysis.</p>
+<p>However, the focus on NAPs also has important limitations. As official government documents, NAPs represent formal institutional discourse rather than the full range of adaptation perspectives within a country. They may exclude or marginalize viewpoints from civil society, local communities, or groups with limited access to formal planning processes. Moreover, NAPs are produced within the constraints of UNFCCC frameworks and often with support from international consultants, potentially introducing homogenizing influences from the outset.</p>
+<p>This methodological approach involves four main steps:</p>
+<ol type="1">
+<li><p><strong>Corpus collection and preparation</strong>: Gathering NAP documents and processing them for analysis, including tokenization, stop word removal, lemmatization, and creation of a document-term matrix.</p></li>
+<li><p><strong>Structural topic modeling</strong>: Applying computational techniques to identify latent topics in the corpus and examine how these topics vary across different document characteristics.</p></li>
+<li><p><strong>Dominance Index calculation</strong>: Developing a quantitative measure of discourse centralization based on the concentration of top topics in different document groups.</p></li>
+<li><p><strong>Visualization and interpretation</strong>: Creating visual representations of discourse patterns and interpreting these patterns through the theoretical framework developed in the previous chapter.</p></li>
+</ol>
+<p>Each of these steps involves specific methodological choices and techniques that shape the analysis, which I elaborate in the following sections.</p>
+<p>[visualization placeholder - methodology flowchart]</p>
+<p>The approach outlined here draws on both computational text analysis methods, particularly topic modeling <span class="citation" data-cites="roberts2019">(<a href="conclusion.html#ref-roberts2019" role="doc-biblioref">Roberts et al., 2019</a>)</span>, and critical discourse analysis traditions that examine how discourse reflects and reproduces power relations <span class="citation" data-cites="fairclough2013">(<a href="conclusion.html#ref-fairclough2013" role="doc-biblioref"><strong>fairclough2013?</strong></a>)</span>. By combining these approaches, I aim to leverage the systematic analytical capabilities of computational methods while maintaining critical awareness of the political and epistemological dimensions of adaptation discourse.</p>
+<section id="corpus-collection-and-preparation" class="level2" data-number="5.1">
+<h2 data-number="5.1" class="anchored" data-anchor-id="corpus-collection-and-preparation"><span class="header-section-number">5.1</span> Corpus collection and preparation</h2>
+<p>The corpus consists of 45 English-language National Adaptation Plans (NAPs) submitted to the UNFCCC as of March 2025. These documents represent a diverse range of countries across different regions, income levels, and vulnerability profiles. The documents were collected directly from the UNFCCC NAP Central website (napcentral.org), which serves as the official repository for submitted NAPs.</p>
+<p>The focus on English-language documents is a significant methodological constraint. It excludes NAPs submitted in other languages (particularly French and Spanish), potentially skewing the analysis toward Anglophone countries or those with stronger ties to international institutions where English is dominant. This limitation means the analysis cannot claim to represent the full global landscape of adaptation discourse but rather offers insights into patterns within the English-language subset of NAPs.</p>
+<p>Despite this limitation, the corpus includes substantial representation from diverse global contexts:</p>
+<ul>
+<li>18 documents from Africa (40% of the corpus)</li>
+<li>14 documents from Asia-Pacific (31% of the corpus)</li>
+<li>11 documents from Latin America and Caribbean (24% of the corpus)</li>
+<li>2 documents from Europe (4% of the corpus)</li>
+</ul>
+<p>In terms of income classification:</p>
+<ul>
+<li>13 from Low-Income Countries (29% of the corpus)</li>
+<li>19 from Lower-Middle Income Countries (42% of the corpus)</li>
+<li>11 from Upper-Middle Income Countries (24% of the corpus)</li>
+<li>2 from High-Income Countries (4% of the corpus)</li>
+</ul>
+<p>The corpus also includes 15 Least Developed Countries (LDCs), 8 Small Island Developing States (SIDS), and 7 Landlocked Developing Countries (LLDCs), with some countries belonging to multiple special status categories.</p>
+<p>Each document is tagged with relevant metadata drawn from World Bank classifications and UNFCCC designations. This metadata includes:</p>
+<ul>
+<li>Geographic region (Africa, Asia-Pacific, Latin America and Caribbean, Europe)</li>
+<li>Income level (Low, Lower-middle, Upper-middle, High)</li>
+<li>Special status (SIDS, LDC, LLDC, non-special)</li>
+<li>Submission date</li>
+<li>Document length</li>
+</ul>
+<p>The collection of this metadata enables systematic comparison of discourse patterns across different country groupings to identify potential factors influencing how adaptation is conceptualized. The metadata is stored separately from the document text to prevent it from influencing the topic modeling process itself.</p>
+<p>Document preparation involves multiple stages of processing to convert the raw NAP documents into a format suitable for computational analysis. This begins with extracting the text content from PDF documents, which presents technical challenges including handling of complex formatting, tables, figures, and inconsistent document structures. I use PDF extraction tools combined with manual verification to ensure accurate text extraction.</p>
+<p>Once extracted, the text undergoes several preprocessing steps:</p>
+<ol type="1">
+<li><p><strong>Tokenization</strong>: Breaking the text into individual words or tokens, which represent the basic units of analysis. This process includes removing punctuation, standardizing capitalization, and handling hyphenation.</p></li>
+<li><p><strong>Stop word removal</strong>: Eliminating common words (e.g., “the,” “is,” “and”) that carry little semantic meaning but appear frequently in the text. I remove both standard English stop words and domain-specific terms that appear across all documents but provide limited analytical value due to their ubiquity. These domain-specific stop words include terms like “adaptation,” “climate,” “plan,” “national,” “country,” and “UNFCCC,” which are so common in the corpus that they do not help differentiate between different conceptualizations of adaptation.</p></li>
+<li><p><strong>Lemmatization</strong>: Reducing words to their base or dictionary form to treat variations of the same word as a single unit. For example, “adapting,” “adapts,” and “adapted” all become “adapt.” This process helps reduce dimensionality and improve the signal-to-noise ratio in the data.</p></li>
+<li><p><strong>Creation of document-term matrix</strong>: Organizing the processed text into a matrix that represents the frequency of each term in each document. This matrix serves as the primary input for the subsequent topic modeling.</p></li>
+</ol>
+<p>These preprocessing steps enable computational analysis but also involve certain trade-offs. Tokenization breaks text into individual words, losing information about phrasal meanings and sentence structures. Stop word removal eliminates words that, while common, might carry important functional meanings in certain contexts. Lemmatization may obscure subtle distinctions in how terms are used (e.g., converting both “developed” and “developing” to “develop,” potentially blurring an important distinction in climate discourse).</p>
+<p>To address some of these limitations, I retain the original text alongside the processed version, allowing for contextual verification when interpreting model outputs. I also conduct sensitivity analyses with different preprocessing choices to ensure that key findings are not artifacts of particular preprocessing decisions.</p>
+<p>The final processed corpus contains approximately 3.5 million words across the 45 documents, with an average of 78,000 words per document. Document length varies considerably, from around 20,000 words for the shortest NAP to over 150,000 words for the longest, reflecting differences in both detail and scope across different national contexts. The preprocessing reduces this to approximately 1.2 million tokens representing about 25,000 unique terms, which form the basis for the subsequent topic modeling.</p>
+</section>
+<section id="structural-topic-modeling" class="level2" data-number="5.2">
+<h2 data-number="5.2" class="anchored" data-anchor-id="structural-topic-modeling"><span class="header-section-number">5.2</span> Structural topic modeling</h2>
+<p>To identify patterns in how adaptation is conceptualized across different NAPs, I employ structural topic modeling (STM), a computational technique that identifies latent topics in a corpus and allows for the incorporation of document metadata as predictors of topic prevalence <span class="citation" data-cites="roberts2019">(<a href="conclusion.html#ref-roberts2019" role="doc-biblioref">Roberts et al., 2019</a>)</span>. Unlike simpler forms of topic modeling, STM enables examination of how topic prevalence varies with document characteristics like region or income level, making it particularly suitable for comparative analysis of adaptation discourse.</p>
+<p>Topic models are unsupervised machine learning methods that discover abstract “topics” that occur in a collection of documents. The fundamental assumption of topic modeling is that documents are mixtures of topics, where a topic is a probability distribution over words. Each document can be described as a mixture of topics, with certain topics more prevalent than others in each document.</p>
+<p>The STM algorithm processes the document-term matrix to identify clusters of words that frequently co-occur, representing coherent topics within the corpus. Mathematically, STM represents each document as a mixture of k topics, with each topic defined as a distribution over the vocabulary. The model simultaneous estimates topic content (the words associated with each topic) and topic prevalence (the proportion of each document devoted to each topic) using a variational expectation-maximization algorithm <span class="citation" data-cites="roberts2019">(<a href="conclusion.html#ref-roberts2019" role="doc-biblioref">Roberts et al., 2019</a>)</span>.</p>
+<p>What distinguishes STM from other topic modeling approaches is its ability to incorporate document metadata as covariates that can affect either topic content or topic prevalence. This allows us to examine, for example, how topic prevalence varies across different regions or income levels, or how the content of similar topics might differ across these categories. In this analysis, I focus primarily on topic prevalence covariates, examining how the distribution of topics varies across different document characteristics.</p>
+<p>A key methodological decision in topic modeling is determining the appropriate number of topics (k). Too few topics may obscure important distinctions in the corpus, while too many may result in incoherent or redundant topics that are difficult to interpret. I employ a data-driven approach to identify the optimal number of topics, using several metrics:</p>
+<ul>
+<li><p><strong>Semantic coherence</strong>: Measures the degree to which high-probability words for a topic tend to co-occur in documents. Higher semantic coherence suggests more coherent, interpretable topics.</p></li>
+<li><p><strong>Exclusivity</strong>: Measures the degree to which words are exclusive to particular topics rather than appearing across many topics. Higher exclusivity suggests more distinctive topics.</p></li>
+<li><p><strong>Held-out likelihood</strong>: Measures the model’s ability to predict held-out text not used in training, providing an indication of how well the model generalizes.</p></li>
+</ul>
+<p>In addition to these standard metrics, I incorporate a complexity factor that penalizes models with higher numbers of topics. This complexity penalty acknowledges that additional topics introduce greater interpretive challenges without necessarily improving model performance in a meaningful way. The penalty is calculated as a linear function of k, with the specific coefficient determined through experimentation.</p>
+<p>After testing models with k ranging from 20 to 80, I select a model with 40 topics based on the balance of semantic coherence, exclusivity, and the complexity penalty. This represents a middle ground that captures meaningful variation in the corpus while maintaining interpretability. The final model is trained using the spectral initialization method, which provides more consistent results than random initialization, and with 100 iterations of the variational expectation-maximization algorithm to ensure convergence.</p>
+<p>It’s important to recognize what topic models can and cannot tell us. Topics identified through this process are statistical constructs representing patterns of word co-occurrence. They do not inherently align with human-intuitive conceptual categories, nor do they capture all aspects of discourse such as narrative structure, rhetorical devices, or implicit assumptions. The topics are also specific to this corpus—they represent patterns within the NAPs rather than universal categories of adaptation discourse.</p>
+<p>For the top topics identified in the model, I provide tentative interpretations based on:</p>
+<ol type="1">
+<li>The highest probability words for each topic</li>
+<li>The most distinctive words for each topic (using FREX: FRequency and EXclusivity)</li>
+<li>Representative documents with high proportions of the topic</li>
+<li>Examination of the original context in which topic-associated words appear</li>
+</ol>
+<p>[visualization placeholder - topic word cloud]</p>
+<p>These interpretations should be understood as plausible readings rather than definitive meanings. They aim to translate statistical patterns into conceptually meaningful categories to facilitate interpretation of discourse patterns, while acknowledging the interpretive judgment involved in this translation.</p>
+<p>The resulting topic model provides several outputs for analysis:</p>
+<ol type="1">
+<li><p><strong>Topic-word distributions</strong>: The probability of each word being generated by each topic, which helps interpret what each topic represents.</p></li>
+<li><p><strong>Document-topic proportions</strong>: The estimated proportion of each document devoted to each topic, which forms the basis for the Dominance Index.</p></li>
+<li><p><strong>Metadata correlations</strong>: How document characteristics like region or income level correlate with topic prevalence, which helps identify patterns across different contexts.</p></li>
+<li><p><strong>Topic correlation matrix</strong>: How different topics relate to each other, which can reveal broader thematic clusters within the discourse.</p></li>
+</ol>
+<p>These outputs enable systematic analysis of patterns in adaptation discourse across different contexts. Rather than imposing predetermined categories or frameworks, this approach allows patterns to emerge inductively from the text while still enabling structured comparison through metadata. The topic model thus serves as a bridge between the unstructured text of the NAPs and the more structured analysis of discourse centralization through the Dominance Index.</p>
+</section>
+<section id="dominance-index-calculation" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="dominance-index-calculation"><span class="header-section-number">5.3</span> Dominance Index calculation</h2>
+<p>To quantify the degree of discourse centralization, I develop a Dominance Index that measures how concentrated or dispersed topic distributions are across different groups of documents. The index provides a single metric that can be compared across different contexts to identify variations in discourse centralization. A high Dominance Index indicates that a few topics dominate the discourse, suggesting a more homogeneous conceptualization of adaptation. A low Dominance Index indicates a more even distribution of topics, suggesting greater diversity in how adaptation is conceptualized.</p>
+<p>The Dominance Index focuses specifically on the concentration of the top n topics in a given group of documents. This approach directly addresses the core question of whether adaptation discourse is dominated by a small number of topics or distributed across many different topics. After testing different values, I select n=5 as capturing a significant portion of the discourse while maintaining meaningful distinctions between different contexts.</p>
+<p>The calculation of the Dominance Index follows these steps:</p>
+<ol type="1">
+<li><p><strong>Group documents</strong>: Aggregate documents according to relevant characteristics (e.g., all documents from a particular region or income level).</p></li>
+<li><p><strong>Calculate topic proportions</strong>: For each topic, calculate the average proportion across all documents in the group. This gives us the average prevalence of each topic within that group.</p></li>
+<li><p><strong>Rank topics</strong>: Sort topics by their average proportion in descending order to identify the most prevalent topics in the group.</p></li>
+<li><p><strong>Calculate top-n proportion</strong>: Sum the proportions of the top 5 topics to determine what fraction of the discourse they represent collectively.</p></li>
+<li><p><strong>Normalize the index</strong>: Scale the result to a 0-1 range, where 0 represents a perfectly even distribution across all topics and 1 represents complete concentration in a single topic.</p></li>
+</ol>
+<p>The mathematical formula for the Dominance Index (DI) can be expressed as:</p>
+<p>DI = (sum of proportions for top 5 topics - minimum possible sum) / (maximum possible sum - minimum possible sum)</p>
 <p>Where:</p>
 <ul>
-<li><span class="math inline">\(H\)</span> is the entropy value</li>
-<li><span class="math inline">\(p(x_i)\)</span> is the probability of category <span class="math inline">\(i\)</span> occurring</li>
-<li><span class="math inline">\(n\)</span> is the number of possible categories</li>
+<li>The minimum possible sum would be 5 * (1/k) in a perfectly even distribution across all k topics</li>
+<li>The maximum possible sum would be 1 (if all discourse were concentrated in a single topic)</li>
 </ul>
-<p>For example, if climate adaptation funding were perfectly evenly distributed across 16 sectors, each sector would receive 6.25% of the funding. The entropy calculation would be:</p>
-<p><span class="math display">\[H = -16 \times (0.0625 \times \log_2 0.0625) = 4\]</span></p>
-<p>This represents maximum entropy for a system with 16 categories. If funding were concentrated in just one sector (100%), the entropy would be 0, indicating complete consensus. To normalize entropy values across datasets with different numbers of categories, I will use relative entropy, calculated as:</p>
-<p><span class="math display">\[H_{rel} = \frac{H}{H_{max}} = \frac{H}{\log_2 n}\]</span></p>
-<p>This scales entropy to a value between 0 and 1, where 0 represents complete concentration (minimum dissonance) and 1 represents perfect dispersion (maximum dissonance). This normalization will allow for direct comparison between different dimensions of analysis (sectors, regions, etc.) and between different datasets (OECD CRS and NAPs).</p>
-<p>This approach attempts to bridge quantitative methods with post-structural critique from the anthropology of development, offering an empirical basis for examining discourse centralization in climate adaptation.</p>
+<p>This normalization ensures that the Dominance Index is comparable across different values of k and n, though in this analysis both are fixed (k=40, n=5).</p>
+<p>The Dominance Index approach differs from entropy-based measures that are sometimes used to quantify diversity in topic distributions. While entropy measures capture the overall evenness of a distribution, the Dominance Index focuses specifically on the concentration of the most prevalent topics, which more directly addresses the question of discourse centralization. The top-n approach also offers greater interpretability, as it can be directly related to specific topics that dominate the discourse.</p>
+<p>To address potential biases from uneven document lengths or sample sizes, I implement several controls:</p>
+<ol type="1">
+<li><p><strong>Document length normalization</strong>: Topic proportions are calculated as fractions of each document, controlling for differences in document length.</p></li>
+<li><p><strong>Jackknife resampling</strong>: For groups with more than five documents, I use jackknife resampling (leave-one-out) to assess the stability of the Dominance Index and calculate confidence intervals.</p></li>
+<li><p><strong>Sample size thresholds</strong>: For very small groups (fewer than three documents), I flag the results as potentially less reliable and interpret them with greater caution.</p></li>
+</ol>
+<p>These controls help ensure that the Dominance Index reflects genuine patterns of discourse centralization rather than artifacts of the corpus composition. However, they cannot entirely eliminate the influence of sample size disparities, particularly for the smallest groups.</p>
+<p>The Dominance Index enables systematic comparison of discourse centralization across different groupings:</p>
+<ul>
+<li>Regional groups (Africa, Asia-Pacific, Latin America and Caribbean, Europe)</li>
+<li>Income levels (Low, Lower-middle, Upper-middle, High)</li>
+<li>Special status designations (SIDS, LDCs, LLDCs, non-special)</li>
+<li>The corpus as a whole (providing a baseline for comparison)</li>
+</ul>
+<p>[visualization placeholder - dominance index comparison chart]</p>
+<p>This comparative approach helps identify factors that might influence the degree of epistemological diversity in adaptation discourse. For example, if the Dominance Index varies significantly across regions but not across income levels, this might suggest that regional knowledge systems or institutional frameworks play a more important role in shaping adaptation discourse than economic circumstances.</p>
+<p>However, it’s important to specify what the Dominance Index can and cannot tell us. The index measures the concentration of topics in a document group, which serves as a proxy for discourse centralization. A higher concentration (higher Dominance Index) suggests a more centralized discourse, while a lower concentration suggests a more diverse discourse. But this metric does not directly measure epistemological diversity or the substantive content of the discourse. Topic diversity is not necessarily equivalent to epistemological diversity—a discourse might include many different topics while still operating within a single epistemological framework.</p>
+<p>Moreover, the Dominance Index doesn’t tell us whether a particular pattern of centralization is “good” or “bad” from a normative perspective. A highly centralized discourse might reflect genuine consensus around effective approaches, while a highly diverse discourse might reflect fragmentation or lack of coherence. Interpreting the normative implications of different Dominance Index values requires connecting the quantitative results to the substantive content of the topics and the broader theoretical framework.</p>
 </section>
-<section id="oecd-creditor-reporting-system" class="level2" data-number="5.2">
-<h2 data-number="5.2" class="anchored" data-anchor-id="oecd-creditor-reporting-system"><span class="header-section-number">5.2</span> OECD creditor reporting system</h2>
-<p>The OECD Creditor Reporting System is a collection of self-reported activities by members of the OECD. This reporting is, to the member states and officials who report, a serious exercise, but it is not coordinated beyond the guidance the OECD gives [source]. The data I analyze covers the period from 2010 to 2023, during which donors have been able to mark projects as relevant to climate adaptation using the Rio markers system [source].</p>
-<p>For the OECD data analysis, I begin by extracting all project-level data where climate adaptation is marked as either a “principal” (marker value 2) or “significant” (marker value 1) objective [source]. I convert adaptation markers to binary flags (1 for any adaptation relevance, 0 for none) and log-transform disbursement amounts to account for the wide range of funding magnitudes.</p>
-<p>The data will be organized according to the standardized sector groups defined by the OECD, such as Education, Health, Water &amp; Sanitation, Transport &amp; Storage, Energy, Agriculture, Environmental Protection, and others [source]. This sectoral classification follows the official OECD purpose codes and provides a consistent framework for analyzing how adaptation funding is distributed across different domains.</p>
-<p>Using this prepared dataset, I will calculate entropy across various dimensions. The sectoral entropy measure will reveal how evenly or unevenly climate adaptation funding is distributed across sectors, with higher entropy values indicating more dispersed funding and lower values suggesting concentration in specific sectors. Similarly, geographic entropy will assess the concentration of adaptation funding across recipient countries and regions by grouping recipients by region and income level using World Bank classifications.</p>
-<p>I will also examine donor entropy to understand how consistently different donors allocate adaptation funding across sectors. For each major donor, the sectoral entropy of their adaptation portfolio will help identify patterns of consensus or divergence among donors. Finally, comparative entropy analyses between adaptation funding and general aid patterns will reveal whether climate adaptation represents a distinct discourse or simply mirrors existing aid patterns.</p>
-<p>To validate the entropy calculations, I will compare the results to randomized data to establish statistical significance, testing whether observed patterns of dissonance differ significantly from random chance [source]. This will involve creating multiple permutations of the dataset with randomly assigned adaptation flags and comparing the resulting entropy distributions to the observed values [source].</p>
-<p>A key limitation of this dataset is that it relies on self-reported data from donors, with potential inconsistencies in how adaptation is coded. Different donors may interpret the climate adaptation marker differently, leading to variations that reflect reporting practices rather than substantive differences in approach. However, this is appropriate for my study as I am interested in what is coded as climate adaptation to analyze what actors think, not the other way around.</p>
-</section>
-<section id="unfccc-national-adaptation-plans" class="level2" data-number="5.3">
-<h2 data-number="5.3" class="anchored" data-anchor-id="unfccc-national-adaptation-plans"><span class="header-section-number">5.3</span> UNFCCC National adaptation plans</h2>
-<p>The National Adaptation Plans (NAPs) are created through collaboration between various government actors and climate adaptation projects within international organizations like the World Bank [source]. In this study, these documents represent recipient countries’ official conceptualizations of climate adaptation and their planned responses.</p>
-<p>For the NAP analysis, I will collect all available NAPs submitted to the UNFCCC, which comprises 45 English language documents. Some of the plans are written in other languages and not available in English. I will then preprocess the text through tokenization, removal of stopwords, stemming, and creating a document-term matrix.</p>
-<p>Each document will be tagged with metadata including country income level, geographic region and special status (SIDS, LDC, neither). This metadata will serve as the basis for grouping documents when calculating entropy measures.</p>
-<p>To analyze discourse patterns in these documents, I will employ structural topic modeling (STM) using the <code>stm</code> package in R. Unlike traditional topic modeling, STM incorporates document metadata as covariates, allowing me to examine how topics correlate with factors like income level or regional location. I will determine the optimal number of topics (likely between 50-60) through model fit statistics including semantic coherence, exclusivity, and held-out likelihood.</p>
-<p>The focus of this analysis is not on the substantive content of the topics but rather on their distribution patterns across different document categories. The output of the STM analysis will provide the prevalence of each topic within each document and its correlation with document metadata, creating the probability distributions needed for entropy calculations.</p>
-<p>I will then convert these topic prevalences into probability distributions suitable for entropy calculation. For example, I might examine the distribution of topics within NAPs from different income groups:</p>
-<p>This approach will allow me to calculate intra-group entropy (within defined groups such as low-income countries), inter-group entropy (between different groups), and overall corpus entropy (across the entire collection of documents) [source].</p>
-<p>Higher intra-group entropy would indicate more diverse conceptualizations of adaptation within that group, while lower values would suggest greater consensus. Large differences between intra-group and inter-group entropy would indicate distinctive discourse patterns associated with particular groups [source].</p>
-<p>To ensure the reliability of topic models, I will use cross-validation by splitting the NAP corpus into training and testing sets to verify that identified topics are stable across different subsets of documents. I will also vary the parameters of topic models (number of topics, priors, etc.) to ensure findings are not artifacts of specific model settings [source].</p>
-<p>A significant limitation in this approach is that NAPs represent official government perspectives and may not capture grassroots or local conceptualizations of adaptation. Power dynamics influence which perspectives are represented in official documents, potentially obscuring alternative or marginalized viewpoints. Additionally, topic modeling requires interpretive decisions in determining the meaning of topics, which may introduce researcher bias. Despite these limitations, the analysis of NAPs provides valuable insight into how recipient countries officially conceptualize climate adaptation, which is central to understanding discourse patterns in international climate governance.</p>
-</section>
-<section id="entropy-calculations" class="level2" data-number="5.4">
-<h2 data-number="5.4" class="anchored" data-anchor-id="entropy-calculations"><span class="header-section-number">5.4</span> Entropy calculations</h2>
-<p>The final methodological step will be to unify the entropy calculations from both datasets to create a comprehensive picture of adaptation discourse fragmentation. This will allow me to compare the degree of centralization or diversification across different dimensions and between different actor types [source].</p>
-<p>For each dimension of analysis (sectors, regions, topics, etc.), I will calculate and report absolute entropy values, relative entropy (normalized to 0-1 scale), benchmark comparisons between adaptation and general aid, and statistical significance based on comparison to random distributions.</p>
-<p>To interpret these values, I will establish general thresholds for categorizing levels of discourse dissonance. Values between 0.00-0.33 indicate low dissonance with high consensus and centralized discourse. Values between 0.34-0.66 represent moderate dissonance with partial consensus. Values between 0.67-1.00 show high dissonance with low consensus and highly decentralized discourse [source].</p>
-<p>The combination of entropy measurements across different datasets and dimensions will provide a comprehensive picture of how centralized or fragmented climate adaptation discourse is in global governance [source]. This directly connects to the theoretical framework by empirically assessing the degree to which adaptation discourse reflects a diversity of epistemological and ontological positions or the dominance of a singular, “anglobal” discourse.</p>
-<p>By focusing deliberately on official discourse in policy documents and funding decisions, this methodology does not seek to uncover some “true” or “authentic” local perspective on adaptation. Rather, it aims to establish how fragmented the official discourse actually is and along what lines this fragmentation occurs [source]. This focus on formal discourse is appropriate given that these official conceptualizations shape funding flows, policy priorities, and ultimately, the material reality of adaptation interventions.</p>
+<section id="visualization-and-interpretation" class="level2" data-number="5.4">
+<h2 data-number="5.4" class="anchored" data-anchor-id="visualization-and-interpretation"><span class="header-section-number">5.4</span> Visualization and interpretation</h2>
+<p>To make patterns of discourse centralization more accessible and interpretable, I develop visualization techniques that complement the quantitative analysis. These visualizations serve both analytical and communicative purposes, helping to identify patterns in the data and effectively convey these patterns to readers who may not be familiar with the technical details of topic modeling or the Dominance Index.</p>
+<p>The primary visualization approach is a “bullseye” representation of discourse dominance. This visualization places topics as points on a target diagram, with distance from the center determined by the topic’s prevalence. In highly centralized discourse (high Dominance Index), points cluster near the center, indicating that a few topics dominate. In more decentralized discourse (low Dominance Index), points are more evenly distributed throughout the target, indicating greater diversity of topics.</p>
+<p>The bullseye visualization is constructed as follows:</p>
+<ol type="1">
+<li><p>The diagram is divided into concentric rings, with the innermost ring representing the highest topic prevalence and the outermost ring representing the lowest.</p></li>
+<li><p>Topics are positioned based on their average proportion within the document group, with more prevalent topics placed closer to the center.</p></li>
+<li><p>Each topic is represented by a point, with optional labeling for the most prevalent topics to aid interpretation.</p></li>
+<li><p>Color coding can be used to distinguish different types of topics (e.g., based on thematic categories) or to indicate topic correlations.</p></li>
+</ol>
+<p>[visualization placeholder - bullseye diagram]</p>
+<p>This visual representation provides an intuitive way to compare discourse patterns across different contexts. By placing bullseye visualizations for different regions or income groups side by side, we can readily observe differences in discourse centralization that might be less apparent in numerical comparisons alone. The bullseye approach is particularly effective for communicating the concept of discourse centralization to non-specialist audiences.</p>
+<p>The bullseye visualization can show the degree of centralization but doesn’t directly indicate which topics are prevalent. To address this, I complement the bullseye diagrams with more detailed visualizations that show the specific topics that dominate in different contexts:</p>
+<ul>
+<li><p><strong>Bar charts</strong>: Comparing Dominance Index values across different groupings to identify variations in overall centralization.</p></li>
+<li><p><strong>Heatmaps</strong>: Showing the prevalence of specific topics across different contexts to identify which topics dominate in which contexts.</p></li>
+<li><p><strong>Network visualizations</strong>: Illustrating relationships between topics and document characteristics to reveal patterns of association.</p></li>
+</ul>
+<p>[visualization placeholder - topic prevalence heatmap]</p>
+<p>These visualizations help bridge the gap between the abstract metric of the Dominance Index and the substantive content of the discourse. They enable identification of both patterns of centralization (how concentrated the discourse is) and patterns of content (which specific topics dominate in which contexts).</p>
+<p>The interpretation of these patterns draws on the theoretical framework developed in the previous chapter. I analyze how discourse centralization relates to epistemological diversity, examining whether differences in Dominance Index values across contexts reflect meaningful variations in how adaptation is conceptualized. This interpretation involves several layers of analysis:</p>
+<ol type="1">
+<li><p><strong>Pattern identification</strong>: Identifying variations in the Dominance Index across different groupings and assessing their statistical significance.</p></li>
+<li><p><strong>Content analysis</strong>: Examining which specific topics dominate in different contexts and how these topics relate to different epistemological and ontological perspectives.</p></li>
+<li><p><strong>Contextual interpretation</strong>: Considering how patterns of discourse centralization might relate to broader factors such as regional knowledge systems, institutional frameworks, or historical legacies.</p></li>
+<li><p><strong>Theoretical connection</strong>: Relating the empirical findings to theoretical concepts such as epistemological diversity, ontological assumptions, and the politics of scale.</p></li>
+</ol>
+<p>This interpretive process aims to move beyond simple description of discourse patterns to deeper analysis of their implications for climate adaptation governance. It seeks to connect the “what” (patterns of discourse centralization) to the “why” (factors that might explain these patterns) and the “so what” (implications for just and effective adaptation).</p>
+<p>The interpretation explicitly considers alternative explanations for observed patterns. For example, if regional groups show different Dominance Index values, this could reflect:</p>
+<ul>
+<li>Genuinely different epistemological traditions across regions</li>
+<li>Institutional factors such as regional development banks or policy frameworks</li>
+<li>Historical patterns of knowledge exchange and policy diffusion</li>
+<li>Artifacts of the corpus composition or analytical method</li>
+</ul>
+<p>By considering these alternatives, I aim to develop more robust interpretations that acknowledge the complexity of factors shaping adaptation discourse.</p>
+<p>Throughout this interpretive process, I maintain awareness of what this methodological approach can and cannot tell us. The analysis can identify patterns of topic distribution across different contexts and suggest possible factors influencing these patterns. It cannot definitively establish causal relationships or directly measure epistemological diversity. The findings should be understood as evidence-based insights that can inform further research and policy discussions, rather than as final conclusions about the nature of adaptation discourse.</p>
+<p>Despite these limitations, this methodological approach offers valuable insights into patterns of discourse centralization that would be difficult to discern through manual analysis alone. By combining computational methods with critical theoretical perspectives, it contributes to our understanding of how adaptation is conceptualized across different contexts and what factors might influence these conceptualizations. These insights have implications for both academic understandings of adaptation discourse and practical efforts to promote more just and effective adaptation governance.</p>
 
 
+<div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list" style="display: none">
+<div id="ref-roberts2019" class="csl-entry" role="listitem">
+Roberts, M. E., Stewart, B. M., &amp; Tingley, D. (2019). Stm: An r package for structural topic models. <em>Journal of Statistical Software</em>, <em>91</em>, 1–40. <a href="https://doi.org/10.18637/jss.v091.i02">https://doi.org/10.18637/jss.v091.i02</a>
+</div>
+</div>
 </section>
 
 </main> <!-- /main -->
@@ -738,8 +851,8 @@ window.Quarto = {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="../text/theory.html" class="pagination-link" aria-label="Theory: Adaptation for the future">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Theory: Adaptation for the future</span></span>
+      <a href="../text/theory.html" class="pagination-link" aria-label="Theory: Development Ontology and Epistemological Diversity">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Theory: Development Ontology and Epistemological Diversity</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
