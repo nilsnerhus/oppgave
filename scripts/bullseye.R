@@ -99,7 +99,7 @@ bullseye <- function(
       fill = "black", 
       color = "white", 
       stroke = 0.3, 
-      size = 2.5
+      size = 5
     ) +
     # Ensure circular appearance
     ggplot2::coord_fixed() +
