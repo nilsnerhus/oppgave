@@ -29,7 +29,7 @@ The degree of discourse centralization serves as an indicator of the dominance o
 
 ## Methods: The Dominance Index
 
-To empirically analyze discourse centralization in climate adaptation, this thesis develops a novel methodological approach called the "Dominance Index." This approach applies quantitative methods to questions typically addressed through qualitative means, creating an interdisciplinary bridge between critical theory and computational text analysis.
+To empirically analyze discourse centralization in climate adaptation, this thesis develops a methodological approach called the "Dominance Index." This approach applies quantitative methods to questions typically addressed through qualitative means, creating an interdisciplinary bridge between critical theory and computational text analysis.
 
 The primary corpus consists of 45 English-language National Adaptation Plans (NAPs) submitted to the UNFCCC. Each document is tagged with metadata including country income level, geographic region, and special status (SIDS, LDC, etc.). The text preprocessing pipeline includes tokenization, stopword removal, and lemmetization to prepare the documents for analysis.
 

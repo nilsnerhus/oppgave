@@ -1,47 +1,56 @@
 # Introduction {#sec-intro}
 
-This thesis concludes five years spent at the University. Throughout this time, the world has changed dramatically:
+Climate adaptation is emerging as one of the defining paradigms of North-South relations in the 21st century. As climate impacts intensify across the globe, the question of how societies should adapt to these changes has moved from the periphery to the center of international governance. Yet despite the growing importance of adaptation in climate summits, funding mechanisms, and policy discussions, there remains a troubling uniformity in how adaptation is conceptualized and implemented across diverse contexts.
 
-- In 2020, the pandemic struck. […]
-- In 2022, Russia invaded Ukraine […]
-- In 2024, Israel responded to Hamas' terror attack with a full scale invasion […]
-- In 2025, the Trump administration and the world's richest man cut 40% of global aid from one day to another
+This homogeneity persists despite a rich body of literature arguing that truly effective responses to complex challenges require ontological and epistemological diversity—different ways of knowing and being in relation to climate futures. Scholars have argued that the dominant development paradigm systematically excludes alternative knowledges and possibilities [@escobar2018] and highlight the "epistemicide" that occurs when Western knowledge systems are universalized at the expense of other forms of knowing [@santos2016]. These critiques suggest that effective climate adaptation would require not just technical adjustments within existing systems, but openness to fundamentally different ways of conceptualizing relationships between humans, non-humans, and future generations.
 
-At the same time, the world has started experiencing the results of 200 years of greenhouse emissions:
+This thesis examines the tension between the theoretical call for diverse approaches to adaptation and the apparent homogeneity in adaptation governance. Rather than assuming uniformity, however, I develop a methodological approach to empirically measure discourse centralization in climate adaptation. Through analysis of National Adaptation Plans (NAPs) submitted to the UNFCCC, I investigate to what extent adaptation discourse reflects a plurality of epistemological and ontological positions or the dominance of a singular global discourse.
+## Climate Adaptation
 
-- Floods in Germany and Spain […]
-- Kiribati to buy land abroad […]
-- Wildfires in LA […]
+International climate change action has evolved significantly since the establishment of the United Nations Framework Convention on Climate Change (UNFCCC) in 1992. Initially focused primarily on mitigation—reducing greenhouse gas emissions—the climate governance architecture has expanded to include adaptation as a second pillar following the Cancun Agreements in 2010, and loss and damage as a third pillar with the Paris Agreement in 2015.
 
+This evolution reflects the growing recognition that some climate impacts are now unavoidable, even with ambitious mitigation efforts. The concept of "common but differentiated responsibilities" established at the Earth Summit has shaped how these pillars are operationalized, with industrialized countries seen as bearing greater responsibility both for emissions reductions and for providing support to developing countries facing disproportionate climate impacts despite contributing least to the problem.
 
-The focus of this thesis are the actions taken to adapt to climate change. The goal is not to predict the future, but rather to better understand what the actors in this space, NGOs, academics, or governments think climate adaptation means. As well as to understand their room for maneuver and what they plan to do today, and in the future.
+Climate adaptation has become increasingly central to Human Security frameworks. As defined by the UNDP (1994), Human Security broadens traditional security concepts to include threats to food security, environmental security, community security, and personal security—all domains directly affected by climate change. Climate adaptation intersects with each of these dimensions, potentially reshaping how security is conceptualized and pursued in international relations.
 
-This thesis takes a novel approach. It combines theories and concepts from the field of Anthropology of Development, with their epistemological critiques of development and development projects, with quantitative methods better known from other fields.
+The funding landscape for adaptation has evolved to include mechanisms like the Green Climate Fund, the Adaptation Fund, and various bilateral and multilateral arrangements. Despite pledges like the "$100 billion promise" and the recent $300 billion commitment at COP29 in Baku (2024), actual disbursement patterns remain contentious, with questions about what counts as adaptation finance and who controls how it is allocated and implemented.
 
-## Climate security as Human Security {#sec-humsec}
+## Homogeneity
 
-A central part of the discussion is vulnerability, risk, and security. Human Security, as an approach to research, challenges the traditional realpolitik-paradigm and focuses security as "something more than the top-down military defense of state interests and territory" [@paris2001, p. 88]. It broadens the understanding of security; horizontally to include more threats and vertically to include more actors [@paris2001, p. 98]. Importantly for climate adaptation, Human Security includes risks to the biosphere and the ecosystems the world relies on, as well as the concrete risk to the individual. The individual might now experience a greater risk to their food security, environmental security, community security and personal security [@undp1994]. 
+Working within large climate policy organizations, one encounters a striking uniformity in how adaptation is conceptualized and approached. Despite operating across dramatically different geographical, cultural, and socioeconomic contexts, adaptation projects often employ remarkably similar framing, methodologies, and solutions. This homogeneity exists in tension with the diverse climate impacts experienced across regions and the heterogeneous social, economic, and cultural contexts in which adaptation must occur.
 
-The critique of development from the perspective of the anthropology of development is that interventions rarely eliminate vulnerabilities. Rather, vulnerabilities are shifted from one group to another, from one scale to another or from one place to another [@scoville-simonds2020;@eriksen2021]. Climate adaptation is special because of its orientation to the future. It is unclear how severe, how often, in what kind and where the damages will come. It is a reconstruction without destruction that relies on both the forecasts from climate science, and a specific understanding of the future, to decide what society is going to keep and discard. How we decide to frame the risk, vulnerability, and tool we use to safeguard ourselves from the future, is an inherently ontological and epistemological question. Without a proper understanding of climate adaptation, we run the risk of maladaptation, where the vulnerability to climate damage is not minimized, just moved around. 
+The field of climate adaptation research reveals this tension clearly. On one hand, the "adaptation nexus" approach, drawing from participatory development traditions, emphasizes technical adjustments and institution-building within existing systems. On the other hand, the "adaptation regime" critique, emerging from post-structural analysis, argues that adaptation discourse functions as a technique of power that reproduces rather than challenges existing inequalities. Between these approaches lies a fundamental disagreement about what adaptation is and ought to be.
 
-## Scope
+This tension reflects a broader challenge in addressing complex global challenges: how to navigate between universal frameworks needed for coordination and the diverse knowledge systems, ontologies, and epistemologies that might offer more contextually appropriate and transformative solutions. Scholars like Raworth (2017), Mazzucato (2021), and Scott (1998) have proposed alternative frameworks for governance that could potentially accommodate greater diversity in approaches to complex challenges like climate adaptation.
 
-This thesis seeks to understand climate adaptation funding flows, on a global scale. Since this funding, and its discourse, is anchored in the UNFCCC, it is a natural focal point for the study. The declarations made at the end of every Climate Summit are the outcome of intense negotiations at the summit, and their contents become a part national political debates all around the world [source]. 
+But how homogeneous is adaptation discourse in practice? Rather than assuming either complete uniformity or radical diversity, this thesis develops a methodological approach to empirically measure discourse centralization in climate adaptation. This approach allows us to move beyond binary oppositions to understand the actual patterns of discourse in adaptation governance.
 
-What *is* climate adaptation?
+## Research Questions
 
-- What is the impact of climate adaptation on are North-South finance flows?
-- What are the most common climate adaptation interventions? What do they replace?
+This thesis addresses three central research questions:
 
-What *impact* will climate adaptation have?
+1. To what extent is climate adaptation discourse centralized or diverse across different contexts?
+2. What do patterns of discourse centralization reveal about power dynamics in climate adaptation governance?
+3. What implications do these discourse patterns have for the future of climate adaptation as a framework for North-South relations?
 
-- What futures do climate adaptation projects have? What are their implications?
-- How are climate adaptation interventions justified? Who decides?
+To address these questions, I develop a methodological approach centered around the "Dominance Index"—a measurement tool for quantifying the degree of discourse centralization across different contexts. This approach combines structural topic modeling of National Adaptation Plans with calculations of topic dominance to identify patterns in how adaptation is conceptualized in official policy documents.
 
-## Structure of the thesis
+While the Dominance Index itself is relatively straightforward, its application to questions of discourse centralization represents a functional bridge between critical theory and quantitative methods. This interdisciplinary approach allows for empirical assessment of theoretical claims about discourse homogeneity while maintaining sensitivity to power dynamics in climate governance.
 
-This thesis is structured in three parts. Following this introduction, I present climate adaptation as a part of the international structure for climate change governance [@sec-context]. Then, I present the two main understandings of climate adaptation in the scientific literature [@sec-lit].
+The analysis reveals a surprising finding: adaptation discourse clusters most strongly by region rather than income level or geography. This suggests that regional epistemic communities and institutions may shape adaptation conceptualizations more significantly than either purely global frameworks or purely local knowledge systems. This finding complicates both the adaptation nexus and adaptation regime perspectives, pointing toward a more complex landscape of knowledge production in climate adaptation.
 
-In the second part, I present the research design. Here, I explain the different ontological and epistemological views on the future and how they can be analyzed [@sec-theory], before I present my data collection and analysis through regression and structured topic models [@sec-methods].
+## Structure
 
-In the last part, I will present the findings from my study [@sec-findings] and discuss how they should be understood [@sec-discussion], before I conclude the thesis [@sec-conclusion].
+This thesis makes three primary contributions to our understanding of climate adaptation governance:
+
+1. First, it provides a theoretical framework for understanding adaptation as a site of contested futures where epistemological and ontological assumptions shape which adaptation pathways are considered possible or impossible. By drawing connections between critical future studies and adaptation governance, the thesis illuminates how discourse centralization can function as a form of "defuturing"—actively reducing rather than expanding future possibilities.
+2. Second, it develops a methodological approach for measuring discourse centralization that can be applied beyond climate adaptation to other domains of global governance. The Dominance Index offers a way to empirically assess the degree to which discourse reflects a diversity of perspectives or the dominance of particular ways of knowing and being.
+3. Third, it offers empirical insights about regional patterns in adaptation discourse that challenge simplistic narratives about global-local dynamics in climate governance. These findings have implications for how we understand the role of regional institutions in mediating between global frameworks and local implementation.
+
+The thesis is structured in three parts:
+
+- Part 1 establishes climate adaptation as a case study. Chapter 1 traces the evolution of adaptation within international climate governance. Chapter 2 reviews competing paradigms in adaptation research, contrasting the adaptation nexus and adaptation regime approaches.
+- Part 2 develops the theoretical and methodological framework. Chapter 3 presents a theoretical framework drawing from critical future studies to understand adaptation as a site of contested futures. Chapter 4 outlines the methodological approach, including the development of the Dominance Index and its application to NAPs.
+- Part 3 presents the analysis and implications. Chapter 5 presents findings on discourse centralization patterns across different dimensions. Chapter 6 discusses the implications of these patterns for power dynamics in adaptation governance and the future of climate adaptation as a framework for North-South relations. Chapter 7 concludes by reflecting on the broader significance of these findings for addressing complex global challenges.
+
+Through this structure, the thesis bridges critical theoretical perspectives with empirical analysis to offer new insights into how climate adaptation discourse is shaped and what this means for addressing one of the defining challenges of our time.
