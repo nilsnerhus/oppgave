@@ -47,6 +47,6 @@ format:
     number-depth: 2
   docx: 
     toc: true
-    reference-doc: references/custom-reference-doc
+    reference-doc: references/custom-reference-doc.docx
 
 editor: source
