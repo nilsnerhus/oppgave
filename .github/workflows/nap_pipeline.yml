@@ -49,7 +49,7 @@ jobs:
 
       - name: Run the functions
         run: |
-          Rscript scripts/everything_together.R
+          Rscript scripts/nap_pipeline.R
 
       - name: Commit and push results
         run: |
