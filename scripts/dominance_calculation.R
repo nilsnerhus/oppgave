@@ -449,10 +449,3 @@ log_message("Dominance analysis complete and saved", "dominance_script")
 
 # Return the analysis invisibly, but don't print anything
 invisible(dominance_analysis)
-
-table <- dominance_analysis$results_by_n$`3`
-
-markdown_table <- knitr::kable(table, format = "markdown")
-
-# Print the markdown table (you can then copy this output)
-cat(markdown_table)
