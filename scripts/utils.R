@@ -257,3 +257,127 @@ web_cache <- function(func, ..., url = "https://napcentral.org/submitted-naps",
     return(readRDS(cache_path))
   }
 }
+
+#' @title Generate country-specific stopwords
+#' @description Creates stopwords based on country names and related terms
+#'
+#' @param text_data Data frame containing country information
+#' @param country_col Name of column containing country names (default: "country_name")
+#' @param region_col Name of column containing region names (default: "region")
+#' @param include_adjectives Whether to include adjectival forms (default: TRUE)
+#' @param include_regions Whether to include region names (default: TRUE)
+#'
+#' @return A character vector of stopwords
+#'
+generate_country_stopwords <- function(
+    text_data,
+    country_col = "country_name",
+    region_col = "region",
+    include_adjectives = TRUE,
+    include_regions = TRUE
+) {
+  country_stops <- c()
+  
+  # Process country names if available
+  if (country_col %in% names(text_data)) {
+    # Extract unique country names and convert to lowercase
+    country_names <- unique(text_data[[country_col]])
+    country_names <- tolower(country_names[!is.na(country_names)])
+    
+    # Add country names to stopwords
+    country_stops <- c(country_stops, country_names)
+    
+    # Add alternative forms (e.g., "United States" -> "united", "states")
+    for (country in country_names) {
+      parts <- unlist(strsplit(country, "\\s+"))
+      if (length(parts) > 1) {
+        country_stops <- c(country_stops, parts)
+      }
+    }
+    
+    # Add adjectival forms if requested
+    if (include_adjectives) {
+      country_adjs <- c()
+      
+      for (country in country_names) {
+        # Handle common endings
+        if (grepl("a$", country)) {
+          # Countries ending in 'a' -> 'an' (America -> American)
+          adj <- gsub("a$", "an", country)
+          country_adjs <- c(country_adjs, adj)
+        } else if (grepl("e$", country)) {
+          # Countries ending in 'e' -> 'ese' (Chinese)
+          adj <- paste0(country, "se")
+          country_adjs <- c(country_adjs, adj)
+        } else {
+          # Default -> add 'ian' (Canada -> Canadian)
+          adj <- paste0(country, "ian")
+          country_adjs <- c(country_adjs, adj)
+        }
+      }
+      
+      # Add the adjectival forms
+      country_stops <- c(country_stops, country_adjs)
+      
+      # Add common nationality patterns
+      common_nationalities <- c(
+        # Common exceptions that don't follow regular rules
+        "afghan", "albanian", "algerian", "angolan", "argentine", "australian", 
+        "austrian", "azerbaijani", "bahraini", "bangladeshi", "belgian", "bolivian", 
+        "brazilian", "british", "cambodian", "cameroonian", "canadian", "chilean", 
+        "chinese", "colombian", "congolese", "croatian", "cuban", "czech", 
+        "danish", "dominican", "dutch", "ecuadorian", "egyptian", "emirati", 
+        "english", "ethiopian", "fijian", "filipino", "finnish", "french", 
+        "german", "ghanaian", "greek", "guatemalan", "haitian", "hungarian", 
+        "icelandic", "indian", "indonesian", "iranian", "iraqi", "irish", 
+        "israeli", "italian", "jamaican", "japanese", "jordanian", "kazakhstani", 
+        "kenyan", "korean", "kuwaiti", "lao", "latvian", "lebanese", "liberian", 
+        "libyan", "lithuanian", "malaysian", "mexican", "moldovan", "mongolian", 
+        "moroccan", "mozambican", "namibian", "nepalese", "nigerian", "norwegian", 
+        "omani", "pakistani", "palestinian", "paraguayan", "peruvian", "polish", 
+        "portuguese", "qatari", "romanian", "russian", "rwandan", "saudi", 
+        "scottish", "senegalese", "serbian", "sierra leonean", "singaporean", 
+        "slovak", "somali", "south african", "spanish", "sri lankan", "sudanese", 
+        "swedish", "swiss", "syrian", "taiwanese", "tajik", "thai", "tunisian", 
+        "turkish", "ugandan", "ukrainian", "uruguayan", "uzbekistani", 
+        "venezuelan", "vietnamese", "welsh", "yemeni", "zambian", "zimbabwean"
+      )
+      
+      country_stops <- c(country_stops, common_nationalities)
+    }
+  }
+  
+  # Process region names if available and requested
+  if (include_regions && region_col %in% names(text_data)) {
+    # Extract unique region names
+    region_names <- unique(text_data[[region_col]])
+    region_names <- tolower(region_names[!is.na(region_names)])
+    
+    # Add region names to stopwords
+    country_stops <- c(country_stops, region_names)
+    
+    # Add parts of region names (e.g., "Latin America & Caribbean" -> "latin", "america", "caribbean")
+    for (region in region_names) {
+      parts <- unlist(strsplit(region, "[\\s&]+"))
+      if (length(parts) > 1) {
+        country_stops <- c(country_stops, parts)
+      }
+    }
+    
+    # Add common region terms
+    common_regions <- c(
+      "africa", "african", "americas", "american", "asia", "asian",
+      "europe", "european", "pacific", "caribbean", "latin", "central",
+      "south", "north", "east", "west", "eastern", "western", "southern", "northern",
+      "middle", "east", "southeast", "northeast", "central", "sub", "saharan"
+    )
+    
+    country_stops <- c(country_stops, common_regions)
+  }
+  
+  # Remove duplicates and sort
+  country_stops <- unique(country_stops)
+  country_stops <- sort(country_stops)
+  
+  return(country_stops)
+}

@@ -33,6 +33,7 @@ prepare_corpus <- function(
     lemmatize = TRUE,
     min_word_count = 2,
     min_word_length = 1,
+    segment_size = 300,
     remove_punctuation = TRUE,
     min_doc_length = 50,
     max_doc_proportion = 0.8,
@@ -83,6 +84,87 @@ prepare_corpus <- function(
     log_message(paste("Validation error:", e$message), "prepare_corpus", "ERROR")
     stop(e$message)
   })
+  
+  # Create segmented corpus if segment_size > 0
+  if (segment_size > 0) {
+    log_message(paste("Segmenting documents by", segment_size, "paragraphs"), "prepare_corpus")
+    
+    # Initialize segmented data
+    segmented_texts <- c()
+    segment_meta <- data.frame()
+    
+    # Process each document
+    for (i in 1:nrow(text_data)) {
+      doc <- text_data[i, ]
+      doc_id <- as.character(doc$doc_id)
+      text <- doc[[text_column]]
+      
+      # Split into paragraphs
+      paragraphs <- unlist(strsplit(text, "\n\n+"))
+      
+      # Group into segments
+      if (length(paragraphs) <= segment_size) {
+        # If document is smaller than segment size, keep as one segment
+        segments <- list(paste(paragraphs, collapse = "\n\n"))
+      } else {
+        # Otherwise split into segments
+        n_segments <- ceiling(length(paragraphs) / segment_size)
+        segments <- vector("list", n_segments)
+        
+        for (j in 1:n_segments) {
+          start_idx <- (j-1) * segment_size + 1
+          end_idx <- min(j * segment_size, length(paragraphs))
+          
+          if (start_idx <= length(paragraphs)) {
+            segments[[j]] <- paste(paragraphs[start_idx:end_idx], collapse = "\n\n")
+          }
+        }
+      }
+      
+      # Add segments to corpus
+      for (j in seq_along(segments)) {
+        if (nchar(segments[[j]]) > 0) {
+          # Add segment text
+          segmented_texts <- c(segmented_texts, segments[[j]])
+          
+          # Create segment metadata
+          segment_id <- paste0(doc_id, "_", j)
+          meta_row <- as.data.frame(doc)
+          meta_row[[text_column]] <- NULL
+          meta_row$doc_id <- segment_id
+          meta_row$original_doc_id <- doc_id
+          meta_row$segment_num <- j
+          
+          # Add to metadata
+          if (nrow(segment_meta) == 0) {
+            segment_meta <- meta_row
+          } else {
+            segment_meta <- rbind(segment_meta, meta_row)
+          }
+        }
+      }
+    }
+    
+    # Create corpus from segments
+    corpus_data <- data.frame(
+      doc_id = segment_meta$doc_id,
+      text = segmented_texts,
+      stringsAsFactors = FALSE
+    )
+    
+    # Merge metadata
+    for (col in names(segment_meta)) {
+      if (!col %in% c("doc_id", text_column)) {
+        corpus_data[[col]] <- segment_meta[[col]]
+      }
+    }
+    
+    log_message(paste("Created", nrow(corpus_data), "segments from", start_docs, "documents"), "prepare_corpus")
+  } else {
+    # No segmentation - use documents directly
+    corpus_data <- text_data
+    names(corpus_data)[names(corpus_data) == text_column] <- "text"
+  }
   
   ## --- Assign document IDs ----------------------------------------------------
   log_message("Assigning document IDs", "prepare_corpus")
