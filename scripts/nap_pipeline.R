@@ -7,13 +7,12 @@
 dir.create("data", recursive = TRUE, showWarnings = FALSE)
 
 # Source function files if not already loaded¨
-if(!exists("utils")) source("scripts/utils.R")
-if(!exists("scrape_web")) source("scripts/scrape_web.R")
-if(!exists("extract_pdfs")) source("scripts/extract_pdfs.R")
-if(!exists("add_metadata")) source("scripts/add_metadata.R")
-if(!exists("prepare_corpus")) source("scripts/prepare_corpus.R")
-if(!exists("find_best_k")) source("scripts/find_best_k.R")
-if(!exists("topic_model")) source("scripts/extract_topic_props.R")
+source("scripts/utils.R")
+source("scripts/scrape_web.R")
+source("scripts/extract_pdfs.R")
+source("scripts/add_metadata.R")
+source("scripts/prepare_corpus.R")
+source("scripts/fit_model.R")
 
 # Step 1: Scrape the UNFCCC website
 exclude_countries <- c("Uruguay", "Israel", "Kuwait", "Trinidad and Tobago") # Uruguay has no national plan, just sectoral, and the others are high income countries
@@ -48,8 +47,6 @@ nap_data <- auto_cache(add_metadata, pdfs$data, sids_list = sids, lldc_list = ll
 nap_stops <- c("mr", "https", "http", "la", "yet", "de", "i.e", "yr", "tion", "des", "svg")
 corpus <- auto_cache(prepare_corpus, nap_data$data, custom_stopwords = nap_stops)
 
-# Step 5: Find optimal topic count
-best_k <- auto_cache(find_best_k, corpus)
-
-# Step 6: Extract topic proportions
-topic_props <- auto_cache(extract_topic_props, best_k)
+# Step 5: Running the model
+prevalence <- ~ region + wb_income_level + is_sids + is_ldc + is_lldc
+topic_model <- auto_cache(fit_model, k = 30, corpus, prevalence.formula = prevalence, iterations = 200)
