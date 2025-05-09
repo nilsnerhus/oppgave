@@ -163,7 +163,7 @@ auto_cache <- function(func, ..., cache_path = NULL, overwrite = FALSE) {
   } else {
     # Log appropriate message based on whether we're forcing overwrite
     if (overwrite && file.exists(cache_path)) {
-      log_message(paste("Forcing recalculation and overwriting cache for", basename(cache_path)))
+      log_message(paste("Overwriting cache for", basename(cache_path), "auto_cache"))
     } else {
       log_message(paste("Computing new result for", basename(cache_path)))
     }
