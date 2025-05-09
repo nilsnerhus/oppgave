@@ -43,7 +43,7 @@ jobs:
             libgdal-dev \
             libproj-dev \
             libgeos-dev \
-            libudunits2
+            libudunits2-dev
 
       - name: Set up renv
         uses: r-lib/actions/setup-renv@v2
