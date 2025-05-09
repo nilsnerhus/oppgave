@@ -11,6 +11,7 @@ source("scripts/utils.R")
 source("scripts/scrape_web.R")
 source("scripts/extract_pdfs.R")
 source("scripts/add_metadata.R")
+source("scripts/create_stopwords.R")
 source("scripts/prepare_corpus.R")
 source("scripts/fit_model.R")
 
@@ -44,9 +45,10 @@ ldc <- c("AFG", "AGO", "BGD", "BEN", "BFA", "BDP", "BOL", "BIH", "BWA", "CAF",
 nap_data <- auto_cache(add_metadata, pdfs$data, sids_list = sids, lldc_list = lldc, ldc_list = ldc)
 
 # Step 4: Prepare corpus
-nap_stops <- c("mr", "https", "http", "la", "yet", "de", "i.e", "yr", "tion", "des", "svg")
+
+nap_stops <- auto_cache(generate_nap_stopwords, nap_data)
 corpus <- auto_cache(prepare_corpus, nap_data$data, custom_stopwords = nap_stops)
 
 # Step 5: Running the model
 prevalence <- ~ region + wb_income_level + is_sids + is_ldc + is_lldc
-topic_model <- auto_cache(fit_model, k = 30, corpus, prevalence.formula = prevalence, iterations = 200)
+topic_model <- auto_cache(fit_model, k = 30, corpus, prevalence = prevalence)
