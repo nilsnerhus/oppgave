@@ -51,4 +51,4 @@ corpus <- auto_cache(prepare_corpus, nap_data$data, custom_stopwords = nap_stops
 
 # Step 5: Running the model
 prevalence <- ~ region + wb_income_level + is_sids + is_ldc + is_lldc
-topic_model <- auto_cache(fit_model, k = 30, corpus, prevalence = prevalence)
+topic_model <- auto_cache(fit_model, corpus, prevalence = prevalence)
