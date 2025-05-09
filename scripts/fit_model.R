@@ -341,7 +341,7 @@ fit_model <- function(
     metadata_final <- NULL
   }
   
-  ## --- Determine optimal k ---------------------------------------------------
+  ## --- Determine optimal k (if not provided) ---------------------------------
   if (is.null(k)) {
     log_message(paste("Determining optimal number of topics (k_min =", k_min, 
                       ", k_max =", k_max, ", k_step =", k_step, ")"), "fit_model")
@@ -349,7 +349,9 @@ fit_model <- function(
     # Generate sequence of k values to test
     k_values <- seq(k_min, k_max, by = k_step)
     
-    # Search for optimal k
+    # Set seed for reproducibility
+    set.seed(seed)
+    
     k_search <- tryCatch({
       stm::searchK(
         documents = stm_data$documents,
@@ -357,7 +359,7 @@ fit_model <- function(
         K = k_values,
         prevalence = prev_formula,
         data = metadata_final,
-        max.em.its = iterations / 2,  # Use fewer iterations for search
+        max.em.its = iterations / 2,
         init.type = "Spectral",
         verbose = FALSE,
         seed = seed
@@ -373,39 +375,71 @@ fit_model <- function(
     diagnostics$k_selection$k_values <- k_values
     diagnostics$k_selection$metrics <- k_search$results
     
-    # Determine best k
-    # Calculate a combined score that balances different metrics
-    k_metrics <- data.frame(k_search$results)
+    # Convert to data frame for calculations
+    k_metrics <- as.data.frame(k_search$results)
     
-    # Normalize metrics to 0-1 scale
+    # Simple function to normalize metrics to 0-1 scale
     normalize <- function(x) {
       if (max(x) == min(x)) return(rep(0, length(x)))
       return((x - min(x)) / (max(x) - min(x)))
     }
     
-    # For semanticCoherence and exclusivity, higher is better
-    # For residual, lower is better (so we invert)
-    k_metrics$norm_coherence <- normalize(k_metrics$semcoh)
-    k_metrics$norm_exclusivity <- normalize(k_metrics$exclus)
-    k_metrics$norm_residual <- 1 - normalize(k_metrics$residual)
+    # Normalize each metric
+    k_metrics$semcoh_norm <- normalize(k_metrics$semcoh)
+    k_metrics$exclus_norm <- normalize(k_metrics$exclus)
+    k_metrics$heldout_norm <- normalize(k_metrics$heldout)
+    # For residuals, lower is better so we invert
+    k_metrics$residual_norm <- 1 - normalize(k_metrics$residual)
     
-    # Calculate combined score (equal weight to each normalized metric)
-    k_metrics$score <- (k_metrics$norm_coherence + 
-                          k_metrics$norm_exclusivity + 
-                          k_metrics$norm_residual) / 3
+    # Calculate combined score with your weights
+    k_metrics$combined_score <- (0.4 * k_metrics$semcoh_norm + 
+                                   0.4 * k_metrics$exclus_norm + 
+                                   0.1 * k_metrics$heldout_norm + 
+                                   0.1 * k_metrics$residual_norm)
     
-    # Add small penalty for model complexity
-    k_metrics$score <- k_metrics$score - 0.01 * normalize(k_metrics$K)
-    
-    # Find k with highest score
-    best_k_idx <- which.max(k_metrics$score)
+    # Find the best K
+    best_k_idx <- which.max(k_metrics$combined_score)
     best_k <- k_metrics$K[best_k_idx]
     
-    log_message(paste("Selected optimal k =", best_k), "fit_model")
+    # Create a simple plot for the selection metrics
+    tryCatch({
+      # Convert to long format for plotting
+      plot_data <- data.frame(
+        K = k_metrics$K,
+        semcoh = k_metrics$semcoh_norm,
+        exclus = k_metrics$exclus_norm, 
+        heldout = k_metrics$heldout_norm,
+        residual = k_metrics$residual_norm,
+        combined = k_metrics$combined_score
+      )
+      
+      # Create the plot
+      k_selection_plot <- ggplot2::ggplot(data = tidyr::pivot_longer(
+        plot_data, 
+        cols = c("semcoh", "exclus", "heldout", "residual", "combined"),
+        names_to = "Metric", 
+        values_to = "Value"
+      )) +
+        ggplot2::geom_line(ggplot2::aes(x = K, y = Value, color = Metric), linewidth = 1) +
+        ggplot2::geom_point(ggplot2::aes(x = K, y = Value, color = Metric)) +
+        ggplot2::geom_vline(xintercept = best_k, linetype = "dashed") +
+        ggplot2::annotate("text", x = best_k, y = 0.95, 
+                          label = paste("Best K =", best_k)) +
+        ggplot2::theme_minimal() +
+        ggplot2::labs(
+          title = "Topic Model Selection",
+          x = "Number of Topics (K)",
+          y = "Normalized Score"
+        )
+      
+      # Store the plot in diagnostics
+      diagnostics$k_selection$plot <- k_selection_plot
+      
+    }, error = function(e) {
+      log_message(paste("Error creating selection plot:", e$message), "fit_model", "WARNING")
+    })
     
-    # Store selection results
-    diagnostics$k_selection$best_k <- best_k
-    diagnostics$k_selection$scores <- k_metrics
+    log_message(paste("Selected optimal K =", best_k), "fit_model")
     
     # Use best k for final model
     k <- best_k

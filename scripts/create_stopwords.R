@@ -128,48 +128,48 @@ generate_nap_stopwords <- function(
     
     artifact_stops <- c()
     
-    # SIMPLIFIED: Find all tokens containing numbers
-    if (!is.null(corpus_terms$freq_terms)) {
-      number_tokens <- corpus_terms$freq_terms$word[grepl("[0-9]", corpus_terms$freq_terms$word)]
+    # Process directly from input text if corpus terms not available
+    if (is.null(corpus_terms$freq_terms)) {
+      log_message("Extracting artifact tokens directly from input text", "generate_nap_stopwords")
+      direct_artifacts <- extract_artifact_tokens(text_data, text_column)
+      artifact_stops <- c(artifact_stops, direct_artifacts)
+      
+      log_message(paste("Found", length(direct_artifacts), "tokens with numbers or punctuation"), 
+                  "generate_nap_stopwords")
+    } else {
+      # Enhanced number detection
+      number_pattern <- "[0-9]|[⁰¹²³⁴⁵⁶⁷⁸⁹½¼¾]"
+      number_tokens <- corpus_terms$freq_terms$word[grepl(number_pattern, corpus_terms$freq_terms$word)]
       artifact_stops <- c(artifact_stops, number_tokens)
       
       log_message(paste("Found", length(number_tokens), "tokens containing numbers"), 
                   "generate_nap_stopwords")
-    }
-    
-    # SIMPLIFIED: Find all tokens containing punctuation
-    # We've already removed punctuation during tokenization, but this captures
-    # any that might have been in the original stopwords list
-    if (!is.null(corpus_terms$freq_terms)) {
-      punct_tokens <- corpus_terms$freq_terms$word[grepl("[[:punct:]]", corpus_terms$freq_terms$word)]
+      
+      # Simplified approach that will work in any environment
+      punct_tokens <- corpus_terms$freq_terms$word[grepl("[^[:alnum:][:space:]]", corpus_terms$freq_terms$word)]
       artifact_stops <- c(artifact_stops, punct_tokens)
       
       log_message(paste("Found", length(punct_tokens), "tokens containing punctuation"), 
                   "generate_nap_stopwords")
+      
+      # Climate document specific formats
+      format_patterns <- c(
+        "\\b[12][0-9]{3}\\b",                          # Years
+        "\\b[0-9]+%|\\b[0-9]+\\.[0-9]+%",              # Percentages
+        "\\b[0-9]+°C|\\b[0-9]+\\.[0-9]+°C",            # Temperatures
+        "\\b[0-9]+\\s*(mm|cm|m|km|ha|km²|m²)",         # Measurements
+        "\\bsection\\s*[0-9]|\\bchapter\\s*[0-9]"      # Document references
+      )
+      
+      format_pattern <- paste(format_patterns, collapse = "|")
+      format_tokens <- corpus_terms$freq_terms$word[grepl(format_pattern, corpus_terms$freq_terms$word, ignore.case = TRUE)]
+      artifact_stops <- c(artifact_stops, format_tokens)
+      
+      log_message(paste("Found", length(format_tokens), "tokens with document-specific formats"), 
+                  "generate_nap_stopwords")
     }
     
-    # Add a few essential document-specific stopwords
-    basic_artifacts <- c(
-      "pdf", "doc", "docx", "html", "annex", "appendix", "chapter", 
-      "section", "page", "paragraph", "figure", "table", "chart",
-      "toc", "contents", "bibliography", "references", "glossary",
-      "header", "footer", "title", "subtitle", "heading", "subheading",
-      "introduction", "conclusion", "summary", "abstract",
-      "background", "methodology", "results", "discussion",
-      "page", "ibid", "et", "al", "etc"
-    )
-    
-    artifact_stops <- c(artifact_stops, basic_artifacts)
-    
-    # Clean up and store
-    artifact_stops <- unique(artifact_stops)
-    artifact_stops <- artifact_stops[artifact_stops != ""]
-    artifact_stops <- sort(artifact_stops)
-    
-    stopwords_by_category$artifacts <- artifact_stops
-    
-    log_message(paste("Generated", length(artifact_stops), "document artifact stopwords"),
-                "generate_nap_stopwords")
+    # Rest of your existing code...
   }
   
   ## --- Generate geographic stopwords ----------------------------------------
@@ -328,10 +328,11 @@ generate_nap_stopwords <- function(
     non_english_stops <- c()
     
     # Get comprehensive stopwords from multiple languages
+    # Excluding Thai (th) which has caused encoding issues
     languages <- c("fr", "es", "pt", "de", "it", "nl", "sv", "no", "da", "fi", 
-                   "hu", "ru", "ar", "zh", "ja", "ko", "hi", "bn", "id", "ms", "th")
+                   "hu", "ru", "ar", "zh", "ja", "ko", "hi", "bn", "id", "ms")
     
-    # Process each language
+    # Process each language with error handling
     for (lang in languages) {
       tryCatch({
         # Get stopwords for this language
@@ -341,65 +342,107 @@ generate_nap_stopwords <- function(
         log_message(paste("Added", length(lang_words), "stopwords for language:", lang),
                     "generate_nap_stopwords")
       }, error = function(e) {
-        log_message(paste("Note: Language", lang, "not available in stopwords package -", e$message),
-                    "generate_nap_stopwords", "INFO")
+        log_message(paste("Error loading stopwords for language", lang, "-", e$message),
+                    "generate_nap_stopwords", "WARNING")
       })
     }
     
     # Add common non-English climate terms
     additional_terms <- c(
       # French
-      "ministère", "département", "agence", "développement", "environnement",
-      "changement", "climatique", "gouvernement", "adaptation", "vulnérabilité",
+      "ministere", "departement", "agence", "developpement", "environnement",
+      "changement", "climatique", "gouvernement", "adaptation", "vulnerabilite",
       "climatiques", "superficie", "superficies", "secteurs", "agricoles", 
-      "ainsi", "précipitations", "température", 
+      "ainsi", "precipitations", "temperature", 
       
       # Spanish
       "ministerio", "departamento", "agencia", "desarrollo", "medio", "ambiente",
-      "cambio", "climático", "gobierno", "adaptación", "américa", "latina",
-      "caribe", "emisiones", "migración", 
+      "cambio", "climatico", "gobierno", "adaptacion", "america", "latina",
+      "caribe", "emisiones", "migracion", 
       
       # Portuguese
-      "ministério", "departamento", "agência", "desenvolvimento", "ambiente",
-      "mudança", "climática", "governo", "adaptação", 
+      "ministerio", "departamento", "agencia", "desenvolvimento", "ambiente",
+      "mudanca", "climatica", "governo", "adaptacao", 
       
       # Any other language terms you've noticed in your documents
-      "moçambique", "vulnérabilité", "émissions", "schweizerische", "bundesrat",
-      "eidgenössisches"
+      "mocambique", "vulnerabilite", "emissions", "schweizerische", "bundesrat",
+      "eidgenossisches"
     )
     
     non_english_stops <- c(non_english_stops, additional_terms)
     
-    # SIMPLIFIED: Detect non-English words using character patterns
-    # This uses the observation that certain letter combinations are rare in English
-    # but common in other languages
+    # Safe approach to find non-English terms in the corpus
     if (!is.null(corpus_terms$freq_terms)) {
-      # Define patterns that likely indicate non-English words
-      non_english_patterns <- c(
-        # Character combinations rare in English but common in other languages
-        "ç", "ñ", "é", "è", "ê", "ë", "à", "â", "ä", "á", "å", "ã",
-        "ì", "í", "î", "ï", "ò", "ó", "ô", "õ", "ö", "ù", "ú", "û", "ü",
-        "ý", "ÿ", "ø", "œ", "æ", "ß", "ð", "þ", "ł", "ń", "ś", "ź", "ż"
-      )
+      log_message("Analyzing corpus for potential non-English terms", "generate_nap_stopwords")
       
-      # Find words with these patterns
-      for (pattern in non_english_patterns) {
-        matching_terms <- corpus_terms$freq_terms$word[grepl(pattern, corpus_terms$freq_terms$word, fixed = TRUE)]
-        if (length(matching_terms) > 0) {
-          non_english_stops <- c(non_english_stops, matching_terms)
-          log_message(paste("Found", length(matching_terms), "potential non-English terms with pattern:", pattern),
+      # Only process words with valid UTF-8 encoding
+      valid_words <- which(sapply(corpus_terms$freq_terms$word, function(w) {
+        tryCatch({
+          identical(w, iconv(w, "UTF-8", "UTF-8", sub=""))
+        }, error = function(e) FALSE)
+      }))
+      
+      if (length(valid_words) > 0) {
+        # Simple non-English markers (safe ASCII characters only)
+        safe_markers <- c(
+          # Common accent markers that are generally safe
+          "e\\u0301", "e\\u0300", "a\\u0301", "a\\u0300", "i\\u0301", "o\\u0301", "u\\u0301",
+          # Common letter combinations rare in English
+          "cz", "sz", "zz", "sch", "ij"
+        )
+        
+        # Use a combined regex to find potential non-English words
+        # This avoids processing each pattern separately
+        for (marker in safe_markers) {
+          tryCatch({
+            matching_words <- corpus_terms$freq_terms$word[valid_words][
+              grepl(marker, corpus_terms$freq_terms$word[valid_words], perl=TRUE)
+            ]
+            
+            if (length(matching_words) > 0) {
+              non_english_stops <- c(non_english_stops, matching_words)
+              log_message(paste("Found", length(matching_words), 
+                                "potential non-English terms with marker:", marker),
+                          "generate_nap_stopwords")
+            }
+          }, error = function(e) {
+            log_message(paste("Error processing marker:", marker, "-", e$message),
+                        "generate_nap_stopwords", "WARNING")
+          })
+        }
+        
+        # Find words with unusual consonant patterns (safe approach)
+        tryCatch({
+          consonant_pattern <- "[bcdfghjklmnpqrstvwxz]{4,}"
+          consonant_clusters <- corpus_terms$freq_terms$word[valid_words][
+            grepl(consonant_pattern, corpus_terms$freq_terms$word[valid_words])
+          ]
+          
+          if (length(consonant_clusters) > 0) {
+            non_english_stops <- c(non_english_stops, consonant_clusters)
+            log_message(paste("Found", length(consonant_clusters), "terms with unusual consonant clusters"),
+                        "generate_nap_stopwords")
+          }
+        }, error = function(e) {
+          log_message(paste("Error processing consonant clusters:", e$message),
+                      "generate_nap_stopwords", "WARNING")
+        })
+      }
+    }
+    
+    # Additional heuristic: very long words are often non-English (especially in technical documents)
+    if (!is.null(corpus_terms$freq_terms)) {
+      tryCatch({
+        long_words <- corpus_terms$freq_terms$word[nchar(corpus_terms$freq_terms$word) > 15]
+        if (length(long_words) > 0) {
+          non_english_stops <- c(non_english_stops, long_words)
+          log_message(paste("Added", length(long_words), "unusually long words (potential non-English terms)"),
                       "generate_nap_stopwords")
         }
-      }
-      
-      # Also detect words with multiple consecutive consonants (4+) that are rare in English
-      # but common in some other languages
-      consonant_clusters <- corpus_terms$freq_terms$word[grepl("[bcdfghjklmnpqrstvwxz]{4,}", corpus_terms$freq_terms$word)]
-      if (length(consonant_clusters) > 0) {
-        non_english_stops <- c(non_english_stops, consonant_clusters)
-        log_message(paste("Found", length(consonant_clusters), "terms with unusual consonant clusters"),
-                    "generate_nap_stopwords")
-      }
+      }, error = function(e) {
+        log_message(paste("Error processing long words:", e$message),
+                    "generate_nap_stopwords", "WARNING")
+      })
     }
     
     # Clean up and store
