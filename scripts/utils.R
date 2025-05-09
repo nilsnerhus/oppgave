@@ -121,8 +121,9 @@ time_operation <- function(expr, func_name = NULL) {
 #' @param func The function to execute if cache is invalid
 #' @param ... All arguments to pass to the function
 #' @param cache_path Optional custom path to store/retrieve cached results
+#' @param overwrite Whether to force recalculation and overwrite any existing cache (default: FALSE)
 #' @return The function result (either from cache or newly generated)
-auto_cache <- function(func, ..., cache_path = NULL) {
+auto_cache <- function(func, ..., cache_path = NULL, overwrite = FALSE) {
   # Get function name for default cache path
   func_name <- deparse(substitute(func))
   
@@ -144,12 +145,15 @@ auto_cache <- function(func, ..., cache_path = NULL) {
   hash_path <- paste0(cache_path, ".hash")
   cache_valid <- FALSE
   
-  if (file.exists(cache_path) && file.exists(hash_path)) {
-    # Compare with stored hash
-    stored_hash <- readLines(hash_path, warn = FALSE)[1]
-    
-    if (current_hash == stored_hash) {
-      cache_valid <- TRUE
+  # Only check cache validity if we're not forcing overwrite
+  if (!overwrite) {
+    if (file.exists(cache_path) && file.exists(hash_path)) {
+      # Compare with stored hash
+      stored_hash <- readLines(hash_path, warn = FALSE)[1]
+      
+      if (current_hash == stored_hash) {
+        cache_valid <- TRUE
+      }
     }
   }
   
@@ -157,7 +161,13 @@ auto_cache <- function(func, ..., cache_path = NULL) {
     log_message(paste("Using cached result from", basename(cache_path)))
     return(readRDS(cache_path))
   } else {
-    log_message(paste("Computing new result for", basename(cache_path)))
+    # Log appropriate message based on whether we're forcing overwrite
+    if (overwrite && file.exists(cache_path)) {
+      log_message(paste("Forcing recalculation and overwriting cache for", basename(cache_path)))
+    } else {
+      log_message(paste("Computing new result for", basename(cache_path)))
+    }
+    
     result <- do.call(func, args)
     saveRDS(result, cache_path)
     
