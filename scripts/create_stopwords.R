@@ -1,11 +1,11 @@
 #' @title Generate enhanced stopwords for NAP corpus
 #' @description Creates a comprehensive programmatic stopword list including
-#'   geographical names, document artifacts, and multilingual terms for NAP document
-#'   preprocessing. Uses external packages and pattern detection.
+#'   geographical names, non-English words, and document artifacts for NAP document
+#'   preprocessing. Uses a simplified, comprehensive approach.
 #'
 #' @param text_data Data frame containing document text and metadata
 #' @param text_column Column name with document text (default: "pdf_text")
-#' @param categories Categories of stopwords to include (default: c("geographic", "artifacts", "multilingual"))
+#' @param categories Categories of stopwords to include (default: c("geographic", "non_english", "artifacts"))
 #' @param custom_additions Additional custom stopwords to include (default: NULL)
 #'
 #' @return A list with standardized structure containing:
@@ -27,7 +27,7 @@ generate_nap_stopwords <- function(
     # Core inputs
   text_data,
   text_column = "pdf_text",
-  categories = c("geographic", "artifacts", "multilingual"),
+  categories = c("geographic", "non_english", "artifacts"),
   custom_additions = NULL
 ) {
   
@@ -48,7 +48,6 @@ generate_nap_stopwords <- function(
   # Initialize diagnostics tracking
   diagnostics <- list(
     processing_issues = character(),
-    common_patterns = list(),
     corpus_stats = list()
   )
   
@@ -64,7 +63,7 @@ generate_nap_stopwords <- function(
   
   log_message("Starting stopword generation", "generate_nap_stopwords")
   
-  ## --- Extract corpus terms for pattern detection ---------------------------
+  ## --- Extract corpus terms -------------------------------------------------
   
   corpus_terms <- list()
   
@@ -72,21 +71,17 @@ generate_nap_stopwords <- function(
   if (any(!is.na(text_data[[text_column]])) && 
       any(nchar(text_data[[text_column]]) > 0)) {
     
-    log_message("Extracting corpus terms for pattern detection", "generate_nap_stopwords")
+    log_message("Extracting corpus terms for analysis", "generate_nap_stopwords")
     
     # Basic tokenization 
-    corpus_tokens <- data.frame(
-      doc_id = integer(),
-      word = character(),
-      stringsAsFactors = FALSE
-    )
+    all_words <- character()
     
     for (i in seq_len(nrow(text_data))) {
       if (!is.na(text_data[[text_column]][i]) && nchar(text_data[[text_column]][i]) > 0) {
         # Convert to lowercase
         text <- tolower(text_data[[text_column]][i])
         
-        # Replace punctuation with spaces
+        # Replace all punctuation with spaces
         text <- gsub("[[:punct:]]", " ", text)
         
         # Split by whitespace
@@ -95,23 +90,15 @@ generate_nap_stopwords <- function(
         # Remove empty strings
         words <- words[words != ""]
         
-        if (length(words) > 0) {
-          corpus_tokens <- rbind(
-            corpus_tokens,
-            data.frame(
-              doc_id = i,
-              word = words,
-              stringsAsFactors = FALSE
-            )
-          )
-        }
+        # Add to collection
+        all_words <- c(all_words, words)
       }
     }
     
     # Calculate word frequencies
-    if (nrow(corpus_tokens) > 0) {
+    if (length(all_words) > 0) {
       # Count word frequencies
-      word_freq <- table(corpus_tokens$word)
+      word_freq <- table(all_words)
       word_freq_df <- data.frame(
         word = names(word_freq),
         freq = as.numeric(word_freq),
@@ -134,6 +121,57 @@ generate_nap_stopwords <- function(
     }
   }
   
+  ## --- Generate artifact stopwords ------------------------------------------
+  
+  if ("artifacts" %in% categories) {
+    log_message("Generating document artifact stopwords", "generate_nap_stopwords")
+    
+    artifact_stops <- c()
+    
+    # SIMPLIFIED: Find all tokens containing numbers
+    if (!is.null(corpus_terms$freq_terms)) {
+      number_tokens <- corpus_terms$freq_terms$word[grepl("[0-9]", corpus_terms$freq_terms$word)]
+      artifact_stops <- c(artifact_stops, number_tokens)
+      
+      log_message(paste("Found", length(number_tokens), "tokens containing numbers"), 
+                  "generate_nap_stopwords")
+    }
+    
+    # SIMPLIFIED: Find all tokens containing punctuation
+    # We've already removed punctuation during tokenization, but this captures
+    # any that might have been in the original stopwords list
+    if (!is.null(corpus_terms$freq_terms)) {
+      punct_tokens <- corpus_terms$freq_terms$word[grepl("[[:punct:]]", corpus_terms$freq_terms$word)]
+      artifact_stops <- c(artifact_stops, punct_tokens)
+      
+      log_message(paste("Found", length(punct_tokens), "tokens containing punctuation"), 
+                  "generate_nap_stopwords")
+    }
+    
+    # Add a few essential document-specific stopwords
+    basic_artifacts <- c(
+      "pdf", "doc", "docx", "html", "annex", "appendix", "chapter", 
+      "section", "page", "paragraph", "figure", "table", "chart",
+      "toc", "contents", "bibliography", "references", "glossary",
+      "header", "footer", "title", "subtitle", "heading", "subheading",
+      "introduction", "conclusion", "summary", "abstract",
+      "background", "methodology", "results", "discussion",
+      "page", "ibid", "et", "al", "etc"
+    )
+    
+    artifact_stops <- c(artifact_stops, basic_artifacts)
+    
+    # Clean up and store
+    artifact_stops <- unique(artifact_stops)
+    artifact_stops <- artifact_stops[artifact_stops != ""]
+    artifact_stops <- sort(artifact_stops)
+    
+    stopwords_by_category$artifacts <- artifact_stops
+    
+    log_message(paste("Generated", length(artifact_stops), "document artifact stopwords"),
+                "generate_nap_stopwords")
+  }
+  
   ## --- Generate geographic stopwords ----------------------------------------
   
   if ("geographic" %in% categories) {
@@ -145,14 +183,25 @@ generate_nap_stopwords <- function(
     # Get country data from countrycode
     country_data <- countrycode::codelist
     
-    # Get country names
-    country_names <- tolower(country_data$country.name.en)
+    # Get ALL country names
+    country_names <- c(
+      tolower(country_data$country.name.en),
+      tolower(country_data$country.name.fr),
+      tolower(country_data$country.name.de),
+      tolower(country_data$country.name.it),
+      tolower(country_data$country.name.es)
+    )
     country_names <- country_names[!is.na(country_names)]
     
-    # Add country codes
+    # Get ALL country codes
     country_codes <- c(
       tolower(country_data$iso2c),
-      tolower(country_data$iso3c)
+      tolower(country_data$iso3c),
+      tolower(country_data$cowc),
+      tolower(country_data$ioc),
+      tolower(country_data$fips),
+      tolower(country_data$un.name.en),
+      tolower(country_data$p4.name)
     )
     country_codes <- country_codes[!is.na(country_codes)]
     
@@ -160,99 +209,101 @@ generate_nap_stopwords <- function(
     geo_stops <- c(geo_stops, country_names, country_codes)
     
     # Add individual words from multi-word countries
-    for (country in country_names) {
+    for (country in unique(country_names)) {
       parts <- unlist(strsplit(country, "\\s+"))
       if (length(parts) > 1) {
         geo_stops <- c(geo_stops, parts)
       }
     }
     
-    # Generate variations: possessive forms
-    country_possessive <- paste0(country_names, "'s")
-    geo_stops <- c(geo_stops, country_possessive)
+    # Get ALL cities from maps package
+    world_cities <- maps::world.cities
     
-    # Generate variations: adjectival forms
+    # Include ALL cities, not just capitals or major ones
+    all_cities <- tolower(world_cities$name)
+    geo_stops <- c(geo_stops, all_cities)
+    
+    # Add possessive forms for countries and cities
+    possessives <- paste0(c(country_names, all_cities), "'s")
+    geo_stops <- c(geo_stops, possessives)
+    
+    # Standard adjectival forms for countries
     country_adjs <- c()
     
-    for (country in country_names) {
-      if (grepl("a$", country)) {
-        # Countries ending in 'a' -> 'an' (e.g., America -> American)
-        adj <- gsub("a$", "an", country)
-        country_adjs <- c(country_adjs, adj)
-      } else if (grepl("e$", country)) {
-        # Countries ending in 'e' -> 'ean' (e.g., Europe -> European)
-        adj <- paste0(country, "an")
-        country_adjs <- c(country_adjs, adj)
-        
-        # Alternative: 'ese' (e.g., Japanese)
-        adj_alt <- paste0(country, "se")
-        country_adjs <- c(country_adjs, adj_alt)
-      } else {
-        # Add common suffixes
-        country_adjs <- c(
-          country_adjs,
-          paste0(country, "ian"),
-          paste0(country, "ese"),
-          paste0(country, "ish")
-        )
-      }
+    for (country in unique(country_names)) {
+      # Various common adjectival patterns
+      country_adjs <- c(
+        country_adjs,
+        paste0(country, "n"),
+        paste0(country, "an"),
+        paste0(country, "ian"),
+        paste0(country, "ish"),
+        paste0(country, "ese"),
+        paste0(country, "i"),
+        gsub("a$", "an", country),
+        gsub("e$", "ean", country),
+        gsub("y$", "ian", country)
+      )
     }
     
-    # Add common nationality exceptions that don't follow regular rules
+    # Add a comprehensive list of nationalities
     common_nationalities <- c(
-      "afghan", "albanian", "algerian", "angolan", "argentine", "australian", 
-      "austrian", "azerbaijani", "bahraini", "bangladeshi", "belgian", "bolivian", 
-      "brazilian", "british", "cambodian", "cameroonian", "canadian", "chilean", 
-      "chinese", "colombian", "congolese", "croatian", "cuban", "czech", 
-      "danish", "dominican", "dutch", "ecuadorian", "egyptian", "emirati", 
-      "english", "ethiopian", "fijian", "filipino", "finnish", "french", 
-      "german", "ghanaian", "greek", "guatemalan", "haitian", "hungarian", 
-      "icelandic", "indian", "indonesian", "iranian", "iraqi", "irish", 
-      "israeli", "italian", "jamaican", "japanese", "jordanian", "kazakhstani", 
-      "kenyan", "korean", "kuwaiti", "lao", "latvian", "lebanese", "liberian", 
-      "libyan", "lithuanian", "malaysian", "mexican", "moldovan", "mongolian", 
-      "moroccan", "mozambican", "namibian", "nepalese", "nigerian", "norwegian", 
-      "omani", "pakistani", "palestinian", "paraguayan", "peruvian", "polish", 
-      "portuguese", "qatari", "romanian", "russian", "rwandan", "saudi", 
-      "scottish", "senegalese", "serbian", "somali", "south african", "spanish", 
-      "sri lankan", "sudanese", "swedish", "swiss", "syrian", "taiwanese", 
-      "tajik", "thai", "tunisian", "turkish", "ugandan", "ukrainian", "uruguayan", 
-      "uzbekistani", "venezuelan", "vietnamese", "welsh", "yemeni", "zambian", "zimbabwean"
+      "afghan", "albanian", "algerian", "andorran", "angolan", "argentine", "armenian",
+      "australian", "austrian", "azerbaijani", "bahamian", "bahraini", "bangladeshi", 
+      "barbadian", "belarusian", "belgian", "belizean", "beninese", "bhutanese", 
+      "bolivian", "bosnian", "botswanan", "brazilian", "british", "bruneian", 
+      "bulgarian", "burkinabe", "burmese", "burundian", "cambodian", "cameroonian", 
+      "canadian", "chadian", "chilean", "chinese", "colombian", "comorian", 
+      "congolese", "croatian", "cuban", "cypriot", "czech", "danish", "djiboutian", 
+      "dominican", "dutch", "ecuadorian", "egyptian", "emirati", "english", 
+      "equatoguinean", "eritrean", "estonian", "ethiopian", "fijian", "filipino", 
+      "finnish", "french", "gabonese", "gambian", "georgian", "german", "ghanaian", 
+      "greek", "grenadian", "guatemalan", "guinean", "guyanese", "haitian", 
+      "honduran", "hungarian", "icelandic", "indian", "indonesian", "iranian", 
+      "iraqi", "irish", "israeli", "italian", "ivorian", "jamaican", "japanese", 
+      "jordanian", "kazakhstani", "kenyan", "korean", "kuwaiti", "kyrgyzstani", 
+      "laotian", "latvian", "lebanese", "lesothan", "liberian", "libyan", 
+      "liechtensteiner", "lithuanian", "luxembourgish", "macedonian", "malagasy", 
+      "malawian", "malaysian", "maldivian", "malian", "maltese", "marshallese", 
+      "mauritanian", "mauritian", "mexican", "micronesian", "moldovan", "monacan", 
+      "mongolian", "montenegrin", "moroccan", "mozambican", "namibian", "nauruan", 
+      "nepalese", "dutch", "zealander", "nicaraguan", "nigerian", "nigerien", 
+      "norwegian", "omani", "pakistani", "palauan", "palestinian", "panamanian", 
+      "guinean", "paraguayan", "peruvian", "filipino", "polish", "portuguese", 
+      "qatari", "romanian", "russian", "rwandan", "kittian", "lucian", "vincentian", 
+      "samoan", "marinese", "sao", "tomean", "saudi", "scottish", "senegalese", 
+      "serbian", "seychellois", "leonean", "singaporean", "slovak", "slovenian", 
+      "somali", "somaliland", "african", "sudanese", "surinamese", "swazi", 
+      "swedish", "swiss", "syrian", "taiwanese", "tajikistani", "tanzanian", 
+      "thai", "timorese", "togolese", "tongan", "trinidadian", "tobagonian", 
+      "tunisian", "turkish", "turkmen", "tuvaluan", "ugandan", "ukrainian", 
+      "uruguayan", "uzbekistani", "vanuatuan", "venezuelan", "vietnamese", 
+      "welsh", "yemeni", "zambian", "zimbabwean"
     )
     
     geo_stops <- c(geo_stops, country_adjs, common_nationalities)
-    
-    # Add city names from maps package
-    world_cities <- maps::world.cities
-    
-    # Extract capital cities
-    capitals <- world_cities$name[world_cities$capital == 1]
-    capitals <- tolower(capitals)
-    geo_stops <- c(geo_stops, capitals)
-    
-    # Add major cities (population > 1 million)
-    major_cities <- world_cities$name[world_cities$pop > 1000000]
-    major_cities <- tolower(major_cities)
-    geo_stops <- c(geo_stops, major_cities)
-    
-    # Add possessive forms for cities
-    cities_possessive <- paste0(c(capitals, major_cities), "'s")
-    geo_stops <- c(geo_stops, cities_possessive)
     
     # Add common geographic terms
     geo_common <- c(
       # Directions
       "north", "south", "east", "west", "northeast", "southeast", 
       "northwest", "southwest", "northern", "southern", "eastern", "western",
+      "central", "coastal", "inland", "offshore", "onshore", "upland", "lowland",
       
       # Region types
-      "country", "region", "province", "state", "city", "district",
-      "territory", "zone", "area", "continent", "island", "peninsula",
+      "country", "nation", "state", "province", "region", "territory", "district",
+      "city", "town", "village", "county", "municipality", "prefecture", "zone",
+      "area", "locality", "settlement", "continent", "island", "peninsula", "coast",
+      "gulf", "bay", "strait", "isthmus", "canal", "archipelago", "atoll", "oasis",
+      "river", "lake", "ocean", "sea", "desert", "mountain", "valley", "plain",
+      "plateau", "basin", "delta", "estuary", "highland", "lowland", "wetland",
       
       # Regional groupings
-      "africa", "asia", "europe", "americas", "oceania", "antarctic",
+      "africa", "asia", "europe", "americas", "oceania", "antarctica",
       "caribbean", "pacific", "mediterranean", "arctic", "atlantic",
-      "subsaharan", "saharan", "latinamerican", "commonwealth", "union"
+      "sahara", "sahel", "maghreb", "levant", "caucasus", "balkans", "scandinavia",
+      "amazon", "andes", "alpine", "himalayan", "siberia", "steppe", "pampas",
+      "asean", "saarc", "commonwealth", "union", "league", "alliance"
     )
     
     geo_stops <- c(geo_stops, geo_common)
@@ -268,163 +319,97 @@ generate_nap_stopwords <- function(
                 "generate_nap_stopwords")
   }
   
-  ## --- Generate document artifact stopwords ---------------------------------
+  ## --- Generate non-English stopwords ---------------------------------------
   
-  if ("artifacts" %in% categories) {
-    log_message("Generating document artifact stopwords", "generate_nap_stopwords")
+  if ("non_english" %in% categories) {
+    log_message("Generating non-English stopwords", "generate_nap_stopwords")
+    used_packages <- c(used_packages, "stopwords")
     
-    artifact_stops <- c()
+    non_english_stops <- c()
     
-    # Basic file and document artifacts
-    basic_artifacts <- c(
-      # File extensions
-      "pdf", "doc", "docx", "xlsx", "ppt", "html", "xml", "txt", "csv", "xls", "svg",
+    # Get comprehensive stopwords from multiple languages
+    languages <- c("fr", "es", "pt", "de", "it", "nl", "sv", "no", "da", "fi", 
+                   "hu", "ru", "ar", "zh", "ja", "ko", "hi", "bn", "id", "ms", "th")
+    
+    # Process each language
+    for (lang in languages) {
+      tryCatch({
+        # Get stopwords for this language
+        lang_words <- stopwords::stopwords(lang, source = "stopwords-iso")
+        non_english_stops <- c(non_english_stops, lang_words)
+        
+        log_message(paste("Added", length(lang_words), "stopwords for language:", lang),
+                    "generate_nap_stopwords")
+      }, error = function(e) {
+        log_message(paste("Note: Language", lang, "not available in stopwords package -", e$message),
+                    "generate_nap_stopwords", "INFO")
+      })
+    }
+    
+    # Add common non-English climate terms
+    additional_terms <- c(
+      # French
+      "ministère", "département", "agence", "développement", "environnement",
+      "changement", "climatique", "gouvernement", "adaptation", "vulnérabilité",
+      "climatiques", "superficie", "superficies", "secteurs", "agricoles", 
+      "ainsi", "précipitations", "température", 
       
-      # URL components
-      "www", "http", "https", "gov", "org", "com", "net", "edu", "doi",
+      # Spanish
+      "ministerio", "departamento", "agencia", "desarrollo", "medio", "ambiente",
+      "cambio", "climático", "gobierno", "adaptación", "américa", "latina",
+      "caribe", "emisiones", "migración", 
       
-      # Document formatting
-      "svg", "jpg", "png", "fig", "tab", "annex", "appendix", "chapter", 
-      "section", "page", "paragraph", "ref", "figure", "table", "chart",
-      "toc", "contents", "bibliography", "glossary", "footnote", "endnote",
+      # Portuguese
+      "ministério", "departamento", "agência", "desenvolvimento", "ambiente",
+      "mudança", "climática", "governo", "adaptação", 
       
-      # Document metadata
-      "draft", "final", "version", "official", "confidential", "internal",
-      "author", "date", "updated", "revision", "copyright", "confidential",
-      
-      # Common document structure terms
-      "header", "footer", "title", "subtitle", "heading", "subheading",
-      "introduction", "conclusion", "summary", "executive", "abstract",
-      "background", "methodology", "results", "discussion", "references",
-      "annex", "appendix", "acknowledgements", "acknowledgments",
-      
-      # PDF-specific artifacts
-      "page", "pg", "ibid", "et", "al", "etc", "op", "cit",
-      
-      # Common formatting artifacts from PDFs
-      "et_al", "ibid", "eg", "ie", "viz", "cf", "nb", "q.v", "p.s"
+      # Any other language terms you've noticed in your documents
+      "moçambique", "vulnérabilité", "émissions", "schweizerische", "bundesrat",
+      "eidgenössisches"
     )
     
-    artifact_stops <- c(artifact_stops, basic_artifacts)
+    non_english_stops <- c(non_english_stops, additional_terms)
     
-    # Data-driven artifact detection (if corpus terms available)
+    # SIMPLIFIED: Detect non-English words using character patterns
+    # This uses the observation that certain letter combinations are rare in English
+    # but common in other languages
     if (!is.null(corpus_terms$freq_terms)) {
-      # Define patterns that likely indicate artifacts
-      artifact_patterns <- list(
-        # Numeric prefixes/suffixes
-        number_prefix = "^[0-9]+[a-z]",        # e.g., "20english"
-        number_suffix = "[a-z]+[0-9]+$",       # e.g., "section5"
-        
-        # Section/heading patterns
-        section_ref = "^[a-z][0-9]+(\\.[0-9]+)?$",  # e.g., "a1", "a1.2"
-        
-        # URL fragments
-        url_domain = "\\.(com|org|gov|edu|net)$",
-        url_start = "^www\\.",
-        
-        # Measurement units
-        measurements = "[0-9]+(mm|cm|m|km|g|kg|ha|l)$",
-        
-        # Special characters
-        underscores = "^_+$",             # Underscores
-        non_alpha = "^[^a-z0-9]+$",       # No alphanumeric characters
-        
-        # Common PDF extraction artifacts
-        hyphenated = "\\w+\\-$",          # Words ending with hyphen
-        pg_numbers = "^p[0-9]+$",         # Page numbers (e.g., p42)
-        
-        # Document formatting artifacts
-        list_markers = "^[ivxlcdm]+\\.?$", # Roman numerals
-        camelcase = "^[A-Z][a-z]+[A-Z]"    # CamelCase without spaces
+      # Define patterns that likely indicate non-English words
+      non_english_patterns <- c(
+        # Character combinations rare in English but common in other languages
+        "ç", "ñ", "é", "è", "ê", "ë", "à", "â", "ä", "á", "å", "ã",
+        "ì", "í", "î", "ï", "ò", "ó", "ô", "õ", "ö", "ù", "ú", "û", "ü",
+        "ý", "ÿ", "ø", "œ", "æ", "ß", "ð", "þ", "ł", "ń", "ś", "ź", "ż"
       )
       
-      # Find terms matching these patterns
-      for (pattern_name in names(artifact_patterns)) {
-        pattern <- artifact_patterns[[pattern_name]]
-        
-        matching_terms <- corpus_terms$freq_terms$word[
-          grepl(pattern, corpus_terms$freq_terms$word)
-        ]
-        
+      # Find words with these patterns
+      for (pattern in non_english_patterns) {
+        matching_terms <- corpus_terms$freq_terms$word[grepl(pattern, corpus_terms$freq_terms$word, fixed = TRUE)]
         if (length(matching_terms) > 0) {
-          # Add to stopwords
-          artifact_stops <- c(artifact_stops, matching_terms)
-          
-          # Track patterns found in diagnostics
-          diagnostics$common_patterns[[pattern_name]] <- list(
-            pattern = pattern,
-            matches = head(matching_terms, 20), # First 20 for brevity
-            count = length(matching_terms)
-          )
-          
-          log_message(paste("Found", length(matching_terms), "matches for pattern:", pattern_name),
+          non_english_stops <- c(non_english_stops, matching_terms)
+          log_message(paste("Found", length(matching_terms), "potential non-English terms with pattern:", pattern),
                       "generate_nap_stopwords")
         }
+      }
+      
+      # Also detect words with multiple consecutive consonants (4+) that are rare in English
+      # but common in some other languages
+      consonant_clusters <- corpus_terms$freq_terms$word[grepl("[bcdfghjklmnpqrstvwxz]{4,}", corpus_terms$freq_terms$word)]
+      if (length(consonant_clusters) > 0) {
+        non_english_stops <- c(non_english_stops, consonant_clusters)
+        log_message(paste("Found", length(consonant_clusters), "terms with unusual consonant clusters"),
+                    "generate_nap_stopwords")
       }
     }
     
     # Clean up and store
-    artifact_stops <- unique(artifact_stops)
-    artifact_stops <- artifact_stops[artifact_stops != ""]
-    artifact_stops <- sort(artifact_stops)
+    non_english_stops <- unique(non_english_stops)
+    non_english_stops <- non_english_stops[non_english_stops != ""]
+    non_english_stops <- sort(non_english_stops)
     
-    stopwords_by_category$artifacts <- artifact_stops
+    stopwords_by_category$non_english <- non_english_stops
     
-    log_message(paste("Generated", length(artifact_stops), "document artifact stopwords"),
-                "generate_nap_stopwords")
-  }
-  
-  ## --- Generate multilingual stopwords --------------------------------------
-  
-  if ("multilingual" %in% categories) {
-    log_message("Generating multilingual stopwords", "generate_nap_stopwords")
-    used_packages <- c(used_packages, "stopwords")
-    
-    multi_stops <- c()
-    
-    # Get stopwords from common languages in NAPs
-    languages <- c("fr", "es", "pt")
-    
-    for (lang in languages) {
-      tryCatch({
-        lang_stops <- stopwords::stopwords(lang, source = "snowball")
-        multi_stops <- c(multi_stops, lang_stops)
-        log_message(paste("Added", length(lang_stops), "stopwords for language:", lang),
-                    "generate_nap_stopwords")
-      }, error = function(e) {
-        log_message(paste("Error getting stopwords for language", lang, ":", e$message),
-                    "generate_nap_stopwords", "WARNING")
-      })
-    }
-    
-    # Add common non-English terms found in NAPs
-    additional_terms <- c(
-      # French terms
-      "ministère", "département", "agence", "conseil", "comité",
-      "développement", "environnement", "changement", "climatique",
-      "gouvernement", "national", "international", "adaptation",
-      
-      # Spanish terms
-      "ministerio", "departamento", "agencia", "consejo", "comité",
-      "desarrollo", "medio", "ambiente", "cambio", "climático",
-      "gobierno", "nacional", "internacional", "adaptación",
-      
-      # Portuguese terms
-      "ministério", "departamento", "agência", "conselho", "comitê",
-      "desenvolvimento", "ambiente", "mudança", "climática",
-      "governo", "nacional", "internacional", "adaptação"
-    )
-    
-    multi_stops <- c(multi_stops, additional_terms)
-    
-    # Clean up and store
-    multi_stops <- unique(multi_stops)
-    multi_stops <- multi_stops[multi_stops != ""]
-    multi_stops <- sort(multi_stops)
-    
-    stopwords_by_category$multilingual <- multi_stops
-    
-    log_message(paste("Generated", length(multi_stops), "multilingual stopwords"),
+    log_message(paste("Generated", length(non_english_stops), "non-English stopwords"),
                 "generate_nap_stopwords")
   }
   
