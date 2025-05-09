@@ -46,9 +46,9 @@ nap_data <- auto_cache(add_metadata, pdfs$data, sids_list = sids, lldc_list = ll
 
 # Step 4: Prepare corpus
 
-nap_stops <- auto_cache(generate_nap_stopwords, nap_data, overwrite = TRUE)
-corpus <- auto_cache(prepare_corpus, nap_data$data, custom_stopwords = nap_stops)
+nap_stops <- auto_cache(generate_nap_stopwords, nap_data$data)
+corpus <- auto_cache(prepare_corpus, nap_data$data, custom_stopwords = nap_stops$data$stopwords)
 
 # Step 5: Running the model
 prevalence <- ~ region + wb_income_level + is_sids + is_ldc + is_lldc
-topic_model <- auto_cache(fit_model, corpus, prevalence = prevalence)
+topic_model <- auto_cache(fit_model, k = 30, corpus, prevalence = prevalence)
