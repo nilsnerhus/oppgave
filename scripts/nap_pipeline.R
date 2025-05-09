@@ -46,7 +46,7 @@ nap_data <- auto_cache(add_metadata, pdfs$data, sids_list = sids, lldc_list = ll
 
 # Step 4: Prepare corpus
 
-nap_stops <- auto_cache(generate_nap_stopwords, nap_data)
+nap_stops <- auto_cache(generate_nap_stopwords, nap_data, overwrite = TRUE)
 corpus <- auto_cache(prepare_corpus, nap_data$data, custom_stopwords = nap_stops)
 
 # Step 5: Running the model
