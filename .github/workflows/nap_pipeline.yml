@@ -42,7 +42,8 @@ jobs:
             libpoppler-cpp-dev \
             libgdal-dev \
             libproj-dev \
-            libgeos-dev
+            libgeos-dev \
+            libudunits2
 
       - name: Set up renv
         uses: r-lib/actions/setup-renv@v2
