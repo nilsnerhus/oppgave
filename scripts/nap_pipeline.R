@@ -45,7 +45,6 @@ ldc <- c("AFG", "AGO", "BGD", "BEN", "BFA", "BDP", "BOL", "BIH", "BWA", "CAF",
 nap_data <- auto_cache(add_metadata, pdfs$data, sids_list = sids, lldc_list = lldc, ldc_list = ldc)
 
 # Step 4: Prepare corpus
-
 nap_stops <- auto_cache(generate_nap_stopwords, nap_data$data, overwrite = TRUE)
 corpus <- auto_cache(prepare_corpus, nap_data$data, custom_stopwords = nap_stops$data$stopwords)
 
