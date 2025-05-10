@@ -325,8 +325,28 @@ fit_model <- function(
       # Sort metadata to match dfm order
       metadata_ordered <- metadata_filtered[match(doc_ids, metadata_filtered$doc_id), ]
       
+      # Check for any mismatches
+      if (any(is.na(match(doc_ids, metadata_filtered$doc_id)))) {
+        log_message("WARNING: Some documents don't have matching metadata", "fit_model", "WARNING")
+      }
+      
       # Remove doc_id column as it's not needed for STM
       metadata_final <- metadata_ordered[, !names(metadata_ordered) %in% c("doc_id")]
+      
+      # Convert logical and character columns to factors
+      for (col in names(metadata_final)) {
+        if (is.logical(metadata_final[[col]])) {
+          # Handle NA values in logical columns
+          if (any(is.na(metadata_final[[col]]))) {
+            metadata_final[[col]] <- factor(metadata_final[[col]], levels = c(FALSE, TRUE, NA), exclude = NULL)
+            levels(metadata_final[[col]])[3] <- "Missing"
+          } else {
+            metadata_final[[col]] <- factor(metadata_final[[col]], levels = c(FALSE, TRUE))
+          }
+        } else if (is.character(metadata_final[[col]])) {
+          metadata_final[[col]] <- factor(metadata_final[[col]])
+        }
+      }
       
       # Check if there are actually any metadata columns left
       if (ncol(metadata_final) == 0) {
@@ -348,10 +368,12 @@ fit_model <- function(
     
     # Generate sequence of k values to test
     k_values <- seq(k_min, k_max, by = k_step)
+    log_message(paste("Testing K values:", paste(k_values, collapse = ", ")), "fit_model")
     
     # Set seed for reproducibility
     set.seed(seed)
     
+    # Run searchK
     k_search <- tryCatch({
       stm::searchK(
         documents = stm_data$documents,
@@ -371,84 +393,237 @@ fit_model <- function(
       stop(paste("Error determining optimal k:", e$message))
     })
     
-    # Store searchK results
-    diagnostics$k_selection$k_values <- k_values
-    diagnostics$k_selection$metrics <- k_search$results
+    # Debug: Check searchK structure
+    log_message("searchK completed. Checking results structure...", "fit_model")
+    log_message(paste("searchK object class:", class(k_search)), "fit_model")
+    log_message(paste("searchK object names:", paste(names(k_search), collapse = ", ")), "fit_model")
     
-    # Convert to data frame for calculations
-    k_metrics <- as.data.frame(k_search$results)
-    
-    # Simple function to normalize metrics to 0-1 scale
-    normalize <- function(x) {
-      if (max(x) == min(x)) return(rep(0, length(x)))
-      return((x - min(x)) / (max(x) - min(x)))
+    # Extract results
+    if (!"results" %in% names(k_search)) {
+      stop("searchK output missing 'results' component")
     }
     
-    # Normalize each metric
-    k_metrics$semcoh_norm <- normalize(k_metrics$semcoh)
-    k_metrics$exclus_norm <- normalize(k_metrics$exclus)
-    k_metrics$heldout_norm <- normalize(k_metrics$heldout)
-    # For residuals, lower is better so we invert
-    k_metrics$residual_norm <- 1 - normalize(k_metrics$residual)
+    k_results <- k_search$results
     
-    # Calculate combined score with your weights
-    k_metrics$combined_score <- (0.4 * k_metrics$semcoh_norm + 
-                                   0.4 * k_metrics$exclus_norm + 
-                                   0.1 * k_metrics$heldout_norm + 
-                                   0.1 * k_metrics$residual_norm)
+    # Check if results is a data frame
+    if (!is.data.frame(k_results)) {
+      log_message("Converting results to data frame", "fit_model")
+      k_results <- as.data.frame(k_results)
+    }
     
-    # Find the best K
-    best_k_idx <- which.max(k_metrics$combined_score)
-    best_k <- k_metrics$K[best_k_idx]
+    # Debug: Check results structure
+    log_message(paste("Results dimensions:", nrow(k_results), "x", ncol(k_results)), "fit_model")
+    log_message(paste("Results column names:", paste(names(k_results), collapse = ", ")), "fit_model")
     
-    # Create a simple plot for the selection metrics
-    tryCatch({
-      # Convert to long format for plotting
-      plot_data <- data.frame(
-        K = k_metrics$K,
-        semcoh = k_metrics$semcoh_norm,
-        exclus = k_metrics$exclus_norm, 
-        heldout = k_metrics$heldout_norm,
-        residual = k_metrics$residual_norm,
-        combined = k_metrics$combined_score
-      )
+    # Ensure we have the K column
+    if (!"K" %in% names(k_results)) {
+      log_message("K column not found, adding from k_values", "fit_model")
+      k_results$K <- k_values
+    }
+    
+    # Check that we have the necessary metrics
+    required_metrics <- c("semcoh", "exclus")
+    missing_metrics <- setdiff(required_metrics, names(k_results))
+    
+    if (length(missing_metrics) > 0) {
+      error_msg <- paste("Missing required metrics:", paste(missing_metrics, collapse = ", "))
+      log_message(error_msg, "fit_model", "ERROR")
+      log_message("Available columns:", paste(names(k_results), collapse = ", "), "fit_model", "ERROR")
+      stop(error_msg)
+    }
+    
+    # Store searchK results in diagnostics
+    diagnostics$k_selection$k_values <- k_values
+    diagnostics$k_selection$raw_results <- k_results
+    
+    # Create a copy for normalization
+    k_metrics <- k_results
+    
+    # Force all numeric columns to be actually numeric
+    numeric_cols <- c("K", "semcoh", "exclus", "heldout", "residual", "bound", "lbound", "em.its")
+    for (col in numeric_cols) {
+      if (col %in% names(k_metrics)) {
+        k_metrics[[col]] <- as.numeric(as.character(k_metrics[[col]]))
+      }
+    }
+    
+    # Function to safely normalize values
+    safe_normalize <- function(x, invert = FALSE) {
+      x <- as.numeric(x)
+      if (length(x) == 0 || all(is.na(x))) {
+        return(rep(0, length(x)))
+      }
       
-      # Create the plot
-      k_selection_plot <- ggplot2::ggplot(data = tidyr::pivot_longer(
-        plot_data, 
-        cols = c("semcoh", "exclus", "heldout", "residual", "combined"),
-        names_to = "Metric", 
-        values_to = "Value"
-      )) +
-        ggplot2::geom_line(ggplot2::aes(x = K, y = Value, color = Metric), linewidth = 1) +
-        ggplot2::geom_point(ggplot2::aes(x = K, y = Value, color = Metric)) +
-        ggplot2::geom_vline(xintercept = best_k, linetype = "dashed") +
-        ggplot2::annotate("text", x = best_k, y = 0.95, 
-                          label = paste("Best K =", best_k)) +
-        ggplot2::theme_minimal() +
-        ggplot2::labs(
-          title = "Topic Model Selection",
-          x = "Number of Topics (K)",
-          y = "Normalized Score"
-        )
+      # Remove NA values for calculation
+      valid_x <- x[!is.na(x)]
+      if (length(valid_x) == 0) {
+        return(rep(0, length(x)))
+      }
       
-      # Store the plot in diagnostics
-      diagnostics$k_selection$plot <- k_selection_plot
+      x_min <- min(valid_x)
+      x_max <- max(valid_x)
       
-    }, error = function(e) {
-      log_message(paste("Error creating selection plot:", e$message), "fit_model", "WARNING")
-    })
+      if (x_min == x_max) {
+        # No variation, return 0.5 for all
+        return(rep(0.5, length(x)))
+      }
+      
+      # Normalize
+      norm_x <- (x - x_min) / (x_max - x_min)
+      
+      # Invert if needed (for metrics where lower is better)
+      if (invert) {
+        norm_x <- 1 - norm_x
+      }
+      
+      return(norm_x)
+    }
+    
+    # Normalize metrics
+    k_metrics$semcoh_norm <- safe_normalize(k_metrics$semcoh)
+    k_metrics$exclus_norm <- safe_normalize(k_metrics$exclus)
+    
+    # Optional: normalize other metrics if available
+    if ("heldout" %in% names(k_metrics)) {
+      k_metrics$heldout_norm <- safe_normalize(k_metrics$heldout)
+    } else {
+      k_metrics$heldout_norm <- 0.5  # neutral value
+    }
+    
+    if ("residual" %in% names(k_metrics)) {
+      k_metrics$residual_norm <- safe_normalize(k_metrics$residual, invert = TRUE)
+    } else {
+      k_metrics$residual_norm <- 0.5  # neutral value
+    }
+    
+    # Calculate combined score
+    k_metrics$combined_score <- (
+      0.4 * k_metrics$semcoh_norm + 
+        0.4 * k_metrics$exclus_norm + 
+        0.1 * k_metrics$heldout_norm + 
+        0.1 * k_metrics$residual_norm
+    )
+    
+    # Debug: Show metrics
+    log_message("K selection metrics:", "fit_model")
+    print(k_metrics[, c("K", "semcoh", "exclus", "combined_score")])
+    
+    # Find best K
+    best_idx <- which.max(k_metrics$combined_score)
+    
+    if (length(best_idx) == 0) {
+      error_msg <- "Could not determine best K: no maximum found"
+      log_message(error_msg, "fit_model", "ERROR")
+      stop(error_msg)
+    }
+    
+    # Extract best K and ensure it's numeric
+    best_k <- as.numeric(k_metrics$K[best_idx])
+    
+    # Validate best_k
+    if (is.null(best_k) || is.na(best_k) || length(best_k) == 0) {
+      error_msg <- "Failed to extract valid best K value"
+      log_message(error_msg, "fit_model", "ERROR")
+      stop(error_msg)
+    }
     
     log_message(paste("Selected optimal K =", best_k), "fit_model")
     
+    # Safer metric logging
+    tryCatch({
+      semcoh_val <- k_metrics$semcoh[best_idx]
+      exclus_val <- k_metrics$exclus[best_idx]
+      combined_val <- k_metrics$combined_score[best_idx]
+      
+      log_message(paste("Metrics for selected K: semcoh =", round(semcoh_val, 3),
+                        ", exclus =", round(exclus_val, 3),
+                        ", combined =", round(combined_val, 3)), "fit_model")
+    }, error = function(e) {
+      log_message(paste("Could not display rounded metrics:", e$message), "fit_model", "WARNING")
+      log_message(paste("Raw metrics: semcoh =", k_metrics$semcoh[best_idx],
+                        ", exclus =", k_metrics$exclus[best_idx],
+                        ", combined =", k_metrics$combined_score[best_idx]), "fit_model")
+    })
+    
+    # Store selection results in diagnostics
+    diagnostics$k_selection$metrics <- k_metrics
+    diagnostics$k_selection$best_k <- best_k
+    diagnostics$k_selection$best_idx <- best_idx
+    
     # Use best k for final model
     k <- best_k
+    
+    log_message(paste("K selection complete. Proceeding with K =", k), "fit_model")
   }
   
   ## --- Fit final STM model --------------------------------------------------
   log_message(paste("Fitting final STM model with k =", k), "fit_model")
   
-  # Fit model
+  # Debug: Check the data types before fitting
+  if (!is.null(metadata_final)) {
+    log_message("Checking metadata structure:", "fit_model")
+    log_message(paste("Metadata dimensions:", nrow(metadata_final), "x", ncol(metadata_final)), "fit_model")
+    log_message(paste("Metadata columns:", paste(names(metadata_final), collapse=", ")), "fit_model")
+    
+    # Check for NA values
+    na_counts <- sapply(metadata_final, function(x) sum(is.na(x)))
+    if (any(na_counts > 0)) {
+      log_message("WARNING: NA values found in metadata:", "fit_model")
+      for (col in names(na_counts)[na_counts > 0]) {
+        log_message(paste("  ", col, ":", na_counts[col], "NA values"), "fit_model")
+      }
+    }
+    
+    # Check data types for prevalence formula variables
+    if (inherits(prev_formula, "formula")) {
+      vars <- all.vars(prev_formula)
+      for (var in vars) {
+        if (var %in% names(metadata_final)) {
+          log_message(paste(var, "- class:", class(metadata_final[[var]]), 
+                            "- type:", typeof(metadata_final[[var]])), "fit_model")
+          
+          # Check for NA values in this variable
+          if (sum(is.na(metadata_final[[var]])) > 0) {
+            log_message(paste("WARNING:", var, "has", sum(is.na(metadata_final[[var]])), "NA values"), "fit_model")
+            
+            # For factors, replace NA with a new level
+            if (is.factor(metadata_final[[var]])) {
+              levels(metadata_final[[var]]) <- c(levels(metadata_final[[var]]), "Missing")
+              metadata_final[[var]][is.na(metadata_final[[var]])] <- "Missing"
+              log_message(paste("Replaced NA values in", var, "with 'Missing' level"), "fit_model")
+            }
+          }
+          
+          # Convert logical variables to factors
+          if (is.logical(metadata_final[[var]])) {
+            metadata_final[[var]] <- factor(metadata_final[[var]], levels = c(FALSE, TRUE))
+            log_message(paste("Converted", var, "from logical to factor"), "fit_model")
+          }
+          
+          # Ensure character variables are factors
+          if (is.character(metadata_final[[var]])) {
+            metadata_final[[var]] <- factor(metadata_final[[var]])
+            log_message(paste("Converted", var, "from character to factor"), "fit_model")
+          }
+        } else {
+          log_message(paste("WARNING: Variable", var, "not found in metadata"), "fit_model")
+        }
+      }
+    }
+    
+    # Remove any rows with NA values in key columns
+    complete_rows <- complete.cases(metadata_final[, all.vars(prev_formula)])
+    if (sum(!complete_rows) > 0) {
+      log_message(paste("WARNING: Removing", sum(!complete_rows), "rows with NA values"), "fit_model")
+      metadata_final <- metadata_final[complete_rows, ]
+      stm_data$documents <- stm_data$documents[complete_rows]
+    }
+  }
+  
+  # Set seed for reproducibility
+  set.seed(seed)
+  
+  # Fit model with better error handling
   stm_model <- tryCatch({
     stm::stm(
       documents = stm_data$documents,
@@ -463,6 +638,23 @@ fit_model <- function(
     )
   }, error = function(e) {
     log_message(paste("Error fitting STM model:", e$message), "fit_model", "ERROR")
+    
+    # Additional debugging information
+    log_message("Debug information:", "fit_model", "ERROR")
+    log_message(paste("k =", k), "fit_model", "ERROR")
+    log_message(paste("Number of documents:", length(stm_data$documents)), "fit_model", "ERROR")
+    log_message(paste("Vocabulary size:", length(stm_data$vocab)), "fit_model", "ERROR")
+    log_message(paste("Prevalence formula:", deparse(prev_formula)), "fit_model", "ERROR")
+    
+    if (!is.null(metadata_final)) {
+      log_message(paste("Metadata rows:", nrow(metadata_final)), "fit_model", "ERROR")
+      log_message(paste("Metadata columns:", paste(names(metadata_final), collapse=", ")), "fit_model", "ERROR")
+      
+      # Print first few rows of metadata for debugging
+      log_message("First few rows of metadata:", "fit_model", "ERROR")
+      print(head(metadata_final))
+    }
+    
     diagnostics$processing_issues <- c(diagnostics$processing_issues, 
                                        paste("STM fitting error:", e$message))
     stop(paste("Error fitting STM model:", e$message))

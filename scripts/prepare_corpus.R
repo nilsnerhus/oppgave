@@ -1,40 +1,14 @@
-#' @title Prepare text corpus for topic modeling
-#' @description Processes raw text documents into a tokenized corpus suitable for
-#'   topic modeling analysis. Handles tokenization, stop word removal, and filtering.
-#'
-#' @param text_data Data frame containing text documents
-#' @param text_column Name of column containing document text (default: "pdf_text")
-#' @param custom_stopwords Additional stop words to remove (default: NULL)
-#' @param lemmatize Whether to apply lemmatization (default: TRUE)
-#' @param min_word_length Minimum character length for terms (default: 3)
-#' @param min_doc_prop Minimum proportion of documents a term must appear in (default: 0.02)
-#' @param max_doc_prop Maximum proportion of docs a term can appear in (default: 0.7)
-#' @param min_doc_length Minimum tokens required per document (default: 50)
-#' @param output_path Path to save processed corpus (default: "data/corpus.rds")
-#'
-#' @return A list containing:
-#'   \item{data}{Cleaned corpus with tokenized documents and metadata}
-#'   \item{metadata}{Processing information including token statistics}
-#'   \item{diagnostics}{Information about removed documents and processing issues}
-#'
-#' @examples
-#' \dontrun{
-#' # Basic usage
-#' corpus <- prepare_corpus(nap_data)
-#' 
-#' # With custom stopwords
-#' corpus <- prepare_corpus(nap_data, custom_stopwords = extra_stopwords)
-#' }
-
 prepare_corpus <- function(
     text_data, 
     text_column = "pdf_text",
-    custom_stopwords = NULL, 
-    lemmatize = TRUE,
+    whitelist = NULL,           # Additional terms to always include
+    geo_stops = TRUE,           # Remove geographic names
+    lemma = TRUE,               # Lemmatize before dictionary check
+    stem = FALSE,               # Stem after dictionary check (overrides lemma)
     min_word_length = 3,
-    min_doc_prop = 0.02,
-    max_doc_prop = 0.7,
-    min_doc_length = 50,
+    min_prop = 0.02,           # Minimum document proportion
+    max_prop = 0.7,            # Maximum document proportion  
+    prop_length = 50,          # Minimum tokens per document
     output_path = "data/corpus.rds"
 ) {
   # Start timing
@@ -56,29 +30,26 @@ prepare_corpus <- function(
   ## --- Input validation -------------------------------------------------------
   log_message("Validating input data", "prepare_corpus")
   
+  # Use standard validation function
+  validate_input(text_data, required_cols = c(text_column), func_name = "prepare_corpus")
+  
+  # Additional parameter validation
   tryCatch({
-    if (!is.data.frame(text_data)) {
-      stop("Input must be a dataframe")
+    if (!is.numeric(min_prop) || min_prop < 0 || min_prop > 1) {
+      stop("min_prop must be a value between 0 and 1")
     }
     
-    if (nrow(text_data) == 0) {
-      stop("Input dataframe has no rows")
+    if (!is.numeric(max_prop) || max_prop < 0 || max_prop > 1) {
+      stop("max_prop must be a value between 0 and 1")
     }
     
-    if (!text_column %in% names(text_data)) {
-      stop(paste("Input is missing required column:", text_column))
+    if (min_prop >= max_prop) {
+      stop("min_prop must be less than max_prop")
     }
     
-    if (!is.numeric(min_doc_prop) || min_doc_prop < 0 || min_doc_prop > 1) {
-      stop("min_doc_prop must be a value between 0 and 1")
-    }
-    
-    if (!is.numeric(max_doc_prop) || max_doc_prop < 0 || max_doc_prop > 1) {
-      stop("max_doc_prop must be a value between 0 and 1")
-    }
-    
-    if (min_doc_prop >= max_doc_prop) {
-      stop("min_doc_prop must be less than max_doc_prop")
+    if (stem && lemma) {
+      log_message("Both stem and lemma are TRUE. Stemming will override lemmatization.", 
+                  "prepare_corpus", "WARNING")
     }
   }, error = function(e) {
     log_message(paste("Validation error:", e$message), "prepare_corpus", "ERROR")
@@ -86,102 +57,221 @@ prepare_corpus <- function(
     stop(e$message)
   })
   
-  ## --- Ensure document IDs ----------------------------------------------------
-  log_message("Preparing document IDs", "prepare_corpus")
-  
-  # Ensure we have document IDs
-  if (!"doc_id" %in% names(text_data)) {
-    text_data$doc_id <- as.character(1:nrow(text_data))
-    log_message("Added sequential document IDs", "prepare_corpus")
-  } else {
-    # Ensure doc_id is character type for consistency
-    text_data$doc_id <- as.character(text_data$doc_id)
-  }
-  
   # Record original document count
   original_doc_count <- nrow(text_data)
   diagnostics$token_stats$original_docs <- original_doc_count
   
   log_message(paste("Processing", original_doc_count, "documents"), "prepare_corpus")
   
+  ## --- Create sequential doc_id -----------------------------------------------
+  log_message("Creating document identifiers", "prepare_corpus")
+  
+  # Create sequential doc_id
+  text_data$doc_id <- as.character(1:nrow(text_data))
+  
+  ## --- Create English dictionary ----------------------------------------------
+  log_message("Creating comprehensive English dictionary (US + UK)", "prepare_corpus")
+  
+  english_dictionary <- time_operation({
+    tryCatch({
+      dict_words <- unique(c(
+        # Lexicon dictionaries
+        lexicon::grady_augmented,
+        lexicon::function_words,
+        
+        # Add whitelist terms if provided
+        whitelist
+      ))
+      
+      # Convert to lowercase for consistent matching
+      dict_words <- unique(tolower(dict_words))
+      
+      log_message(paste("Created dictionary with", length(dict_words), "unique words"), 
+                  "prepare_corpus")
+      dict_words
+      
+    }, error = function(e) {
+      log_message(paste("Error creating full dictionary:", e$message), 
+                  "prepare_corpus", "WARNING")
+      # Fallback
+      unique(tolower(lexicon::grady_augmented))
+    })
+  }, "prepare_corpus")
+  
   ## --- Prepare corpus dataframe -----------------------------------------------
-  # Create corpus dataframe with document text and IDs
   corpus_data <- text_data
   names(corpus_data)[names(corpus_data) == text_column] <- "text"
   
-  # Check for empty documents early
+  # Check for empty documents
   empty_docs <- which(is.na(corpus_data$text) | nchar(corpus_data$text) == 0)
   if (length(empty_docs) > 0) {
     log_message(paste("Removing", length(empty_docs), "empty documents"), "prepare_corpus")
+    removed_rows <- empty_docs
     corpus_data <- corpus_data[-empty_docs, ]
     
     diagnostics$removed_documents$empty_count <- length(empty_docs)
-    diagnostics$removed_documents$empty_ids <- corpus_data$doc_id[empty_docs]
+    diagnostics$removed_documents$empty_doc_ids <- text_data$doc_id[empty_docs]
+    # Also track country names if available
+    if ("country_name" %in% names(text_data)) {
+      diagnostics$removed_documents$empty_countries <- text_data$country_name[empty_docs]
+    }
   }
   
   ## --- Tokenize documents -----------------------------------------------------
   log_message("Tokenizing documents", "prepare_corpus")
   
-  tokenized_text <- tryCatch({
-    corpus_data %>%
-      tidytext::unnest_tokens(
-        word, 
-        text,
-        to_lower = TRUE,
-        strip_punct = TRUE
-      )
-  }, error = function(e) {
-    log_message(paste("Tokenization error:", e$message), "prepare_corpus", "ERROR")
-    diagnostics$processing_issues <- c(diagnostics$processing_issues, 
-                                       paste("Tokenization failed:", e$message))
-    stop(e$message)
-  })
+  tokenized_text <- time_operation({
+    tryCatch({
+      corpus_data %>%
+        tidytext::unnest_tokens(
+          word, 
+          text,
+          to_lower = TRUE,
+          strip_punct = TRUE
+        )
+    }, error = function(e) {
+      log_message(paste("Tokenization error:", e$message), "prepare_corpus", "ERROR")
+      diagnostics$processing_issues <- c(diagnostics$processing_issues, 
+                                         paste("Tokenization failed:", e$message))
+      stop(e$message)
+    })
+  }, "prepare_corpus")
   
   # Track initial token count
   start_tokens <- nrow(tokenized_text)
   diagnostics$token_stats$initial_tokens <- start_tokens
   log_message(paste("Initial tokenization produced", start_tokens, "tokens"), "prepare_corpus")
   
-  ## --- Filter numeric content -------------------------------------------------
-  log_message("Filtering numeric content", "prepare_corpus")
+  ## --- Apply lemmatization if requested (BEFORE dictionary check) -------------
+  if (lemma && !stem) {
+    log_message("Applying lemmatization", "prepare_corpus")
+    
+    tokenized_text <- time_operation({
+      tokenized_text %>%
+        dplyr::mutate(word = textstem::lemmatize_words(word))
+    }, "prepare_corpus")
+  }
+  
+  ## --- Token validation: Dictionary + Length ----------------------------------
+  log_message("Validating tokens (dictionary check + word length)", "prepare_corpus")
   
   tokenized_text <- tokenized_text %>%
-    # Remove pure numeric tokens (with optional commas and decimals)
-    dplyr::filter(!stringr::str_detect(word, "^\\d+([,.]\\d+)*$")) %>%
-    # Remove decimal numbers (e.g., .123, 0.123)
-    dplyr::filter(!stringr::str_detect(word, "^[0-9]*\\.[0-9]+$")) %>%
-    # Remove comma-separated numbers (e.g., 123,456)
-    dplyr::filter(!stringr::str_detect(word, "^[0-9]{1,3}(,[0-9]{3})+$"))
+    dplyr::filter(
+      word %in% english_dictionary,              # Must be in dictionary
+      nchar(word) >= min_word_length             # Must meet length requirement
+    )
   
-  ## --- Apply word length filter -----------------------------------------------
-  log_message(paste("Filtering words shorter than", min_word_length, "characters"), 
-              "prepare_corpus")
+  tokens_after_validation <- nrow(tokenized_text)
+  log_message(paste("Token validation kept", tokens_after_validation, 
+                    "of", start_tokens, "tokens"), "prepare_corpus")
   
-  tokenized_text <- tokenized_text %>%
-    dplyr::filter(stringr::str_length(word) >= min_word_length)
+  ## --- Geographic token removal (if enabled) ----------------------------------
+  if (geo_stops) {
+    log_message("Creating geographic stopwords (countries + cities)", "prepare_corpus")
+    
+    geographic_terms <- time_operation({
+      tryCatch({
+        # Get country names in multiple languages
+        country_data <- countrycode::codelist
+        country_names <- unique(c(
+          country_data$country.name.en,   # English
+          country_data$country.name.fr,   # French
+          country_data$country.name.es,   # Spanish
+          country_data$country.name.de    # Portuguese (using German as proxy)
+        ))
+        
+        # Clean up NA values
+        country_names <- country_names[!is.na(country_names)]
+        
+        # Add country names from our actual data (if available)
+        if ("country_name" %in% names(text_data)) {
+          country_names <- unique(c(country_names, text_data$country_name))
+        }
+        
+        # Process country names
+        geographic_tokens <- character()
+        
+        for (country in country_names) {
+          # Split multi-word countries
+          words <- unlist(strsplit(country, "\\s+"))
+          
+          for (word in words) {
+            word_lower <- tolower(word)
+            geographic_tokens <- c(
+              geographic_tokens,
+              word_lower,                    # "albania"
+              paste0(word_lower, "'s"),      # "albania's"
+              paste0(word_lower, "s"),       # "albanias" (just in case)
+              paste0(word_lower, "'")        # "albania'" (apostrophe only)
+            )
+          }
+        }
+        
+        # Add city names
+        city_names <- maps::world.cities$name
+        for (city in city_names) {
+          city_lower <- tolower(city)
+          geographic_tokens <- c(
+            geographic_tokens,
+            city_lower,                      # "paris"
+            paste0(city_lower, "'s"),        # "paris's"
+            paste0(city_lower, "s"),         # "pariss" (for consistency)
+            paste0(city_lower, "'")          # "paris'"
+          )
+        }
+        
+        # Clean and deduplicate
+        geographic_tokens <- unique(geographic_tokens)
+        geographic_tokens <- geographic_tokens[geographic_tokens != ""]
+        
+        log_message(paste("Created", length(geographic_tokens), "geographic stopwords"), 
+                    "prepare_corpus")
+        
+        geographic_tokens
+        
+      }, error = function(e) {
+        log_message(paste("Error creating geographic stopwords:", e$message), 
+                    "prepare_corpus", "WARNING")
+        # Fallback to just using data's country names
+        if ("country_name" %in% names(text_data)) {
+          country_names <- text_data$country_name
+          tokens <- character()
+          for (country in country_names) {
+            words <- unlist(strsplit(tolower(country), "\\s+"))
+            tokens <- c(tokens, words, paste0(words, "'s"))
+          }
+          unique(tokens)
+        } else {
+          character(0)
+        }
+      })
+    }, "prepare_corpus")
+    
+    # Remove geographic tokens
+    tokens_before <- nrow(tokenized_text)
+    tokenized_text <- tokenized_text %>%
+      dplyr::filter(!word %in% geographic_terms)
+    
+    tokens_removed <- tokens_before - nrow(tokenized_text)
+    log_message(paste("Removed", tokens_removed, "geographic tokens"), "prepare_corpus")
+    
+    diagnostics$token_stats$geographic_tokens_removed <- tokens_removed
+  }
   
   ## --- Remove stopwords ------------------------------------------------------
   log_message("Removing stopwords", "prepare_corpus")
   
-  # Remove standard stopwords
   tokenized_text <- tokenized_text %>%
     dplyr::anti_join(tidytext::get_stopwords(), by = "word")
   
-  # Remove custom stopwords if provided
-  if (!is.null(custom_stopwords) && length(custom_stopwords) > 0) {
-    custom_stops <- tibble::tibble(word = custom_stopwords)
-    tokenized_text <- tokenized_text %>%
-      dplyr::anti_join(custom_stops, by = "word")
+  ## --- Apply stemming if requested (AFTER validation) ------------------------
+  if (stem) {
+    log_message("Applying stemming", "prepare_corpus")
     
-    log_message(paste("Removed", length(custom_stopwords), "custom stopwords"), "prepare_corpus")
-  }
-  
-  ## --- Apply lemmatization if requested ---------------------------------------
-  if (lemmatize) {
-    log_message("Applying lemmatization", "prepare_corpus")
-    
-    tokenized_text <- tokenized_text %>%
-      dplyr::mutate(word = textstem::lemmatize_words(word))
+    tokenized_text <- time_operation({
+      tokenized_text %>%
+        dplyr::mutate(word = SnowballC::wordStem(word))
+    }, "prepare_corpus")
   }
   
   ## --- Filter words by document frequency ------------------------------------
@@ -191,8 +281,8 @@ prepare_corpus <- function(
   doc_count <- length(unique(tokenized_text$doc_id))
   
   # Calculate minimum and maximum document counts from proportions
-  min_doc_count <- ceiling(min_doc_prop * doc_count)
-  max_doc_count <- floor(max_doc_prop * doc_count)
+  min_doc_count <- ceiling(min_prop * doc_count)
+  max_doc_count <- floor(max_prop * doc_count)
   
   log_message(paste("Words must appear in at least", min_doc_count, 
                     "documents and at most", max_doc_count, "documents"), 
@@ -203,7 +293,6 @@ prepare_corpus <- function(
     dplyr::group_by(word) %>%
     dplyr::summarize(
       doc_count = dplyr::n_distinct(doc_id),
-      doc_prop = doc_count / doc_count,
       .groups = "drop"
     ) %>%
     dplyr::filter(
@@ -215,7 +304,8 @@ prepare_corpus <- function(
   tokenized_text <- tokenized_text %>%
     dplyr::semi_join(word_doc_counts, by = "word")
   
-  log_message(paste("Retained", nrow(word_doc_counts), "unique words after frequency filtering"), 
+  log_message(paste("Retained", nrow(word_doc_counts), 
+                    "unique words after frequency filtering"), 
               "prepare_corpus")
   
   ## --- Filter documents by length ---------------------------------------------
@@ -227,30 +317,36 @@ prepare_corpus <- function(
   
   # Filter by minimum document length
   valid_docs <- doc_lengths %>%
-    dplyr::filter(token_count >= min_doc_length)
+    dplyr::filter(token_count >= prop_length)
   
   # Track removed documents
-  removed_doc_ids <- setdiff(doc_lengths$doc_id, valid_docs$doc_id)
+  removed_docs <- setdiff(doc_lengths$doc_id, valid_docs$doc_id)
   
-  if (length(removed_doc_ids) > 0) {
-    log_message(paste("Removed", length(removed_doc_ids), 
-                      "documents with fewer than", min_doc_length, "tokens"),
+  if (length(removed_docs) > 0) {
+    log_message(paste("Removed", length(removed_docs), 
+                      "documents with fewer than", prop_length, "tokens"),
                 "prepare_corpus", "WARNING")
     
-    diagnostics$removed_documents$short_count <- length(removed_doc_ids)
-    diagnostics$removed_documents$short_ids <- removed_doc_ids
+    diagnostics$removed_documents$short_count <- length(removed_docs)
+    diagnostics$removed_documents$short_doc_ids <- removed_docs
+    
+    # Also track country names if available
+    if ("country_name" %in% names(corpus_data)) {
+      diagnostics$removed_documents$short_countries <- 
+        corpus_data$country_name[corpus_data$doc_id %in% removed_docs]
+    }
   }
   
   # Filter tokenized text to keep only documents meeting minimum length
   tokenized_text <- tokenized_text %>%
-    dplyr::semi_join(valid_docs, by = "doc_id")
+    dplyr::inner_join(valid_docs, by = "doc_id")
   
   ## --- Prepare final output ---------------------------------------------------
   # Extract metadata for remaining documents
-  metadata_cols <- setdiff(names(text_data), c(text_column, "doc_id"))
+  metadata_cols <- setdiff(names(text_data), c(text_column))
   
   if (length(metadata_cols) > 0) {
-    doc_metadata <- text_data[text_data$doc_id %in% valid_docs$doc_id, c("doc_id", metadata_cols)]
+    doc_metadata <- text_data[text_data$doc_id %in% valid_docs$doc_id, metadata_cols]
   } else {
     doc_metadata <- data.frame(doc_id = valid_docs$doc_id)
   }
@@ -270,11 +366,12 @@ prepare_corpus <- function(
   diagnostics$token_stats$removed_tokens <- start_tokens - final_tokens
   diagnostics$token_stats$vocabulary_size <- final_terms
   
-  # Create core data result
+  # Create core data result - including the dictionary
   result_data <- list(
     tokens = tokenized_text,       # Tokenized text data
     metadata = doc_metadata,       # Document metadata
-    vocab = vocabulary             # Vocabulary list
+    vocab = vocabulary,            # Vocabulary list
+    dictionary = english_dictionary # Dictionary used for validation
   )
   
   # Calculate processing time
@@ -291,24 +388,21 @@ prepare_corpus <- function(
     final_tokens = final_tokens,
     vocabulary_size = final_terms,
     processing_options = list(
-      lemmatize = lemmatize,
+      lemma = lemma,
+      stem = stem,
+      geo_stops = geo_stops,
       min_word_length = min_word_length,
-      min_doc_prop = min_doc_prop,
-      max_doc_prop = max_doc_prop,
-      min_doc_length = min_doc_length
+      min_prop = min_prop,
+      max_prop = max_prop,
+      prop_length = prop_length,
+      dict_size = length(english_dictionary)
     )
   )
   
-  # Final result structure
-  final_result <- create_result(
+  # Return standardized result
+  return(create_result(
     data = result_data,
     metadata = result_metadata,
     diagnostics = diagnostics
-  )
-  
-  log_message(sprintf("Processing complete: %d docs, %d tokens, %d terms", 
-                      final_docs, final_tokens, final_terms), 
-              "prepare_corpus")
-  
-  return(final_result)
+  ))
 }
