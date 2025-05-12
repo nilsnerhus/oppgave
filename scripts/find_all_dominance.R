@@ -36,7 +36,7 @@
 #' }
 
 find_all_dominance <- function(
-    model, 
+    topic_data, 
     value_col = "Proportion", 
     doc_id_col = "doc_id",
     dimensions = c("region", "wb_income_level", "is_sids", "is_lldc", "is_ldc"),
@@ -61,7 +61,7 @@ find_all_dominance <- function(
   )
   
   ## --- Input validation -------------------------------------------------------
-  log_message("Validating input data", "find_all_dominance")
+  log_message("Validating inputs and preparing for analysis", "find_all_dominance")
   
   tryCatch({
     if (!is.data.frame(topic_data)) {
@@ -100,8 +100,6 @@ find_all_dominance <- function(
   })
   
   ## --- Initialize results structures ------------------------------------------
-  log_message("Initializing results structures", "find_all_dominance")
-  
   # Initialize nested list for full results
   results <- list()
   
@@ -118,15 +116,17 @@ find_all_dominance <- function(
     stringsAsFactors = FALSE
   )
   
-  ## --- Calculate overall dominance --------------------------------------------
-  log_message("Calculating overall dominance", "find_all_dominance")
-  
-  results$overall <- list()
+  ## --- Process each n-value --------------------------------------------------
   for (n_val in n_values) {
-    log_message(paste("Overall dominance with n =", n_val), "find_all_dominance")
+    log_message(paste("Calculating dominance values for n =", n_val, "..."), "find_all_dominance")
     
-    # Calculate dominance
-    dom_result <- find_dominance(
+    # Count successful calculations for this n-value
+    n_calculations <- 0
+    
+    # 1. Calculate overall dominance for this n-value
+    results$overall <- results$overall %||% list()
+    
+    overall_result <- find_dominance(
       topic_data, 
       value_col = value_col, 
       doc_id_col = doc_id_col, 
@@ -135,68 +135,67 @@ find_all_dominance <- function(
     )
     
     # Store full result in nested structure
-    results$overall[[paste0("n", n_val)]] <- dom_result
+    results$overall[[paste0("n", n_val)]] <- overall_result
     
     # Also add to summary dataframe
     summary_results <- rbind(summary_results, data.frame(
       dimension = "Overall",
       category = "All documents",
       n = n_val,
-      docs = dom_result$doc_count,
-      raw_dominance = dom_result$raw_dominance,
-      norm_dominance = dom_result$norm_dominance,
-      ci_lower = dom_result$ci_lower,
-      ci_upper = dom_result$ci_upper,
+      docs = overall_result$doc_count,
+      raw_dominance = overall_result$raw_dominance,
+      norm_dominance = overall_result$norm_dominance,
+      ci_lower = overall_result$ci_lower,
+      ci_upper = overall_result$ci_upper,
       stringsAsFactors = FALSE
     ))
-  }
-  
-  ## --- Calculate dominance for each dimension ---------------------------------
-  for (dim in dimensions) {
-    if (dim %in% names(topic_data)) {
-      log_message(paste("Analyzing dimension:", dim), "find_all_dominance")
-      
-      results[[dim]] <- list()
-      
-      # Get unique values
-      unique_vals <- unique(topic_data[[dim]])
-      unique_vals <- unique_vals[!is.na(unique_vals)]
-      
-      # For each category
-      for (val in unique_vals) {
-        # Format category name
-        if (is.logical(val)) {
-          cat_name <- if(val) paste("Yes", dim) else paste("No", dim)
-        } else {
-          cat_name <- as.character(val)
-        }
+    
+    n_calculations <- n_calculations + 1
+    
+    # 2. Process each dimension for this n-value
+    for (dim in dimensions) {
+      if (dim %in% names(topic_data)) {
+        results[[dim]] <- results[[dim]] %||% list()
         
-        # Count documents for this category
-        doc_count <- length(unique(topic_data$doc_id[topic_data[[dim]] == val]))
+        # Get unique values for this dimension
+        unique_vals <- unique(topic_data[[dim]])
+        unique_vals <- unique_vals[!is.na(unique_vals)]
         
-        # Skip categories with too few documents
-        if (doc_count < min_doc_count) {
-          log_message(paste("Skipping", cat_name, "- only", doc_count, "documents"),
-                      "find_all_dominance", "WARNING")
-          
-          # Track skipped categories
-          if (!dim %in% names(diagnostics$skipped_categories)) {
-            diagnostics$skipped_categories[[dim]] <- character()
+        # Track skipped categories for this dimension
+        skipped_in_dim <- 0
+        
+        # Process each category within this dimension
+        for (val in unique_vals) {
+          # Format category name
+          if (is.logical(val)) {
+            cat_name <- if(val) paste("Yes", dim) else paste("No", dim)
+          } else {
+            cat_name <- as.character(val)
           }
-          diagnostics$skipped_categories[[dim]] <- c(
-            diagnostics$skipped_categories[[dim]], 
-            cat_name
-          )
           
-          next
-        }
-        
-        results[[dim]][[cat_name]] <- list()
-        
-        # For each n value
-        for (n_val in n_values) {
-          log_message(paste("Calculating dominance for", cat_name, "with n =", n_val),
-                      "find_all_dominance")
+          # Count documents for this category
+          doc_count <- length(unique(topic_data$doc_id[topic_data[[dim]] == val]))
+          
+          # Skip categories with too few documents
+          if (doc_count < min_doc_count) {
+            log_message(paste("Skipping", cat_name, "- only", doc_count, "documents (min:", min_doc_count, ")"),
+                        "find_all_dominance", "WARNING")
+            
+            # Track skipped categories
+            if (!dim %in% names(diagnostics$skipped_categories)) {
+              diagnostics$skipped_categories[[dim]] <- character()
+            }
+            diagnostics$skipped_categories[[dim]] <- c(
+              diagnostics$skipped_categories[[dim]], 
+              cat_name
+            )
+            
+            skipped_in_dim <- skipped_in_dim + 1
+            next
+          }
+          
+          # Initialize category in results if needed
+          results[[dim]][[cat_name]] <- results[[dim]][[cat_name]] %||% list()
           
           # Calculate dominance
           dom_result <- find_dominance(
@@ -224,9 +223,22 @@ find_all_dominance <- function(
             ci_upper = dom_result$ci_upper,
             stringsAsFactors = FALSE
           ))
+          
+          n_calculations <- n_calculations + 1
         }
+        
+        # Log dimension summary
+        categories_analyzed <- length(unique_vals) - skipped_in_dim
+        log_message(paste("Processed dimension:", dim, "-", categories_analyzed, "categories analyzed", 
+                          ifelse(skipped_in_dim > 0, paste0("(", skipped_in_dim, " skipped)"), "")),
+                    "find_all_dominance")
       }
     }
+    
+    # Log n-value completion
+    log_message(paste("Completed dominance calculations for n =", n_val, ":", 
+                      n_calculations, "total calculations"),
+                "find_all_dominance")
   }
   
   ## --- Calculate dimension rankings -------------------------------------------
@@ -234,9 +246,30 @@ find_all_dominance <- function(
   
   # Define the rank_dimensions function inside
   rank_dimensions <- function(dominance_results) {
-    # For each dimension, calculate variation metrics
-    dimension_stats <- dominance_results %>%
+    # Define dimension categories
+    dimension_categories <- list(
+      "region" = "administrative",
+      "wb_income_level" = "economic",
+      "is_sids" = "geography",
+      "is_lldc" = "geography",
+      "is_ldc" = "economic"  # LDC is considered economic rather than purely geographic
+    )
+    
+    # Add category column to the results
+    results_with_categories <- dominance_results %>%
       dplyr::filter(dimension != "Overall") %>%
+      dplyr::mutate(
+        dimension_category = sapply(dimension, function(d) {
+          if (d %in% names(dimension_categories)) {
+            dimension_categories[[d]]
+          } else {
+            "other"
+          }
+        })
+      )
+    
+    # Calculate dimension-level statistics
+    dimension_stats <- results_with_categories %>%
       dplyr::group_by(dimension, n) %>%
       dplyr::summarize(
         min_dominance = min(norm_dominance, na.rm = TRUE),
@@ -245,12 +278,34 @@ find_all_dominance <- function(
         std_dev = stats::sd(norm_dominance, na.rm = TRUE),
         mean_dominance = mean(norm_dominance, na.rm = TRUE),
         coef_var = if(mean_dominance > 0) std_dev / mean_dominance else NA,
-        category_count = dplyr::n(),
+        count = dplyr::n(),
+        analysis_level = "dimension",
         .groups = "drop"
       ) %>%
       dplyr::arrange(n, dplyr::desc(range))
     
-    return(dimension_stats)
+    # Calculate category-level statistics
+    category_stats <- results_with_categories %>%
+      dplyr::group_by(dimension_category, n) %>%
+      dplyr::summarize(
+        min_dominance = min(norm_dominance, na.rm = TRUE),
+        max_dominance = max(norm_dominance, na.rm = TRUE),
+        range = max_dominance - min_dominance,
+        std_dev = stats::sd(norm_dominance, na.rm = TRUE),
+        mean_dominance = mean(norm_dominance, na.rm = TRUE),
+        coef_var = if(mean_dominance > 0) std_dev / mean_dominance else NA,
+        count = dplyr::n(),
+        analysis_level = "category",
+        .groups = "drop"
+      ) %>%
+      dplyr::rename(dimension = dimension_category) %>%  # Rename for consistent column structure
+      dplyr::arrange(n, dplyr::desc(range))
+    
+    # Combine both levels of analysis
+    combined_stats <- dplyr::bind_rows(dimension_stats, category_stats) %>%
+      dplyr::arrange(n, analysis_level, dplyr::desc(range))
+    
+    return(combined_stats)
   }
   
   dimension_rankings <- rank_dimensions(summary_results)
@@ -288,15 +343,17 @@ find_all_dominance <- function(
     diagnostics = diagnostics
   )
   
+  # Log completion
+  log_message(paste("Dominance analysis complete:", length(dimensions), "dimensions,", 
+                    length(n_values), "n-values,", nrow(summary_results), "total calculations",
+                    "in", round(processing_time, 2), "seconds"), 
+              "find_all_dominance")
+  
   # Save results if output_path is provided
   if (!is.null(output_path)) {
     log_message(paste("Saving results to", output_path), "find_all_dominance")
     saveRDS(final_result, output_path)
   }
-  
-  log_message(paste("Dominance analysis complete with", 
-                    nrow(summary_results), "total calculations"), 
-              "find_all_dominance")
   
   return(final_result)
 }

@@ -480,7 +480,7 @@ fit_model <- function(
     }
     
     # Normalize metrics
-    k_metrics$semcoh_norm <- safe_normalize(k_metrics$semcoh)
+    k_metrics$semcoh_norm <- safe_normalize(k_metrics$semcoh, invert = FALSE)
     k_metrics$exclus_norm <- safe_normalize(k_metrics$exclus)
     
     # Optional: normalize other metrics if available

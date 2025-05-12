@@ -7,7 +7,7 @@
 #' @param data Data frame containing proportions or values to analyze
 #' @param value_col Name of column containing the proportion values (default: "Proportion")
 #' @param doc_id_col Name of column containing document identifiers (default: "doc_id")
-#' @param n Number of top categories to include (default: 8)
+#' @param n Number of top categories to include (default: 5)
 #' @param normalize Sample size for normalization (default: NULL for automatic)
 #'                  Set to 0 to skip normalization
 #' @param iterations Number of subsampling iterations (default: NULL for automatic)
@@ -15,6 +15,7 @@
 #' @param max_iterations Maximum number of iterations when auto-calculating (default: 100)
 #' @param filter_col Optional column name to filter by
 #' @param filter_value Optional value to filter for in filter_col
+#' @param confidence Confidence level for interval calculation (default: 0.95)
 #'
 #' @return A list containing:
 #'   \item{raw_dominance}{Unnormalized dominance value (0-1)}
@@ -37,26 +38,16 @@ find_dominance <- function(
     data, 
     value_col = "Proportion", 
     doc_id_col = "doc_id",
-    n = 8, 
+    n = 5, 
     normalize = NULL,
     iterations = NULL,
+    min_iterations = 20,
+    max_iterations = 100,
     filter_col = NULL,
-    filter_value = NULL
+    filter_value = NULL,
+    confidence = 0.95
 ) {
-  # Start timing
-  start_time <- Sys.time()
-  
-  # Initialize diagnostics tracking
-  diagnostics <- list(
-    issues = character(),
-    method_info = list(
-      n = n,
-      normalize = normalize,
-      filter_applied = !is.null(filter_col) && !is.null(filter_value)
-    )
-  )
-  
-  ## --- Input validation -----------------------------------------------------
+  # Input validation with minimal logging
   tryCatch({
     if (!is.data.frame(data)) {
       stop("data must be a dataframe")
@@ -84,12 +75,7 @@ find_dominance <- function(
     }
     
   }, error = function(e) {
-    if (exists("log_message")) {
-      log_message(paste("Validation error:", e$message), "find_dominance", "ERROR")
-    } else {
-      message(paste("ERROR:", e$message))
-    }
-    diagnostics$issues <- c(diagnostics$issues, e$message)
+    log_message(paste("Validation error:", e$message), "find_dominance", "ERROR")
     stop(e$message)
   })
   
@@ -99,14 +85,15 @@ find_dominance <- function(
     filtered_data <- data[data[[filter_col]] == filter_value, ]
     
     if (nrow(filtered_data) == 0) {
-      warning(paste("No data matches filter", filter_col, "=", filter_value))
+      log_message(paste("No data matches filter", filter_col, "=", filter_value), 
+                  "find_dominance", "WARNING")
+      
       return(list(
         raw_dominance = NA,
         norm_dominance = NA,
         ci_lower = NA,
         ci_upper = NA,
-        doc_count = 0,
-        error = "No data after filtering"
+        doc_count = 0
       ))
     }
     
@@ -123,7 +110,18 @@ find_dominance <- function(
   }
   
   ## --- Calculate raw dominance ----------------------------------------------
-  raw_dominance <- calculate_raw_dominance(data, value_col, n)
+  # Sum proportions by topic across all documents
+  topic_sums <- aggregate(data[[value_col]], by=list(Topic=data$Topic), FUN=sum)
+  
+  # Sort topics by their total proportion
+  topic_sums <- topic_sums[order(topic_sums$x, decreasing = TRUE), ]
+  
+  # Calculate the proportion of the top n topics
+  total_proportion <- sum(topic_sums$x)
+  top_n_proportion <- sum(topic_sums$x[1:min(n, nrow(topic_sums))])
+  
+  # Calculate raw dominance as the proportion of discourse in top n topics
+  raw_dominance <- top_n_proportion / total_proportion
   
   # If normalization is explicitly disabled, return the raw value
   if (!is.null(normalize) && normalize == 0) {
@@ -142,18 +140,15 @@ find_dominance <- function(
   if (is.null(normalize)) {
     # Default to 80% of document count, with minimum of 5
     sample_size <- max(5, floor(doc_count * 0.8))
-    if (exists("log_message")) {
-      log_message(paste("Auto-calculated sample size:", sample_size), "find_dominance")
-    } else {
-      message(paste("INFO: Auto-calculated sample size:", sample_size))
-    }
   } else {
     sample_size <- normalize
     # Check if we have enough documents
     if (doc_count < sample_size) {
       sample_size <- doc_count
-      warning(paste("Requested sample size (", normalize, ") exceeds available documents (", 
-                    doc_count, "). Using all available documents.", sep = ""))
+      log_message(paste("Requested sample size (", normalize, 
+                        ") exceeds available documents (", doc_count, 
+                        "). Using all available documents.", sep = ""), 
+                  "find_dominance", "WARNING")
     }
   }
   
@@ -164,44 +159,60 @@ find_dominance <- function(
     auto_iterations <- ceiling(30 * sqrt(ratio))
     
     # Keep within reasonable bounds
-    iterations <- min(max(20, auto_iterations), 100)
-    
-    if (exists("log_message")) {
-      log_message(paste("Auto-calculated iterations:", iterations), "find_dominance")
-    } else {
-      message(paste("INFO: Auto-calculated iterations:", iterations))
-    }
+    iterations <- min(max(min_iterations, auto_iterations), max_iterations)
   }
   
-  # Calculate normalized dominance via subsampling
+  # Check if we have enough documents for normalization
   if (doc_count >= 5) {
-    norm_result <- normalize_via_subsampling(
-      data, 
-      value_col, 
-      doc_id_col, 
-      n, 
-      iterations, 
-      sample_size
-    )
+    # Initialize storage for subsampling results
+    subsample_results <- numeric(iterations)
+    
+    # Perform iterations
+    for (i in 1:iterations) {
+      # Sample document IDs
+      sampled_ids <- sample(unique_docs, size = sample_size, replace = FALSE)
+      
+      # Filter data to just these documents
+      sample_data <- data[data[[doc_id_col]] %in% sampled_ids, ]
+      
+      # Calculate dominance for this sample
+      sample_topic_sums <- aggregate(sample_data[[value_col]], 
+                                     by=list(Topic=sample_data$Topic), FUN=sum)
+      sample_topic_sums <- sample_topic_sums[order(sample_topic_sums$x, decreasing = TRUE), ]
+      sample_total <- sum(sample_topic_sums$x)
+      sample_top_n <- sum(sample_topic_sums$x[1:min(n, nrow(sample_topic_sums))])
+      
+      # Store this iteration's dominance value
+      subsample_results[i] <- sample_top_n / sample_total
+    }
+    
+    # Calculate normalized dominance and confidence intervals
+    norm_dominance <- mean(subsample_results)
+    
+    # Calculate confidence intervals
+    ci_alpha <- (1 - confidence) / 2
+    ci_bounds <- stats::quantile(subsample_results, c(ci_alpha, 1 - ci_alpha))
+    ci_lower <- ci_bounds[1]
+    ci_upper <- ci_bounds[2]
     
     # Return the result
     return(list(
       raw_dominance = raw_dominance,
-      norm_dominance = norm_result$norm_dominance,
-      ci_lower = norm_result$ci_lower,
-      ci_upper = norm_result$ci_upper,
+      norm_dominance = norm_dominance,
+      ci_lower = ci_lower,
+      ci_upper = ci_upper,
       doc_count = doc_count
     ))
   } else {
     # Not enough documents for normalization
-    warning("Too few documents for reliable normalization")
+    log_message("Too few documents for reliable normalization", "find_dominance", "WARNING")
+    
     return(list(
       raw_dominance = raw_dominance,
       norm_dominance = NA,
       ci_lower = NA,
       ci_upper = NA,
-      doc_count = doc_count,
-      error = "Too few documents for normalization"
+      doc_count = doc_count
     ))
   }
 }
