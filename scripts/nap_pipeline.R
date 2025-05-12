@@ -54,7 +54,7 @@ corpus <- auto_cache(prepare_corpus, nap_data$data)
 
 # Step 5: Running the model
 prevalence <- ~ region + wb_income_level + is_sids + is_ldc + is_lldc
-model <- auto_cache(fit_model, corpus)
+model <- auto_cache(fit_model, corpus, overwrite = TRUE)
 
 # Step 6: Calculate domianance
 dominance <- auto_cache(find_all_dominance, model)
