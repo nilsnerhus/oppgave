@@ -15,6 +15,10 @@ source("scripts/prepare_corpus.R")
 source("scripts/fit_model.R")
 source("scripts/helper_find_dominance.R")
 source("scripts/find_all_dominance.R")
+source("scripts/create_results_tables.R")
+source("scripts/helper_dominance_table.R")
+source("scripts/helper_variance_table.R")
+source("scripts/helper_explained_table.R")
 
 # Step 1: Scrape the UNFCCC website
 exclude_countries <- c("Uruguay", "Israel", "Kuwait", "Trinidad and Tobago") # Uruguay has no national plan, just sectoral, and the others are high income countries
@@ -54,3 +58,7 @@ model <- auto_cache(fit_model, corpus)
 
 # Step 6: Calculate domianance
 dominance <- auto_cache(find_all_dominance, model)
+
+tables <- auto_cache(create_result_tables, dominance)
+
+

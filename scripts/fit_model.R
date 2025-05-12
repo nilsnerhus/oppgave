@@ -393,11 +393,6 @@ fit_model <- function(
       stop(paste("Error determining optimal k:", e$message))
     })
     
-    # Debug: Check searchK structure
-    log_message("searchK completed. Checking results structure...", "fit_model")
-    log_message(paste("searchK object class:", class(k_search)), "fit_model")
-    log_message(paste("searchK object names:", paste(names(k_search), collapse = ", ")), "fit_model")
-    
     # Extract results
     if (!"results" %in% names(k_search)) {
       stop("searchK output missing 'results' component")
@@ -411,25 +406,10 @@ fit_model <- function(
       k_results <- as.data.frame(k_results)
     }
     
-    # Debug: Check results structure
-    log_message(paste("Results dimensions:", nrow(k_results), "x", ncol(k_results)), "fit_model")
-    log_message(paste("Results column names:", paste(names(k_results), collapse = ", ")), "fit_model")
-    
     # Ensure we have the K column
     if (!"K" %in% names(k_results)) {
       log_message("K column not found, adding from k_values", "fit_model")
       k_results$K <- k_values
-    }
-    
-    # Check that we have the necessary metrics
-    required_metrics <- c("semcoh", "exclus")
-    missing_metrics <- setdiff(required_metrics, names(k_results))
-    
-    if (length(missing_metrics) > 0) {
-      error_msg <- paste("Missing required metrics:", paste(missing_metrics, collapse = ", "))
-      log_message(error_msg, "fit_model", "ERROR")
-      log_message("Available columns:", paste(names(k_results), collapse = ", "), "fit_model", "ERROR")
-      stop(error_msg)
     }
     
     # Store searchK results in diagnostics
@@ -439,7 +419,7 @@ fit_model <- function(
     # Create a copy for normalization
     k_metrics <- k_results
     
-    # Force all numeric columns to be actually numeric
+    # Force all numeric columns to be numeric
     numeric_cols <- c("K", "semcoh", "exclus", "heldout", "residual", "bound", "lbound", "em.its")
     for (col in numeric_cols) {
       if (col %in% names(k_metrics)) {
@@ -479,34 +459,91 @@ fit_model <- function(
       return(norm_x)
     }
     
-    # Normalize metrics
-    k_metrics$semcoh_norm <- safe_normalize(k_metrics$semcoh, invert = FALSE)
+    # Calculate perplexity scores if not already present in results
+    # Lower perplexity means better fit, so we invert for normalization
+    if (!"perplexity" %in% names(k_metrics)) {
+      # Calculate perplexity for each model in searchK
+      log_message("Calculating perplexity for each K value", "fit_model")
+      
+      perplexity_scores <- numeric(length(k_values))
+      
+      # If available, use the models already computed in searchK
+      if ("exclusivity" %in% names(k_search) && is.list(k_search$exclusivity)) {
+        models_list <- k_search$exclusivity
+        
+        for (i in seq_along(k_values)) {
+          k_val <- k_values[i]
+          model_index <- which(sapply(models_list, function(m) m$K == k_val))
+          
+          if (length(model_index) > 0) {
+            model <- models_list[[model_index[1]]]
+            
+            # Use a sample of data as held-out for perplexity calculation
+            if (!is.null(stm_data$documents) && length(stm_data$documents) > 0) {
+              # Take a small sample of documents for perplexity calculation
+              sample_size <- min(20, length(stm_data$documents))
+              sample_indices <- sample(seq_along(stm_data$documents), sample_size)
+              
+              # Use STM's eval.perplexity function
+              perp <- tryCatch({
+                stm::eval.perplexity(model, stm_data$documents[sample_indices], stm_data$vocab)
+              }, error = function(e) {
+                NA_real_
+              })
+              
+              perplexity_scores[i] <- perp
+            }
+          }
+        }
+        
+        # Add perplexity to k_metrics
+        k_metrics$perplexity <- perplexity_scores
+      }
+    }
+    
+    # Normalize metrics (higher values = better for all normalized metrics)
+    k_metrics$semcoh_norm <- safe_normalize(k_metrics$semcoh)
     k_metrics$exclus_norm <- safe_normalize(k_metrics$exclus)
     
-    # Optional: normalize other metrics if available
+    # Held-out likelihood - higher is better
     if ("heldout" %in% names(k_metrics)) {
       k_metrics$heldout_norm <- safe_normalize(k_metrics$heldout)
     } else {
-      k_metrics$heldout_norm <- 0.5  # neutral value
+      k_metrics$heldout_norm <- 0.5  # neutral value if missing
     }
     
+    # Residual - lower is better, so invert
     if ("residual" %in% names(k_metrics)) {
       k_metrics$residual_norm <- safe_normalize(k_metrics$residual, invert = TRUE)
     } else {
-      k_metrics$residual_norm <- 0.5  # neutral value
+      k_metrics$residual_norm <- 0.5  # neutral value if missing
     }
     
-    # Calculate combined score
-    k_metrics$combined_score <- (
-      0.4 * k_metrics$semcoh_norm + 
-        0.4 * k_metrics$exclus_norm + 
-        0.1 * k_metrics$heldout_norm + 
-        0.1 * k_metrics$residual_norm
-    )
+    # Perplexity - lower is better, so invert
+    if ("perplexity" %in% names(k_metrics)) {
+      k_metrics$perp_norm <- safe_normalize(k_metrics$perplexity, invert = TRUE)
+    } else {
+      k_metrics$perp_norm <- 0.5  # neutral value if missing
+    }
     
-    # Debug: Show metrics
+    # Calculate combined score with balanced weights and stronger complexity penalty
+    k_metrics$combined_score <- (
+      0.30 * k_metrics$semcoh_norm + 
+        0.30 * k_metrics$exclus_norm + 
+        0.15 * k_metrics$heldout_norm + 
+        0.15 * k_metrics$residual_norm +
+        (if("perp_norm" %in% names(k_metrics)) 0.10 * k_metrics$perp_norm else 0)
+    ) - 0.05 * safe_normalize(k_metrics$K)  # Stronger complexity penalty
+    
+    # Log the metrics for better understanding
     log_message("K selection metrics:", "fit_model")
-    print(k_metrics[, c("K", "semcoh", "exclus", "combined_score")])
+    metrics_to_show <- c("K", "semcoh", "exclus", "residual", "heldout")
+    if ("perplexity" %in% names(k_metrics)) metrics_to_show <- c(metrics_to_show, "perplexity")
+    metrics_to_show <- c(metrics_to_show, "combined_score")
+    
+    # Only show columns that exist in k_metrics
+    metrics_to_show <- intersect(metrics_to_show, names(k_metrics))
+    print(k_metrics[, metrics_to_show])
     
     # Find best K
     best_idx <- which.max(k_metrics$combined_score)
@@ -529,20 +566,16 @@ fit_model <- function(
     
     log_message(paste("Selected optimal K =", best_k), "fit_model")
     
-    # Safer metric logging
+    # Log detailed metrics for the selected K
     tryCatch({
-      semcoh_val <- k_metrics$semcoh[best_idx]
-      exclus_val <- k_metrics$exclus[best_idx]
-      combined_val <- k_metrics$combined_score[best_idx]
-      
-      log_message(paste("Metrics for selected K: semcoh =", round(semcoh_val, 3),
-                        ", exclus =", round(exclus_val, 3),
-                        ", combined =", round(combined_val, 3)), "fit_model")
+      log_message("Metrics for selected K:", "fit_model")
+      for (metric in metrics_to_show) {
+        if (metric %in% names(k_metrics)) {
+          log_message(paste("  -", metric, "=", round(k_metrics[best_idx, metric], 4)), "fit_model")
+        }
+      }
     }, error = function(e) {
-      log_message(paste("Could not display rounded metrics:", e$message), "fit_model", "WARNING")
-      log_message(paste("Raw metrics: semcoh =", k_metrics$semcoh[best_idx],
-                        ", exclus =", k_metrics$exclus[best_idx],
-                        ", combined =", k_metrics$combined_score[best_idx]), "fit_model")
+      log_message(paste("Could not display detailed metrics:", e$message), "fit_model", "WARNING")
     })
     
     # Store selection results in diagnostics
