@@ -13,7 +13,7 @@ source("scripts/extract_pdfs.R")
 source("scripts/add_metadata.R")
 source("scripts/prepare_corpus.R")
 source("scripts/fit_model.R")
-source("scripts/find_dominance.R")
+source("scripts/helper_find_dominance.R")
 source("scripts/find_all_dominance.R")
 
 # Step 1: Scrape the UNFCCC website
@@ -53,4 +53,4 @@ prevalence <- ~ region + wb_income_level + is_sids + is_ldc + is_lldc
 model <- auto_cache(fit_model, corpus)
 
 # Step 6: Calculate domianance
-dominance <- auto_cache(find_all_dominance, model$data$topic_data, overwrite = TRUE)
+dominance <- auto_cache(find_all_dominance, model)
