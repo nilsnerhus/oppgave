@@ -34,12 +34,12 @@
 fit_model <- function(
     corpus,
     k = NULL,
-    k_min = 20,
-    k_max = 80, 
-    k_step = 10,
+    k_min = 5,
+    k_max = 40, 
+    k_step = 5,
     segment = 1000,
     prevalence = NULL,
-    iterations = 150,
+    iterations = 200,
     output_path = "data/topic_model.rds"
 ) {
   ## --- Housekeeping ----------------------------------------------------------
@@ -528,12 +528,12 @@ fit_model <- function(
     
     # Calculate combined score with balanced weights and stronger complexity penalty
     k_metrics$combined_score <- (
-      0.30 * k_metrics$semcoh_norm + 
-        0.30 * k_metrics$exclus_norm + 
-        0.15 * k_metrics$heldout_norm + 
+      0.20 * k_metrics$semcoh_norm + 
+        0.20 * k_metrics$exclus_norm + 
+        0.45 * k_metrics$heldout_norm + 
         0.15 * k_metrics$residual_norm +
         (if("perp_norm" %in% names(k_metrics)) 0.10 * k_metrics$perp_norm else 0)
-    ) - 0.05 * safe_normalize(k_metrics$K)  # Stronger complexity penalty
+    ) - 0.1 * safe_normalize(k_metrics$K)  # Stronger complexity penalty
     
     # Log the metrics for better understanding
     log_message("K selection metrics:", "fit_model")
