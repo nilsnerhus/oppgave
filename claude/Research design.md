@@ -42,3 +42,19 @@ This methodological framework maintains a reflexive stance on knowledge producti
 By addressing methodological considerations throughout rather than relegating them to a "limitations" section, this research design integrates critical awareness into the entire analytical process, distinguishing between the overall research framework and the specific techniques employed.
 
 The methods are defined in the code, which will be available on GitHub.
+
+### Temporal Impact Analysis
+
+In addition to cross-sectional analysis of discourse centralization, this research examines how individual documents impact the overall centralization over time. By employing a sliding window approach, we can measure the marginal impact of each new National Adaptation Plan on discourse dominance, revealing whether certain documents introduce greater fragmentation or centralization.
+
+This temporal analysis provides insights into the evolution of adaptation discourse, identifying potential turning points or trends in how knowledge diversity has changed over time. It complements the dimensional analysis by adding a dynamic perspective to what would otherwise be a static snapshot.
+
+### Dimension Ranking
+
+To systematically assess which factors best explain patterns of discourse centralization, this research employs a dimension ranking approach. For each dimension (region, income level, etc.), we calculate multiple metrics of variation including:
+
+1. Range of dominance values
+2. Standard deviation of dominance values  
+3. Coefficient of variation
+
+These metrics quantify the degree to which each dimension differentiates discourse patterns. The dimension with the greatest variation in dominance values can be considered the most explanatory factor in discourse centralization. This approach enables direct comparison of the relative importance of regional, economic, and other factors in shaping adaptation discourse.

@@ -23,3 +23,11 @@ Even through the text is the main part of the thesis, strong visualizations are 
 - Topic modelling, where the latent distrobution is highlighted
 
 The text is written in a "confident" voice. Methodological issues are presented as impacting choices and enhancing the rigour of the text, not to take away from the conclusions
+
+## Citation Approach
+
+This research deliberately limits its theoretical and methodological foundation to the literature specified in the bibliography. Rather than drawing on an ever-expanding range of sources, the analysis employs a carefully curated collection of literature that spans critical theory, adaptation governance, epistemological diversity, and methodological approaches. This bounded approach supports focused engagement with key theoretical debates while ensuring analytical coherence.
+
+Key theoretical resources include work on adaptation regimes [@paprocki2018; @dewan2022], epistemological diversity [@santos2014; @escobar2018], critical future studies [@godhe2018; @goode2017], and methodological approaches to discourse analysis [@petersen2015; @roberts2019]. These sources provide sufficient conceptual tools to analyze patterns of discourse centralization in climate adaptation planning and interpret their significance for North-South relations.
+
+By working within these methodological boundaries, the research maintains theoretical focus while still providing novel empirical and analytical contributions through the application of the Dominance Index to patterns of adaptation discourse.
