@@ -34,84 +34,137 @@ As well as plots giving the
 
 ## Raw output
 
-| dimension       | category                   | docs | raw_dominance | norm_dominance | ci_lower | ci_upper |
-| :-------------- | :------------------------- | ---: | ------------: | -------------: | -------: | -------: |
-| Overall         | All documents              |   44 |         0.265 |          0.295 |    0.257 |    0.329 |
-| region          | Europe & Central Asia      |    6 |         0.859 |          0.863 |    0.831 |    0.988 |
-| region          | Sub-Saharan Africa         |   13 |         0.684 |          0.704 |    0.598 |    0.784 |
-| region          | East Asia & Pacific        |    9 |         0.626 |          0.651 |    0.555 |    0.767 |
-| region          | Latin America & Caribbean  |    7 |         0.747 |          0.747 |    0.669 |    0.814 |
-| region          | Middle East & North Africa |    4 |         0.556 |             NA |       NA |       NA |
-| region          | South Asia                 |    5 |         0.594 |          0.594 |    0.594 |    0.594 |
-| wb_income_level | Upper middle income        |   17 |         0.393 |          0.438 |    0.373 |    0.498 |
-| wb_income_level | Lower middle income        |   15 |         0.373 |          0.391 |    0.331 |    0.460 |
-| wb_income_level | Low income                 |    9 |         0.747 |          0.749 |    0.677 |    0.913 |
-| wb_income_level | High income                |    3 |         0.659 |             NA |       NA |       NA |
-| is_sids         | No is_sids                 |   33 |         0.326 |          0.344 |    0.298 |    0.387 |
-| is_sids         | Yes is_sids                |   11 |         0.575 |          0.613 |    0.546 |    0.727 |
-| is_lldc         | No is_lldc                 |   34 |         0.289 |          0.298 |    0.248 |    0.351 |
-| is_lldc         | Yes is_lldc                |   10 |         0.477 |          0.511 |    0.418 |    0.596 |
-| is_ldc          | No is_ldc                  |   29 |         0.317 |          0.323 |    0.282 |    0.395 |
-| is_ldc          | Yes is_ldc                 |   15 |         0.350 |          0.393 |    0.327 |    0.436 |
-| Overall         | All documents              |   44 |         0.406 |          0.431 |    0.387 |    0.478 |
-| region          | Europe & Central Asia      |    6 |         0.941 |          0.937 |    0.930 |    0.996 |
-| region          | Sub-Saharan Africa         |   13 |         0.877 |          0.901 |    0.844 |    0.971 |
-| region          | East Asia & Pacific        |    9 |         0.846 |          0.872 |    0.814 |    0.938 |
-| region          | Latin America & Caribbean  |    7 |         0.896 |          0.952 |    0.902 |    0.990 |
-| region          | Middle East & North Africa |    4 |         0.769 |             NA |       NA |       NA |
-| region          | South Asia                 |    5 |         0.831 |          0.831 |    0.831 |    0.831 |
-| wb_income_level | Upper middle income        |   17 |         0.587 |          0.655 |    0.575 |    0.721 |
-| wb_income_level | Lower middle income        |   15 |         0.519 |          0.564 |    0.505 |    0.638 |
-| wb_income_level | Low income                 |    9 |         0.916 |          0.938 |    0.897 |    0.967 |
-| wb_income_level | High income                |    3 |         0.873 |             NA |       NA |       NA |
-| is_sids         | No is_sids                 |   33 |         0.482 |          0.513 |    0.452 |    0.566 |
-| is_sids         | Yes is_sids                |   11 |         0.747 |          0.781 |    0.688 |    0.876 |
-| is_lldc         | No is_lldc                 |   34 |         0.424 |          0.446 |    0.391 |    0.492 |
-| is_lldc         | Yes is_lldc                |   10 |         0.701 |          0.765 |    0.697 |    0.837 |
-| is_ldc          | No is_ldc                  |   29 |         0.466 |          0.493 |    0.437 |    0.553 |
-| is_ldc          | Yes is_ldc                 |   15 |         0.533 |          0.585 |    0.520 |    0.652 |
-| Overall         | All documents              |   44 |         0.581 |          0.609 |    0.574 |    0.637 |
-| region          | Europe & Central Asia      |    6 |         0.995 |          0.995 |    0.994 |    0.998 |
-| region          | Sub-Saharan Africa         |   13 |         0.965 |          0.978 |    0.956 |    0.997 |
-| region          | East Asia & Pacific        |    9 |         0.945 |          0.961 |    0.930 |    0.988 |
-| region          | Latin America & Caribbean  |    7 |         0.989 |          0.993 |    0.986 |    0.998 |
-| region          | Middle East & North Africa |    4 |         0.957 |             NA |       NA |       NA |
-| region          | South Asia                 |    5 |         0.957 |          0.957 |    0.957 |    0.957 |
-| wb_income_level | Upper middle income        |   17 |         0.825 |          0.852 |    0.789 |    0.916 |
-| wb_income_level | Lower middle income        |   15 |         0.707 |          0.778 |    0.707 |    0.840 |
-| wb_income_level | Low income                 |    9 |         0.986 |          0.989 |    0.983 |    0.996 |
-| wb_income_level | High income                |    3 |         0.987 |             NA |       NA |       NA |
-| is_sids         | No is_sids                 |   33 |         0.686 |          0.717 |    0.669 |    0.783 |
-| is_sids         | Yes is_sids                |   11 |         0.891 |          0.920 |    0.875 |    0.965 |
-| is_lldc         | No is_lldc                 |   34 |         0.592 |          0.630 |    0.584 |    0.681 |
-| is_lldc         | Yes is_lldc                |   10 |         0.921 |          0.927 |    0.902 |    0.981 |
-| is_ldc          | No is_ldc                  |   29 |         0.651 |          0.698 |    0.650 |    0.751 |
-| is_ldc          | Yes is_ldc                 |   15 |         0.751 |          0.807 |    0.756 |    0.871 |
+### Dominance at n=3
+
+> knitr::kable(dominance_tbl)
+
+|category                     |level        | docs| raw_dominance| norm_dominance| ci_lower| ci_upper|
+|:----------------------------|:------------|----:|-------------:|--------------:|--------:|--------:|
+|Overall                      |Category     |   44|         0.949|          0.949|    0.928|    0.970|
+|Income                       |Category     |   44|         0.949|          0.949|    0.928|    0.970|
+|- Upper middle income        |Sub-category |   17|         0.947|          0.947|    0.916|    0.978|
+|- Lower middle income        |Sub-category |   15|         0.928|          0.928|    0.880|    0.975|
+|- Low income                 |Sub-category |    9|         0.980|          0.980|    0.968|    0.992|
+|- High income                |Sub-category |    3|         0.974|          0.974|    0.934|    1.015|
+|Region                       |Category     |   44|         0.949|          0.949|    0.928|    0.970|
+|- Europe & Central Asia      |Sub-category |    6|         0.969|          0.969|    0.939|    0.999|
+|- Sub-Saharan Africa         |Sub-category |   13|         0.967|          0.967|    0.943|    0.991|
+|- East Asia & Pacific        |Sub-category |    9|         0.924|          0.924|    0.865|    0.982|
+|- Latin America & Caribbean  |Sub-category |    7|         0.941|          0.941|    0.889|    0.993|
+|- Middle East & North Africa |Sub-category |    4|         0.919|          0.919|    0.773|    1.065|
+|- South Asia                 |Sub-category |    5|         0.959|          0.959|    0.922|    0.996|
+|Geography                    |Category     |   44|         0.949|          0.949|    0.928|    0.970|
+|- SIDS                       |Sub-category |   11|         0.932|          0.932|    0.884|    0.981|
+|- LLDC                       |Sub-category |   10|         0.971|          0.971|    0.952|    0.990|
 
 
-| dimension       |   std_dev |  coef_var |
-| :-------------- | --------: | --------: |
-| economic        | 0.1673101 | 0.3648180 |
-| geography       | 0.1461587 | 0.3309083 |
-| administrative  | 0.1021375 | 0.1434655 |
-| wb_income_level | 0.1945216 | 0.3699680 |
-| region          | 0.1021375 | 0.1434655 |
-| is_sids         | 0.1897222 | 0.3965283 |
-| is_lldc         | 0.1506148 | 0.3719612 |
-| is_ldc          | 0.0495775 | 0.1385379 |
-| economic        | 0.1725277 | 0.2665751 |
-| geography       | 0.1717874 | 0.2743052 |
-| administrative  | 0.0490637 | 0.0545882 |
-| wb_income_level | 0.1950730 | 0.2712894 |
-| is_lldc         | 0.2251935 | 0.3719656 |
-| is_sids         | 0.1899524 | 0.2935383 |
-| region          | 0.0490637 | 0.0545882 |
-| is_ldc          | 0.0650389 | 0.1205730 |
-| geography       | 0.1484632 | 0.1859264 |
-| economic        | 0.1074313 | 0.1302471 |
-| administrative  | 0.0176234 | 0.0180421 |
-| is_lldc         | 0.2097476 | 0.2694530 |
-| wb_income_level | 0.1068004 | 0.1223297 |
-| is_sids         | 0.1432349 | 0.1749775 |
-| is_ldc          | 0.0768735 | 0.1021594 |
-| region          | 0.0176234 | 0.0180421 |
+> knitr::kable(variance_tbl)
+
+|category                     |level        | docs| std_dev| coef_var|
+|:----------------------------|:------------|----:|-------:|--------:|
+|Overall                      |Category     |   44|   0.071|    0.075|
+|Income                       |Category     |   44|   0.071|    0.075|
+|- Upper middle income        |Sub-category |   17|   0.066|    0.070|
+|- Lower middle income        |Sub-category |   15|   0.094|    0.101|
+|- Low income                 |Sub-category |    9|   0.018|    0.019|
+|- High income                |Sub-category |    3|   0.036|    0.037|
+|Region                       |Category     |   44|   0.071|    0.075|
+|- Europe & Central Asia      |Sub-category |    6|   0.037|    0.038|
+|- Sub-Saharan Africa         |Sub-category |   13|   0.044|    0.046|
+|- East Asia & Pacific        |Sub-category |    9|   0.089|    0.097|
+|- Latin America & Caribbean  |Sub-category |    7|   0.071|    0.075|
+|- Middle East & North Africa |Sub-category |    4|   0.149|    0.162|
+|- South Asia                 |Sub-category |    5|   0.042|    0.044|
+|Geography                    |Category     |   44|   0.071|    0.075|
+|- SIDS                       |Sub-category |   11|   0.082|    0.088|
+|- LLDC                       |Sub-category |   10|   0.030|    0.031|
+
+
+> knitr::kable(explained_tbl)
+
+|   |category                     |level        | docs| explained_var|
+|:--|:----------------------------|:------------|----:|-------------:|
+|1  |Overall                      |Category     |   44|           0.0|
+|2  |Income                       |Category     |   44|           8.1|
+|7  |Region                       |Category     |   44|           8.0|
+|14 |Geography                    |Category     |   44|           3.7|
+|3  |- Upper middle income        |Sub-category |   17|           0.0|
+|4  |- Lower middle income        |Sub-category |   15|           3.1|
+|5  |- Low income                 |Sub-category |    9|           3.9|
+|6  |- High income                |Sub-category |    3|           0.9|
+|8  |- Europe & Central Asia      |Sub-category |    6|           1.1|
+|9  |- Sub-Saharan Africa         |Sub-category |   13|           2.0|
+|10 |- East Asia & Pacific        |Sub-category |    9|           2.6|
+|11 |- Latin America & Caribbean  |Sub-category |    7|           0.2|
+|12 |- Middle East & North Africa |Sub-category |    4|           1.7|
+|13 |- South Asia                 |Sub-category |    5|           0.2|
+|15 |- SIDS                       |Sub-category |   11|           1.4|
+|16 |- LLDC                       |Sub-category |   10|           2.2|
+
+
+### Dominance at n=5
+
+> knitr::kable(dominance_tbl)
+
+|category                     |level        | docs| raw_dominance| norm_dominance| ci_lower| ci_upper|
+|:----------------------------|:------------|----:|-------------:|--------------:|--------:|--------:|
+|Overall                      |Category     |   44|         0.981|          0.981|    0.972|    0.989|
+|Income                       |Category     |   44|         0.981|          0.981|    0.972|    0.989|
+|- Upper middle income        |Sub-category |   17|         0.978|          0.978|    0.963|    0.993|
+|- Lower middle income        |Sub-category |   15|         0.975|          0.975|    0.957|    0.992|
+|- Low income                 |Sub-category |    9|         0.994|          0.994|    0.989|    0.998|
+|- High income                |Sub-category |    3|         0.992|          0.992|    0.980|    1.003|
+|Region                       |Category     |   44|         0.981|          0.981|    0.972|    0.989|
+|- Europe & Central Asia      |Sub-category |    6|         0.989|          0.989|    0.978|    1.000|
+|- Sub-Saharan Africa         |Sub-category |   13|         0.990|          0.990|    0.984|    0.997|
+|- East Asia & Pacific        |Sub-category |    9|         0.970|          0.970|    0.947|    0.992|
+|- Latin America & Caribbean  |Sub-category |    7|         0.974|          0.974|    0.944|    1.003|
+|- Middle East & North Africa |Sub-category |    4|         0.969|          0.969|    0.913|    1.026|
+|- South Asia                 |Sub-category |    5|         0.986|          0.986|    0.974|    0.999|
+|Geography                    |Category     |   44|         0.981|          0.981|    0.972|    0.989|
+|- SIDS                       |Sub-category |   11|         0.972|          0.972|    0.949|    0.995|
+|- LLDC                       |Sub-category |   10|         0.990|          0.990|    0.982|    0.997|
+
+
+> knitr::kable(variance_tbl)
+
+|category                     |level        | docs| std_dev| coef_var|
+|:----------------------------|:------------|----:|-------:|--------:|
+|Overall                      |Category     |   44|   0.029|    0.029|
+|Income                       |Category     |   44|   0.029|    0.029|
+|- Upper middle income        |Sub-category |   17|   0.031|    0.032|
+|- Lower middle income        |Sub-category |   15|   0.035|    0.036|
+|- Low income                 |Sub-category |    9|   0.007|    0.007|
+|- High income                |Sub-category |    3|   0.010|    0.010|
+|Region                       |Category     |   44|   0.029|    0.029|
+|- Europe & Central Asia      |Sub-category |    6|   0.014|    0.014|
+|- Sub-Saharan Africa         |Sub-category |   13|   0.012|    0.013|
+|- East Asia & Pacific        |Sub-category |    9|   0.034|    0.035|
+|- Latin America & Caribbean  |Sub-category |    7|   0.039|    0.041|
+|- Middle East & North Africa |Sub-category |    4|   0.057|    0.059|
+|- South Asia                 |Sub-category |    5|   0.014|    0.014|
+|Geography                    |Category     |   44|   0.029|    0.029|
+|- SIDS                       |Sub-category |   11|   0.039|    0.040|
+|- LLDC                       |Sub-category |   10|   0.012|    0.012|
+
+
+> knitr::kable(explained_tbl)
+
+|   |category                     |level        | docs| explained_var|
+|:--|:----------------------------|:------------|----:|-------------:|
+|1  |Overall                      |Category     |   44|           0.0|
+|2  |Income                       |Category     |   44|           7.1|
+|7  |Region                       |Category     |   44|          10.5|
+|14 |Geography                    |Category     |   44|           4.7|
+|3  |- Upper middle income        |Sub-category |   17|           0.5|
+|4  |- Lower middle income        |Sub-category |   15|           1.6|
+|5  |- Low income                 |Sub-category |    9|           3.9|
+|6  |- High income                |Sub-category |    3|           1.0|
+|8  |- Europe & Central Asia      |Sub-category |    6|           1.0|
+|9  |- Sub-Saharan Africa         |Sub-category |   13|           3.2|
+|10 |- East Asia & Pacific        |Sub-category |    9|           3.2|
+|11 |- Latin America & Caribbean  |Sub-category |    7|           1.0|
+|12 |- Middle East & North Africa |Sub-category |    4|           1.4|
+|13 |- South Asia                 |Sub-category |    5|           0.4|
+|15 |- SIDS                       |Sub-category |   11|           2.5|
+|16 |- LLDC                       |Sub-category |   10|           2.0|
