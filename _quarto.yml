@@ -25,7 +25,10 @@ book:
     - text/conclusion.qmd
 
 cap-location: margin
-bibliography: references/references.bib
+bibliography: 
+  - references/references.bib
+  - references/grateful-refs.bib
+
 csl: references/apa.csl
 code-overflow: wrap
 highlight-style: tango
