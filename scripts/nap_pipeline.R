@@ -58,3 +58,5 @@ model <- auto_cache(fit_model, corpus)
 
 # Step 6: Calculate domianance
 dominance <- auto_cache(find_all_dominance, model, n = 3)
+
+tables <- create_result_tables(dominance, n_value = 3)
