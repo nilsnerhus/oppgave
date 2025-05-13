@@ -34,6 +34,9 @@ code-overflow: wrap
 highlight-style: tango
 code-fold: true
 
+comments: 
+  hypothesis: TRUE
+
 execute: 
   echo: false
   warning: false
