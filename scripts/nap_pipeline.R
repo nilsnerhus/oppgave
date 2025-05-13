@@ -57,8 +57,4 @@ prevalence <- ~ region + wb_income_level + is_sids + is_ldc + is_lldc
 model <- auto_cache(fit_model, corpus)
 
 # Step 6: Calculate domianance
-dominance <- auto_cache(find_all_dominance, model)
-
-tables <- auto_cache(create_result_tables, dominance, n = 3)
-
-
+dominance <- auto_cache(find_all_dominance, model, n = 3)
