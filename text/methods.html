@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>5&nbsp; Methods: Dominance Index – 100 billion dollar COP-out</title>
+<title>5&nbsp; Methods – 100 billion dollar COP-out</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -108,7 +108,7 @@ div.csl-indent {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../text/theory.html">Research design</a></li><li class="breadcrumb-item"><a href="../text/methods.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods: Dominance Index</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../text/theory.html">Research design</a></li><li class="breadcrumb-item"><a href="../text/methods.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -205,7 +205,7 @@ div.csl-indent {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../text/methods.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods: Dominance Index</span></span></a>
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods</span></span></a>
   </div>
 </li>
       </ul>
@@ -251,17 +251,60 @@ div.csl-indent {
   <ul>
   <li><a href="#corpus-collection-and-preparation" id="toc-corpus-collection-and-preparation" class="nav-link active" data-scroll-target="#corpus-collection-and-preparation"><span class="header-section-number">5.1</span> Corpus Collection and Preparation</a></li>
   <li><a href="#structural-topic-modeling" id="toc-structural-topic-modeling" class="nav-link" data-scroll-target="#structural-topic-modeling"><span class="header-section-number">5.2</span> Structural Topic Modeling</a></li>
-  <li><a href="#dominance-index-calculation" id="toc-dominance-index-calculation" class="nav-link" data-scroll-target="#dominance-index-calculation"><span class="header-section-number">5.3</span> Dominance Index Calculation</a></li>
-  <li><a href="#interpretation" id="toc-interpretation" class="nav-link" data-scroll-target="#interpretation"><span class="header-section-number">5.4</span> Interpretation</a></li>
+  <li><a href="#dominance" id="toc-dominance" class="nav-link" data-scroll-target="#dominance"><span class="header-section-number">5.3</span> Dominance</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
+<div id="chapter-metrics" class="callout callout-style-default callout-note callout-titled">
+  <div class="callout-header d-flex align-content-center">
+    <div class="callout-icon-container">
+      <i class="callout-icon"></i>
+    </div>
+    <div class="callout-title-container">Chapter Metrics</div>
+  </div>
+  <div class="callout-body-container callout-body">
+    <p>Calculating metrics...</p>
+  </div>
+</div>
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../text/theory.html">Research design</a></li><li class="breadcrumb-item"><a href="../text/methods.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods: Dominance Index</span></a></li></ol></nav>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Get the current URL path to identify the chapter
+  const path = window.location.pathname;
+  
+  // Only show on chapter pages, not index or other pages
+  if (!path.endsWith('/index.html') && !path.endsWith('/')) {
+    // Get all paragraphs in the main content
+    const paragraphs = document.querySelectorAll('main p');
+    let text = '';
+    
+    // Concatenate the text from all paragraphs
+    paragraphs.forEach(p => {
+      text += p.textContent + ' ';
+    });
+    
+    // Calculate metrics
+    const charCount = text.length;
+    const pages = (charCount / 2400).toFixed(0);
+    const percentage = ((charCount / 24000) * 100).toFixed(1);
+    
+    // Update the metrics display
+    document.querySelector('#chapter-metrics .callout-body').innerHTML = 
+      `<p>Current length: <strong>${pages} pages</strong> (${percentage}% of target)</p>`;
+    
+  } else {
+    // Hide the metrics box if not on a chapter page
+    const metrics = document.getElementById('chapter-metrics');
+    if (metrics) metrics.style.display = 'none';
+  }
+});
+</script>
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../text/theory.html">Research design</a></li><li class="breadcrumb-item"><a href="../text/methods.html"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span id="sec-methods" class="quarto-section-identifier"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods: Dominance Index</span></span></h1>
+<h1 class="title"><span id="sec-methods" class="quarto-section-identifier"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods</span></span></h1>
 </div>
 
 
@@ -282,17 +325,16 @@ div.csl-indent {
 <p>Climate adaptation discourse serves as a site of contested futures where epistemological and ontological assumptions shape which adaptation pathways are considered possible, legitimate, or desirable. To empirically examine this discourse, I develop a methodological approach centered around the “Dominance Index”—a measurement tool for quantifying the degree to which adaptation discourse is concentrated around particular topics or perspectives.</p>
 </blockquote>
 <p>This methodology bridges critical theoretical perspectives with quantitative text analysis, creating an interdisciplinary approach that can systematically analyze discourse patterns across a substantial corpus of documents. The approach moves beyond assumptions of either complete homogeneity or radical diversity in adaptation discourse, enabling empirical assessment of how discourse reflects epistemological plurality or monoculture across different contexts.</p>
-<p>The Dominance Index measures the distribution of topics across documents and document groups, identifying patterns of concentration or dispersion. Topic distribution serves as a proxy for epistemological diversity, though this requires careful interpretation. This approach does not capture all elements of discourse such as rhetorical structures, implicit assumptions, or visual elements that might not be reflected in word co-occurrence patterns <span class="citation" data-cites="roberts2019">(<a href="conclusion.html#ref-roberts2019" role="doc-biblioref">Roberts et al., 2019</a>)</span>.</p>
-<p>Rather than assuming either complete uniformity or radical diversity, this approach enables empirical assessment of the degree to which discourse reflects epistemological plurality or monoculture across different contexts. It provides a quantitative foundation for examining whether adaptation discourse is characterized by a rich diversity of perspectives or dominated by particular ways of knowing and conceptualizing climate challenges.</p>
+<p>The Dominance Index measures the distribution of topics across documents and document groups, identifying patterns of concentration or dispersion. Topic distribution serves as a proxy for epistemological diversity, though this requires careful interpretation. Rather than assuming either complete uniformity or radical diversity, this approach enables empirical assessment of the degree to which discourse reflects epistemological plurality or monoculture across different contexts. It provides a quantitative foundation for examining whether adaptation discourse is characterized by a rich diversity of perspectives or dominated by particular ways of knowing and conceptualizing climate challenges.</p>
 <section id="corpus-collection-and-preparation" class="level2" data-number="5.1">
 <h2 data-number="5.1" class="anchored" data-anchor-id="corpus-collection-and-preparation"><span class="header-section-number">5.1</span> Corpus Collection and Preparation</h2>
 <blockquote class="blockquote">
-<p>National Adaptation Plans provide a revealing window into adaptation discourse, requiring systematic processing to transform official policy documents into data suitable for computational analysis.</p>
+<p>National Adaptation Plans provide a revealing window into how countries frame their policies. To make the texts comparable, they have to be processed.</p>
 </blockquote>
 <p>The corpus consists of 44 English-language National Adaptation Plans (NAPs) submitted to the UNFCCC. These documents represent a diverse range of countries across different regions, income levels, and vulnerability profiles. Geographic distribution spans Africa, Asia-Pacific, Latin America and Caribbean, and Europe, with additional categories including Small Island Developing States (SIDS) and Landlocked Developing Countries (LLDCs).</p>
 <p>The focus on English-language documents introduces a methodological constraint, potentially skewing analysis toward Anglophone countries or those with stronger ties to international institutions. This limitation means the analysis cannot claim to represent the full global landscape of adaptation discourse, but rather offers insights into patterns within the English-language subset of NAPs <span class="citation" data-cites="wright2023">(<a href="conclusion.html#ref-wright2023" role="doc-biblioref">Wright et al., 2023</a>)</span>. Wright and colleagues (2023) used a similar approach in their analysis of how countries frame climate change in UNFCCC documentation, noting the limitations but also the valuable insights that can be gained from systematic analysis of official climate policy documents.</p>
 <p>Document preparation involves multiple stages of processing to convert raw PDF documents into a format suitable for computational analysis. The process begins with text extraction from PDF documents, which presents technical challenges including handling complex formatting, tables, figures, and inconsistent document structures. Once extracted, the text undergoes a systematic preprocessing pipeline to prepare it for analysis.</p>
-<p>First, the text is tokenized—broken into individual words or tokens, which serve as the basic units of analysis. This process includes removing punctuation, standardizing capitalization, and handling hyphenation. Next, lemmatization reduces words to their base or dictionary form, treating variations of the same word as a single unit. For example, “adapting,” “adapts,” and “adapted” all become “adapt.” This reduces dimensionality and improves the signal-to-noise ratio in the data.</p>
+<p>First, the text is tokenized—broken into individual words or tokens, which serve as the basic units of analysis. This process includes removing punctuation, standardizing capitalization, and handling hyphenation. Next, lemmatization reduces words to their base or dictionary form, treating variations of the same word as a single unit.</p>
 <p>The tokens then undergo validation against a comprehensive dictionary of 120,644 English words. This step is crucial for removing formatting artifacts, names, and non-English text that might have been introduced during PDF extraction. The whitelist approach during token validation is particularly important for handling the challenges of working with a PDF corpus, enabling meaningful comparison across documents by removing national acronyms, names, and formatting issues.</p>
 <p>Following token validation, the process removes geographic stopwords—country and city names that could skew the analysis by overemphasizing geographic references. Standard stopword removal then filters common words with little semantic value, such as “the,” “is,” and “and.” Finally, frequency filtering removes words appearing in fewer than 2% or more than 70% of documents, focusing the analysis on terms that are neither so rare as to be idiosyncratic nor so common as to be uninformative. This approach to frequency filtering follows established practice in computational text analysis <span class="citation" data-cites="silge2017">(<a href="conclusion.html#ref-silge2017" role="doc-biblioref">Silge &amp; Robinson, 2017</a>)</span>.</p>
 <p>Documents must contain at least 50 tokens after preprocessing to be included in the analysis. This threshold ensures that each document contains sufficient text for meaningful topic modeling, while avoiding the risk that very short documents might distort the analysis. One document became too short during processing and was removed from the corpus, resulting in the final count of 44 documents.</p>
@@ -301,48 +343,32 @@ div.csl-indent {
 <section id="structural-topic-modeling" class="level2" data-number="5.2">
 <h2 data-number="5.2" class="anchored" data-anchor-id="structural-topic-modeling"><span class="header-section-number">5.2</span> Structural Topic Modeling</h2>
 <blockquote class="blockquote">
-<p>Structural topic modeling identifies latent patterns in adaptation discourse and examines how topic prevalence varies across different document characteristics, allowing for systematic comparison while acknowledging the interpretive nature of topic identification.</p>
+<p>Structural topic modeling finds latent topics and measures how they are distributed across the corpus.</p>
 </blockquote>
 <p>To identify patterns in how adaptation is conceptualized across different NAPs, I employ structural topic modeling (STM), a computational technique that identifies latent topics in a corpus and allows for the incorporation of document metadata as predictors of topic prevalence. Unlike simpler forms of topic modeling, STM enables examination of how topic prevalence varies with document characteristics like region or income level, making it particularly suitable for comparative analysis of adaptation discourse <span class="citation" data-cites="roberts2019">(<a href="conclusion.html#ref-roberts2019" role="doc-biblioref">Roberts et al., 2019</a>)</span>.</p>
 <p>Topic models emerged as computational methods to discover underlying patterns in text data without requiring supervision or labeled examples. Unlike modern AI language models that focus on predicting or generating text, topic modeling aims to uncover the hidden thematic structure of documents. The Structural Topic Model (STM) employed in this analysis treats documents as “bags of words” where word order is disregarded but co-occurrence patterns reveal meaningful latent topics.</p>
 <p>The fundamental assumption in topic modeling is that documents are mixtures of topics, and topics are probability distributions over words. Each document can be described as a mixture of topics, with certain topics more prevalent than others in each document. These latent topics aren’t explicitly stated in the text but emerge from statistical patterns of word co-occurrence. What distinguishes STM from other topic modeling approaches is its ability to incorporate document metadata as covariates that can affect topic prevalence, allowing examination of how topics vary with document characteristics like region or income level <span class="citation" data-cites="roberts2016">(<a href="conclusion.html#ref-roberts2016" role="doc-biblioref">Roberts et al., 2016</a>)</span>.</p>
-<p>The STM algorithm processes the document-term matrix to identify clusters of words that frequently co-occur, representing coherent topics within the corpus. Mathematically, STM represents each document as a mixture of k topics, with each topic defined as a distribution over the vocabulary. The model simultaneously estimates topic content (the words associated with each topic) and topic prevalence (the proportion of each document devoted to each topic) using a variational expectation-maximization algorithm.</p>
 <p>A key methodological decision in topic modeling is determining the appropriate number of topics (k). Too few topics may obscure important distinctions in the corpus, while too many may result in incoherent or redundant topics that are difficult to interpret. I employ a data-driven approach to identify the optimal number of topics, using several metrics: semantic coherence (measuring how frequently high-probability words for a topic co-occur), exclusivity (measuring how distinctive topics are from one another), and held-out likelihood (measuring the model’s ability to predict text not used in training). This optimization process identifies 15 as the optimal number of topics, providing sufficient granularity to capture meaningful variation while avoiding overly specific or redundant topics <span class="citation" data-cites="egami2022">(<a href="conclusion.html#ref-egami2022" role="doc-biblioref">Egami et al., 2022</a>)</span>.</p>
-<p>The final model is trained using the spectral initialization method, which provides more consistent results than random initialization, and with an appropriate number of iterations of the variational expectation-maximization algorithm to ensure convergence. This approach follows best practices in topic modeling as outlined by Roberts et al.&nbsp;(2019), who emphasize the importance of model selection and validation in ensuring that identified topics are both coherent and useful for substantive interpretation.</p>
+<p>The final model is trained using the spectral initialization method, which provides more consistent results than random initialization, and with an appropriate number of iterations of the variational expectation-maximization algorithm to ensure convergence. This approach follows best practices in topic modeling as outlined by <span class="citation" data-cites="roberts2019">Roberts et al. (<a href="conclusion.html#ref-roberts2019" role="doc-biblioref">2019</a>)</span>, who emphasize the importance of model selection and validation in ensuring that identified topics are both coherent and useful for substantive interpretation.</p>
 <p>It’s important to recognize what topic models can and cannot tell us. Topics identified through this process are statistical constructs representing patterns of word co-occurrence. They do not inherently align with human-intuitive conceptual categories, nor do they capture all aspects of discourse such as narrative structure, rhetorical devices, or implicit assumptions. The topics are also specific to this corpus—they represent patterns within the NAPs rather than universal categories of adaptation discourse.</p>
-<p>The resulting topic model provides several outputs for analysis: topic-word distributions, which help interpret what each topic represents; document-topic proportions, which form the basis for the Dominance Index; metadata correlations, which help identify patterns across different contexts; and a topic correlation matrix, which reveals broader thematic clusters within the discourse.</p>
-<p>These outputs enable systematic analysis of patterns in adaptation discourse across different contexts. Rather than imposing predetermined categories or frameworks, this approach allows patterns to emerge inductively from the text while still enabling structured comparison through metadata. The topic model thus serves as a bridge between the unstructured text of the NAPs and the more structured analysis of discourse centralization through the Dominance Index.</p>
+<p>These outputs enable systematic analysis of patterns in adaptation discourse across different contexts. Rather than imposing predetermined categories or frameworks, this approach allows patterns to emerge inductively from the text while still enabling structured comparison through metadata.</p>
 </section>
-<section id="dominance-index-calculation" class="level2" data-number="5.3">
-<h2 data-number="5.3" class="anchored" data-anchor-id="dominance-index-calculation"><span class="header-section-number">5.3</span> Dominance Index Calculation</h2>
+<section id="dominance" class="level2" data-number="5.3">
+<h2 data-number="5.3" class="anchored" data-anchor-id="dominance"><span class="header-section-number">5.3</span> Dominance</h2>
 <blockquote class="blockquote">
-<p>The Dominance Index quantifies discourse centralization by measuring the concentration of top topics across different document groups, enabling systematic comparison of adaptation discourses across regions and income levels.</p>
+<p>The index quantifies discourse centralization by measuring how much of the discourse is dominated by the top topics, and how much of the variance that can be explained.</p>
 </blockquote>
 <p>To quantify the degree of discourse centralization, I develop a Dominance Index that measures how concentrated or dispersed topic distributions are across different groups of documents. A high Dominance Index indicates that a few topics dominate the discourse, suggesting a more homogeneous conceptualization of adaptation, while a low Dominance Index indicates a more even distribution of topics, suggesting greater diversity in conceptualization.</p>
 <p>The Dominance Index focuses specifically on the concentration of the top 3 topics in a given group of documents. This approach directly addresses the core question of whether adaptation discourse is dominated by a small number of topics or distributed across many different topics. The calculation process involves several systematic steps.</p>
 <p>First, documents are grouped according to relevant characteristics, such as all documents from a particular region or income level. For each topic, the average proportion across all documents in the group is calculated, providing the average prevalence of each topic within that group. Topics are then ranked by their average proportion in descending order to identify the most prevalent topics in the group. The proportions of the top three topics are summed to determine what fraction of the discourse they represent collectively. Finally, this sum is normalized to a 0-1 range, where 0 represents a perfectly even distribution across all topics and 1 represents complete concentration in a single topic.</p>
-<p>The mathematical formula for the Dominance Index (DI) can be expressed as:</p>
-<p>DI = (sum of proportions for top 3 topics - minimum possible sum) / (maximum possible sum - minimum possible sum)</p>
-<p>Where the minimum possible sum would be 3 * (1/15) = 0.2 in a perfectly even distribution across all 15 topics, and the maximum possible sum would be 1 (if all discourse were concentrated in a single topic). This normalization ensures that the Dominance Index is comparable across different groupings and contexts.</p>
-<p>The Dominance Index is conceptually similar to concentration measures used in ecology and economics, focusing on the degree to which a distribution is dominated by its most prevalent elements. This approach differs from entropy-based measures that capture overall evenness by specifically emphasizing the concentration of dominant topics, which more directly addresses questions of discourse centralization and power dynamics in knowledge production <span class="citation" data-cites="roberts2020">(<a href="conclusion.html#ref-roberts2020" role="doc-biblioref">Roberts et al., 2020</a>)</span>. Roberts and colleagues (2020) employ a similar approach in their analysis of text-based causal inference, demonstrating the utility of focused metrics that capture specific aspects of textual distributions.</p>
-<p>To ensure robustness, I implement several controls in the Dominance Index calculation. Document length normalization calculates topic proportions as fractions of each document, controlling for differences in document length. Jackknife resampling for groups with more than five documents assesses the stability of the Dominance Index and calculates confidence intervals. Sample size thresholds flag results from very small groups (fewer than three documents) as potentially less reliable, encouraging cautious interpretation. These controls help ensure that the Dominance Index reflects genuine patterns of discourse centralization rather than artifacts of corpus composition or document length variation.</p>
+<p>The Dominance Index is conceptually similar to concentration measures used in ecology and economics, focusing on the degree to which a distribution is dominated by its most prevalent elements. This approach differs from entropy-based measures that capture overall evenness by specifically emphasizing the concentration of dominant topics, which more directly addresses questions of discourse centralization and power dynamics in knowledge production <span class="citation" data-cites="roberts2020">(<a href="conclusion.html#ref-roberts2020" role="doc-biblioref">Roberts et al., 2020</a>)</span>. <span class="citation" data-cites="roberts2020">Roberts et al. (<a href="conclusion.html#ref-roberts2020" role="doc-biblioref">2020</a>)</span> employ a similar approach in their analysis of text-based causal inference, demonstrating the utility of focused metrics that capture specific aspects of textual distributions.</p>
 <p>The Dominance Index enables systematic comparison of discourse centralization across different groupings, including regional groups (Africa, Asia-Pacific, Latin America and Caribbean, Europe), income levels (Low, Lower-middle, Upper-middle, High), and special status designations (SIDS, LLDCs). This comparative approach helps identify factors that might influence the degree of epistemological diversity in adaptation discourse.</p>
 <p>However, it’s important to specify what the Dominance Index can and cannot tell us. The index measures the concentration of topics in a document group, which serves as a proxy for discourse centralization. A higher concentration suggests a more centralized discourse, while a lower concentration suggests a more diverse discourse. But this metric does not directly measure epistemological diversity or the substantive content of the discourse. Topic diversity is not necessarily equivalent to epistemological diversity—a discourse might include many different topics while still operating within a single epistemological framework.</p>
-</section>
-<section id="interpretation" class="level2" data-number="5.4">
-<h2 data-number="5.4" class="anchored" data-anchor-id="interpretation"><span class="header-section-number">5.4</span> Interpretation</h2>
-<blockquote class="blockquote">
-<p>The analytical framework for interpreting Dominance Index results focuses on identifying which dimensions best explain variation in discourse centralization, connecting statistical patterns to their theoretical implications for adaptation governance.</p>
-</blockquote>
 <p>The interpretation of Dominance Index results employs a variance decomposition approach that quantifies how much of the total variation in discourse centralization is explained by different dimensions such as region, income level, and special status designations. This analytical method helps determine which factors most strongly shape adaptation discourse patterns, providing insight into whether discourse aligns more closely with economic positioning, regional institutional frameworks, or particular geographic vulnerabilities <span class="citation" data-cites="roberts2019">(<a href="conclusion.html#ref-roberts2019" role="doc-biblioref">Roberts et al., 2019</a>)</span>.</p>
 <p>For each dimension (region, income level, etc.), the approach calculates the proportion of total variance explained through an ANOVA-like framework. This involves comparing the between-group variance (differences in Dominance Index values across categories within a dimension) to the total variance in the corpus. The dimension that explains the greatest proportion of variance can be considered the most influential factor in shaping discourse centralization patterns.</p>
 <p>For categorical dimensions like income level or region, the analysis uses a formula-based approach that calculates how much of the overall variation in Dominance Index values can be attributed to differences between categories. This involves calculating both the total variance across all documents and the variance between group means, then determining the ratio of between-group variance to total variance. The resulting percentage represents the proportion of variance explained by that dimension.</p>
 <p>For binary dimensions like special status designations (SIDS, LLDCs), the approach calculates the contribution of each designation to the overall variance. This involves comparing the mean Dominance Index values for documents with and without each designation, weighted by the proportion of documents in each category. The weighted squared differences between group means and the overall mean provide a measure of how much variance is explained by each binary distinction.</p>
 <p>The statistical significance of differences in Dominance Index values between groups is assessed through confidence intervals generated by jackknife resampling. Non-overlapping confidence intervals provide evidence that observed differences reflect meaningful variations in discourse patterns rather than random fluctuation or sampling error. This approach is particularly important given the relatively small number of documents in some groupings <span class="citation" data-cites="yakir2019">(<a href="conclusion.html#ref-yakir2019" role="doc-biblioref">Yakir, 2019</a>)</span>.</p>
-<p>To complement the variance decomposition approach, the analysis also examines the specific topics that dominate in different contexts, connecting the quantitative patterns to qualitative differences in discourse content. This helps determine whether differences in Dominance Index values reflect substantively different approaches to adaptation or merely variations in emphasis within a broadly similar framework.</p>
-<p>The interpretation explicitly considers alternative explanations for observed patterns. For example, if regional groups show different Dominance Index values, this could reflect genuinely different epistemological traditions across regions, institutional factors such as regional development banks or policy frameworks, historical patterns of knowledge exchange and policy diffusion, or artifacts of the corpus composition or analytical method. By considering these alternatives, the analysis develops more robust interpretations that acknowledge the complexity of factors shaping adaptation discourse.</p>
-<p>This analytical framework allows for systematic examination of how discourse centralization patterns relate to different contextual factors, moving beyond simple description to identify potential explanatory variables. The results of this analysis, presented in the following chapter, provide insight into which dimensions of context—economic, regional, or geographic—most strongly shape how adaptation is conceptualized in official policy documents. These insights have implications for understanding power dynamics in climate governance and the degree to which adaptation discourse reflects epistemological diversity or monoculture across different contexts.</p>
-<p>Through this interpretive approach, the analysis connects the quantitative patterns revealed by the Dominance Index to broader questions about epistemological diversity, power relations, and future-making in climate adaptation governance. While the methodology cannot definitively establish causal relationships, it provides a systematic framework for examining patterns of discourse centralization and their potential implications for just and effective adaptation.</p>
 
 
 <div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list" style="display: none">

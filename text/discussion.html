@@ -240,7 +240,7 @@ div.csl-indent {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../text/methods.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods: Dominance Index</span></span></a>
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods</span></span></a>
   </div>
 </li>
       </ul>
@@ -292,6 +292,50 @@ div.csl-indent {
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
+<div id="chapter-metrics" class="callout callout-style-default callout-note callout-titled">
+  <div class="callout-header d-flex align-content-center">
+    <div class="callout-icon-container">
+      <i class="callout-icon"></i>
+    </div>
+    <div class="callout-title-container">Chapter Metrics</div>
+  </div>
+  <div class="callout-body-container callout-body">
+    <p>Calculating metrics...</p>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Get the current URL path to identify the chapter
+  const path = window.location.pathname;
+  
+  // Only show on chapter pages, not index or other pages
+  if (!path.endsWith('/index.html') && !path.endsWith('/')) {
+    // Get all paragraphs in the main content
+    const paragraphs = document.querySelectorAll('main p');
+    let text = '';
+    
+    // Concatenate the text from all paragraphs
+    paragraphs.forEach(p => {
+      text += p.textContent + ' ';
+    });
+    
+    // Calculate metrics
+    const charCount = text.length;
+    const pages = (charCount / 2400).toFixed(0);
+    const percentage = ((charCount / 24000) * 100).toFixed(1);
+    
+    // Update the metrics display
+    document.querySelector('#chapter-metrics .callout-body').innerHTML = 
+      `<p>Current length: <strong>${pages} pages</strong> (${percentage}% of target)</p>`;
+    
+  } else {
+    // Hide the metrics box if not on a chapter page
+    const metrics = document.getElementById('chapter-metrics');
+    if (metrics) metrics.style.display = 'none';
+  }
+});
+</script>
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../text/findings.html">Analysis</a></li><li class="breadcrumb-item"><a href="../text/discussion.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Discussion</span></a></li></ol></nav>
 <div class="quarto-title">

@@ -205,7 +205,7 @@ div.csl-indent {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../text/methods.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods: Dominance Index</span></span></a>
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods</span></span></a>
   </div>
 </li>
       </ul>
@@ -249,16 +249,59 @@ div.csl-indent {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#climate-governance" id="toc-climate-governance" class="nav-link active" data-scroll-target="#climate-governance"><span class="header-section-number">2.1</span> Climate governance</a></li>
-  <li><a href="#mitigation" id="toc-mitigation" class="nav-link" data-scroll-target="#mitigation"><span class="header-section-number">2.2</span> Mitigation</a></li>
-  <li><a href="#adaptation" id="toc-adaptation" class="nav-link" data-scroll-target="#adaptation"><span class="header-section-number">2.3</span> Adaptation</a></li>
-  <li><a href="#loss-and-damage" id="toc-loss-and-damage" class="nav-link" data-scroll-target="#loss-and-damage"><span class="header-section-number">2.4</span> Loss and damage</a></li>
-  <li><a href="#unfccc-negotiations" id="toc-unfccc-negotiations" class="nav-link" data-scroll-target="#unfccc-negotiations"><span class="header-section-number">2.5</span> UNFCCC Negotiations</a></li>
+  <li><a href="#mitigation" id="toc-mitigation" class="nav-link active" data-scroll-target="#mitigation"><span class="header-section-number">2.1</span> Mitigation</a></li>
+  <li><a href="#adaptation" id="toc-adaptation" class="nav-link" data-scroll-target="#adaptation"><span class="header-section-number">2.2</span> Adaptation</a></li>
+  <li><a href="#loss-and-damage" id="toc-loss-and-damage" class="nav-link" data-scroll-target="#loss-and-damage"><span class="header-section-number">2.3</span> Loss and damage</a></li>
+  <li><a href="#unfccc-negotiations" id="toc-unfccc-negotiations" class="nav-link" data-scroll-target="#unfccc-negotiations"><span class="header-section-number">2.4</span> UNFCCC Negotiations</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
+<div id="chapter-metrics" class="callout callout-style-default callout-note callout-titled">
+  <div class="callout-header d-flex align-content-center">
+    <div class="callout-icon-container">
+      <i class="callout-icon"></i>
+    </div>
+    <div class="callout-title-container">Chapter Metrics</div>
+  </div>
+  <div class="callout-body-container callout-body">
+    <p>Calculating metrics...</p>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Get the current URL path to identify the chapter
+  const path = window.location.pathname;
+  
+  // Only show on chapter pages, not index or other pages
+  if (!path.endsWith('/index.html') && !path.endsWith('/')) {
+    // Get all paragraphs in the main content
+    const paragraphs = document.querySelectorAll('main p');
+    let text = '';
+    
+    // Concatenate the text from all paragraphs
+    paragraphs.forEach(p => {
+      text += p.textContent + ' ';
+    });
+    
+    // Calculate metrics
+    const charCount = text.length;
+    const pages = (charCount / 2400).toFixed(0);
+    const percentage = ((charCount / 24000) * 100).toFixed(1);
+    
+    // Update the metrics display
+    document.querySelector('#chapter-metrics .callout-body').innerHTML = 
+      `<p>Current length: <strong>${pages} pages</strong> (${percentage}% of target)</p>`;
+    
+  } else {
+    // Hide the metrics box if not on a chapter page
+    const metrics = document.getElementById('chapter-metrics');
+    if (metrics) metrics.style.display = 'none';
+  }
+});
+</script>
 
 <header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../text/context.html">Climate adaptation</a></li><li class="breadcrumb-item"><a href="../text/context.html"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Context</span></a></li></ol></nav>
 <div class="quarto-title">
@@ -279,8 +322,6 @@ div.csl-indent {
 </header>
 
 
-<section id="climate-governance" class="level2" data-number="2.1">
-<h2 data-number="2.1" class="anchored" data-anchor-id="climate-governance"><span class="header-section-number">2.1</span> Climate governance</h2>
 <blockquote class="blockquote">
 <p>Climate adaptation is becoming a central part of development governance, where the goal is to finesse the three pillars to get the optimal political economy outcome.</p>
 </blockquote>
@@ -289,9 +330,8 @@ div.csl-indent {
 <p>The CBDR principle fundamentally shaped North-South dynamics in climate governance by establishing differential obligations between developed countries (listed in Annex I and II of the convention) and developing countries. This differentiation created a framework where industrialized nations were expected to take the lead in emissions reductions while also providing financial and technological support to developing countries <span class="citation" data-cites="persson2014">(<a href="conclusion.html#ref-persson2014" role="doc-biblioref">Persson &amp; Remling, 2014</a>)</span>. These power relations have remained central to climate negotiations, even as the governance architecture has evolved to include adaptation and loss and damage alongside mitigation.</p>
 <p>Climate governance has evolved through three distinct pillars: mitigation (established at Kyoto in 1997), adaptation (formalized at Cancun in 2010), and loss and damage (incorporated in the Paris Agreement in 2015). This evolution reflects growing recognition of climate impacts and the inadequacy of mitigation alone, while also revealing shifting North-South dynamics in how climate challenges are conceptualized and addressed <span class="citation" data-cites="roberts2015">(<a href="conclusion.html#ref-roberts2015" role="doc-biblioref">Roberts &amp; Huq, 2015</a>)</span>.</p>
 <p>The adaptation funding landscape includes various mechanisms such as the Green Climate Fund, Adaptation Fund, and the Rio markers system for tracking adaptation finance. Despite pledges like the “$100 billion promise” and the recent $300 billion commitment at COP29 in Baku (2024), actual disbursement patterns reveal significant shortfalls and geographical and sectoral imbalances <span class="citation" data-cites="stern2022 cpi2023">(<a href="conclusion.html#ref-cpi2023" role="doc-biblioref">CPI, 2023</a>; <a href="conclusion.html#ref-stern2022" role="doc-biblioref">Stern et al., 2022</a>)</span>. These financial frameworks involve complex interactions between public and private financing models, multilateral development banks, bilateral donor frameworks, national governance structures, and non-state actors.</p>
-</section>
-<section id="mitigation" class="level2" data-number="2.2">
-<h2 data-number="2.2" class="anchored" data-anchor-id="mitigation"><span class="header-section-number">2.2</span> Mitigation</h2>
+<section id="mitigation" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="mitigation"><span class="header-section-number">2.1</span> Mitigation</h2>
 <blockquote class="blockquote">
 <p>Climate mitigation emerged as the first pillar of climate governance, establishing North-South power dynamics through differential responsibilities that would later shape adaptation approaches.</p>
 </blockquote>
@@ -303,8 +343,8 @@ div.csl-indent {
 <p>The Paris Agreement, adopted at COP21 in 2015, marked a significant shift in the mitigation approach. Rather than maintaining the strict binary between developed and developing country obligations, Paris introduced a universal framework where all countries contribute through “nationally determined contributions” (NDCs) while still acknowledging differential capabilities and responsibilities <span class="citation" data-cites="hall2018">(<a href="conclusion.html#ref-hall2018" role="doc-biblioref">Hall &amp; Persson, 2018</a>)</span>. This hybrid approach attempted to resolve long-standing tensions in climate governance by allowing countries to determine their own contributions based on national circumstances while maintaining the principle of common but differentiated responsibilities.</p>
 <p>However, this flexibility came at the cost of ambition, with the first round of NDCs collectively putting the world on track for approximately 3°C of warming rather than the Agreement’s 1.5-2°C goal. This ambition gap has reinforced critiques that the climate regime prioritizes political feasibility and consensus over the transformative action needed to address the scale of the climate crisis <span class="citation" data-cites="williams2020">(<a href="conclusion.html#ref-williams2020" role="doc-biblioref">Williams, 2020</a>)</span>.</p>
 </section>
-<section id="adaptation" class="level2" data-number="2.3">
-<h2 data-number="2.3" class="anchored" data-anchor-id="adaptation"><span class="header-section-number">2.3</span> Adaptation</h2>
+<section id="adaptation" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="adaptation"><span class="header-section-number">2.2</span> Adaptation</h2>
 <blockquote class="blockquote">
 <p>Adaptation evolved from a peripheral concern to a central pillar as climate impacts became unavoidable, creating a distinctive site where North-South relations materialize through funding mechanisms and institutional arrangements.</p>
 </blockquote>
@@ -317,8 +357,8 @@ div.csl-indent {
 <p>Adaptation funding is further complicated by challenges in defining and measuring adaptation outcomes, attributing climate impacts, and ensuring funds reach the most vulnerable communities <span class="citation" data-cites="persson2014">(<a href="conclusion.html#ref-persson2014" role="doc-biblioref">Persson &amp; Remling, 2014</a>)</span>. The absence of universally agreed metrics for assessing adaptation effectiveness—unlike mitigation, where greenhouse gas emissions provide a common metric—creates challenges for prioritizing investments and demonstrating results. These measurement challenges are not merely technical but reflect deeper questions about what counts as successful adaptation and who gets to define success.</p>
 <p>The adaptation governance landscape is further complicated by its multi-level nature, with actions required at global, regional, national, and local scales. International frameworks provide guidance and resources, but adaptation is inherently context-specific, requiring localized assessment of vulnerabilities and appropriate responses <span class="citation" data-cites="ireland2010">(<a href="conclusion.html#ref-ireland2010" role="doc-biblioref">Ireland, 2010</a>)</span>. This creates challenges for coherence across scales and for ensuring that global policies and financing mechanisms effectively support local adaptation needs. The tension between global standardization and local specificity reflects broader dynamics in North-South relations, where Northern-dominated international institutions establish frameworks that may not adequately reflect the diverse realities and priorities of communities in the Global South.</p>
 </section>
-<section id="loss-and-damage" class="level2" data-number="2.4">
-<h2 data-number="2.4" class="anchored" data-anchor-id="loss-and-damage"><span class="header-section-number">2.4</span> Loss and damage</h2>
+<section id="loss-and-damage" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="loss-and-damage"><span class="header-section-number">2.3</span> Loss and damage</h2>
 <blockquote class="blockquote">
 <p>Loss and damage represents the recognition that some climate impacts exceed adaptation limits, introducing contested questions of liability and compensation that directly challenge conventional development frameworks.</p>
 </blockquote>
@@ -332,8 +372,8 @@ div.csl-indent {
 <p>The evolution of loss and damage governance illustrates how North-South power dynamics shape climate governance even as new institutional arrangements emerge. While developed countries have reluctantly accepted the principle of providing support for loss and damage, they have consistently worked to avoid language around compensation or liability that could create legal obligations based on historical emissions <span class="citation" data-cites="roberts2018">(<a href="conclusion.html#ref-roberts2018" role="doc-biblioref">Roberts &amp; Pelling, 2018</a>)</span>. Meanwhile, vulnerable countries continue to advocate for frameworks that acknowledge historical responsibility and provide predictable, adequate finance for addressing loss and damage.</p>
 <p>These tensions are not merely rhetorical but have material consequences for how loss and damage is addressed and funded. The framing of loss and damage as either a matter of justice and compensation or as a technical challenge of risk management shapes which interventions are prioritized, how resources are allocated, and ultimately who bears the costs of climate impacts that cannot be avoided through mitigation or adaptation <span class="citation" data-cites="vanhala2016">(<a href="conclusion.html#ref-vanhala2016" role="doc-biblioref">Vanhala &amp; Hestbaek, 2016</a>)</span>.</p>
 </section>
-<section id="unfccc-negotiations" class="level2" data-number="2.5">
-<h2 data-number="2.5" class="anchored" data-anchor-id="unfccc-negotiations"><span class="header-section-number">2.5</span> UNFCCC Negotiations</h2>
+<section id="unfccc-negotiations" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="unfccc-negotiations"><span class="header-section-number">2.4</span> UNFCCC Negotiations</h2>
 <blockquote class="blockquote">
 <p>UNFCCC adaptation negotiations reveal fundamental tensions between technical framing and justice concerns, with ambiguous language and procedural complexity often masking power imbalances in how adaptation is conceptualized and funded.</p>
 </blockquote>

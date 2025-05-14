@@ -185,7 +185,7 @@ ul.task-list li input[type="checkbox"] {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../text/methods.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods: Dominance Index</span></span></a>
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods</span></span></a>
   </div>
 </li>
       </ul>
@@ -229,14 +229,57 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul>
-  <li><a href="#climate-justice" id="toc-climate-justice" class="nav-link active" data-scroll-target="#climate-justice"><span class="header-section-number">1.1</span> Climate justice</a></li>
-  <li><a href="#scope" id="toc-scope" class="nav-link" data-scroll-target="#scope"><span class="header-section-number">1.2</span> Scope</a></li>
-  <li><a href="#disposition" id="toc-disposition" class="nav-link" data-scroll-target="#disposition"><span class="header-section-number">1.3</span> Disposition</a></li>
+  <li><a href="#scope" id="toc-scope" class="nav-link active" data-scroll-target="#scope"><span class="header-section-number">1.1</span> Scope</a></li>
+  <li><a href="#disposition" id="toc-disposition" class="nav-link" data-scroll-target="#disposition"><span class="header-section-number">1.2</span> Disposition</a></li>
   </ul>
 </nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
+<div id="chapter-metrics" class="callout callout-style-default callout-note callout-titled">
+  <div class="callout-header d-flex align-content-center">
+    <div class="callout-icon-container">
+      <i class="callout-icon"></i>
+    </div>
+    <div class="callout-title-container">Chapter Metrics</div>
+  </div>
+  <div class="callout-body-container callout-body">
+    <p>Calculating metrics...</p>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Get the current URL path to identify the chapter
+  const path = window.location.pathname;
+  
+  // Only show on chapter pages, not index or other pages
+  if (!path.endsWith('/index.html') && !path.endsWith('/')) {
+    // Get all paragraphs in the main content
+    const paragraphs = document.querySelectorAll('main p');
+    let text = '';
+    
+    // Concatenate the text from all paragraphs
+    paragraphs.forEach(p => {
+      text += p.textContent + ' ';
+    });
+    
+    // Calculate metrics
+    const charCount = text.length;
+    const pages = (charCount / 2400).toFixed(0);
+    const percentage = ((charCount / 24000) * 100).toFixed(1);
+    
+    // Update the metrics display
+    document.querySelector('#chapter-metrics .callout-body').innerHTML = 
+      `<p>Current length: <strong>${pages} pages</strong> (${percentage}% of target)</p>`;
+    
+  } else {
+    // Hide the metrics box if not on a chapter page
+    const metrics = document.getElementById('chapter-metrics');
+    if (metrics) metrics.style.display = 'none';
+  }
+});
+</script>
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
@@ -257,8 +300,6 @@ ul.task-list li input[type="checkbox"] {
 </header>
 
 
-<section id="climate-justice" class="level2" data-number="1.1">
-<h2 data-number="1.1" class="anchored" data-anchor-id="climate-justice"><span class="header-section-number">1.1</span> Climate justice</h2>
 <blockquote class="blockquote">
 <p>Climate change is dangerous, unfair and already here.</p>
 </blockquote>
@@ -270,9 +311,8 @@ ul.task-list li input[type="checkbox"] {
 <p>[Societies change when our worldviews are challenged. Major changes, such as the suffragettes, the civil rights movement etc.etc. were struggles about <em>who counts</em>. Former colonies were granted their freedom because they were now seen as nations in their own right. By engaging with the stories that justified the oppressions of women and minorities, the natural conclusion became that everyone are <em>people</em>. This is despite the law saying otherwise.]</p>
 <p>[As I am writing this thesis, the world is experiencing the opposite development. The Putin regime claims Ukrainians do not exist, the Trump regime claims transgender peoples do not exsist. ]</p>
 <p>This thesis argues that the current climate regime re-tells the story of underdevelopment.</p>
-</section>
-<section id="scope" class="level2" data-number="1.2">
-<h2 data-number="1.2" class="anchored" data-anchor-id="scope"><span class="header-section-number">1.2</span> Scope</h2>
+<section id="scope" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="scope"><span class="header-section-number">1.1</span> Scope</h2>
 <p>This thesis is based on text-mining and topic modeling all National Adaptation Plans (NAPs) subitted to the UNFCCC. This analysis squarly targets the official policy documents submitted to the UNFCCC. It recongnizes, and highlights, that these countries rarely are perfect representatives of their citizens. I use this</p>
 <p>This thesis addresses three central research questions:</p>
 <ul>
@@ -281,8 +321,8 @@ ul.task-list li input[type="checkbox"] {
 <li>Is climate adaptation an effective way of delivering climate justice?</li>
 </ul>
 </section>
-<section id="disposition" class="level2" data-number="1.3">
-<h2 data-number="1.3" class="anchored" data-anchor-id="disposition"><span class="header-section-number">1.3</span> Disposition</h2>
+<section id="disposition" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="disposition"><span class="header-section-number">1.2</span> Disposition</h2>
 <p>After this introduction-section, the thesis continues. It is structured in three main parts. This is to cleanly separate the case I present from the research design I develop, and the analysis I do when I combine them.</p>
 <p>Part 1 argues that climate adaptation is the most future oriented of the pillars of the UNFCCC, and <a href="context.html" class="quarto-xref"><span>Chapter 2</span></a> argues that climate adaptation is becoming a central part of development governance, where the goal is to finesse the three pillars to get the optimal political economy outcome, while <a href="lit.html" class="quarto-xref"><span>Chapter 3</span></a> argues that the two main strands of research in climate adaptation mirror their roots in development and decolonial studies.</p>
 <p>Part 2 argues that discourse centralization is a key metric to understand the different worldviews and their dominance in the discourse. <a href="theory.html" class="quarto-xref"><span>Chapter 4</span></a> argues that the future is not a given destiny, but shaped by the decitions made and the worldview (and past-/future-view) that shapes them and <a href="methods.html" class="quarto-xref"><span>Chapter 5</span></a> introduced the dominance index as a measure of the discourse centralization.</p>

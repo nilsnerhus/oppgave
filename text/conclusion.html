@@ -203,7 +203,7 @@ div.csl-indent {
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../text/methods.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods: Dominance Index</span></span></a>
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Methods</span></span></a>
   </div>
 </li>
       </ul>
@@ -254,6 +254,50 @@ div.csl-indent {
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
+<div id="chapter-metrics" class="callout callout-style-default callout-note callout-titled">
+  <div class="callout-header d-flex align-content-center">
+    <div class="callout-icon-container">
+      <i class="callout-icon"></i>
+    </div>
+    <div class="callout-title-container">Chapter Metrics</div>
+  </div>
+  <div class="callout-body-container callout-body">
+    <p>Calculating metrics...</p>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // Get the current URL path to identify the chapter
+  const path = window.location.pathname;
+  
+  // Only show on chapter pages, not index or other pages
+  if (!path.endsWith('/index.html') && !path.endsWith('/')) {
+    // Get all paragraphs in the main content
+    const paragraphs = document.querySelectorAll('main p');
+    let text = '';
+    
+    // Concatenate the text from all paragraphs
+    paragraphs.forEach(p => {
+      text += p.textContent + ' ';
+    });
+    
+    // Calculate metrics
+    const charCount = text.length;
+    const pages = (charCount / 2400).toFixed(0);
+    const percentage = ((charCount / 24000) * 100).toFixed(1);
+    
+    // Update the metrics display
+    document.querySelector('#chapter-metrics .callout-body').innerHTML = 
+      `<p>Current length: <strong>${pages} pages</strong> (${percentage}% of target)</p>`;
+    
+  } else {
+    // Hide the metrics box if not on a chapter page
+    const metrics = document.getElementById('chapter-metrics');
+    if (metrics) metrics.style.display = 'none';
+  }
+});
+</script>
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
@@ -377,6 +421,11 @@ need critical future studies. <em>Culture Unbound</em>, <em>9</em>(1,
 Hall, N., &amp; Persson, Å. (2018). Global climate adaptation
 governance: Why is it not legally binding? <em>European Journal of
 International Relations</em>, <em>24</em>(3), 540–566. <a href="https://doi.org/10.1177/1354066117725157">https://doi.org/10.1177/1354066117725157</a>
+</div>
+<div id="ref-hulme2011" class="csl-entry" role="listitem">
+Hulme, M. (2011). Reducing the future to climate: A story of climate
+determinism and reductionism. <em>Osiris</em>, <em>26</em>(1), 245–266.
+<a href="https://doi.org/10.1086/661274">https://doi.org/10.1086/661274</a>
 </div>
 <div id="ref-inayatullah1990" class="csl-entry" role="listitem">
 Inayatullah, S. (1990). Deconstructing and reconstructing the future:
