@@ -528,9 +528,9 @@ fit_model <- function(
     
     # Calculate combined score with balanced weights and stronger complexity penalty
     k_metrics$combined_score <- (
-      0.20 * k_metrics$semcoh_norm + 
-        0.20 * k_metrics$exclus_norm + 
-        0.45 * k_metrics$heldout_norm + 
+      0.25 * k_metrics$semcoh_norm + 
+        0.25 * k_metrics$exclus_norm + 
+        0.35 * k_metrics$heldout_norm + 
         0.15 * k_metrics$residual_norm +
         (if("perp_norm" %in% names(k_metrics)) 0.10 * k_metrics$perp_norm else 0)
     ) - 0.1 * safe_normalize(k_metrics$K)  # Stronger complexity penalty
