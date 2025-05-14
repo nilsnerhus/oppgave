@@ -1,6 +1,6 @@
 # Findings {#sec-findings}
 
-> Adaptation discourse in National Adaptation Plans shows remarkably high centralization (Dominance Index 0.949), with income level explaining more variance than region or geography, revealing how adaptation planning follows existing development categories despite diverse geographical contexts.
+> Adaptation discourse in National Adaptation Plans shows remarkably high centralization, with income level explaining more variance than region or geography, revealing how adaptation planning follows existing development categories despite diverse geographical contexts.
 
 The analysis of discourse centralization in National Adaptation Plans (NAPs) reveals striking patterns in how climate adaptation is conceptualized across different contexts. This chapter presents the findings from applying the Dominance Index methodology to the corpus of 45 English-language NAPs submitted to the UNFCCC as of March 2025.
 
@@ -10,7 +10,7 @@ When examining which factors best explain the variation that does exist, we find
 
 These patterns suggest that adaptation discourse is shaped more by economic positioning and regional institutional influences than by similar geographical vulnerabilities. The dominance of income level as an explanatory factor indicates that adaptation planning follows existing development categories despite the diverse geographical contexts in which adaptation occurs.
 
-```{r}
+```{{r}}
 #| fig-cap: "Dominance Index values across dimensions (n=3)"
 #| label: fig-dominance
 
@@ -19,8 +19,6 @@ These patterns suggest that adaptation discourse is shaped more by economic posi
 # across different dimensions, likely as a bar chart or similar
 
 ```
-
-The following sections examine each dimension in detail, analyzing specific patterns within income groups, regions, and geographical categories.
 
 ## Income
 
@@ -40,13 +38,7 @@ Perhaps more revealing than the absolute values is the internal variation within
 
 ```
 
-The most prevalent topics in low-income country NAPs focus overwhelmingly on vulnerability assessment, institutional capacity building, and project implementation frameworks. These topics align closely with the requirements and priorities of international funding mechanisms like the Green Climate Fund and the Least Developed Countries Fund, suggesting that the discourse may be shaped by funding criteria rather than contextually specific adaptation needs.
-
 In contrast, lower-middle income countries show greater discourse diversity, with more emphasis on sector-specific adaptation strategies and integration with national development planning. This greater diversity may reflect their intermediate position—less dependent on international climate finance than low-income countries but still actively engaged with international adaptation frameworks.
-
-Upper-middle and high-income countries show a different pattern, with high centralization but focused on different topics than low-income countries. Their discourse emphasizes risk assessment methodologies, economic analysis of adaptation options, and technical infrastructure solutions. This suggests that while discourse remains centralized, the content of that centralized discourse varies by income level.
-
-The finding that income level serves as the primary explanatory factor for discourse centralization patterns aligns with broader critiques of adaptation governance as reproducing existing development categories and power relations. It suggests that the economic positioning of countries within the global system shapes adaptation discourse more strongly than their specific climate vulnerabilities or geographical characteristics.
 
 ## Region
 
@@ -54,11 +46,11 @@ The finding that income level serves as the primary explanatory factor for disco
 
 Regional analysis provides important insights into how adaptation discourse is shaped by regional institutions, knowledge networks, and shared historical contexts. While regional groupings explain slightly less variance than income level (8.0% versus 8.1%), they emerge as the second strongest explanatory factor for discourse centralization patterns.
 
-Sub-Saharan Africa shows high centralization (Dominance Index of 0.967) with relatively low internal variation (standard deviation of 0.044), suggesting a relatively homogeneous regional discourse. Documents from this region emphasize community-based adaptation, agriculture and food security, and water resource management. The consistency across countries may reflect the influence of regional bodies like the African Union and regional development banks that have developed adaptation frameworks specific to African contexts.
+Sub-Saharan Africa shows high centralization (Dominance Index of 0.967) with relatively low internal variation (standard deviation of 0.044), suggesting a relatively homogeneous regional discourse. 
 
-East Asia and the Pacific displays the lowest centralization (0.924) and highest internal variation (0.089), indicating greater diversity in how adaptation is conceptualized across this geographically and economically diverse region. NAPs from this region show greater emphasis on urban adaptation, coastal management, and disaster risk reduction, reflecting the specific vulnerabilities of many countries in the region to sea-level rise and extreme weather events.
+East Asia and the Pacific displays the lowest centralization (0.924) and highest internal variation (0.089), indicating greater diversity in how adaptation is conceptualized across this geographically and economically diverse region. 
 
-```{r}
+```{{r}}
 #| fig-cap: "Dominance Index and internal variation by region"
 #| label: fig-region-variation
 
@@ -68,13 +60,13 @@ East Asia and the Pacific displays the lowest centralization (0.924) and highest
 
 ```
 
-South Asia demonstrates high centralization (0.959) with moderate internal variation (0.042). Documents from this region emphasize transboundary water management, resilient agriculture, and disaster preparedness—themes that reflect shared regional vulnerabilities while also aligning with international adaptation discourse.
+South Asia demonstrates high centralization (0.959) with moderate internal variation (0.042). 
 
-Latin America and the Caribbean shows moderate centralization (0.941) with significant internal variation (0.071), suggesting diversity within a broadly similar regional approach. Ecosystem-based adaptation and integration of indigenous knowledge feature more prominently in NAPs from this region than others, potentially reflecting regional priorities and knowledge traditions.
+Latin America and the Caribbean shows moderate centralization (0.941) with significant internal variation (0.071), suggesting diversity within a broadly similar regional approach.
 
 The Middle East and North Africa region exhibits the second-lowest centralization (0.919) but the highest internal variation (0.149), suggesting significant diversity within the region despite some shared approaches. This may reflect the diverse economic circumstances within the region, from oil-rich Gulf states to lower-income countries.
 
-Europe and Central Asia shows high centralization (0.969) with low internal variation (0.037), though the small sample size (6 documents) limits the robustness of this finding. NAPs from this region emphasize infrastructure modernization, energy efficiency, and integration with existing environmental policies—reflecting their generally higher income levels and institutional capacities.
+Europe and Central Asia shows high centralization (0.969) with low internal variation (0.037), though the small sample size (6 documents) limits the robustness of this finding. 
 
 These regional patterns suggest that while adaptation discourse remains highly centralized globally, regional institutions and knowledge systems play an important role in mediating between global frameworks and national implementation. Regional bodies appear to influence how adaptation is conceptualized and articulated, creating distinctive regional emphases within the broader centralized discourse. This finding highlights the importance of the regional scale as a site where global adaptation norms are translated and contextualized, even if fundamental epistemological diversity remains limited.
 
@@ -86,9 +78,9 @@ The analysis of discourse centralization by geographical characteristics—speci
 
 Small Island Developing States show lower centralization (Dominance Index of 0.932) than the overall average (0.949), with moderate internal variation (standard deviation of 0.082). This suggests some diversification of adaptation discourse among SIDS, potentially reflecting their specific vulnerabilities to sea-level rise, extreme weather events, and ecosystem disruption. However, this diversification is less pronounced than might be expected given their distinctive geographical circumstances and climate vulnerabilities.
 
-```{r}
+```{{r}}
 #| fig-cap: "Comparison of discourse topics across geographical categories"
-#| label: fig-geography-topics
+#| label: fig-geo-topics
 
 # This is a placeholder for a visualization comparing
 # the most prevalent topics across geographical categories
@@ -98,9 +90,7 @@ Small Island Developing States show lower centralization (Dominance Index of 0.9
 
 Landlocked Developing Countries, in contrast, show higher centralization (0.971) with low internal variation (0.030), indicating a more homogeneous discourse despite the diverse regional contexts of LLDCs across Africa, Asia, and Latin America. This homogeneity suggests that for LLDCs, economic positioning and institutional factors may shape adaptation discourse more strongly than their shared geographical characteristic of being landlocked.
 
-Content analysis reveals that SIDS NAPs do emphasize certain distinctive topics more prominently, including coastal zone management, tourism adaptation, and marine ecosystem protection. However, these distinctive emphases occur within a discourse that remains broadly similar to the global pattern in its fundamental conceptual frameworks and approaches to adaptation. Similarly, while LLDC NAPs place greater emphasis on transboundary water management and agricultural resilience, they largely conform to the global centralized pattern in their overall conceptualization of adaptation.
-
-The finding that geographical characteristics explain relatively little variance in discourse centralization suggests that adaptation discourse is shaped more by economic and institutional factors than by specific climate vulnerabilities. This aligns with critiques from the adaptation regime literature, which argues that adaptation discourse often reflects and reproduces existing power relations rather than responding primarily to context-specific vulnerabilities [@paprocki2018; @dewan2022].
+The finding that geographical characteristics explain relatively little variance in discourse centralization suggests that adaptation discourse is shaped more by economic and institutional factors than by specific climate vulnerabilities. 
 
 This pattern raises important questions about the responsiveness of adaptation planning to local contexts and specific vulnerabilities. If geographical characteristics—which directly shape climate vulnerability profiles—have less influence on adaptation discourse than economic positioning or regional institutional affiliations, this suggests potential limitations in how adaptation is currently conceptualized and planned. It may indicate that the global adaptation architecture prioritizes standardized approaches over context-specific responses, potentially limiting the effectiveness of adaptation interventions in addressing the diverse challenges faced by differently positioned countries.
 
