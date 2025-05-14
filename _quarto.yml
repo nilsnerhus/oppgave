@@ -46,6 +46,7 @@ format:
   html:
     theme: cosmo
     code-fold: true
+    include-before-body: _includes/page_metrics.html
   pdf:
     documentclass: scrreprt
     toc: true
