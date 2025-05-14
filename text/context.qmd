@@ -1,7 +1,5 @@
 # Context {#sec-context}
 
-## Climate governance 
-
 >Climate adaptation is becoming a central part of development governance, where the goal is to finesse the three pillars to get the optimal political economy outcome. 
 
 International climate change action is governed by the United Nations Framework Convention on Climate Change (UNFCCC), established at the Earth Summit in Rio de Janeiro in 1992. The Summit also created two other conventions, The Convention on Biological Diversity (CBD) and The United Nations Convention to Combat Desertification (UNCCD) [@hall2018]. Together, these frameworks established new institutional arrangements for addressing global environmental challenges.
