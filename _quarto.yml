@@ -24,7 +24,7 @@ book:
         - text/discussion.qmd
     - text/conclusion.qmd
 
-cap-location: margin
+cap-location: bottom
 bibliography: 
   - references/references.bib
   - references/grateful-refs.bib
