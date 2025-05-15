@@ -1,13 +1,13 @@
-#' @title Create explained variance table
+#' @title Create explained variance table based on whole corpus
 #' @description Calculates how much of the total variation in dominance values 
-#'   can be explained by each category and subcategory.
+#'   can be explained by each category and subcategory, following the approach
+#'   recommended by Roberts et al. (2019).
 #'
 #' @param doc_data Data frame containing document-level dominance values
 #' @param dominance_col Name of column containing dominance values
 #' @param category_map List mapping higher-level categories to dimensions
 #'
-#' @return A data frame showing percentage of total variance explained
-
+#' @return A data frame showing percentage of total variance explained by each category
 create_explained_table <- function(
     doc_data,
     dominance_col,
@@ -25,7 +25,7 @@ create_explained_table <- function(
     stringsAsFactors = FALSE
   )
   
-  ## --- Calculate total variance -------------------------------------------
+  ## --- Calculate total variance from whole corpus -------------------------
   # Determine the total variance in dominance values
   total_variance <- stats::var(doc_data[[dominance_col]], na.rm = TRUE)
   total_docs <- nrow(doc_data)
@@ -55,7 +55,7 @@ create_explained_table <- function(
     if (category_name %in% c("Income", "Region")) {
       dim <- category_dimensions[1]  # Should be one dimension per category
       
-      # Calculate category-level explained variance using ANOVA
+      # Use ANOVA to calculate category-level explained variance
       formula <- stats::as.formula(paste(dominance_col, "~", dim))
       model <- stats::aov(formula, data = doc_data)
       anova_table <- stats::anova(model)
@@ -110,8 +110,7 @@ create_explained_table <- function(
     } else if (category_name == "Geography") {
       # For Geography category (binary dimensions)
       
-      # Calculate overall category explained variance
-      # For multiple binary variables, use multiple regression
+      # Calculate overall category explained variance with multiple regression
       formula_terms <- paste(category_dimensions, collapse = " + ")
       formula <- stats::as.formula(paste(dominance_col, "~", formula_terms))
       

@@ -13,7 +13,7 @@ source("scripts/extract_pdfs.R")
 source("scripts/add_metadata.R")
 source("scripts/prepare_corpus.R")
 
-web <- web_cache(scrape_web, overwrite = TRUE)
+web <- web_cache(scrape_web)
 pdfs <- auto_cache(extract_pdfs,web$data)
 
 lldc <- c("AFG", "ARM", "AZE", "BFA", "BDI", "CAF", "TCD", "ETH", "KAZ", 
@@ -33,16 +33,21 @@ corpus <- auto_cache(prepare_corpus, nap_data$data)
 # Step 2: Structural topic modeling
 source("scripts/fit_model.R")
 
-prevalence <- ~ region + wb_income_level + is_sids + is_ldc + is_lldc
-model <- auto_cache(fit_model, corpus)
+prevalence <- ~ region + wb_income_level + is_sids + is_lldc
+model <- auto_cache(fit_model, corpus, k = 20, prevalence = prevalence)
 
-# Step 3: Domianance
-source("scripts/helper_find_dominance.R")
-source("scripts/find_all_dominance.R")
-source("scripts/create_results_tables.R")
-source("scripts/helper_dominance_table.R")
-source("scripts/helper_variance_table.R")
-source("scripts/helper_explained_table.R")
+# Step 3: Analysis
+source("scripts/name_topics.R")
+source("scripts/find_dominance.R")
+source("scripts/stm_effects.R")
 
+names <- auto_cache(name_topics, model)
 dominance <- auto_cache(find_all_dominance, model, n = 3)
-tables <- create_result_tables(dominance, n_value = 3)
+effects <- auto_cache(stm_effects, model)
+
+# Step 4: Findings
+source("scripts/create_tables.R")
+source("scripts/helper_dominance_table.R")
+source("scripts/helper_effects_table.R")
+
+tables <- create_tables(names, dominance, effects)
