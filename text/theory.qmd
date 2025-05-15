@@ -1,7 +1,5 @@
 # Theory {#sec-theory}
 
-## Development Ontology 
-
 > Climate adaptation discourse serves as a site of contested futures where epistemological and ontological assumptions shape which adaptation pathways are considered possible, legitimate, or desirable, often constraining rather than expanding future possibilities.
 
 Climate adaptation discourse operates at the intersection of multiple knowledge systems and worldviews, each with distinct assumptions about what constitutes valid knowledge, how vulnerability is understood, and what futures are possible or desirable. This chapter develops a theoretical framework for analyzing discourse centralization in climate adaptation, focusing on how certain epistemological and ontological positions dominate while others are marginalized.
