@@ -41,9 +41,15 @@ source("scripts/name_topics.R")
 source("scripts/find_dominance.R")
 source("scripts/stm_effects.R")
 
-names <- auto_cache(name_topics, model)
-dominance <- auto_cache(find_all_dominance, model, n = 3)
-effects <- auto_cache(stm_effects, model)
+category_map <- list(
+  Income = "wb_income_level", 
+  Region = "region", 
+  Geography = c("is_sids", "is_lldc")
+)
+
+names <- auto_cache(name_topics, model, overwrite = TRUE)
+dominance <- auto_cache(find_all_dominance, model, n = 3, overwrite = TRUE)
+effects <- auto_cache(stm_effects, model, category_map)
 
 # Step 4: Findings
 source("scripts/create_tables.R")
