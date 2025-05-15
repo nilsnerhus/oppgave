@@ -178,16 +178,19 @@ auto_cache <- function(func, ..., cache_path = NULL, overwrite = FALSE) {
   }
 }
 
-#' @title Check for web content changes
-#' @description Monitors a web page for changes by checking table content
-#' @param func The function to execute if content has changed
+#' @title Cache web scraping results with content change detection
+#' @description Caches results from web scraping functions, with the option to check for content
+#'   changes before reusing cached results. Supports forced refresh via the overwrite parameter.
+#'   
+#' @param func The web scraping function to execute if cache is invalid
 #' @param ... Arguments to pass to the function
-#' @param url URL of the webpage to check
+#' @param url URL of the webpage to check for changes (default: "https://napcentral.org/submitted-naps")
 #' @param cache_path Path to the cached data (defaults to data/func_name.rds)
 #' @param table_index Index of the table to monitor (default: 1)
+#' @param overwrite Whether to force recalculation and ignore the cache (default: FALSE)
 #' @return The function result (either from cache or newly computed)
 web_cache <- function(func, ..., url = "https://napcentral.org/submitted-naps", 
-                              cache_path = NULL, table_index = 1) {
+                      cache_path = NULL, table_index = 1, overwrite = FALSE) {
   # Get function name for default cache path
   func_name <- deparse(substitute(func))
   
@@ -197,73 +200,76 @@ web_cache <- function(func, ..., url = "https://napcentral.org/submitted-naps",
   }
   
   # Check if cache exists
-  if (!file.exists(cache_path)) {
-    log_message("No cache found, need to fetch data")
+  if (!file.exists(cache_path) || overwrite) {
+    log_message(if(overwrite) "Overwrite requested, fetching fresh data" else "No cache found, need to fetch data")
     # Need to fetch data
     result <- do.call(func, list(...))
     saveRDS(result, cache_path)
     return(result)
   }
   
-  # Content-based check
-  size_path <- paste0(cache_path, ".size")
-  content_changed <- FALSE
-  
-  tryCatch({
-    # Do a quick scrape to check the content
-    session <- polite::bow(url = url)
-    quick_html <- polite::scrape(session)
-    tables <- rvest::html_nodes(quick_html, "table")
+  # Only check content if we're not overwriting
+  if (!overwrite) {
+    # Content-based check
+    size_path <- paste0(cache_path, ".size")
+    content_changed <- FALSE
     
-    if (length(tables) >= table_index) {
-      # Get the table and count rows as a proxy for content
-      table_html <- tables[[table_index]]
-      rows <- rvest::html_nodes(table_html, "tr")
-      current_row_count <- length(rows)
+    tryCatch({
+      # Do a quick scrape to check the content
+      session <- polite::bow(url = url)
+      quick_html <- polite::scrape(session)
+      tables <- rvest::html_nodes(quick_html, "table")
       
-      # Calculate a simple content signature
-      row_texts <- sapply(rows, rvest::html_text)
-      content_signature <- digest::digest(row_texts)
-      
-      # Check against previous signature if available
-      if (file.exists(size_path)) {
-        previous_data <- readLines(size_path, warn = FALSE)
-        if (length(previous_data) >= 2) {
-          previous_row_count <- as.numeric(previous_data[1])
-          previous_signature <- previous_data[2]
-          
-          # Check if content changed
-          if (current_row_count != previous_row_count || 
-              content_signature != previous_signature) {
-            content_changed <- TRUE
-            log_message("Web content has changed")
+      if (length(tables) >= table_index) {
+        # Get the table and count rows as a proxy for content
+        table_html <- tables[[table_index]]
+        rows <- rvest::html_nodes(table_html, "tr")
+        current_row_count <- length(rows)
+        
+        # Calculate a simple content signature
+        row_texts <- sapply(rows, rvest::html_text)
+        content_signature <- digest::digest(row_texts)
+        
+        # Check against previous signature if available
+        if (file.exists(size_path)) {
+          previous_data <- readLines(size_path, warn = FALSE)
+          if (length(previous_data) >= 2) {
+            previous_row_count <- as.numeric(previous_data[1])
+            previous_signature <- previous_data[2]
+            
+            # Check if content changed
+            if (current_row_count != previous_row_count || 
+                content_signature != previous_signature) {
+              content_changed <- TRUE
+              log_message("Web content has changed")
+            }
           }
+        } else {
+          # No previous data, assume content changed
+          content_changed <- TRUE
         }
+        
+        # Save current data for future comparison
+        writeLines(c(as.character(current_row_count), content_signature), size_path)
       } else {
-        # No previous data, assume content changed
+        # Table not found, assume content changed
         content_changed <- TRUE
       }
-      
-      # Save current data for future comparison
-      writeLines(c(as.character(current_row_count), content_signature), size_path)
-    } else {
-      # Table not found, assume content changed
+    }, error = function(e) {
+      log_message(paste("Error checking web content:", e$message), "web_cache", "WARNING")
+      # On error, default to needing fresh data to be safe
       content_changed <- TRUE
+    })
+    
+    if (content_changed) {
+      # Content changed, need to fetch new data
+      result <- do.call(func, list(...))
+      saveRDS(result, cache_path)
+      return(result)
+    } else {
+      log_message("Web content unchanged, using cached data")
+      # Use cached data
+      return(readRDS(cache_path))
     }
-  }, error = function(e) {
-    log_message(paste("Error checking web content:", e$message), "web_cache", "WARNING")
-    # On error, default to needing fresh data to be safe
-    content_changed <- TRUE
-  })
-  
-  if (content_changed) {
-    # Content changed, need to fetch new data
-    result <- do.call(func, list(...))
-    saveRDS(result, cache_path)
-    return(result)
-  } else {
-    log_message("Web content unchanged, using cached data")
-    # Use cached data
-    return(readRDS(cache_path))
   }
 }
