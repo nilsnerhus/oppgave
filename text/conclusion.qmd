@@ -6,10 +6,3 @@
 :::
 
 # R-packages {.unnumbered}
-
-```{r}
-grateful::cite_packages(
-  pkgs = pkgs,
-  cite.tidyverse = TRUE, 
-  output = "paragraph"
-)

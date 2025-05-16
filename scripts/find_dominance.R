@@ -1,22 +1,20 @@
-#' @title Calculate dominance across all dimensions
+#' @title Calculate discourse dominance and create summary table
 #' @description Calculates discourse dominance (topic concentration) across documents
 #'   and analyzes how it varies by different dimensions like income level, region,
-#'   or geographic characteristics. Identifies top topics for each category.
+#'   or geographic characteristics. Creates a formatted table for reporting.
 #'   
 #' @param model Result from fit_model() containing topic proportions and model data
 #' @param n Number of top topics to include in dominance calculation (default: 3)
-#' @param dominance_config Configuration options for dominance analysis:
-#'   \itemize{
-#'     \item dimensions - Which dimensions to analyze (default: all from category_map)
-#'     \item include_top_topics - Whether to identify top topics (default: TRUE)
-#'     \item min_docs - Minimum documents for a subcategory (default: 3)
-#'   }
+#' @param dimensions Which dimensions to analyze (default: NULL, use all from category_map)
+#' @param include_top_topics Whether to identify top topics (default: TRUE)
+#' @param min_docs Minimum documents for a subcategory (default: 3)
 #'
 #' @return A list containing:
 #'   \item{data}{
 #'     \itemize{
+#'       \item dominance_table - Formatted table with dominance scores by dimension and category
 #'       \item document_dominance - Document-level dominance values
-#'       \item dimension_dominance - Dominance by category dimensions
+#'       \item dimension_dominance - Dominance by category dimensions (raw data)
 #'       \item top_topics - Most dominant topics by category and subcategory
 #'     }
 #'   }
@@ -26,36 +24,31 @@
 #' @examples
 #' \dontrun{
 #' # Basic usage with default parameters
-#' dominance <- find_dominance(model)
+#' dominance_results <- find_dominance(model)
+#' 
+#' # Access the formatted table for reporting
+#' dominance_table <- dominance_results$data$dominance_table
+#' print(dominance_table)
 #' 
 #' # Use more topics in dominance calculation
-#' dominance <- find_dominance(model, n = 5)
+#' dominance_results <- find_dominance(model, n = 5)
 #' 
 #' # Focus on specific dimensions only
-#' dominance_config <- list(
-#'   dimensions = c("Income", "Region")
-#' )
-#' dominance <- find_dominance(model, n = 3, dominance_config = dominance_config)
+#' dominance_results <- find_dominance(model, n = 3, 
+#'                                   dimensions = c("Income", "Region"))
 #' }
 find_dominance <- function(
     model,
     n = 3,
-    dominance_config = list(
-      dimensions = NULL,       # Default: all from category_map
-      include_top_topics = TRUE,
-      min_docs = 3
-    )
+    dimensions = NULL,
+    include_top_topics = TRUE,
+    min_docs = 3
 ) {
   ## --- Setup & Initialization -------------------------------------------------
   start_time <- Sys.time()
   
   # Import the pipe operator
   `%>%` <- magrittr::`%>%`
-  
-  # Set defaults for any missing config options
-  dominance_config$dimensions <- dominance_config$dimensions %||% NULL
-  dominance_config$include_top_topics <- dominance_config$include_top_topics %||% TRUE
-  dominance_config$min_docs <- dominance_config$min_docs %||% 3
   
   # Initialize diagnostics tracking
   diagnostics <- list(
@@ -118,7 +111,14 @@ find_dominance <- function(
   }
   
   # Check that category_map is available
-  if (!"category_map" %in% names(model$metadata)) {
+  category_map <- NULL
+  if ("metadata" %in% names(model) && "category_map" %in% names(model$metadata)) {
+    category_map <- model$metadata$category_map
+  } else if ("config" %in% names(model$data) && "category_map" %in% names(model$data$config)) {
+    category_map <- model$data$config$category_map
+  }
+  
+  if (is.null(category_map)) {
     warning_msg <- "No category_map found in model metadata; using fallback dimensions"
     diagnostics$calculation_issues <- c(diagnostics$calculation_issues, warning_msg)
     log_message(warning_msg, "find_dominance", "WARNING")
@@ -138,8 +138,6 @@ find_dominance <- function(
     if (length(geo_cols) > 0) {
       category_map$Geography <- geo_cols
     }
-  } else {
-    category_map <- model$metadata$category_map
   }
   
   ## --- Extract topic data and metadata ----------------------------------------
@@ -152,10 +150,10 @@ find_dominance <- function(
   topic_data <- model$data$topic_data
   
   # Determine dimensions to analyze
-  if (is.null(dominance_config$dimensions)) {
+  if (is.null(dimensions)) {
     dimensions_to_analyze <- names(category_map)
   } else {
-    dimensions_to_analyze <- intersect(dominance_config$dimensions, names(category_map))
+    dimensions_to_analyze <- intersect(dimensions, names(category_map))
     
     if (length(dimensions_to_analyze) == 0) {
       warning_msg <- "None of the specified dimensions found in category_map; using all dimensions"
@@ -236,7 +234,7 @@ find_dominance <- function(
   )
   
   # Add top topics if requested
-  if (dominance_config$include_top_topics) {
+  if (include_top_topics) {
     # Inline the identify_top_topics functionality
     # Calculate average proportion for each topic
     topic_averages <- stats::aggregate(
@@ -292,7 +290,7 @@ find_dominance <- function(
       std_dev = round(overall_sd, 3),
       ci_lower = round(overall_mean - ci_width, 3),
       ci_upper = round(overall_mean + ci_width, 3),
-      top_topics = if(dominance_config$include_top_topics) 
+      top_topics = if(include_top_topics) 
         dimension_dominance$top_topics[1] else NA_character_,
       stringsAsFactors = FALSE
     ))
@@ -320,7 +318,7 @@ find_dominance <- function(
         group_data <- document_dominance[document_dominance[[dim]] == val, ]
         
         # Skip if too few documents
-        if (nrow(group_data) < dominance_config$min_docs) {
+        if (nrow(group_data) < min_docs) {
           skip_msg <- paste("Skipping", val, "in", category_name, 
                             "(only", nrow(group_data), "documents)")
           diagnostics$skipped_categories <- c(diagnostics$skipped_categories, skip_msg)
@@ -337,7 +335,7 @@ find_dominance <- function(
         top_topics_str <- NA_character_
         
         # Calculate top topics if requested (inline)
-        if (dominance_config$include_top_topics) {
+        if (include_top_topics) {
           # Filter topic data for this group
           group_topic_data <- topic_data[topic_data$doc_id %in% group_data$doc_id, ]
           
@@ -404,7 +402,7 @@ find_dominance <- function(
         group_data <- document_dominance[document_dominance[[dim]] == TRUE, ]
         
         # Skip if too few documents
-        if (nrow(group_data) < dominance_config$min_docs) {
+        if (nrow(group_data) < min_docs) {
           skip_msg <- paste("Skipping", dim, "in", category_name, 
                             "(only", nrow(group_data), "documents)")
           diagnostics$skipped_categories <- c(diagnostics$skipped_categories, skip_msg)
@@ -421,7 +419,7 @@ find_dominance <- function(
         top_topics_str <- NA_character_
         
         # Calculate top topics if requested (inline)
-        if (dominance_config$include_top_topics) {
+        if (include_top_topics) {
           # Filter topic data for this group
           group_topic_data <- topic_data[topic_data$doc_id %in% group_data$doc_id, ]
           
@@ -473,6 +471,32 @@ find_dominance <- function(
     }
   }
   
+  ## --- Format dominance table for reporting ----------------------------------
+  log_message("Creating formatted dominance table for reporting", "find_dominance")
+  
+  # Create a formatted version of dimension_dominance for reporting
+  dominance_table <- dimension_dominance
+  
+  # Format confidence intervals
+  dominance_table$confidence_interval <- paste0("[", 
+                                                dominance_table$ci_lower, ", ", 
+                                                dominance_table$ci_upper, "]")
+  
+  # Format dominance as percentage
+  dominance_table$dominance_pct <- paste0(round(dominance_table$dominance * 100, 1), "%")
+  
+  # Reorder and select columns for display
+  dominance_table <- dominance_table[, c("category", "level", "docs", 
+                                         "dominance", "dominance_pct", 
+                                         "std_dev", "confidence_interval",
+                                         "top_topics")]
+  
+  # Rename columns for clarity
+  names(dominance_table) <- c("Category", "Level", "Documents", 
+                              "Dominance", "Dominance (%)", 
+                              "Std Dev", "Confidence Interval",
+                              "Top Topics")
+  
   ## --- Create result object ---------------------------------------------------
   # Calculate processing time
   end_time <- Sys.time()
@@ -480,8 +504,9 @@ find_dominance <- function(
   
   # Create data result
   result_data <- list(
-    document_dominance = document_dominance,
-    dimension_dominance = dimension_dominance
+    dominance_table = dominance_table,       # Formatted table for reporting
+    document_dominance = document_dominance, # Document-level dominance values
+    dimension_dominance = dimension_dominance # Raw dimension-level results
   )
   
   # Create metadata
@@ -491,7 +516,8 @@ find_dominance <- function(
     n_value = n,
     total_documents = doc_count,
     dimensions_analyzed = dimensions_to_analyze,
-    dominance_config = dominance_config
+    include_top_topics = include_top_topics,
+    min_docs = min_docs
   )
   
   # Update diagnostics

@@ -3,7 +3,7 @@
 #'   by applying tokenization, dictionary validation, stopword removal, and frequency
 #'   filtering. Handles document filtering based on token counts.
 #'
-#' @param documents A dataframe containing document text (output from add_metadata)
+#' @param tokens_data A dataframe containing doc_id and text columns from extract_pdfs
 #' @param text_column Column name containing text to process (default: "text")
 #' @param validation_config List with validation options:
 #'   \itemize{
@@ -19,9 +19,9 @@
 #' @return A list containing:
 #'   \item{data}{
 #'     \itemize{
-#'       \item tokens - Processed tokens dataframe
+#'       \item tokens - Processed tokens dataframe with doc_id and word columns
 #'       \item vocab - List of unique terms in corpus
-#'       \item metadata - Document metadata
+#'       \item doc_metadata - Document-level statistics
 #'     }
 #'   }
 #'   \item{metadata}{Processing statistics and timestamps}
@@ -29,20 +29,15 @@
 #'
 #' @examples
 #' \dontrun{
-#' # Basic usage with defaults
-#' tokens <- validate_tokens(nap_data$data$documents)
+#' # First scrape the website and extract PDF content
+#' web_data <- scrape_web()
+#' pdf_data <- extract_pdfs(web_data$data$tokens)
 #' 
-#' # Custom validation configuration
-#' validation_config <- list(
-#'   geo_stops = FALSE,
-#'   use_lemma = TRUE,
-#'   min_word_length = 4
-#' )
-#' tokens <- validate_tokens(nap_data$data$documents, 
-#'                         validation_config = validation_config)
+#' # Then validate and process tokens
+#' tokens <- validate_tokens(pdf_data$data$tokens)
 #' }
 validate_tokens <- function(
-    documents, 
+    tokens_data, 
     text_column = "text",
     validation_config = list(
       whitelist = NULL,
@@ -70,14 +65,18 @@ validate_tokens <- function(
   ## --- Input validation -------------------------------------------------------
   log_message("Validating input data", "validate_tokens")
   
-  # Validate documents is a data frame
-  if (!is.data.frame(documents)) {
+  # Validate tokens_data is a data frame
+  if (!is.data.frame(tokens_data)) {
     error_msg <- "Input must be a dataframe"
     diagnostics$processing_issues <- c(diagnostics$processing_issues, error_msg)
     log_message(error_msg, "validate_tokens", "ERROR")
     
     return(create_result(
-      data = NULL,
+      data = list(
+        tokens = NULL,
+        vocab = NULL,
+        doc_metadata = NULL
+      ),
       metadata = list(
         timestamp = Sys.time(),
         success = FALSE
@@ -88,14 +87,18 @@ validate_tokens <- function(
   
   # Check required columns
   required_cols <- c("doc_id", text_column)
-  missing_cols <- setdiff(required_cols, names(documents))
+  missing_cols <- setdiff(required_cols, names(tokens_data))
   if (length(missing_cols) > 0) {
     error_msg <- paste("Input is missing required columns:", paste(missing_cols, collapse = ", "))
     diagnostics$processing_issues <- c(diagnostics$processing_issues, error_msg)
     log_message(error_msg, "validate_tokens", "ERROR")
     
     return(create_result(
-      data = NULL,
+      data = list(
+        tokens = NULL,
+        vocab = NULL,
+        doc_metadata = NULL
+      ),
       metadata = list(
         timestamp = Sys.time(),
         success = FALSE
@@ -105,13 +108,17 @@ validate_tokens <- function(
   }
   
   # Check for empty dataframe
-  if (nrow(documents) == 0) {
+  if (nrow(tokens_data) == 0) {
     error_msg <- "Input dataframe has no rows"
     diagnostics$processing_issues <- c(diagnostics$processing_issues, error_msg)
     log_message(error_msg, "validate_tokens", "ERROR")
     
     return(create_result(
-      data = NULL,
+      data = list(
+        tokens = NULL,
+        vocab = NULL,
+        doc_metadata = NULL
+      ),
       metadata = list(
         timestamp = Sys.time(),
         success = FALSE
@@ -127,7 +134,11 @@ validate_tokens <- function(
     log_message(error_msg, "validate_tokens", "ERROR")
     
     return(create_result(
-      data = NULL,
+      data = list(
+        tokens = NULL,
+        vocab = NULL,
+        doc_metadata = NULL
+      ),
       metadata = list(
         timestamp = Sys.time(),
         success = FALSE
@@ -146,7 +157,7 @@ validate_tokens <- function(
   validation_config$min_doc_tokens <- validation_config$min_doc_tokens %||% 50
   
   # Record original document count
-  original_doc_count <- nrow(documents)
+  original_doc_count <- nrow(tokens_data)
   diagnostics$token_stats$original_docs <- original_doc_count
   
   log_message(paste("Processing", original_doc_count, "documents"), "validate_tokens")
@@ -185,7 +196,7 @@ validate_tokens <- function(
   log_message("Tokenizing documents", "validate_tokens")
   
   # Prepare corpus dataframe
-  corpus_data <- documents
+  corpus_data <- tokens_data
   names(corpus_data)[names(corpus_data) == text_column] <- "text"
   
   # Check for empty documents
@@ -195,7 +206,7 @@ validate_tokens <- function(
     corpus_data <- corpus_data[-empty_docs, ]
     
     diagnostics$removed_documents$empty_count <- length(empty_docs)
-    diagnostics$removed_documents$empty_doc_ids <- documents$doc_id[empty_docs]
+    diagnostics$removed_documents$empty_doc_ids <- tokens_data$doc_id[empty_docs]
   }
   
   # Tokenize text
@@ -393,7 +404,7 @@ validate_tokens <- function(
   # Create data result
   result_data <- list(
     tokens = tokenized_text,       # Tokenized text data
-    metadata = doc_metadata,       # Document metadata
+    doc_metadata = doc_metadata,   # Document metadata
     vocab = vocabulary             # Vocabulary list
   )
   
@@ -419,7 +430,11 @@ validate_tokens <- function(
   
   # Return standardized result
   return(create_result(
-    data = result_data,
+    data = list(
+      tokens = tokenized_text,
+      vocab = vocabulary,
+      doc_metadata = doc_metadata
+    ),
     metadata = result_metadata,
     diagnostics = diagnostics
   ))

@@ -1,6 +1,6 @@
 #' @title Scrape NAP documents from website
 #' @description Scrapes the UNFCCC NAP Central website to extract National Adaptation Plans
-#'   document links and metadata. Focuses on extracting English language PDFs.
+#'   document links and metadata. Returns separate structures for text and metadata paths.
 #'
 #' @param url URL of the website to scrape (default: "https://napcentral.org/submitted-naps")
 #' @param name_col Column index containing country names (default: 2)
@@ -12,13 +12,21 @@
 #' @param output_path Path to save results (default: "data/scraped_website.rds")
 #'
 #' @return A list containing:
-#'   \item{data}{Data frame with country_name, date_posted, and pdf_link columns}
+#'   \item{data}{
+#'     \itemize{
+#'       \item tokens - Data frame with doc_id and pdf_link for text extraction path
+#'       \item metadata - Data frame with doc_id, country_name, and date_posted for metadata path
+#'     }
+#'   }
 #'   \item{metadata}{Processing information including timestamp and statistics}
-#'   \item{diagnostics}{Information about excluded countries and processing issues}
+#'   \item{diagnostics}{Information about processing issues}
 #'
 #' @examples
 #' \dontrun{
 #' nap_data <- scrape_web(exclude_countries = c("Uruguay"))
+#' # Access the two data paths
+#' tokens_data <- nap_data$data$tokens
+#' metadata_data <- nap_data$data$metadata
 #' }
 
 scrape_web <- function(
@@ -62,11 +70,18 @@ scrape_web <- function(
   # Convert exclude_countries to lowercase for case-insensitive matching
   exclude_countries <- tolower(exclude_countries)
   
-  ## --- Setup empty tibble -----------------------------------------------------
-  results <- tibble::tibble(
-    country_name = character(),
-    date_posted = character(),
+  ## --- Setup empty tibbles ----------------------------------------------------
+  # Initialize tokens data structure (for extract_pdfs path)
+  tokens_data <- tibble::tibble(
+    doc_id = character(),
     pdf_link = character()
+  )
+  
+  # Initialize metadata data structure (for add_metadata path)
+  metadata_data <- tibble::tibble(
+    doc_id = character(),
+    country_name = character(),
+    date_posted = character()
   )
   
   ## --- Connect to website -----------------------------------------------------
@@ -85,7 +100,10 @@ scrape_web <- function(
     
     # Return early with error information
     return(create_result(
-      data = results,
+      data = list(
+        tokens = tokens_data,
+        metadata = metadata_data
+      ),
       metadata = list(
         url = url,
         timestamp = Sys.time(),
@@ -104,7 +122,10 @@ scrape_web <- function(
     
     # Return early with error information
     return(create_result(
-      data = results,
+      data = list(
+        tokens = tokens_data,
+        metadata = metadata_data
+      ),
       metadata = list(
         url = url,
         timestamp = Sys.time(),
@@ -122,7 +143,10 @@ scrape_web <- function(
     diagnostics$processing_issues <- c(diagnostics$processing_issues, "No tables found on page")
     
     return(create_result(
-      data = results,
+      data = list(
+        tokens = tokens_data,
+        metadata = metadata_data
+      ),
       metadata = list(
         url = url,
         timestamp = Sys.time(),
@@ -155,7 +179,10 @@ scrape_web <- function(
     diagnostics$processing_issues <- c(diagnostics$processing_issues, "Selected table has no rows")
     
     return(create_result(
-      data = results,
+      data = list(
+        tokens = tokens_data,
+        metadata = metadata_data
+      ),
       metadata = list(
         url = url,
         timestamp = Sys.time(),
@@ -187,6 +214,8 @@ scrape_web <- function(
   }
   
   ## --- Loop through rows ------------------------------------------------------
+  doc_counter <- 0  # Counter for generating unique doc_ids
+  
   for (i in seq_along(rows)) {
     cells <- rvest::html_nodes(rows[[i]], "td")
     
@@ -249,12 +278,25 @@ scrape_web <- function(
     
     ## Save result if found
     if (!is.null(pdf_link)) {
-      results <- tibble::add_row(
-        results,
-        country_name = country_name,
-        date_posted = date_posted,
+      # Increment counter and generate doc_id
+      doc_counter <- doc_counter + 1
+      doc_id <- paste0("nap_", sprintf("%03d", doc_counter))
+      
+      # Add to tokens data (for extract_pdfs path)
+      tokens_data <- tibble::add_row(
+        tokens_data,
+        doc_id = doc_id,
         pdf_link = pdf_link
       )
+      
+      # Add to metadata data (for add_metadata path)
+      metadata_data <- tibble::add_row(
+        metadata_data,
+        doc_id = doc_id,
+        country_name = country_name,
+        date_posted = date_posted
+      )
+      
       log_message(paste("Added English PDF for:", country_name), "scrape_web")
     }
   } 
@@ -270,12 +312,16 @@ scrape_web <- function(
     processing_time_sec = processing_time,
     table_count = length(tables),
     row_count = length(rows),
+    document_count = doc_counter,
     success = TRUE
   )
   
-  # Return standardized result
+  # Return standardized result with separated data structures
   return(create_result(
-    data = results,
+    data = list(
+      tokens = tokens_data,
+      metadata = metadata_data
+    ),
     metadata = metadata,
     diagnostics = diagnostics
   ))

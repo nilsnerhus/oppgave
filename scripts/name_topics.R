@@ -1,7 +1,7 @@
-#' @title Name topics with automatic or interactive labeling
-#' @description Assigns meaningful names to topics based on word distributions.
-#'   Works in either automated mode (generating names from top terms) or interactive
-#'   mode (prompting user for names). Provides example text to aid interpretation.
+#' @title Name topics and create summary table
+#' @description Assigns meaningful names to topics based on word distributions
+#'   and creates a formatted table for reporting. Works in either automated mode
+#'   (generating names from top terms) or interactive mode (prompting user for names).
 #'   
 #' @param model Result from fit_model() containing topic information
 #' @param mode Naming mode: "auto" or "interactive" (default: "auto")
@@ -11,6 +11,7 @@
 #' @return A list containing:
 #'   \item{data}{
 #'     \itemize{
+#'       \item topics_table - Formatted table with topic IDs, names, and top terms
 #'       \item topic_names - Dataframe with topic_id, topic_name, and short_name
 #'       \item topic_terms - Top terms for each naming method
 #'       \item topic_examples - Example text snippets for each topic (if requested)
@@ -22,13 +23,14 @@
 #' @examples
 #' \dontrun{
 #' # Automatic naming based on FREX terms
-#' topic_names <- name_topics(model)
+#' topic_results <- name_topics(model)
+#' 
+#' # Use the topics table directly for reporting
+#' topics_table <- topic_results$data$topics_table
+#' print(topics_table)
 #' 
 #' # Interactive naming with user input
-#' topic_names <- name_topics(model, mode = "interactive")
-#' 
-#' # Automatic naming using probability method without examples
-#' topic_names <- name_topics(model, method = "prob", include_examples = FALSE)
+#' topic_results <- name_topics(model, mode = "interactive")
 #' }
 name_topics <- function(
     model,
@@ -70,18 +72,31 @@ name_topics <- function(
   
   # Check for required model components
   if (!("topic_terms" %in% names(model$data))) {
-    error_msg <- "Model missing topic_terms component"
-    diagnostics$naming_issues <- c(diagnostics$naming_issues, error_msg)
-    log_message(error_msg, "name_topics", "ERROR")
+    # If model doesn't have topic_terms, try to generate them from the model
+    if ("model" %in% names(model$data) && !is.null(model$data$model)) {
+      log_message("Generating topic terms from model", "name_topics")
+      try({
+        model$data$topic_terms <- list(
+          label_summary = stm::labelTopics(model$data$model, n = 10)
+        )
+      }, silent = TRUE)
+    }
     
-    return(create_result(
-      data = NULL,
-      metadata = list(
-        timestamp = Sys.time(),
-        success = FALSE
-      ),
-      diagnostics = diagnostics
-    ))
+    # If still missing, return error
+    if (!("topic_terms" %in% names(model$data))) {
+      error_msg <- "Model missing topic_terms component"
+      diagnostics$naming_issues <- c(diagnostics$naming_issues, error_msg)
+      log_message(error_msg, "name_topics", "ERROR")
+      
+      return(create_result(
+        data = NULL,
+        metadata = list(
+          timestamp = Sys.time(),
+          success = FALSE
+        ),
+        diagnostics = diagnostics
+      ))
+    }
   }
   
   # Validate mode parameter
@@ -524,6 +539,32 @@ name_topics <- function(
     }
   }
   
+  ## --- Create topics table ----------------------------------------------------
+  log_message("Creating topics table for reporting", "name_topics")
+  
+  # Start with basic topic names
+  topics_table <- topic_names
+  
+  # Add top terms from the chosen method
+  words_col <- paste0(method, "_words")
+  if (words_col %in% names(topic_label_summary)) {
+    topics_table$top_terms <- topic_label_summary[[words_col]]
+  } else {
+    # If chosen method not available, use the first available method
+    available_cols <- grep("_words$", names(topic_label_summary), value = TRUE)
+    if (length(available_cols) > 0) {
+      topics_table$top_terms <- topic_label_summary[[available_cols[1]]]
+    } else {
+      topics_table$top_terms <- NA_character_
+    }
+  }
+  
+  # Ensure topic_id is formatted consistently
+  topics_table$topic_id <- as.integer(topics_table$topic_id)
+  
+  # Sort by topic_id
+  topics_table <- topics_table[order(topics_table$topic_id), ]
+  
   ## --- Create result object ---------------------------------------------------
   # Calculate processing time
   end_time <- Sys.time()
@@ -531,8 +572,9 @@ name_topics <- function(
   
   # Create data result
   result_data <- list(
-    topic_names = topic_names,
-    topic_terms = topic_label_summary
+    topics_table = topics_table,      # New formatted table for reporting
+    topic_names = topic_names,        # Original topic names dataframe
+    topic_terms = topic_label_summary # Terms for each topic
   )
   
   # Add examples if generated
