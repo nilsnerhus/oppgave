@@ -1,149 +1,239 @@
-#' @title Fit structural topic model with optional segmentation
-#' @description Takes a preprocessed corpus, optionally segments documents by token count,
-#'   creates a document-feature matrix, and fits a structural topic model (STM).
-#'   Includes automatic topic number determination if k is not specified.
-#'
-#' @param corpus Output from prepare_corpus() function
+#' @title Fit optimal structural topic model with effects analysis
+#' @description Fits a structural topic model to tokenized text data, automatically
+#'   determining the optimal number of topics or using a specified value. Supports 
+#'   document segmentation, prevalence modeling with metadata, content covariates, 
+#'   and pre-calculates topic effects for downstream analysis.
+#'   
+#' @param tokens Result from validate_tokens() function containing tokens and vocabulary
+#' @param config Configuration from add_metadata including metadata and category_map
 #' @param k Number of topics to use (default: NULL, auto-determines optimal k)
-#' @param k_min Minimum number of topics to try if auto-determining (default: 20)
-#' @param k_max Maximum number of topics to try if auto-determining (default: 80)
-#' @param k_step Step size for k search (default: 10)
-#' @param segment Number of tokens per segment (default: 1000, 0 for no segmentation)
-#' @param prevalence Formula for metadata covariates (default: NULL)
-#' @param iterations Maximum EM algorithm iterations (default: 150)
-#' @param output_path Path to save results (default: "data/topic_model.rds")
+#' @param k_search_config Topic number search configuration:
+#'   \itemize{
+#'     \item min - Minimum number of topics to try (default: 5)
+#'     \item max - Maximum number of topics to try (default: 40)
+#'     \item step - Step size for k search (default: 5)
+#'   }
+#' @param modeling_config Model fitting configuration:
+#'   \itemize{
+#'     \item segment - Number of tokens per segment (default: 0, no segmentation)
+#'     \item prevalence_formula - Custom formula for metadata covariates (default: NULL, auto-generated)
+#'     \item content_covariates - Variables affecting word distribution within topics (default: NULL)
+#'     \item iterations - Maximum EM algorithm iterations (default: 200)
+#'     \item seed - Random seed for reproducibility (default: 1234)
+#'     \item include_model - Whether to include full model in output (default: TRUE)
+#'   }
+#' @param model_weights Advanced STM model weights and parameters:
+#'   \itemize{
+#'     \item gamma.prior - Prior on document-topic proportions (default: NULL)
+#'     \item sigma.prior - Prior on topic-word distributions (default: NULL)
+#'     \item alpha - Parameter for exclusivity calculation (default: NULL)
+#'     \item kappa - Regularization parameter (default: NULL)
+#'   }
 #'
 #' @return A list containing:
-#'   \item{data}{Document-topic proportions, topic labels, and other model outputs}
+#'   \item{data}{
+#'     \itemize{
+#'       \item model - Fitted STM model object (optional, can be excluded to save memory)
+#'       \item topic_proportions - Document-topic proportion matrix (wide format)
+#'       \item topic_data - Long-format topic data with metadata
+#'       \item topic_terms - Top terms for each topic using different metrics
+#'       \item topic_correlations - Topic correlation matrix
+#'       \item segments - Segmentation information (if used)
+#'       \item effects - Pre-calculated estimateEffect results for each dimension
+#'       \item variance_explained - Percentage of variance explained by each dimension
+#'     }
+#'   }
 #'   \item{metadata}{Processing information and model parameters}
-#'   \item{diagnostics}{Model quality metrics and processing information}
+#'   \item{diagnostics}{Model quality metrics and k-selection information}
 #'
 #' @examples
 #' \dontrun{
-#' # Fit model with automatic k determination, no segmentation
-#' model <- fit_model(corpus, segment = 0)
+#' # Fit model with automatic k determination and default effect calculation
+#' model <- fit_model(tokens$data, nap_data$data$config)
 #' 
-#' # Fit model with 30 topics and 500-token segments
-#' model <- fit_model(corpus, k = 30, segment = 500)
-#' 
-#' # Fit model with metadata covariates
-#' model <- fit_model(corpus, 
-#'                   prevalence = ~ region + wb_income_level)
+#' # Fit model with content covariates and custom weights
+#' modeling_config <- list(
+#'   segment = 500,  # Use 500-token segments
+#'   content_covariates = c("wb_income_level")  # Word distributions vary by income level
+#' )
+#' model_weights <- list(
+#'   kappa = 0.1,  # Lower regularization
+#'   alpha = 50    # Higher exclusivity weight
+#' )
+#' model <- fit_model(tokens$data, nap_data$data$config, 
+#'                  k = 20, 
+#'                  modeling_config = modeling_config,
+#'                  model_weights = model_weights)
 #' }
-
 fit_model <- function(
-    corpus,
+    tokens, 
+    config,
     k = NULL,
-    k_min = 5,
-    k_max = 40, 
-    k_step = 5,
-    segment = 1000,
-    prevalence = NULL,
-    iterations = 200,
-    output_path = "data/topic_model.rds"
+    k_search_config = list(
+      min = 5,
+      max = 40,
+      step = 5
+    ),
+    modeling_config = list(
+      segment = 0,                # Default: no segmentation
+      prevalence_formula = NULL,  # Default: auto-generated from category_map
+      content_covariates = NULL,  # Default: no content covariates
+      iterations = 200,
+      seed = 1234,
+      include_model = FALSE        # Whether to include full model in output
+    ),
+    model_weights = list(
+      gamma.prior = NULL,         # Prior on document-topic proportions
+      sigma.prior = NULL,         # Prior on topic-word distributions
+      alpha = NULL,               # Parameter for exclusivity calculation
+      kappa = NULL                # Regularization parameter
+    )
 ) {
-  ## --- Housekeeping ----------------------------------------------------------
+  ## --- Setup & Initialization -------------------------------------------------
   start_time <- Sys.time()
   
   # Import the pipe operator
   `%>%` <- magrittr::`%>%`
   
-  # Set seed for reproducibility
-  seed <- 1234
-  set.seed(seed)
+  # Set default parameters for any missing config options
+  k_search_config$min <- k_search_config$min %||% 5
+  k_search_config$max <- k_search_config$max %||% 40
+  k_search_config$step <- k_search_config$step %||% 5
   
-  # Create output directory if needed
-  ensure_directory(output_path)
+  modeling_config$segment <- modeling_config$segment %||% 0
+  modeling_config$iterations <- modeling_config$iterations %||% 200
+  modeling_config$seed <- modeling_config$seed %||% 1234
+  modeling_config$include_model <- modeling_config$include_model %||% TRUE
+  
+  # Set seed for reproducibility
+  set.seed(modeling_config$seed)
   
   # Initialize diagnostics tracking
   diagnostics <- list(
     model_quality = list(),
     k_selection = list(),
     segmentation = list(),
+    effects_analysis = list(),
     processing_issues = character()
   )
   
-  ## --- Input validation ------------------------------------------------------
-  log_message("Validating input corpus", "fit_model")
+  ## --- Input validation -------------------------------------------------------
+  log_message("Validating input data", "fit_model")
   
-  tryCatch({
-    # Check that corpus has the expected structure
-    if (!is.list(corpus) || !"data" %in% names(corpus)) {
-      stop("Input must be the output from prepare_corpus()")
-    }
+  # Validate tokens structure
+  if (!is.list(tokens) || 
+      !all(c("tokens", "vocab", "metadata") %in% names(tokens))) {
+    error_msg <- "tokens must be a list with 'tokens', 'vocab', and 'metadata' components"
+    diagnostics$processing_issues <- c(diagnostics$processing_issues, error_msg)
+    log_message(error_msg, "fit_model", "ERROR")
     
-    # Validate corpus data components
-    required_components <- c("tokens", "vocab", "metadata")
-    missing_components <- setdiff(required_components, names(corpus$data))
-    if (length(missing_components) > 0) {
-      stop("Corpus missing required components: ", paste(missing_components, collapse = ", "))
-    }
-    
-    # Validate k parameters
-    if (!is.null(k)) {
-      if (!is.numeric(k) || k < 2) {
-        stop("k must be a number greater than 1")
-      }
-    } else {
-      if (!is.numeric(k_min) || !is.numeric(k_max) || !is.numeric(k_step)) {
-        stop("k_min, k_max, and k_step must be numbers")
-      }
-      if (k_min < 2) {
-        stop("k_min must be a number greater than 1")
-      }
-      if (k_max <= k_min) {
-        stop("k_max must be greater than k_min")
-      }
-      if (k_step <= 0) {
-        stop("k_step must must be a number greater than 0")
-      }
-    }
-    
-    # Validate segmentation parameter
-    if (!is.numeric(segment) || segment < 0) {
-      stop("segment must be a non-negative integer")
-    }
-    
-  }, error = function(e) {
-    log_message(paste("Validation error:", e$message), "fit_model", "ERROR")
-    diagnostics$processing_issues <- c(diagnostics$processing_issues, e$message)
-    stop(e$message)
-  })
-  
-  ## --- Extract corpus components ---------------------------------------------
-  log_message("Extracting corpus components", "fit_model")
-  
-  # Extract tokens
-  tokens <- corpus$data$tokens
-  
-  # Extract vocabulary if available
-  if ("vocab" %in% names(corpus$data)) {
-    vocabulary <- corpus$data$vocab
-  } else {
-    vocabulary <- sort(unique(tokens$word))
-    log_message("Created vocabulary from token data", "fit_model")
+    return(create_result(
+      data = NULL,
+      metadata = list(
+        timestamp = Sys.time(),
+        success = FALSE
+      ),
+      diagnostics = diagnostics
+    ))
   }
   
-  # Extract metadata
-  metadata <- corpus$data$metadata
+  # Validate config
+  if (!is.list(config) || 
+      !all(c("metadata", "category_map") %in% names(config))) {
+    error_msg <- "config must be a list with 'metadata' and 'category_map' components"
+    diagnostics$processing_issues <- c(diagnostics$processing_issues, error_msg)
+    log_message(error_msg, "fit_model", "ERROR")
+    
+    return(create_result(
+      data = NULL,
+      metadata = list(
+        timestamp = Sys.time(),
+        success = FALSE
+      ),
+      diagnostics = diagnostics
+    ))
+  }
   
-  # Check for required columns in tokens
-  if (!all(c("doc_id", "word") %in% names(tokens))) {
-    log_message("Tokens dataframe missing required columns (doc_id, word)", "fit_model", "ERROR")
-    stop("Tokens dataframe must contain doc_id and word columns")
+  # Validate tokens dataframe
+  tokens_df <- tokens$tokens
+  if (!"doc_id" %in% names(tokens_df) || !"word" %in% names(tokens_df)) {
+    error_msg <- "tokens dataframe must contain 'doc_id' and 'word' columns"
+    diagnostics$processing_issues <- c(diagnostics$processing_issues, error_msg)
+    log_message(error_msg, "fit_model", "ERROR")
+    
+    return(create_result(
+      data = NULL,
+      metadata = list(
+        timestamp = Sys.time(),
+        success = FALSE
+      ),
+      diagnostics = diagnostics
+    ))
+  }
+  
+  # Validate vocabulary
+  vocabulary <- tokens$vocab
+  if (length(vocabulary) == 0) {
+    error_msg <- "vocabulary is empty"
+    diagnostics$processing_issues <- c(diagnostics$processing_issues, error_msg)
+    log_message(error_msg, "fit_model", "ERROR")
+    
+    return(create_result(
+      data = NULL,
+      metadata = list(
+        timestamp = Sys.time(),
+        success = FALSE
+      ),
+      diagnostics = diagnostics
+    ))
   }
   
   # Count original documents
-  original_docs <- length(unique(tokens$doc_id))
-  log_message(paste("Corpus has", original_docs, "documents and", 
+  original_docs <- length(unique(tokens_df$doc_id))
+  log_message(paste("Processing", original_docs, "documents with", 
                     length(vocabulary), "unique terms"), "fit_model")
   
-  ## --- Apply segmentation ----------------------------------------------------
-  use_segmentation <- segment > 0
+  ## --- STM data preparation ---------------------------------------------------
+  log_message("Preparing data for STM", "fit_model")
+  
+  # Count word frequencies
+  word_counts <- tokens_df %>%
+    dplyr::count(doc_id, word)
+  
+  # Create document-feature matrix using tidytext
+  dfm_object <- tryCatch({
+    word_counts %>%
+      tidytext::cast_dfm(doc_id, word, n)
+  }, error = function(e) {
+    error_msg <- paste("DFM creation error:", e$message)
+    diagnostics$processing_issues <<- c(diagnostics$processing_issues, error_msg)
+    log_message(error_msg, "fit_model", "ERROR")
+    stop(error_msg)
+  })
+  
+  # Convert to STM format
+  stm_data <- tryCatch({
+    # Convert DFM to STM format
+    stm_result <- quanteda::convert(dfm_object, to = "stm")
+    
+    # Set document names to match IDs
+    stm_result$documents.dimnames <- rownames(dfm_object)
+    
+    stm_result
+  }, error = function(e) {
+    error_msg <- paste("STM conversion error:", e$message)
+    diagnostics$processing_issues <<- c(diagnostics$processing_issues, error_msg)
+    log_message(error_msg, "fit_model", "ERROR")
+    stop(error_msg)
+  })
+  
+  ## --- Segmentation (if requested) --------------------------------------------
+  use_segmentation <- modeling_config$segment > 0
   segment_mapping <- NULL
   
   if (use_segmentation) {
-    log_message(paste("Segmenting documents into chunks of", segment, "tokens"), "fit_model")
+    log_message(paste("Segmenting documents into chunks of", 
+                      modeling_config$segment, "tokens"), "fit_model")
     
     # Initialize segment storage
     segmented_tokens <- list()
@@ -156,12 +246,12 @@ fit_model <- function(
     )
     
     # Get unique document IDs
-    doc_ids <- unique(tokens$doc_id)
+    doc_ids <- unique(tokens_df$doc_id)
     
     # Process each document for segmentation
     for (doc_id in doc_ids) {
       # Extract tokens for this document
-      doc_tokens <- tokens[tokens$doc_id == doc_id, ]
+      doc_tokens <- tokens_df[tokens_df$doc_id == doc_id, ]
       total_tokens <- nrow(doc_tokens)
       
       # Skip empty documents
@@ -171,10 +261,10 @@ fit_model <- function(
       }
       
       # Calculate number of segments needed
-      n_segments <- ceiling(total_tokens / segment)
+      n_segments <- ceiling(total_tokens / modeling_config$segment)
       
       # If document is smaller than segmentation threshold, keep as one segment
-      if (total_tokens <= segment) {
+      if (total_tokens <= modeling_config$segment) {
         segment_id <- paste0(doc_id, "_1")
         
         # Create segment with original tokens
@@ -192,8 +282,8 @@ fit_model <- function(
       } else {
         # Split into segments of specified size
         for (j in 1:n_segments) {
-          start_idx <- (j - 1) * segment + 1
-          end_idx <- min(j * segment, total_tokens)
+          start_idx <- (j - 1) * modeling_config$segment + 1
+          end_idx <- min(j * modeling_config$segment, total_tokens)
           
           if (start_idx <= total_tokens) {
             # Create segment ID
@@ -218,160 +308,194 @@ fit_model <- function(
     }
     
     # Combine all segmented tokens
-    tokens <- do.call(rbind, segmented_tokens)
+    tokens_df <- do.call(rbind, segmented_tokens)
     
     # Update document IDs to use segment IDs
-    tokens$doc_id <- tokens$segment_id
+    tokens_df$doc_id <- tokens_df$segment_id
     
     log_message(paste("Created", nrow(segment_mapping), "segments from", 
                       length(doc_ids), "documents"), "fit_model")
     
     # Store segmentation info in diagnostics
-    diagnostics$segmentation$segment <- segment
+    diagnostics$segmentation$segment_size <- modeling_config$segment
     diagnostics$segmentation$original_docs <- original_docs
     diagnostics$segmentation$segment_count <- nrow(segment_mapping)
     
-    # Add metadata to segments
-    if (nrow(metadata) > 0) {
-      # Create lookup table for original document metadata
-      segment_metadata <- merge(segment_mapping, metadata,
-                                by.x = "original_doc_id", by.y = "doc_id")
-      
-      # Rename segment_id to doc_id for consistency
-      names(segment_metadata)[names(segment_metadata) == "segment_id"] <- "doc_id"
-      
-      # Use segment metadata for modeling
-      metadata <- segment_metadata
-    }
-  } else {
-    log_message("Using documents without segmentation", "fit_model")
+    # We need to redo the document-term matrix creation for segments
+    # Count word frequencies
+    word_counts <- tokens_df %>%
+      dplyr::count(doc_id, word)
+    
+    # Create document-feature matrix using tidytext
+    dfm_object <- word_counts %>%
+      tidytext::cast_dfm(doc_id, word, n)
+    
+    # Convert to STM format
+    stm_data <- quanteda::convert(dfm_object, to = "stm")
+    stm_data$documents.dimnames <- rownames(dfm_object)
   }
   
-  ## --- Create document-term matrix and convert to STM format ----------------
-  log_message("Creating document-term matrix", "fit_model")
+  ## --- Metadata preparation ---------------------------------------------------
+  log_message("Preparing metadata for modeling", "fit_model")
   
-  # Count word frequencies
-  word_counts <- tokens %>%
-    dplyr::count(doc_id, word)
+  # Get metadata from config
+  metadata_df <- config$metadata
   
-  # Create document-feature matrix using tidytext
-  dfm_object <- tryCatch({
-    word_counts %>%
-      tidytext::cast_dfm(doc_id, word, n)
-  }, error = function(e) {
-    log_message(paste("DFM creation error:", e$message), "fit_model", "ERROR")
-    diagnostics$processing_issues <- c(diagnostics$processing_issues, 
-                                       paste("DFM creation failed:", e$message))
-    stop(e$message)
-  })
-  
-  # Convert to STM format
-  stm_data <- tryCatch({
-    # Convert DFM to STM format
-    stm_result <- quanteda::convert(dfm_object, to = "stm")
+  # If segmentation was used, we need to match metadata to segments
+  if (use_segmentation) {
+    # Create segment metadata by joining with original metadata
+    segment_metadata <- dplyr::left_join(
+      segment_mapping,
+      metadata_df,
+      by = c("original_doc_id" = "doc_id")
+    )
     
-    # Set document names to match IDs
-    stm_result$documents.dimnames <- rownames(dfm_object)
+    # Rename segment_id to doc_id for consistency
+    segment_metadata$doc_id <- segment_metadata$segment_id
+    segment_metadata$segment_id <- NULL
     
-    stm_result
-  }, error = function(e) {
-    log_message(paste("STM conversion error:", e$message), "fit_model", "ERROR")
-    diagnostics$processing_issues <- c(diagnostics$processing_issues, 
-                                       paste("STM conversion failed:", e$message))
-    stop(e$message)
-  })
+    # Use segment metadata for modeling
+    model_metadata <- segment_metadata
+  } else {
+    # Use original metadata
+    model_metadata <- metadata_df
+  }
   
-  ## --- Process prevalence formula --------------------------------------------
-  log_message("Processing prevalence formula", "fit_model")
+  # Ensure metadata order matches dfm order
+  doc_ids <- rownames(dfm_object)
   
-  # Handle prevalence formula
-  if (is.null(prevalence)) {
-    # Default to no covariates
-    prev_formula <- stats::as.formula("~ 1")
-    log_message("Using default prevalence formula (no covariates)", "fit_model")
-  } else if (is.character(prevalence)) {
+  # Filter metadata to include only documents in the dfm
+  model_metadata <- model_metadata[model_metadata$doc_id %in% doc_ids, ]
+  
+  # Sort metadata to match dfm order
+  model_metadata <- model_metadata[match(doc_ids, model_metadata$doc_id), ]
+  
+  # Check for any mismatches
+  if (any(is.na(match(doc_ids, model_metadata$doc_id)))) {
+    warning_msg <- "Some documents don't have matching metadata"
+    diagnostics$processing_issues <- c(diagnostics$processing_issues, warning_msg)
+    log_message(warning_msg, "fit_model", "WARNING")
+  }
+  
+  # Prepare metadata for STM - remove doc_id and convert types
+  stm_metadata <- model_metadata[, !names(model_metadata) %in% c("doc_id")]
+  
+  # Convert logical and character columns to factors
+  for (col in names(stm_metadata)) {
+    if (is.logical(stm_metadata[[col]])) {
+      # Handle NA values in logical columns
+      if (any(is.na(stm_metadata[[col]]))) {
+        stm_metadata[[col]] <- factor(stm_metadata[[col]], 
+                                      levels = c(FALSE, TRUE, NA), 
+                                      exclude = NULL)
+        levels(stm_metadata[[col]])[3] <- "Missing"
+      } else {
+        stm_metadata[[col]] <- factor(stm_metadata[[col]], 
+                                      levels = c(FALSE, TRUE))
+      }
+    } else if (is.character(stm_metadata[[col]])) {
+      stm_metadata[[col]] <- factor(stm_metadata[[col]])
+    }
+  }
+  
+  ## --- Prevalence formula preparation -----------------------------------------
+  log_message("Preparing prevalence formula", "fit_model")
+  
+  # Initialize formula variables
+  search_prev_formula <- NULL
+  prev_formula <- NULL
+  
+  # Prepare prevalence formula based on provided value or auto-generate
+  if (is.null(modeling_config$prevalence_formula)) {
+    # Extract all dimensions from category_map
+    all_dimensions <- unlist(config$category_map)
+    
+    # Check which dimensions are available in metadata
+    available_dims <- all_dimensions[all_dimensions %in% names(stm_metadata)]
+    
+    if (length(available_dims) > 0) {
+      # For search phase, just use the first dimension to keep it simple
+      search_formula_str <- paste("~", available_dims[1])
+      search_prev_formula <- stats::as.formula(search_formula_str)
+      log_message(paste("Using simplified formula for searchK:", 
+                        search_formula_str), "fit_model")
+      
+      # For final model, use all dimensions
+      final_formula_str <- paste("~", paste(available_dims, collapse = " + "))
+      prev_formula <- stats::as.formula(final_formula_str)
+      log_message(paste("Will use full formula for final model:", 
+                        final_formula_str), "fit_model")
+    } else {
+      # No usable dimensions, use intercept-only model
+      search_prev_formula <- stats::as.formula("~ 1")
+      prev_formula <- stats::as.formula("~ 1")
+      log_message("No usable dimensions for prevalence formula, using intercept-only", "fit_model")
+    }
+  } else if (is.character(modeling_config$prevalence_formula)) {
     # Convert string to formula
     tryCatch({
-      prev_formula <- stats::as.formula(prevalence)
-      log_message(paste("Using prevalence formula:", prevalence), "fit_model")
+      prev_formula <- stats::as.formula(modeling_config$prevalence_formula)
+      search_prev_formula <- prev_formula  # Use same formula for both
+      log_message(paste("Using prevalence formula:", modeling_config$prevalence_formula), "fit_model")
     }, error = function(e) {
-      log_message(paste("Error parsing prevalence formula:", e$message), "fit_model", "ERROR")
-      diagnostics$processing_issues <- c(diagnostics$processing_issues, 
-                                         paste("Formula error:", e$message))
+      warning_msg <- paste("Error parsing prevalence formula:", e$message)
+      diagnostics$processing_issues <- c(diagnostics$processing_issues, warning_msg)
+      log_message(warning_msg, "fit_model", "WARNING")
       prev_formula <- stats::as.formula("~ 1")
-      log_message("Falling back to default prevalence formula (no covariates)", "fit_model", "WARNING")
+      search_prev_formula <- prev_formula
+      log_message("Falling back to intercept-only prevalence formula", "fit_model", "WARNING")
     })
-  } else if (inherits(prevalence, "formula")) {
-    # Use provided formula
-    prev_formula <- prevalence
-    log_message(paste("Using provided prevalence formula:", deparse(prev_formula)), "fit_model")
+  } else if (inherits(modeling_config$prevalence_formula, "formula")) {
+    # Use the provided formula
+    prev_formula <- modeling_config$prevalence_formula
+    search_prev_formula <- prev_formula  # Use same formula for both
+    log_message(paste("Using provided prevalence formula:", 
+                      deparse(prev_formula)), "fit_model")
   } else {
     # Invalid input, use default
-    log_message("Invalid prevalence formula, using default (no covariates)", "fit_model", "WARNING")
     prev_formula <- stats::as.formula("~ 1")
+    search_prev_formula <- prev_formula
+    log_message("Invalid prevalence formula, using intercept-only", "fit_model", "WARNING")
   }
   
-  ## --- Prepare metadata for STM ----------------------------------------------
-  # Ensure metadata is properly formatted for STM
-  if (!is.null(metadata) && nrow(metadata) > 0) {
-    # Check if metadata has doc_id
-    if ("doc_id" %in% names(metadata)) {
-      # Match metadata to documents in the correct order
-      doc_ids <- rownames(dfm_object)
+  ## --- Content covariates preparation -----------------------------------------
+  log_message("Preparing content covariates", "fit_model")
+  
+  # Initialize content covariates
+  content_covariates <- NULL
+  
+  # Process content covariates if provided
+  if (!is.null(modeling_config$content_covariates)) {
+    # Check which content covariates are available in metadata
+    available_content <- modeling_config$content_covariates[
+      modeling_config$content_covariates %in% names(stm_metadata)]
+    
+    if (length(available_content) > 0) {
+      # Create a formula for content covariates
+      content_formula <- stats::as.formula(
+        paste("~", paste(available_content, collapse = " + ")))
       
-      # Filter metadata to include only documents in the dfm
-      metadata_filtered <- metadata[metadata$doc_id %in% doc_ids, ]
+      # Create design matrix (without intercept)
+      content_covariates <- stats::model.matrix(content_formula, data = stm_metadata)[, -1, drop = FALSE]
       
-      # Sort metadata to match dfm order
-      metadata_ordered <- metadata_filtered[match(doc_ids, metadata_filtered$doc_id), ]
-      
-      # Check for any mismatches
-      if (any(is.na(match(doc_ids, metadata_filtered$doc_id)))) {
-        log_message("WARNING: Some documents don't have matching metadata", "fit_model", "WARNING")
-      }
-      
-      # Remove doc_id column as it's not needed for STM
-      metadata_final <- metadata_ordered[, !names(metadata_ordered) %in% c("doc_id")]
-      
-      # Convert logical and character columns to factors
-      for (col in names(metadata_final)) {
-        if (is.logical(metadata_final[[col]])) {
-          # Handle NA values in logical columns
-          if (any(is.na(metadata_final[[col]]))) {
-            metadata_final[[col]] <- factor(metadata_final[[col]], levels = c(FALSE, TRUE, NA), exclude = NULL)
-            levels(metadata_final[[col]])[3] <- "Missing"
-          } else {
-            metadata_final[[col]] <- factor(metadata_final[[col]], levels = c(FALSE, TRUE))
-          }
-        } else if (is.character(metadata_final[[col]])) {
-          metadata_final[[col]] <- factor(metadata_final[[col]])
-        }
-      }
-      
-      # Check if there are actually any metadata columns left
-      if (ncol(metadata_final) == 0) {
-        metadata_final <- NULL
-        log_message("No usable metadata columns found after filtering", "fit_model", "WARNING")
-      }
+      log_message(paste("Using content covariates:", 
+                        paste(available_content, collapse = ", ")), "fit_model")
     } else {
-      metadata_final <- NULL
-      log_message("Metadata missing doc_id column, cannot use for modeling", "fit_model", "WARNING")
+      warning_msg <- "Specified content covariates not available in metadata"
+      diagnostics$processing_issues <- c(diagnostics$processing_issues, warning_msg)
+      log_message(warning_msg, "fit_model", "WARNING")
     }
-  } else {
-    metadata_final <- NULL
   }
   
-  ## --- Determine optimal k (if not provided) ---------------------------------
+  ## --- K selection (if not provided) ------------------------------------------
   if (is.null(k)) {
-    log_message(paste("Determining optimal number of topics (k_min =", k_min, 
-                      ", k_max =", k_max, ", k_step =", k_step, ")"), "fit_model")
+    log_message(paste("Determining optimal number of topics (min =", k_search_config$min, 
+                      ", max =", k_search_config$max, 
+                      ", step =", k_search_config$step, ")"), "fit_model")
     
     # Generate sequence of k values to test
-    k_values <- seq(k_min, k_max, by = k_step)
+    k_values <- seq(k_search_config$min, k_search_config$max, by = k_search_config$step)
     log_message(paste("Testing K values:", paste(k_values, collapse = ", ")), "fit_model")
-    
-    # Set seed for reproducibility
-    set.seed(seed)
     
     # Run searchK
     k_search <- tryCatch({
@@ -379,453 +503,232 @@ fit_model <- function(
         documents = stm_data$documents,
         vocab = stm_data$vocab,
         K = k_values,
-        prevalence = prev_formula,
-        data = metadata_final,
-        max.em.its = iterations / 2,
+        prevalence = search_prev_formula,  # Use simplified formula
+        content = NULL,  # Always NULL for searchK to avoid exclusivity errors
+        data = stm_metadata,
+        max.em.its = round(modeling_config$iterations / 2),
         init.type = "Spectral",
         verbose = FALSE,
-        seed = seed
+        seed = modeling_config$seed
       )
     }, error = function(e) {
-      log_message(paste("Error in searchK:", e$message), "fit_model", "ERROR")
-      diagnostics$processing_issues <- c(diagnostics$processing_issues, 
-                                         paste("searchK error:", e$message))
-      stop(paste("Error determining optimal k:", e$message))
+      error_msg <- paste("Error in searchK:", e$message)
+      diagnostics$processing_issues <- c(diagnostics$processing_issues, error_msg)
+      log_message(error_msg, "fit_model", "ERROR")
+      stop(error_msg)
     })
     
     # Extract results
-    if (!"results" %in% names(k_search)) {
-      stop("searchK output missing 'results' component")
-    }
-    
     k_results <- k_search$results
-    
-    # Check if results is a data frame
-    if (!is.data.frame(k_results)) {
-      log_message("Converting results to data frame", "fit_model")
-      k_results <- as.data.frame(k_results)
-    }
-    
-    # Ensure we have the K column
-    if (!"K" %in% names(k_results)) {
-      log_message("K column not found, adding from k_values", "fit_model")
-      k_results$K <- k_values
-    }
     
     # Store searchK results in diagnostics
     diagnostics$k_selection$k_values <- k_values
     diagnostics$k_selection$raw_results <- k_results
     
-    # Create a copy for normalization
-    k_metrics <- k_results
-    
-    # Force all numeric columns to be numeric
-    numeric_cols <- c("K", "semcoh", "exclus", "heldout", "residual", "bound", "lbound", "em.its")
-    for (col in numeric_cols) {
-      if (col %in% names(k_metrics)) {
-        k_metrics[[col]] <- as.numeric(as.character(k_metrics[[col]]))
-      }
+    # Calculate combined score with balanced weights and complexity penalty
+    # Normalize metrics to 0-1 scale
+    normalize <- function(x) {
+      if (max(x) == min(x)) return(rep(0.5, length(x)))
+      (x - min(x)) / (max(x) - min(x))
     }
     
-    # Function to safely normalize values
-    safe_normalize <- function(x, invert = FALSE) {
-      x <- as.numeric(x)
-      if (length(x) == 0 || all(is.na(x))) {
-        return(rep(0, length(x)))
-      }
-      
-      # Remove NA values for calculation
-      valid_x <- x[!is.na(x)]
-      if (length(valid_x) == 0) {
-        return(rep(0, length(x)))
-      }
-      
-      x_min <- min(valid_x)
-      x_max <- max(valid_x)
-      
-      if (x_min == x_max) {
-        # No variation, return 0.5 for all
-        return(rep(0.5, length(x)))
-      }
-      
-      # Normalize
-      norm_x <- (x - x_min) / (x_max - x_min)
-      
-      # Invert if needed (for metrics where lower is better)
-      if (invert) {
-        norm_x <- 1 - norm_x
-      }
-      
-      return(norm_x)
-    }
+    # For each metric, higher is better except residual (lower is better)
+    semcoh_norm <- normalize(k_results$semcoh)
+    exclus_norm <- normalize(k_results$exclus)
+    residual_norm <- 1 - normalize(k_results$residual)  # Invert so higher is better
     
-    # Calculate perplexity scores if not already present in results
-    # Lower perplexity means better fit, so we invert for normalization
-    if (!"perplexity" %in% names(k_metrics)) {
-      # Calculate perplexity for each model in searchK
-      log_message("Calculating perplexity for each K value", "fit_model")
-      
-      perplexity_scores <- numeric(length(k_values))
-      
-      # If available, use the models already computed in searchK
-      if ("exclusivity" %in% names(k_search) && is.list(k_search$exclusivity)) {
-        models_list <- k_search$exclusivity
-        
-        for (i in seq_along(k_values)) {
-          k_val <- k_values[i]
-          model_index <- which(sapply(models_list, function(m) m$K == k_val))
-          
-          if (length(model_index) > 0) {
-            model <- models_list[[model_index[1]]]
-            
-            # Use a sample of data as held-out for perplexity calculation
-            if (!is.null(stm_data$documents) && length(stm_data$documents) > 0) {
-              # Take a small sample of documents for perplexity calculation
-              sample_size <- min(20, length(stm_data$documents))
-              sample_indices <- sample(seq_along(stm_data$documents), sample_size)
-              
-              # Use STM's eval.perplexity function
-              perp <- tryCatch({
-                stm::eval.perplexity(model, stm_data$documents[sample_indices], stm_data$vocab)
-              }, error = function(e) {
-                NA_real_
-              })
-              
-              perplexity_scores[i] <- perp
-            }
-          }
-        }
-        
-        # Add perplexity to k_metrics
-        k_metrics$perplexity <- perplexity_scores
-      }
-    }
-    
-    # Normalize metrics (higher values = better for all normalized metrics)
-    k_metrics$semcoh_norm <- safe_normalize(k_metrics$semcoh)
-    k_metrics$exclus_norm <- safe_normalize(k_metrics$exclus)
-    
-    # Held-out likelihood - higher is better
-    if ("heldout" %in% names(k_metrics)) {
-      k_metrics$heldout_norm <- safe_normalize(k_metrics$heldout)
-    } else {
-      k_metrics$heldout_norm <- 0.5  # neutral value if missing
-    }
-    
-    # Residual - lower is better, so invert
-    if ("residual" %in% names(k_metrics)) {
-      k_metrics$residual_norm <- safe_normalize(k_metrics$residual, invert = TRUE)
-    } else {
-      k_metrics$residual_norm <- 0.5  # neutral value if missing
-    }
-    
-    # Perplexity - lower is better, so invert
-    if ("perplexity" %in% names(k_metrics)) {
-      k_metrics$perp_norm <- safe_normalize(k_metrics$perplexity, invert = TRUE)
-    } else {
-      k_metrics$perp_norm <- 0.5  # neutral value if missing
-    }
-    
-    # Calculate combined score with balanced weights and stronger complexity penalty
-    k_metrics$combined_score <- (
-      0.25 * k_metrics$semcoh_norm + 
-        0.25 * k_metrics$exclus_norm + 
-        0.35 * k_metrics$heldout_norm + 
-        0.15 * k_metrics$residual_norm +
-        (if("perp_norm" %in% names(k_metrics)) 0.10 * k_metrics$perp_norm else 0)
-    ) - 0.1 * safe_normalize(k_metrics$K)  # Stronger complexity penalty
-    
-    # Log the metrics for better understanding
-    log_message("K selection metrics:", "fit_model")
-    metrics_to_show <- c("K", "semcoh", "exclus", "residual", "heldout")
-    if ("perplexity" %in% names(k_metrics)) metrics_to_show <- c(metrics_to_show, "perplexity")
-    metrics_to_show <- c(metrics_to_show, "combined_score")
-    
-    # Only show columns that exist in k_metrics
-    metrics_to_show <- intersect(metrics_to_show, names(k_metrics))
-    print(k_metrics[, metrics_to_show])
+    # Calculate combined score
+    combined_score <- 0.35 * semcoh_norm + 
+      0.35 * exclus_norm + 
+      0.30 * residual_norm - 
+      0.05 * normalize(k_results$K)  # Small complexity penalty
     
     # Find best K
-    best_idx <- which.max(k_metrics$combined_score)
-    
-    if (length(best_idx) == 0) {
-      error_msg <- "Could not determine best K: no maximum found"
-      log_message(error_msg, "fit_model", "ERROR")
-      stop(error_msg)
-    }
-    
-    # Extract best K and ensure it's numeric
-    best_k <- as.numeric(k_metrics$K[best_idx])
-    
-    # Validate best_k
-    if (is.null(best_k) || is.na(best_k) || length(best_k) == 0) {
-      error_msg <- "Failed to extract valid best K value"
-      log_message(error_msg, "fit_model", "ERROR")
-      stop(error_msg)
-    }
+    best_idx <- which.max(combined_score)
+    best_k <- k_values[best_idx]
     
     log_message(paste("Selected optimal K =", best_k), "fit_model")
     
-    # Log detailed metrics for the selected K
-    tryCatch({
-      log_message("Metrics for selected K:", "fit_model")
-      for (metric in metrics_to_show) {
-        if (metric %in% names(k_metrics)) {
-          log_message(paste("  -", metric, "=", round(k_metrics[best_idx, metric], 4)), "fit_model")
-        }
-      }
-    }, error = function(e) {
-      log_message(paste("Could not display detailed metrics:", e$message), "fit_model", "WARNING")
-    })
-    
     # Store selection results in diagnostics
-    diagnostics$k_selection$metrics <- k_metrics
+    diagnostics$k_selection$combined_score <- combined_score
     diagnostics$k_selection$best_k <- best_k
     diagnostics$k_selection$best_idx <- best_idx
     
     # Use best k for final model
     k <- best_k
-    
-    log_message(paste("K selection complete. Proceeding with K =", k), "fit_model")
   }
   
-  ## --- Fit final STM model --------------------------------------------------
-  log_message(paste("Fitting final STM model with k =", k), "fit_model")
+  ## --- Fit STM model ----------------------------------------------------------
+  log_message(paste("Fitting STM model with k =", k), "fit_model")
   
-  # Debug: Check the data types before fitting
-  if (!is.null(metadata_final)) {
-    log_message("Checking metadata structure:", "fit_model")
-    log_message(paste("Metadata dimensions:", nrow(metadata_final), "x", ncol(metadata_final)), "fit_model")
-    log_message(paste("Metadata columns:", paste(names(metadata_final), collapse=", ")), "fit_model")
-    
-    # Check for NA values
-    na_counts <- sapply(metadata_final, function(x) sum(is.na(x)))
-    if (any(na_counts > 0)) {
-      log_message("WARNING: NA values found in metadata:", "fit_model")
-      for (col in names(na_counts)[na_counts > 0]) {
-        log_message(paste("  ", col, ":", na_counts[col], "NA values"), "fit_model")
-      }
-    }
-    
-    # Check data types for prevalence formula variables
-    if (inherits(prev_formula, "formula")) {
-      vars <- all.vars(prev_formula)
-      for (var in vars) {
-        if (var %in% names(metadata_final)) {
-          log_message(paste(var, "- class:", class(metadata_final[[var]]), 
-                            "- type:", typeof(metadata_final[[var]])), "fit_model")
-          
-          # Check for NA values in this variable
-          if (sum(is.na(metadata_final[[var]])) > 0) {
-            log_message(paste("WARNING:", var, "has", sum(is.na(metadata_final[[var]])), "NA values"), "fit_model")
-            
-            # For factors, replace NA with a new level
-            if (is.factor(metadata_final[[var]])) {
-              levels(metadata_final[[var]]) <- c(levels(metadata_final[[var]]), "Missing")
-              metadata_final[[var]][is.na(metadata_final[[var]])] <- "Missing"
-              log_message(paste("Replaced NA values in", var, "with 'Missing' level"), "fit_model")
-            }
-          }
-          
-          # Convert logical variables to factors
-          if (is.logical(metadata_final[[var]])) {
-            metadata_final[[var]] <- factor(metadata_final[[var]], levels = c(FALSE, TRUE))
-            log_message(paste("Converted", var, "from logical to factor"), "fit_model")
-          }
-          
-          # Ensure character variables are factors
-          if (is.character(metadata_final[[var]])) {
-            metadata_final[[var]] <- factor(metadata_final[[var]])
-            log_message(paste("Converted", var, "from character to factor"), "fit_model")
-          }
-        } else {
-          log_message(paste("WARNING: Variable", var, "not found in metadata"), "fit_model")
-        }
-      }
-    }
-    
-    # Remove any rows with NA values in key columns
-    complete_rows <- complete.cases(metadata_final[, all.vars(prev_formula)])
-    if (sum(!complete_rows) > 0) {
-      log_message(paste("WARNING: Removing", sum(!complete_rows), "rows with NA values"), "fit_model")
-      metadata_final <- metadata_final[complete_rows, ]
-      stm_data$documents <- stm_data$documents[complete_rows]
-    }
-  }
+  # Set seed for reproducibility 
+  set.seed(modeling_config$seed)
   
-  # Set seed for reproducibility
-  set.seed(seed)
-  
-  # Fit model with better error handling
+  # Fit model with configured options
   stm_model <- tryCatch({
     stm::stm(
       documents = stm_data$documents,
       vocab = stm_data$vocab,
       K = k,
       prevalence = prev_formula,
-      data = metadata_final,
-      max.em.its = iterations,
+      content = content_covariates,
+      data = stm_metadata,
+      max.em.its = modeling_config$iterations,
       init.type = "Spectral",
       verbose = FALSE,
-      seed = seed
+      gamma.prior = model_weights$gamma.prior,
+      sigma.prior = model_weights$sigma.prior,
+      kappa = model_weights$kappa,
+      seed = modeling_config$seed
     )
   }, error = function(e) {
-    log_message(paste("Error fitting STM model:", e$message), "fit_model", "ERROR")
-    
-    # Additional debugging information
-    log_message("Debug information:", "fit_model", "ERROR")
-    log_message(paste("k =", k), "fit_model", "ERROR")
-    log_message(paste("Number of documents:", length(stm_data$documents)), "fit_model", "ERROR")
-    log_message(paste("Vocabulary size:", length(stm_data$vocab)), "fit_model", "ERROR")
-    log_message(paste("Prevalence formula:", deparse(prev_formula)), "fit_model", "ERROR")
-    
-    if (!is.null(metadata_final)) {
-      log_message(paste("Metadata rows:", nrow(metadata_final)), "fit_model", "ERROR")
-      log_message(paste("Metadata columns:", paste(names(metadata_final), collapse=", ")), "fit_model", "ERROR")
-      
-      # Print first few rows of metadata for debugging
-      log_message("First few rows of metadata:", "fit_model", "ERROR")
-      print(head(metadata_final))
-    }
-    
-    diagnostics$processing_issues <- c(diagnostics$processing_issues, 
-                                       paste("STM fitting error:", e$message))
-    stop(paste("Error fitting STM model:", e$message))
+    error_msg <- paste("Error fitting STM model:", e$message)
+    diagnostics$processing_issues <<- c(diagnostics$processing_issues, error_msg)
+    log_message(error_msg, "fit_model", "ERROR")
+    stop(error_msg)
   })
   
-  ## --- Extract topic information --------------------------------------------
+  ## --- Extract topic information ----------------------------------------------
   log_message("Extracting topic information", "fit_model")
   
   # Extract document-topic proportions
   topic_proportions <- stm_model$theta
   
   # Add document IDs
-  doc_ids <- rownames(dfm_object)
-  topic_proportions_df <- as.data.frame(topic_proportions)
-  topic_proportions_df$doc_id <- doc_ids
+  topic_props_df <- as.data.frame(topic_proportions)
+  topic_props_df$doc_id <- rownames(dfm_object)
   
   # Rename topic columns
-  names(topic_proportions_df)[1:k] <- paste0("Topic_", 1:k)
+  names(topic_props_df)[1:k] <- paste0("Topic_", 1:k)
   
-  # Get topic labels using different methods
-  topic_labels <- tryCatch({
-    stm::labelTopics(stm_model, n = 10)
-  }, error = function(e) {
-    log_message(paste("Error extracting topic labels:", e$message), "fit_model", "WARNING")
-    diagnostics$processing_issues <- c(diagnostics$processing_issues, 
-                                       paste("Label extraction error:", e$message))
-    NULL
-  })
-  
-  # Create data frames for different label types
-  if (!is.null(topic_labels)) {
-    # Highest probability labels
+  # Get topic labels and top terms
+  topic_terms <- tryCatch({
+    labels <- stm::labelTopics(stm_model, n = 10)
+    
+    # Create data frames for different label types
     prob_labels <- data.frame(
       topic_id = 1:k,
       label_type = "probability",
-      words = apply(topic_labels$prob, 1, paste, collapse = ", ")
+      words = apply(labels$prob, 1, paste, collapse = ", "),
+      stringsAsFactors = FALSE
     )
     
-    # FREX labels (balancing frequency and exclusivity)
     frex_labels <- data.frame(
       topic_id = 1:k,
       label_type = "frex",
-      words = apply(topic_labels$frex, 1, paste, collapse = ", ")
+      words = apply(labels$frex, 1, paste, collapse = ", "),
+      stringsAsFactors = FALSE
     )
     
-    # Lift labels
     lift_labels <- data.frame(
       topic_id = 1:k,
       label_type = "lift",
-      words = apply(topic_labels$lift, 1, paste, collapse = ", ")
+      words = apply(labels$lift, 1, paste, collapse = ", "),
+      stringsAsFactors = FALSE
     )
     
-    # Score labels
     score_labels <- data.frame(
       topic_id = 1:k,
       label_type = "score",
-      words = apply(topic_labels$score, 1, paste, collapse = ", ")
+      words = apply(labels$score, 1, paste, collapse = ", "),
+      stringsAsFactors = FALSE
     )
     
     # Combine all label types
     all_labels <- rbind(prob_labels, frex_labels, lift_labels, score_labels)
     
-    # Create a wide format for easier use
+    # Also create a wide format for easier use
     label_summary <- data.frame(
       topic_id = 1:k,
       prob_words = prob_labels$words,
       frex_words = frex_labels$words,
       lift_words = lift_labels$words,
-      score_words = score_labels$words
+      score_words = score_labels$words,
+      stringsAsFactors = FALSE
     )
-  } else {
-    # Create empty label data frames if extraction failed
-    all_labels <- data.frame(topic_id = integer(0), label_type = character(0), words = character(0))
-    label_summary <- data.frame(topic_id = 1:k)
-  }
+    
+    list(
+      all_labels = all_labels,
+      label_summary = label_summary
+    )
+  }, error = function(e) {
+    warning_msg <- paste("Error extracting topic labels:", e$message)
+    diagnostics$processing_issues <<- c(diagnostics$processing_issues, warning_msg)
+    log_message(warning_msg, "fit_model", "WARNING")
+    
+    # Return empty label data frames
+    list(
+      all_labels = data.frame(
+        topic_id = integer(0), 
+        label_type = character(0), 
+        words = character(0),
+        stringsAsFactors = FALSE
+      ),
+      label_summary = data.frame(
+        topic_id = 1:k,
+        stringsAsFactors = FALSE
+      )
+    )
+  })
   
-  ## --- Aggregate results -----------------------------------------------------
+  ## --- Aggregate results (if segmentation used) -------------------------------
   if (use_segmentation) {
     log_message("Aggregating segment-level results to document level", "fit_model")
     
     # Merge topic proportions with segment mapping
-    segment_props <- merge(
-      topic_proportions_df,
+    segment_props <- dplyr::left_join(
+      topic_props_df,
       segment_mapping,
-      by.x = "doc_id",
-      by.y = "segment_id"
+      by = c("doc_id" = "segment_id")
     )
     
-    # Aggregate to document level - simple average across segments
-    doc_topic_cols <- paste0("Topic_", 1:k)
+    # Get topic columns
+    topic_cols <- paste0("Topic_", 1:k)
     
+    # Aggregate to document level using weighted average
     doc_topic_props <- segment_props %>%
       dplyr::group_by(original_doc_id) %>%
       dplyr::summarize(
-        across(all_of(doc_topic_cols), mean),
+        across(all_of(topic_cols), ~ weighted.mean(., token_count, na.rm = TRUE)),
         .groups = "drop"
       )
     
     # Rename for consistency
     names(doc_topic_props)[names(doc_topic_props) == "original_doc_id"] <- "doc_id"
     
-    # Get document-level metadata (before segmentation)
-    if (!is.null(corpus$data$metadata)) {
-      doc_metadata <- corpus$data$metadata
-      
-      # Merge with aggregated topic proportions
-      doc_topic_props <- merge(doc_topic_props, doc_metadata, by = "doc_id", all.x = TRUE)
-    }
-    
-    # Store both segment-level and document-level results
-    topic_results <- list(
-      segment_level = topic_proportions_df,
-      document_level = doc_topic_props,
-      segment_mapping = segment_mapping
+    # Join with original metadata (pre-segmentation)
+    doc_topic_props <- dplyr::left_join(
+      doc_topic_props,
+      metadata_df,
+      by = "doc_id"
     )
   } else {
-    # No segmentation - just use the topic proportions directly
-    if (!is.null(metadata) && nrow(metadata) > 0) {
-      # Add metadata back to topic proportions
-      doc_topic_props <- merge(topic_proportions_df, metadata, by = "doc_id", all.x = TRUE)
-    } else {
-      doc_topic_props <- topic_proportions_df
-    }
-    
-    # Store only document-level results
-    topic_results <- list(
-      document_level = doc_topic_props
+    # No segmentation - just join with metadata
+    doc_topic_props <- dplyr::left_join(
+      topic_props_df,
+      metadata_df,
+      by = "doc_id"
     )
   }
   
-  ## --- Calculate model quality metrics ---------------------------------------
+  # Create long format for easier analysis
+  topic_data <- doc_topic_props %>%
+    tidyr::pivot_longer(
+      cols = starts_with("Topic_"),
+      names_to = "Topic",
+      values_to = "Proportion"
+    )
+  
+  ## --- Calculate model quality metrics ----------------------------------------
   log_message("Calculating model quality metrics", "fit_model")
   
   # Calculate semantic coherence
   coherence <- tryCatch({
     mean(stm::semanticCoherence(stm_model, stm_data$documents))
   }, error = function(e) {
-    log_message(paste("Error calculating coherence:", e$message), "fit_model", "WARNING")
+    warning_msg <- paste("Error calculating coherence:", e$message)
+    diagnostics$processing_issues <<- c(diagnostics$processing_issues, warning_msg)
+    log_message(warning_msg, "fit_model", "WARNING")
     NA
   })
   
@@ -833,78 +736,200 @@ fit_model <- function(
   exclusivity <- tryCatch({
     mean(stm::exclusivity(stm_model))
   }, error = function(e) {
-    log_message(paste("Error calculating exclusivity:", e$message), "fit_model", "WARNING")
+    warning_msg <- paste("Error calculating exclusivity:", e$message)
+    diagnostics$processing_issues <<- c(diagnostics$processing_issues, warning_msg)
+    log_message(warning_msg, "fit_model", "WARNING")
+    NA
+  })
+  
+  # Calculate held-out likelihood if available
+  heldout <- tryCatch({
+    if (!is.null(stm_model$heldout)) {
+      stm_model$heldout$bound
+    } else {
+      NA
+    }
+  }, error = function(e) {
     NA
   })
   
   # Store quality metrics
-  diagnostics$model_quality$coherence <- coherence
-  diagnostics$model_quality$exclusivity <- exclusivity
-  diagnostics$model_quality$iterations <- stm_model$convergence$its
-  diagnostics$model_quality$convergence <- !stm_model$convergence$converged
+  model_quality <- list(
+    coherence = coherence,
+    exclusivity = exclusivity,
+    heldout = heldout,
+    iterations = stm_model$convergence$its,
+    converged = stm_model$convergence$converged
+  )
   
-  ## --- Create long format for topic data ------------------------------------
-  # Convert to long format for easier analysis
-  doc_topic_long <- topic_results$document_level %>%
-    tidyr::pivot_longer(
-      cols = starts_with("Topic_"),
-      names_to = "Topic",
-      values_to = "Proportion"
-    )
+  diagnostics$model_quality <- model_quality
   
-  ## --- Prepare result ---------------------------------------------------------
+  ## --- Run effects analysis ---------------------------------------------------
+  log_message("Running effects analysis", "fit_model")
+  
+  # Initialize lists for effects and variance explained
+  effects_list <- list()
+  variance_explained <- list()
+  
+  # Determine dimensions to analyze from category_map
+  all_dimensions <- unlist(config$category_map)
+  available_dims <- all_dimensions[all_dimensions %in% names(doc_topic_props)]
+  
+  # Helper function to calculate variance explained
+  calculate_variance <- function(effects_obj, topic_count) {
+    total_variance <- 0
+    
+    # Loop through topics
+    for (i in 1:topic_count) {
+      # Get summary for this topic
+      s <- summary(effects_obj, topics = i)
+      
+      # Add this topic's explained variance
+      if (!is.null(s$r2)) {
+        total_variance <- total_variance + s$r2
+      }
+    }
+    
+    # Return average across topics
+    return(total_variance / topic_count)
+  }
+  
+  # Process each dimension
+  for (dim in available_dims) {
+    log_message(paste("Analyzing effects of", dim), "fit_model")
+    
+    # Skip if dimension has insufficient variation
+    if (is.factor(doc_topic_props[[dim]]) && length(levels(doc_topic_props[[dim]])) < 2) {
+      warning_msg <- paste("Dimension", dim, "has insufficient variation for effects analysis")
+      diagnostics$processing_issues <- c(diagnostics$processing_issues, warning_msg)
+      log_message(warning_msg, "fit_model", "WARNING")
+      next
+    }
+    
+    if (is.logical(doc_topic_props[[dim]]) && length(unique(doc_topic_props[[dim]])) < 2) {
+      warning_msg <- paste("Dimension", dim, "has insufficient variation for effects analysis")
+      diagnostics$processing_issues <- c(diagnostics$processing_issues, warning_msg)
+      log_message(warning_msg, "fit_model", "WARNING")
+      next
+    }
+    
+    # Create formula for this dimension
+    formula <- stats::as.formula(paste("~", dim))
+    
+    # Try to estimate effects
+    effects_result <- tryCatch({
+      # Estimate effects for all topics
+      effects <- stm::estimateEffect(
+        formula, 
+        stmobj = stm_model, 
+        metadata = doc_topic_props,
+        uncertainty = 20  # Default value
+      )
+      
+      # Calculate variance explained
+      var_explained <- calculate_variance(effects, k)
+      
+      list(
+        effects = effects,
+        variance = var_explained
+      )
+    }, error = function(e) {
+      warning_msg <- paste("Error estimating effects for", dim, ":", e$message)
+      diagnostics$processing_issues <<- c(diagnostics$processing_issues, warning_msg)
+      log_message(warning_msg, "fit_model", "WARNING")
+      NULL
+    })
+    
+    # Store results if successful
+    if (!is.null(effects_result)) {
+      effects_list[[dim]] <- effects_result$effects
+      variance_explained[[dim]] <- effects_result$variance
+      
+      log_message(paste(dim, "explains approximately", 
+                        round(effects_result$variance * 100, 1), "% of topic variance"), 
+                  "fit_model")
+    }
+  }
+  
+  # Store effect analysis summary in diagnostics
+  diagnostics$effects_analysis$dimensions <- names(effects_list)
+  diagnostics$effects_analysis$variance_explained <- variance_explained
+  
+  ## --- Create and format final results ----------------------------------------
+  log_message("Preparing final results", "fit_model")
+  
+  # Create result data
+  result_data <- list(
+    # Include model only if requested
+    model = if(modeling_config$include_model) stm_model else NULL,
+    
+    # Document-topic proportions (wide format)
+    topic_proportions = doc_topic_props,
+    
+    # Topic data (long format with metadata)
+    topic_data = topic_data,
+    
+    # Topic terms
+    topic_terms = topic_terms,
+    
+    # Topic correlations
+    topic_correlations = stm_model$beta$cor,
+    
+    # Segmentation information (if used)
+    segments = if(use_segmentation) list(
+      mapping = segment_mapping,
+      segment_size = modeling_config$segment
+    ) else NULL,
+    
+    # Effects analysis results
+    effects = effects_list,
+    
+    # Variance explained by each dimension
+    variance_explained = variance_explained
+  )
+  
+  ## --- Create result object ---------------------------------------------------
   # Calculate processing time
   end_time <- Sys.time()
   processing_time <- as.numeric(difftime(end_time, start_time, units = "secs"))
   
-  # Create result data
-  result_data <- list(
-    # Core model results
-    topic_proportions = topic_results$document_level,  # Document-level results
-    topic_data = doc_topic_long,                      # Long format for easy analysis
-    topic_labels = all_labels,                        # All label types
-    label_summary = label_summary,                    # Wide format labels
-    topic_correlations = stm_model$beta$cor,          # Topic correlation matrix
-    
-    # If segmentation was used, include segment information
-    segmentation = if(use_segmentation) {
-      list(
-        segment_proportions = topic_results$segment_level,
-        segment_mapping = topic_results$segment_mapping
-      )
-    } else {
-      NULL
-    },
-    
-    # Include model object for potential further analysis
-    model = stm_model
-  )
-  
-  # Create metadata
+  # Create metadata about the processing
   result_metadata <- list(
     timestamp = start_time,
     processing_time_sec = processing_time,
     k = k,
     auto_k = is.null(k),
     prevalence_formula = deparse(prev_formula),
+    content_covariates = if(!is.null(modeling_config$content_covariates)) 
+      modeling_config$content_covariates else NULL,
     segmentation_used = use_segmentation,
-    segment = segment,
-    iterations = iterations,
-    documents = if(use_segmentation) length(unique(segment_mapping$original_doc_id)) else nrow(topic_proportions_df),
+    segment_size = if(use_segmentation) modeling_config$segment else NA,
+    iterations = modeling_config$iterations,
+    documents = if(use_segmentation) 
+      length(unique(segment_mapping$original_doc_id)) 
+    else nrow(topic_proportions),
     segments = if(use_segmentation) nrow(segment_mapping) else NA,
-    seed = seed
+    seed = modeling_config$seed,
+    model_included = modeling_config$include_model
   )
   
-  # Create final result
-  final_result <- create_result(
-    data = result_data,
-    metadata = result_metadata,
-    diagnostics = diagnostics
+  # Add diagnostics summary 
+  diagnostics$summary <- list(
+    model_converged = model_quality$converged,
+    coherence = model_quality$coherence,
+    exclusivity = model_quality$exclusivity,
+    dimensions_analyzed = length(effects_list),
+    issues_count = length(diagnostics$processing_issues)
   )
   
   log_message(sprintf("Model fitting complete: k = %d, coherence = %.3f, exclusivity = %.3f", 
                       k, coherence, exclusivity), 
               "fit_model")
   
-  return(final_result)
+  # Return standardized result
+  return(create_result(
+    data = result_data,
+    metadata = result_metadata,
+    diagnostics = diagnostics
+  ))
 }
