@@ -33,22 +33,22 @@ category_map <- list(
   Geography = c("is_sids", "is_lldc")
 )
 
-nap_data <- auto_cache(add_metadata, pdfs$data, geo_config = list(sids_list = sids, lldc_list = lldc), overwrite = TRUE)
-tokens <- auto_cache(validate_tokens, nap_data)
+nap_data <- auto_cache(add_metadata, pdfs$data, geo_config = list(sids_list = sids, lldc_list = lldc))
+tokens <- auto_cache(validate_tokens, nap_data$data$documents)
 
 # Step 2: Structural topic modeling
 source("scripts/fit_model.R")
 
-model <- auto_cache(fit_model, tokens, nap_data)
+model <- auto_cache(fit_model, tokens$data, nap_data$data$config, overwrite = TRUE)
 
 # Step 3: Analysis
 source("scripts/name_topics.R")
 source("scripts/find_dominance.R")
 
 names <- auto_cache(name_topics, model)
-dominance <- auto_cache(find_all_dominance, model, n = 3)
+dominance <- auto_cache(find_dominance, model, n = 3, overwrite = TRUE)
 
 # Step 4: Findings
 source("scripts/create_tables.R")
 
-tables <- create_tables(names, dominance, effects)
+tables <- create_tables(names, dominance, effects, overwrite = TRUE)
