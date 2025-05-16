@@ -3,13 +3,17 @@
 #'   PDF documents using links obtained from the NAP Central website. Handles 
 #'   connection errors and extraction issues.
 #'
-#' @param scraped_website Data frame containing country names, dates, and PDF links
+#' @param tokens_data Data frame containing doc_id and pdf_link columns from scrape_web
 #' @param pdf_dir Directory to temporarily store downloaded PDFs (default: "data")
 #' @param output_path Path to save the extracted text data (default: "data/pdfs.rds")
 #' @param respect_robots_txt Whether to follow robots.txt rules (default: TRUE)
 #'
 #' @return A list containing:
-#'   \item{data}{Data frame with country_name, date_posted, and pdf_text columns}
+#'   \item{data}{
+#'     \itemize{
+#'       \item tokens - Data frame with doc_id and text columns
+#'     }
+#'   }
 #'   \item{metadata}{Processing information including timing and success rates}
 #'   \item{diagnostics}{Information about errors encountered during processing}
 #'
@@ -18,12 +22,12 @@
 #' # First scrape the website
 #' web_data <- scrape_web()
 #' 
-#' # Then extract PDF content
-#' pdf_data <- extract_pdfs(web_data)
+#' # Then extract PDF content from the tokens data path
+#' pdf_data <- extract_pdfs(web_data$data$tokens)
 #' }
 
 extract_pdfs <- function(
-    scraped_website, 
+    tokens_data, 
     pdf_dir = "data",
     output_path = "data/pdfs.rds",
     respect_robots_txt = TRUE
@@ -47,16 +51,18 @@ extract_pdfs <- function(
   ## --- Input validation -------------------------------------------------------
   log_message("Validating input data", "extract_pdfs")
   
-  required_cols <- c("country_name", "pdf_link", "date_posted")
-  missing_cols <- setdiff(required_cols, names(scraped_website))
+  required_cols <- c("doc_id", "pdf_link")
+  missing_cols <- setdiff(required_cols, names(tokens_data))
   
-  if (!is.data.frame(scraped_website)) {
-    error_msg <- "scraped_website must be a dataframe"
+  if (!is.data.frame(tokens_data)) {
+    error_msg <- "tokens_data must be a dataframe"
     diagnostics$processing_issues <- c(diagnostics$processing_issues, error_msg)
     log_message(error_msg, "extract_pdfs", "ERROR")
     
     return(create_result(
-      data = NULL,
+      data = list(
+        tokens = NULL
+      ),
       metadata = list(
         timestamp = Sys.time(),
         success = FALSE
@@ -65,13 +71,15 @@ extract_pdfs <- function(
     ))
   }
   
-  if (nrow(scraped_website) == 0) {
-    error_msg <- "scraped_website has no rows"
+  if (nrow(tokens_data) == 0) {
+    error_msg <- "tokens_data has no rows"
     diagnostics$processing_issues <- c(diagnostics$processing_issues, error_msg)
     log_message(error_msg, "extract_pdfs", "ERROR")
     
     return(create_result(
-      data = NULL,
+      data = list(
+        tokens = NULL
+      ),
       metadata = list(
         timestamp = Sys.time(),
         success = FALSE
@@ -81,12 +89,14 @@ extract_pdfs <- function(
   }
   
   if (length(missing_cols) > 0) {
-    error_msg <- paste("scraped_website is missing required columns:", paste(missing_cols, collapse = ", "))
+    error_msg <- paste("tokens_data is missing required columns:", paste(missing_cols, collapse = ", "))
     diagnostics$processing_issues <- c(diagnostics$processing_issues, error_msg)
     log_message(error_msg, "extract_pdfs", "ERROR")
     
     return(create_result(
-      data = NULL,
+      data = list(
+        tokens = NULL
+      ),
       metadata = list(
         timestamp = Sys.time(),
         success = FALSE
@@ -101,7 +111,9 @@ extract_pdfs <- function(
     log_message(error_msg, "extract_pdfs", "ERROR")
     
     return(create_result(
-      data = NULL,
+      data = list(
+        tokens = NULL
+      ),
       metadata = list(
         timestamp = Sys.time(),
         success = FALSE
@@ -118,27 +130,26 @@ extract_pdfs <- function(
   
   ## --- Initialize results tibble ----------------------------------------------
   results <- tibble::tibble(
-    country_name = character(),
-    date_posted = character(),
-    pdf_text = character()
+    doc_id = character(),
+    text = character()
   )
   
   ## --- Process each NAP -------------------------------------------------------
   successful_downloads <- 0
   successful_extractions <- 0
   
-  log_message(paste("Processing", nrow(scraped_website), "NAP documents"), "extract_pdfs")
+  log_message(paste("Processing", nrow(tokens_data), "NAP documents"), "extract_pdfs")
   
-  for (i in 1:nrow(scraped_website)) {
-    country <- scraped_website$country_name[i]
-    log_message(paste(i, "of", nrow(scraped_website), ":", country), "extract_pdfs")
+  for (i in 1:nrow(tokens_data)) {
+    doc_id <- tokens_data$doc_id[i]
+    log_message(paste(i, "of", nrow(tokens_data), ":", doc_id), "extract_pdfs")
     
     # Create safe filename
-    safe_country <- tolower(gsub("[^a-zA-Z0-9]", "_", country))
-    pdf_path <- file.path(pdf_dir, paste0(safe_country, ".pdf"))
+    safe_id <- tolower(gsub("[^a-zA-Z0-9]", "_", doc_id))
+    pdf_path <- file.path(pdf_dir, paste0(safe_id, ".pdf"))
     
     # Get PDF URL and fix if it's a relative URL
-    pdf_url <- scraped_website$pdf_link[i]
+    pdf_url <- tokens_data$pdf_link[i]
     if (!grepl("^http", pdf_url)) {
       pdf_url <- paste0("https://napcentral.org", pdf_url)
     }
@@ -173,12 +184,12 @@ extract_pdfs <- function(
         successful_downloads <- successful_downloads + 1
         log_message("Download successful!", "extract_pdfs")
       } else {
-        error_msg <- paste("Failed to download PDF for", country)
+        error_msg <- paste("Failed to download PDF for", doc_id)
         diagnostics$download_errors <- c(diagnostics$download_errors, error_msg)
         log_message(error_msg, "extract_pdfs", "WARNING")
       }
     }, error = function(e) {
-      error_msg <- paste("Error downloading PDF for", country, ":", e$message)
+      error_msg <- paste("Error downloading PDF for", doc_id, ":", e$message)
       diagnostics$download_errors <- c(diagnostics$download_errors, error_msg)
       log_message(paste("Download error:", e$message), "extract_pdfs", "WARNING")
     })
@@ -191,9 +202,8 @@ extract_pdfs <- function(
         
         # Add to results
         results <- tibble::add_row(results,
-                                   country_name = country,
-                                   date_posted = scraped_website$date_posted[i],
-                                   pdf_text = paste(text, collapse = "\n\n")
+                                   doc_id = doc_id,
+                                   text = paste(text, collapse = "\n\n")
         )
         
         successful_extractions <- successful_extractions + 1
@@ -206,7 +216,7 @@ extract_pdfs <- function(
           log_message("Could not delete PDF file: ", pdf_path, "extract_pdfs", "WARNING")
         }
       }, error = function(e) {
-        error_msg <- paste("Error extracting text from PDF for", country, ":", e$message)
+        error_msg <- paste("Error extracting text from PDF for", doc_id, ":", e$message)
         diagnostics$extraction_errors <- c(diagnostics$extraction_errors, error_msg)
         log_message(paste("Text extraction error:", e$message), "extract_pdfs", "WARNING")
       })
@@ -248,22 +258,24 @@ extract_pdfs <- function(
   metadata <- list(
     timestamp = start_time,
     processing_time_sec = processing_time,
-    total_documents = nrow(scraped_website),
+    total_documents = nrow(tokens_data),
     successful_downloads = successful_downloads,
     successful_extractions = successful_extractions,
-    download_success_rate = round(successful_downloads / nrow(scraped_website) * 100, 1),
+    download_success_rate = round(successful_downloads / nrow(tokens_data) * 100, 1),
     extraction_success_rate = if (successful_downloads > 0) round(successful_extractions / successful_downloads * 100, 1) else 0,
-    overall_success_rate = round(successful_extractions / nrow(scraped_website) * 100, 1),
+    overall_success_rate = round(successful_extractions / nrow(tokens_data) * 100, 1),
     success = nrow(results) > 0
   )
   
   # Log completion message
-  log_message(paste("Successfully processed", successful_extractions, "of", nrow(scraped_website), "NAPs", 
+  log_message(paste("Successfully processed", successful_extractions, "of", nrow(tokens_data), "NAPs", 
                     sprintf("(%.1f%%)", metadata$overall_success_rate)), "extract_pdfs")
   
   # Return standardized result
   return(create_result(
-    data = results,
+    data = list(
+      tokens = results
+    ),
     metadata = metadata,
     diagnostics = diagnostics
   ))

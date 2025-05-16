@@ -1,11 +1,9 @@
 #' @title Add metadata to NAP country data
 #' @description Enhances NAP country data with standardized metadata from World Bank 
-#'   and custom country classifications. Separates text from metadata, standardizes 
-#'   country names, adds ISO codes, parses dates, and adds region, income level, 
-#'   and special status indicators.
+#'   and custom country classifications. Standardizes country names, adds ISO codes, 
+#'   parses dates, and adds region, income level, and special status indicators.
 #'   
-#' @param data A dataframe containing country NAP data
-#' @param text_column Column name containing document text (default: "pdf_text")
+#' @param metadata_data A dataframe from scrape_web containing doc_id, country_name, and date_posted columns
 #' @param match_col Column name containing country names (default: "country_name")
 #' @param date_col Column name containing dates (default: "date_posted")
 #' @param geo_config List with geographic classification lists:
@@ -19,8 +17,8 @@
 #' @return A list containing:
 #'   \item{data}{
 #'     \itemize{
-#'       \item documents - Dataframe with doc_id and text columns
-#'       \item config - List with metadata, category_map and other configuration
+#'       \item metadata - Enhanced metadata dataframe with all classifications
+#'       \item config - List with category_map and other configuration details
 #'     }
 #'   }
 #'   \item{metadata}{Processing statistics and timestamps}
@@ -38,13 +36,12 @@
 #' 
 #' # Add metadata with geographic classifications and category map
 #' geo_config <- list(sids_list = sids, lldc_list = lldc)
-#' nap_data <- add_metadata(pdfs$data, 
-#'                         geo_config = geo_config,
-#'                         category_map = category_map)
+#' enriched_data <- add_metadata(web_data$data$metadata, 
+#'                              geo_config = geo_config,
+#'                              category_map = category_map)
 #' }
 add_metadata <- function(
-    data, 
-    text_column = "pdf_text",
+    metadata_data, 
     match_col = "country_name",
     date_col = "date_posted",
     geo_config = list(
@@ -70,13 +67,16 @@ add_metadata <- function(
   log_message("Validating input data", "add_metadata")
   
   # Validate data is a data frame
-  if (!is.data.frame(data)) {
+  if (!is.data.frame(metadata_data)) {
     error_msg <- "Input must be a dataframe"
     diagnostics$issues <- c(diagnostics$issues, error_msg)
     log_message(error_msg, "add_metadata", "ERROR")
     
     return(create_result(
-      data = NULL,
+      data = list(
+        metadata = NULL,
+        config = NULL
+      ),
       metadata = list(
         timestamp = Sys.time(),
         success = FALSE
@@ -86,13 +86,16 @@ add_metadata <- function(
   }
   
   # Check for empty data frame
-  if (nrow(data) == 0) {
+  if (nrow(metadata_data) == 0) {
     error_msg <- "Input dataframe has no rows"
     diagnostics$issues <- c(diagnostics$issues, error_msg)
     log_message(error_msg, "add_metadata", "ERROR")
     
     return(create_result(
-      data = NULL,
+      data = list(
+        metadata = NULL,
+        config = NULL
+      ),
       metadata = list(
         timestamp = Sys.time(),
         success = FALSE
@@ -102,15 +105,18 @@ add_metadata <- function(
   }
   
   # Check required columns exist
-  required_cols <- c(match_col, text_column)
-  missing_cols <- setdiff(required_cols, names(data))
+  required_cols <- c("doc_id", match_col, date_col)
+  missing_cols <- setdiff(required_cols, names(metadata_data))
   if (length(missing_cols) > 0) {
     error_msg <- paste("Input is missing required columns:", paste(missing_cols, collapse = ", "))
     diagnostics$issues <- c(diagnostics$issues, error_msg)
     log_message(error_msg, "add_metadata", "ERROR")
     
     return(create_result(
-      data = NULL,
+      data = list(
+        metadata = NULL,
+        config = NULL
+      ),
       metadata = list(
         timestamp = Sys.time(),
         success = FALSE
@@ -139,13 +145,7 @@ add_metadata <- function(
   }
   
   # Create a copy of the input data
-  result <- data
-  
-  # Add doc_id if not present (sequential numeric ID)
-  if (!"doc_id" %in% names(result)) {
-    result$doc_id <- as.character(1:nrow(result))
-    log_message("Added sequential doc_id column", "add_metadata")
-  }
+  result <- metadata_data
   
   ## --- World Bank country data and matching -----------------------------------
   log_message("Fetching World Bank country data", "add_metadata")
@@ -341,21 +341,6 @@ add_metadata <- function(
     result$is_lldc <- as.logical(result$is_lldc)
   }
   
-  ## --- Separate documents and metadata ----------------------------------------
-  log_message("Separating documents and metadata", "add_metadata")
-  
-  # Extract text into documents dataframe
-  documents <- data.frame(
-    doc_id = result$doc_id,
-    text = result[[text_column]],
-    stringsAsFactors = FALSE
-  )
-  
-  # Remove text column from metadata
-  if (text_column %in% names(result)) {
-    result <- result[, !names(result) %in% text_column]
-  }
-  
   ## --- Create config ----------------------------------------------------------
   log_message("Creating configuration", "add_metadata")
   
@@ -406,12 +391,12 @@ add_metadata <- function(
   metadata <- list(
     timestamp = start_time,
     processing_time_sec = processing_time,
-    records_processed = nrow(data),
+    records_processed = nrow(metadata_data),
     countries_matched = match_count,
-    match_rate = round(match_count/nrow(data) * 100, 1),
+    match_rate = round(match_count/nrow(metadata_data) * 100, 1),
     dates_parsed = parsed_count,
     date_parsing_success_rate = if(parsed_count > 0 && !is.null(date_col)) 
-      round(parsed_count/sum(!is.na(data[[date_col]]))*100, 1) else NA,
+      round(parsed_count/sum(!is.na(metadata_data[[date_col]]))*100, 1) else NA,
     success = TRUE
   )
   
@@ -421,7 +406,7 @@ add_metadata <- function(
   # Return standardized result with nested data structure
   return(create_result(
     data = list(
-      documents = documents,
+      metadata = result,
       config = config
     ),
     metadata = metadata,
