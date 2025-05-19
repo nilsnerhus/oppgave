@@ -42,10 +42,10 @@ source("scripts/search_k.R")
 source("scripts/find_k.R")
 source("scripts/fit_model.R")
 
-stm_data <- auto_cache(prepare_stm, tokens, metadata, overwrite = TRUE, segment_size = 1000)
-metrics <- auto_cache(search_k, stm_data)
-k <- auto_cache(find_k, metrics)
-model <- auto_cache(fit_model, stm_data, k = 15, overwrite = TRUE)
+stm_data <- auto_cache(prepare_stm, tokens, metadata, overwrite = TRUE)
+metrics <- auto_cache(search_k, stm_data, overwrite = TRUE)
+k <- auto_cache(find_k, metrics, overwrite = TRUE)
+model <- auto_cache(fit_model, stm_data, k = k$data$best_k, overwrite = TRUE)
 
 # Step 3: Analysis
 source("scripts/name_topics.R")

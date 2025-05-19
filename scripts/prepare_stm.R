@@ -311,7 +311,8 @@ prepare_stm <- function(
     stop(error_msg)
   })
   
-  # Convert to STM format
+  ## --- Convert to STM format with proper matrix structure ---------------------
+  log_message("Converting to STM format", "prepare_stm")
   stm_input <- tryCatch({
     # Convert DFM to STM format
     stm_result <- quanteda::convert(dfm_object, to = "stm")
@@ -319,35 +320,70 @@ prepare_stm <- function(
     # Set document names to match IDs
     stm_result$documents.dimnames <- rownames(dfm_object)
     
-    # IMPORTANT: Validate and fix document format
+    # IMPORTANT: Validate and ensure proper matrix format for each document
     log_message("Validating STM document format", "prepare_stm")
     for (i in seq_along(stm_result$documents)) {
+      # Get the document
       doc <- stm_result$documents[[i]]
       
-      # Check if document is not in proper list format
-      if (!is.list(doc) || !all(c("indices", "counts") %in% names(doc))) {
-        log_message(paste("Fixing document", i, "format"), "prepare_stm")
+      # Handle different document formats
+      if (is.matrix(doc) && ncol(doc) == 2) {
+        # Already in correct matrix format, just ensure column names
+        colnames(doc) <- c("indices", "counts")
+        stm_result$documents[[i]] <- doc
+      } else if (is.list(doc) && all(c("indices", "counts") %in% names(doc))) {
+        # Convert list format to matrix format
+        log_message(paste("Converting list document", i, "to matrix format"), "prepare_stm")
+        mat <- cbind(doc$indices, doc$counts)
+        colnames(mat) <- c("indices", "counts")
+        stm_result$documents[[i]] <- mat
+      } else if (is.atomic(doc)) {
+        # Handle atomic vector format (single vector of indices)
+        log_message(paste("Converting atomic vector document", i, "to matrix format"), "prepare_stm")
         
-        # If it's a vector of indices, convert to proper format
-        if (is.atomic(doc) && length(doc) > 0) {
-          # Count occurrences of each index
-          index_counts <- table(doc)
+        # Count occurrences of each index
+        if (length(doc) > 0) {
+          index_table <- table(doc)
+          indices <- as.integer(names(index_table))
+          counts <- as.integer(index_table)
           
-          # Create proper document structure
-          stm_result$documents[[i]] <- list(
-            indices = as.integer(names(index_counts)),
-            counts = as.integer(index_counts)
-          )
+          # Create matrix with indices and counts
+          mat <- cbind(indices, counts)
+          colnames(mat) <- c("indices", "counts")
+          stm_result$documents[[i]] <- mat
         } else {
-          # If can't fix, create empty document
-          stm_result$documents[[i]] <- list(
-            indices = integer(0),
-            counts = integer(0)
-          )
+          # Empty document
+          stm_result$documents[[i]] <- matrix(integer(0), ncol = 2)
+          colnames(stm_result$documents[[i]]) <- c("indices", "counts")
+        }
+      } else {
+        # Fallback for undefined format - create empty document
+        log_message(paste("Unknown document format for document", i, "- creating empty document"), 
+                    "prepare_stm", "WARNING")
+        stm_result$documents[[i]] <- matrix(integer(0), ncol = 2)
+        colnames(stm_result$documents[[i]]) <- c("indices", "counts")
+      }
+      
+      # Verify indices are within vocabulary bounds
+      if (nrow(stm_result$documents[[i]]) > 0) {
+        vocab_length <- length(stm_result$vocab)
+        invalid_indices <- stm_result$documents[[i]][, 1] > vocab_length
+        
+        if (any(invalid_indices)) {
+          log_message(paste("Removing", sum(invalid_indices), "invalid indices in document", i), 
+                      "prepare_stm", "WARNING")
+          stm_result$documents[[i]] <- stm_result$documents[[i]][!invalid_indices, , drop = FALSE]
+        }
+        
+        # Ensure there are still indices after filtering
+        if (nrow(stm_result$documents[[i]]) == 0) {
+          log_message(paste("Document", i, "has no valid indices left after filtering"), 
+                      "prepare_stm", "WARNING")
         }
       }
     }
     
+    # Return the properly formatted STM input
     stm_result
   }, error = function(e) {
     error_msg <- paste("STM conversion error:", e$message)
@@ -356,54 +392,24 @@ prepare_stm <- function(
     stop(error_msg)
   })
   
+  # Additional validation - check for empty documents
+  empty_docs <- sapply(stm_input$documents, function(d) nrow(d) == 0)
+  if (any(empty_docs)) {
+    log_message(paste(sum(empty_docs), "documents are empty after conversion"), 
+                "prepare_stm", "WARNING")
+  }
+  
+  log_message(paste("Successfully converted", length(stm_input$documents), 
+                    "documents to STM format"), "prepare_stm")
+  
   ## --- Prepare metadata for STM -----------------------------------------------
   log_message("Preparing metadata for STM", "prepare_stm")
   
-  # If segmentation was used, we need to match metadata to segments
-  if (use_segmentation) {
-    log_message("Preparing metadata for segmented documents", "prepare_stm")
-    
-    # Create segment metadata by joining with original metadata
-    segment_metadata <- tryCatch({
-      dplyr::left_join(
-        segment_mapping,
-        metadata_df,
-        by = c("original_doc_id" = "doc_id")
-      )
-    }, error = function(e) {
-      warning_msg <- paste("Error joining segment mapping with metadata:", e$message)
-      diagnostics$processing_issues <<- c(diagnostics$processing_issues, warning_msg)
-      log_message(warning_msg, "prepare_stm", "WARNING")
-      
-      # Return segment mapping as fallback
-      segment_mapping
-    })
-    
-    # Check for missing metadata after join
-    missing_metadata_count <- sum(is.na(segment_metadata$original_doc_id))
-    if (missing_metadata_count > 0) {
-      warning_msg <- paste(missing_metadata_count, "segments have missing metadata")
-      diagnostics$processing_issues <- c(diagnostics$processing_issues, warning_msg)
-      log_message(warning_msg, "prepare_stm", "WARNING")
-    }
-    
-    # Rename segment_id to doc_id for consistency
-    segment_metadata$doc_id <- segment_metadata$segment_id
-    segment_metadata$segment_id <- NULL
-    
-    # Use segment metadata for modeling
-    model_metadata <- segment_metadata
-    
-    log_message(paste("Created metadata for", nrow(model_metadata), "segments"), "prepare_stm")
-  } else {
-    # Use original metadata
-    model_metadata <- metadata_df
-    log_message(paste("Using original metadata for", nrow(model_metadata), "documents"), "prepare_stm")
-  }
-  
-  # Ensure metadata order matches document order in STM input
-  log_message("Aligning metadata with document order", "prepare_stm")
+  # Get the document IDs from the STM input
   doc_ids <- rownames(dfm_object)
+  
+  # Start with original metadata
+  model_metadata <- metadata_df
   
   # Check metadata coverage
   metadata_coverage <- sum(doc_ids %in% model_metadata$doc_id) / length(doc_ids) * 100
@@ -419,7 +425,7 @@ prepare_stm <- function(
     diagnostics$processing_issues <- c(diagnostics$processing_issues, warning_msg)
     log_message(warning_msg, "prepare_stm", "WARNING")
     
-    # If too many documents are missing metadata, consider creating placeholder metadata
+    # If too many documents are missing metadata, create placeholder metadata
     if (length(missing_docs) > 0.1 * length(doc_ids)) {
       log_message("Creating placeholder metadata for missing documents", "prepare_stm", "WARNING")
       
@@ -442,7 +448,7 @@ prepare_stm <- function(
   # Sort metadata to match document order in dfm
   model_metadata <- model_metadata[match(doc_ids, model_metadata$doc_id), ]
   
-  # Handle NA values in metadata that might cause STM errors
+  # Now check for NA values that might cause problems
   if (nrow(model_metadata) > 0) {
     log_message("Checking for NA values in metadata", "prepare_stm")
     na_counts <- colSums(is.na(model_metadata))
@@ -471,29 +477,6 @@ prepare_stm <- function(
         }
       }
     }
-  }
-  
-  # Filter metadata variables if requested
-  if (!is.null(stm_config$preserve_vars)) {
-    log_message("Filtering metadata variables", "prepare_stm")
-    
-    # Always preserve doc_id
-    preserve_vars <- union("doc_id", stm_config$preserve_vars)
-    
-    # Check if all requested variables exist
-    missing_vars <- setdiff(preserve_vars, names(model_metadata))
-    if (length(missing_vars) > 0) {
-      warning_msg <- paste("Requested variables not found in metadata:", 
-                           paste(missing_vars, collapse = ", "))
-      diagnostics$processing_issues <- c(diagnostics$processing_issues, warning_msg)
-      log_message(warning_msg, "prepare_stm", "WARNING")
-    }
-    
-    # Filter to requested variables
-    existing_vars <- intersect(preserve_vars, names(model_metadata))
-    model_metadata <- model_metadata[, existing_vars, drop = FALSE]
-    
-    log_message(paste("Retained", length(existing_vars), "metadata variables"), "prepare_stm")
   }
   
   # Verify metadata has right dimensions for STM
@@ -526,37 +509,33 @@ prepare_stm <- function(
   result_data <- list(
     stm_input = stm_input,
     metadata = model_metadata,
-    segments = if(use_segmentation) segment_mapping else NULL,
+    segments = if(exists("segment_mapping")) segment_mapping else NULL,
     vocab = vocab,
     config = config
   )
-  
-  # Include original tokens if requested
-  if (stm_config$keep_tokens) {
-    result_data$tokens <- tokens_df
-  }
   
   # Create metadata about the processing
   result_metadata <- list(
     timestamp = start_time,
     processing_time_sec = processing_time,
     document_count = length(doc_ids),
-    segment_count = if(use_segmentation) nrow(segment_mapping) else NA,
+    segment_count = if(exists("segment_mapping")) nrow(segment_mapping) else NA,
     vocabulary_size = length(vocab),
-    segmentation_used = use_segmentation,
-    segment_size = segment_size,
+    segmentation_used = exists("segment_mapping"),
+    segment_size = if(exists("segment_size")) segment_size else 0,
     metadata_vars = names(model_metadata),
     success = TRUE
   )
   
   # Update diagnostics
-  diagnostics$join_stats$final_docs <- length(doc_ids)
-  diagnostics$join_stats$success_rate <- round(
-    length(doc_ids) / max(length(token_doc_ids), length(metadata_doc_ids)) * 100, 1
-  )
+  if (exists("join_stats")) {
+    diagnostics$join_stats$final_docs <- length(doc_ids)
+    diagnostics$join_stats$success_rate <- round(
+      length(doc_ids) / max(length(token_doc_ids), length(metadata_doc_ids)) * 100, 1
+    )
+  }
   
-  log_message(paste("STM preparation complete:", length(doc_ids), "documents,", 
-                    if(use_segmentation) paste(nrow(segment_mapping), "segments,"),
+  log_message(paste("STM preparation complete:", length(doc_ids), "documents,",
                     length(vocab), "vocabulary terms"), "prepare_stm")
   
   # Return standardized result

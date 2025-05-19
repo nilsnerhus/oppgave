@@ -256,76 +256,153 @@ fit_model <- function(
     }
   }
   
-  ## --- Fit STM model ----------------------------------------------------------
-  log_message(paste("Fitting STM model with k =", k), "fit_model")
+  ## --- Initialize Model Parameters ---------------------------------------------
+  log_message("Preparing for STM estimation", "fit_model")
   
   # Set seed for reproducibility 
   set.seed(seed)
   
-  # More detailed diagnostics
-  log_message("Additional STM input diagnostics", "fit_model")
-  # Check document indices vs vocabulary length
+  # More efficient vocabulary length lookup (stored once)
   vocab_length <- length(stm_input$vocab)
   log_message(paste("Vocabulary length:", vocab_length), "fit_model")
   
-  # Check if all documents are correctly structured
-  invalid_indices <- FALSE
+  ## --- Validate and Repair Document Format ------------------------------------
+  log_message("Validating document format", "fit_model")
+  
+  # First ensure all documents are in matrix format
   for (i in seq_along(stm_input$documents)) {
     doc <- stm_input$documents[[i]]
-    if (any(doc$indices > vocab_length)) {
-      log_message(paste("Document", i, "has indices exceeding vocabulary length"), "fit_model", "WARNING")
-      invalid_indices <- TRUE
-      break
-    }
-  }
-  
-  if (invalid_indices) {
-    log_message("Attempting to repair document indices", "fit_model", "WARNING")
-    # Attempt to repair documents by filtering invalid indices
-    for (i in seq_along(stm_input$documents)) {
-      doc <- stm_input$documents[[i]]
-      valid_idx <- doc$indices <= vocab_length
-      if (!all(valid_idx)) {
-        stm_input$documents[[i]]$indices <- doc$indices[valid_idx]
-        stm_input$documents[[i]]$counts <- doc$counts[valid_idx]
-        log_message(paste("Repaired document", i), "fit_model")
+    
+    if (is.list(doc) && all(c("indices", "counts") %in% names(doc))) {
+      # Convert list to matrix
+      stm_input$documents[[i]] <- cbind(doc$indices, doc$counts)
+      colnames(stm_input$documents[[i]]) <- c("indices", "counts")
+    } else if (is.atomic(doc)) {
+      # Convert atomic vector to matrix
+      if (length(doc) > 0) {
+        index_table <- table(doc)
+        indices <- as.integer(names(index_table))
+        counts <- as.integer(index_table)
+        
+        stm_input$documents[[i]] <- cbind(indices, counts)
+        colnames(stm_input$documents[[i]]) <- c("indices", "counts")
+      } else {
+        stm_input$documents[[i]] <- matrix(integer(0), ncol = 2)
+        colnames(stm_input$documents[[i]]) <- c("indices", "counts")
       }
     }
   }
   
-  # Try different methods to fit the model
-  methods_to_try <- c("Spectral", "Random", "LDA")
+  # Now reindex to ensure sequential integers starting from 1
+  log_message("Reindexing vocabulary and documents", "fit_model")
+  
+  # Step 1: Collect all unique indices used across documents
+  all_indices <- integer(0)
+  for (i in seq_along(stm_input$documents)) {
+    doc <- stm_input$documents[[i]]
+    if (is.matrix(doc) && nrow(doc) > 0) {
+      all_indices <- union(all_indices, doc[, 1])
+    }
+  }
+  
+  # Step 2: Create a mapping from original indices to sequential indices
+  if (length(all_indices) > 0) {
+    # Sort indices to ensure consistent mapping
+    all_indices <- sort(all_indices)
+    
+    # Create mapping from original to new sequential indices
+    index_map <- seq_along(all_indices)
+    names(index_map) <- as.character(all_indices)
+    
+    # Step 3: Create new vocabulary using the mapping
+    new_vocab <- character(length(index_map))
+    for (i in seq_along(all_indices)) {
+      old_idx <- all_indices[i]
+      if (old_idx <= length(stm_input$vocab)) {
+        new_vocab[i] <- stm_input$vocab[old_idx]
+      } else {
+        # Handle indices beyond vocabulary length
+        new_vocab[i] <- paste0("unknown_", old_idx)
+      }
+    }
+    
+    # Step 4: Update all documents with new indices
+    for (i in seq_along(stm_input$documents)) {
+      doc <- stm_input$documents[[i]]
+      if (is.matrix(doc) && nrow(doc) > 0) {
+        # Map old indices to new sequential indices
+        new_indices <- index_map[as.character(doc[, 1])]
+        
+        # Create new document matrix
+        new_doc <- cbind(new_indices, doc[, 2])
+        colnames(new_doc) <- c("indices", "counts")
+        stm_input$documents[[i]] <- new_doc
+      }
+    }
+    
+    # Step 5: Update vocabulary
+    stm_input$vocab <- new_vocab
+    
+    log_message(paste("Reindexed vocabulary from", length(stm_input$vocab), 
+                      "to", length(new_vocab), "terms"), "fit_model")
+  }
+  
+  ## --- Fit STM Model ---------------------------------------------------------
+  log_message(paste("Fitting STM model with k =", k), "fit_model")
+  
+  # Try different initialization methods if needed
+  methods_to_try <- c(init_type, "Spectral", "Random")
   success <- FALSE
   
   for (method in methods_to_try) {
     if (success) break
     
-    log_message(paste("Trying STM with", method, "initialization"), "fit_model")
+    # Only try other methods if the specified one fails
+    if (method != init_type && method != "Spectral") {
+      log_message(paste("Initial method failed, trying", method, "initialization"), "fit_model")
+    } else {
+      log_message(paste("Using", method, "initialization"), "fit_model")
+    }
     
-    # Also try different k values if needed
-    for (try_k in c(k, max(5, k-5), max(2, k-10))) {
+    # Try with different k values only if needed
+    k_values <- if (method == init_type) c(k) else c(k, max(5, k-5), max(2, k-10))
+    
+    for (try_k in k_values) {
       if (success) break
       
-      # Try with simpler prevalence
-      for (formula_type in c(prev_formula, stats::as.formula("~ 1"))) {
+      # Only try different k if current one fails
+      if (try_k != k) {
+        log_message(paste("Attempting with reduced k =", try_k), "fit_model")
+      }
+      
+      # Try with different formulas only if needed
+      formula_options <- if (method == init_type) list(prev_formula) else list(prev_formula, stats::as.formula("~ 1"))
+      
+      for (formula_idx in seq_along(formula_options)) {
         if (success) break
         
-        log_message(paste("Attempting with k =", try_k, "and", 
-                          if(formula_type == stats::as.formula("~ 1")) "intercept-only" else "full", 
-                          "formula"), "fit_model")
+        current_formula <- formula_options[[formula_idx]]
+        
+        # Only log formula change if not using original
+        if (formula_idx > 1) {
+          log_message("Attempting with intercept-only formula", "fit_model")
+        }
         
         # Fit model with configured options
         stm_model_result <- tryCatch({
+          # Use an adaptive initial iteration limit
+          initial_iter_limit <- if (method == init_type) iterations else min(iterations, 50)
+          
           stm::stm(
             documents = stm_input$documents,
             vocab = stm_input$vocab,
             K = try_k,
-            prevalence = formula_type,
+            prevalence = current_formula,
             content = model_content,
             data = metadata_df,
-            max.em.its = min(iterations, 50),  # Limit iterations for testing
+            max.em.its = initial_iter_limit,
             init.type = method,
-            verbose = TRUE,  # Enable verbose output for debugging
+            verbose = TRUE,
             gamma.prior = gamma_prior,
             sigma.prior = sigma_prior,
             kappa = kappa,
@@ -334,17 +411,7 @@ fit_model <- function(
         }, error = function(e) {
           error_msg <- paste("Error fitting STM model with", method, "and k =", try_k, ":", e$message)
           log_message(error_msg, "fit_model", "WARNING")
-          
-          # Check if the error contains traceback info
-          tb <- tryCatch(sys.calls(), error = function(e) NULL)
-          if (!is.null(tb)) {
-            log_message("Error traceback:", "fit_model", "WARNING")
-            for (i in 1:min(length(tb), 5)) {
-              log_message(paste("  ", i, ":", deparse(tb[[i]])), "fit_model")
-            }
-          }
-          
-          return(NULL)
+          NULL
         })
         
         if (!is.null(stm_model_result)) {
@@ -364,6 +431,10 @@ fit_model <- function(
     log_message(error_msg, "fit_model", "ERROR")
     stop(error_msg)
   }
+  
+  # If we reach here, a model was successfully fitted
+  log_message(paste("Model successfully estimated with k =", k, 
+                    "using", method, "initialization"), "fit_model")
   
   ## --- Calculate model quality metrics ----------------------------------------
   log_message("Calculating model quality metrics", "fit_model")
