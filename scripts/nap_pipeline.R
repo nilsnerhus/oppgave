@@ -34,18 +34,20 @@ category_map <- list(
 )
 
 metadata <- auto_cache(add_metadata, web$data$metadata)
-tokens <- auto_cache(validate_tokens, docs$data$tokens)
+tokens <- auto_cache(validate_tokens, docs$data$tokens, overwrite = TRUE)
 
 # Step 2: Structural topic modeling
-source("scripts/prepare_stm.R")
+source("scripts/process_text.R")
+source("scripts/prep_documents.R")
 source("scripts/search_k.R")
 source("scripts/find_k.R")
 source("scripts/fit_model.R")
 
-stm_data <- auto_cache(prepare_stm, tokens, metadata, overwrite = TRUE)
-metrics <- auto_cache(search_k, stm_data, overwrite = TRUE)
+text <- auto_cache(process_text, tokens, metadata, overwrite = TRUE)
+documents <- auto_cache(prep_documents, text, overwrite = TRUE)
+metrics <- auto_cache(search_k, documents, overwrite = TRUE)
 k <- auto_cache(find_k, metrics, overwrite = TRUE)
-model <- auto_cache(fit_model, stm_data, k = k$data$best_k, overwrite = TRUE)
+model <- auto_cache(fit_model, documents, k = k$data$best_k, overwrite = TRUE)
 
 # Step 3: Analysis
 source("scripts/name_topics.R")
