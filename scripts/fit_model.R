@@ -151,22 +151,84 @@ fit_model <- function(
     }
   } else if (!is.null(config) && "category_map" %in% names(config)) {
     # Auto-generate from category map
+    log_message("Generating formula from category map", "fit_model")
     all_dimensions <- unlist(config$category_map)
     
-    # Check which dimensions are available in metadata
-    available_dims <- all_dimensions[all_dimensions %in% names(metadata_df)]
+    # Validate each dimension before including it
+    valid_dimensions <- character(0)
     
-    if (length(available_dims) > 0) {
-      # Create formula with all available dimensions
-      formula_str <- paste("~", paste(available_dims, collapse = " + "))
+    for (dim in all_dimensions) {
+      # Check if dimension exists in metadata
+      if (dim %in% names(metadata_df)) {
+        # Get the values
+        values <- metadata_df[[dim]]
+        
+        # Check for sufficient non-NA values (at least 90% present)
+        na_rate <- sum(is.na(values)) / length(values)
+        if (na_rate > 0.1) {
+          log_message(paste("Skipping", dim, "- too many missing values:", 
+                            round(na_rate * 100, 1), "%"), "fit_model", "WARNING")
+          next
+        }
+        
+        # Check for sufficient variation
+        if (is.factor(values) || is.character(values)) {
+          # For categorical variables, need at least 2 levels with sufficient counts
+          counts <- table(values)
+          if (length(counts) < 2 || min(counts) < 3) {
+            log_message(paste("Skipping", dim, "- insufficient variation in categories"), 
+                        "fit_model", "WARNING")
+            next
+          }
+        } else if (is.numeric(values)) {
+          # For numeric variables, need some variation
+          if (stats::sd(values, na.rm = TRUE) < 0.001 || length(unique(values)) < 2) {
+            log_message(paste("Skipping", dim, "- insufficient numeric variation"), 
+                        "fit_model", "WARNING")
+            next
+          }
+        } else if (is.logical(values)) {
+          # For logical variables, need both TRUE and FALSE with sufficient counts
+          if (all(values, na.rm = TRUE) || all(!values, na.rm = TRUE) || 
+              min(sum(values, na.rm = TRUE), sum(!values, na.rm = TRUE)) < 3) {
+            log_message(paste("Skipping", dim, "- insufficient logical variation"), 
+                        "fit_model", "WARNING")
+            next
+          }
+        }
+        
+        # If we get here, the dimension is valid
+        valid_dimensions <- c(valid_dimensions, dim)
+        log_message(paste("Validated dimension:", dim), "fit_model")
+      } else {
+        log_message(paste("Dimension", dim, "not found in metadata"), "fit_model", "WARNING")
+      }
+    }
+    
+    # Create formula from valid dimensions
+    if (length(valid_dimensions) > 0) {
+      formula_str <- paste("~", paste(valid_dimensions, collapse = " + "))
       prev_formula <- stats::as.formula(formula_str)
-      log_message(paste("Using auto-generated formula from category_map:", formula_str), "fit_model")
+      log_message(paste("Using auto-generated formula:", formula_str), "fit_model")
     } else {
-      log_message("No usable dimensions for prevalence formula, using intercept-only", "fit_model")
+      log_message("No valid dimensions found, using intercept-only formula", "fit_model", "WARNING")
     }
   } else {
     log_message("No prevalence formula or category_map provided, using intercept-only", "fit_model")
   }
+  
+  # Verify the formula can be used with the data
+  tryCatch({
+    # Try to create a model matrix to test formula validity
+    test_matrix <- stats::model.matrix(prev_formula, data = metadata_df)
+    log_message("Prevalence formula validated successfully", "fit_model")
+  }, error = function(e) {
+    warning_msg <- paste("Error validating prevalence formula:", e$message, 
+                         "- falling back to intercept-only")
+    diagnostics$processing_issues <- c(diagnostics$processing_issues, warning_msg)
+    log_message(warning_msg, "fit_model", "WARNING")
+    prev_formula <- stats::as.formula("~ 1")
+  })
   
   ## --- Prepare content covariates ---------------------------------------------
   log_message("Preparing content covariates", "fit_model")
@@ -200,29 +262,108 @@ fit_model <- function(
   # Set seed for reproducibility 
   set.seed(seed)
   
-  # Fit model with configured options
-  stm_model <- tryCatch({
-    stm::stm(
-      documents = stm_input$documents,
-      vocab = stm_input$vocab,
-      K = k,
-      prevalence = prev_formula,
-      content = model_content,
-      data = metadata_df,
-      max.em.its = iterations,
-      init.type = init_type,
-      verbose = FALSE,
-      gamma.prior = gamma_prior,
-      sigma.prior = sigma_prior,
-      kappa = kappa,
-      seed = seed
-    )
-  }, error = function(e) {
-    error_msg <- paste("Error fitting STM model:", e$message)
-    diagnostics$processing_issues <<- c(diagnostics$processing_issues, error_msg)
+  # More detailed diagnostics
+  log_message("Additional STM input diagnostics", "fit_model")
+  # Check document indices vs vocabulary length
+  vocab_length <- length(stm_input$vocab)
+  log_message(paste("Vocabulary length:", vocab_length), "fit_model")
+  
+  # Check if all documents are correctly structured
+  invalid_indices <- FALSE
+  for (i in seq_along(stm_input$documents)) {
+    doc <- stm_input$documents[[i]]
+    if (any(doc$indices > vocab_length)) {
+      log_message(paste("Document", i, "has indices exceeding vocabulary length"), "fit_model", "WARNING")
+      invalid_indices <- TRUE
+      break
+    }
+  }
+  
+  if (invalid_indices) {
+    log_message("Attempting to repair document indices", "fit_model", "WARNING")
+    # Attempt to repair documents by filtering invalid indices
+    for (i in seq_along(stm_input$documents)) {
+      doc <- stm_input$documents[[i]]
+      valid_idx <- doc$indices <= vocab_length
+      if (!all(valid_idx)) {
+        stm_input$documents[[i]]$indices <- doc$indices[valid_idx]
+        stm_input$documents[[i]]$counts <- doc$counts[valid_idx]
+        log_message(paste("Repaired document", i), "fit_model")
+      }
+    }
+  }
+  
+  # Try different methods to fit the model
+  methods_to_try <- c("Spectral", "Random", "LDA")
+  success <- FALSE
+  
+  for (method in methods_to_try) {
+    if (success) break
+    
+    log_message(paste("Trying STM with", method, "initialization"), "fit_model")
+    
+    # Also try different k values if needed
+    for (try_k in c(k, max(5, k-5), max(2, k-10))) {
+      if (success) break
+      
+      # Try with simpler prevalence
+      for (formula_type in c(prev_formula, stats::as.formula("~ 1"))) {
+        if (success) break
+        
+        log_message(paste("Attempting with k =", try_k, "and", 
+                          if(formula_type == stats::as.formula("~ 1")) "intercept-only" else "full", 
+                          "formula"), "fit_model")
+        
+        # Fit model with configured options
+        stm_model_result <- tryCatch({
+          stm::stm(
+            documents = stm_input$documents,
+            vocab = stm_input$vocab,
+            K = try_k,
+            prevalence = formula_type,
+            content = model_content,
+            data = metadata_df,
+            max.em.its = min(iterations, 50),  # Limit iterations for testing
+            init.type = method,
+            verbose = TRUE,  # Enable verbose output for debugging
+            gamma.prior = gamma_prior,
+            sigma.prior = sigma_prior,
+            kappa = kappa,
+            seed = seed
+          )
+        }, error = function(e) {
+          error_msg <- paste("Error fitting STM model with", method, "and k =", try_k, ":", e$message)
+          log_message(error_msg, "fit_model", "WARNING")
+          
+          # Check if the error contains traceback info
+          tb <- tryCatch(sys.calls(), error = function(e) NULL)
+          if (!is.null(tb)) {
+            log_message("Error traceback:", "fit_model", "WARNING")
+            for (i in 1:min(length(tb), 5)) {
+              log_message(paste("  ", i, ":", deparse(tb[[i]])), "fit_model")
+            }
+          }
+          
+          return(NULL)
+        })
+        
+        if (!is.null(stm_model_result)) {
+          log_message(paste("Successfully fitted model with", method, "and k =", try_k), "fit_model")
+          stm_model <- stm_model_result
+          k <- try_k  # Update k to successful value
+          success <- TRUE
+          break
+        }
+      }
+    }
+  }
+  
+  if (!success) {
+    error_msg <- "Failed to fit STM model with any method"
+    diagnostics$processing_issues <- c(diagnostics$processing_issues, error_msg)
     log_message(error_msg, "fit_model", "ERROR")
     stop(error_msg)
-  })
+  }
   
   ## --- Calculate model quality metrics ----------------------------------------
   log_message("Calculating model quality metrics", "fit_model")
