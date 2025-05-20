@@ -34,31 +34,18 @@ category_map <- list(
 )
 
 metadata <- auto_cache(add_metadata, web$data$metadata)
-tokens <- auto_cache(validate_tokens, docs$data$tokens, overwrite = TRUE)
+tokens <- auto_cache(validate_tokens, docs$data$tokens)
 
 # Step 2: Structural topic modeling
-source("scripts/process_text.R")
-source("scripts/prep_documents.R")
-source("scripts/search_k.R")
+source("scripts/process_dfm.R")
 source("scripts/find_k.R")
 source("scripts/fit_model.R")
 
-text <- auto_cache(process_text, tokens$data$documents$text, metadata$data$metadata, overwrite = TRUE)
-documents <- auto_cache(prep_documents, text$data$processed, overwrite = TRUE, lower.thresh = 1, upper.thresh = 1)
-metrics <- auto_cache(search_k, documents, overwrite = TRUE)
-k <- auto_cache(find_k, metrics, overwrite = TRUE)
-model <- auto_cache(fit_model, documents, k = k$data$best_k, overwrite = TRUE)
+dfm <- auto_cache(process_dfm, tokens, metadata)
+k <- auto_cache(find_k, dfm, overwrite = TRUE)
+model <- auto_cache(fit_model, dfm, k = k)
 
 # Step 3: Analysis
 source("scripts/name_topics.R")
 source("scripts/find_dominance.R")
-source("scripts/estimate_effect-R")
-
-names <- auto_cache(name_topics, model)
-dominance <- auto_cache(find_dominance, model, n = 3, overwrite = TRUE)
-effects <- auto_cache(estimate_effect, model)
-
-# Check what the validate_tokens is returning
-tokens_result <- tokens
-str(tokens_result$data$documents[1:2])  # Look at structure of first two documents
-head(tokens_result$data$documents$text[1], 20)  # Look at beginning of first document's text
+source("scripts/estimate_effect.R")
