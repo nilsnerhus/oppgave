@@ -42,10 +42,14 @@ source("scripts/find_k.R")
 source("scripts/fit_model.R")
 
 dfm <- auto_cache(process_dfm, tokens, metadata)
-k <- auto_cache(find_k, dfm, overwrite = TRUE)
-model <- auto_cache(fit_model, dfm, k = k)
+k <- auto_cache(find_k, dfm)
+model <- auto_cache(fit_model, dfm, k = k, category_map = category_map)
 
 # Step 3: Analysis
 source("scripts/name_topics.R")
 source("scripts/find_dominance.R")
 source("scripts/estimate_effect.R")
+
+topics <- auto_cache(name_topics, model)
+dominance <- auto_cache(find_dominance, model)
+effects <- auto_cache(estimate_effect, model, metadata, category_map)

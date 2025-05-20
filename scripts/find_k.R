@@ -37,12 +37,12 @@
 #' }
 find_k <- function(
     dfm,
-    range = c(5, 10, 15, 20, 25),
-    iterations = 75,
-    coherence = 0.4,
+    range = c(10, 15, 20, 25, 30, 35, 40),
+    iterations = 100,
+    coherence = 0.45,
     exclusivity = 0.4,
     residual = 0.2,
-    penalty = 0.05
+    penalty = 0.025
 ) {
   ## --- Setup & Initialization -------------------------------------------------
   start_time <- Sys.time()
@@ -227,15 +227,114 @@ find_k <- function(
     
     log_message("Created metrics from individual models", "find_k")
   }
+  
+  ## --- Analyze searchK results to find best k ---------------------------------
+  log_message("Analyzing searchK results to find optimal k", "find_k")
+  
+  # Check if we have valid searchK results
+  if (is.null(search_result) || !("results" %in% names(search_result))) {
+    log_message("No valid searchK results found, using default k", "find_k", "WARNING")
+    best_k <- ifelse(length(range) > 0, range[ceiling(length(range)/2)], 15)
+    metrics_display <- NULL  # No metrics to display
+  } else {
+    log_message("Found searchK results, extracting key metrics", "find_k")
+    
+    # Get the length of results (number of K values tested)
+    num_k <- length(search_result$results$K)
+    log_message(paste("Found", num_k, "K values to evaluate"), "find_k")
+    
+    # Create simple vectors for metrics
+    k_values <- unlist(search_result$results$K)
+    exclusivity_vals <- unlist(search_result$results$exclus)
+    coherence_vals <- unlist(search_result$results$semcoh)
+    residual_vals <- unlist(search_result$results$residual)
+    
+    # Ensure we have valid metrics
+    valid_metrics <- TRUE
+    if (is.null(k_values) || length(k_values) == 0) {
+      log_message("Missing K values in results", "find_k", "WARNING")
+      valid_metrics <- FALSE
+    }
+    if (is.null(coherence_vals) || length(coherence_vals) == 0) {
+      # Try heldout as alternative
+      coherence_vals <- -unlist(search_result$results$heldout)
+      if (is.null(coherence_vals) || length(coherence_vals) == 0) {
+        log_message("Missing coherence metrics in results", "find_k", "WARNING")
+        valid_metrics <- FALSE
+      }
+    }
+    if (is.null(exclusivity_vals) || length(exclusivity_vals) == 0) {
+      log_message("Missing exclusivity metrics in results", "find_k", "WARNING")
+      valid_metrics <- FALSE
+    }
+    
+    if (valid_metrics) {
+      # Normalize metrics (0-1 scale)
+      norm_coherence <- (coherence_vals - min(coherence_vals)) / (max(coherence_vals) - min(coherence_vals))
+      norm_exclusivity <- (exclusivity_vals - min(exclusivity_vals)) / (max(exclusivity_vals) - min(exclusivity_vals))
+      
+      # For residuals, invert so higher is better
+      if (!is.null(residual_vals) && length(residual_vals) > 0) {
+        norm_residual <- 1 - (residual_vals - min(residual_vals)) / (max(residual_vals) - min(residual_vals))
+      } else {
+        # Set to neutral value if missing
+        norm_residual <- rep(0.5, length(k_values))
+      }
+      
+      # Calculate scores using the FUNCTION PARAMETERS (not renamed variables)
+      scores <- (coherence * norm_coherence) + 
+        (exclusivity * norm_exclusivity) + 
+        (residual * norm_residual) - 
+        (penalty * k_values)
+      
+      # Find best k
+      best_idx <- which.max(scores)
+      best_k <- k_values[best_idx]
+      
+      log_message(paste("Selected best k =", best_k, "with score =", 
+                        round(scores[best_idx], 4)), "find_k")
+      
+      # Create a simple display table (no fancy formatting)
+      metrics_display <- data.frame(
+        K = k_values,
+        Coherence = round(coherence_vals, 3),
+        Exclusivity = round(exclusivity_vals, 3),
+        Score = round(scores, 3),
+        Selected = (k_values == best_k)
+      )
+    } else {
+      # Default if metrics are missing
+      log_message("Could not extract valid metrics, using default k", "find_k", "WARNING")
+      best_k <- ifelse(length(range) > 0, range[ceiling(length(range)/2)], 15)
+      metrics_display <- NULL
+    }
+  }
+  
+  # Store results in diagnostics
+  diagnostics$k_stats <- list(
+    best_k = best_k,
+    weights = list(
+      coherence = coherence,
+      exclusivity = exclusivity,
+      residual = residual,
+      penalty = penalty
+    )
+  )
+  
+  # Log the selection
+  log_message(paste("Final selection: k =", best_k), "find_k")
 
   ## --- Calculate processing time and create result ---------------------------
   end_time <- Sys.time()
   processing_time <- as.numeric(difftime(end_time, start_time, units = "secs"))
   
+  # For now, just return search results without calculating the best k
+  log_message("Returning searchK results without calculating best k", "find_k")
+  
   # Return standardized result
   return(create_result(
     data = list(
-      best_k = best_k,  # Single numeric value
+      best_k = best_k,  # This should be set correctly now
       metrics = metrics_display,
       searchK_results = search_result
     ),
