@@ -1,10 +1,9 @@
 #' @title Prepare documents for Structural Topic Modeling
-#' @description Takes processed text data, fixes document matrix orientation if needed,
-#'   and prepares it for STM modeling by filtering vocabulary based on document frequency
-#'   thresholds. Uses STM's prepDocuments function to create properly formatted input for 
-#'   topic modeling.
+#' @description Takes standardized text data, validates indices, and prepares it for STM modeling
+#'   by filtering vocabulary based on document frequency thresholds. Assumes input is already
+#'   in standardized format from standardize_text_processor.
 #'   
-#' @param processed_result Result from process_text() containing processed text data
+#' @param processed_result Result from standardize_text_processor containing processed text data
 #' @param lower.thresh Minimum number of documents a term must appear in (default: 2)
 #' @param upper.thresh Maximum proportion of documents a term can appear in (default: 0.9)
 #'
@@ -18,13 +17,12 @@
 #'   }
 #'   \item{metadata}{Processing information and statistics}
 #'   \item{diagnostics}{Filtering statistics and issues encountered}
-#'
 prep_documents <- function(
     processed_result,
     lower.thresh = 2,
     upper.thresh = 0.9
 ) {
-  ## --- Setup & Initialization -------------------------------------------
+  ## --- Setup & Initialization -------------------------------------------------
   start_time <- Sys.time()
   
   # Initialize diagnostics tracking
@@ -33,14 +31,14 @@ prep_documents <- function(
     vocab_stats = list()
   )
   
-  ## --- Input validation -------------------------------------------------
+  ## --- Input validation -------------------------------------------------------
   log_message("Validating input data", "prep_documents")
   
   # Validate processed_result structure
   if (!is.list(processed_result) || 
       !"data" %in% names(processed_result) ||
       !"processed" %in% names(processed_result$data)) {
-    error_msg <- "processed_result must be the output from process_text() with processed data"
+    error_msg <- "processed_result must be the output from standardize_text_processor() with processed data"
     diagnostics$processing_issues <- c(diagnostics$processing_issues, error_msg)
     log_message(error_msg, "prep_documents", "ERROR")
     
@@ -75,7 +73,7 @@ prep_documents <- function(
     ))
   }
   
-  ## --- Extract processed data -------------------------------------------
+  ## --- Extract processed data -------------------------------------------------
   log_message("Extracting processed text data", "prep_documents")
   
   # Extract config if available
@@ -84,95 +82,62 @@ prep_documents <- function(
     config <- processed_result$data$config
   }
   
-  ## --- Fix document matrices by transposing if needed and validate indices ---
-  log_message("Checking document matrix orientation and indices", "prep_documents")
+  ## --- Basic validation of document indices -----------------------------------
+  log_message("Validating document indices", "prep_documents")
   
-  # Get vocab size for index validation
+  # Get vocabulary size for index validation
   vocab_size <- length(processed$vocab)
   
-  # Process each document
-  fixed_docs <- list()
-  for (i in 1:length(processed$documents)) {
-    doc <- processed$documents[[i]]
-    
-    if (!is.null(doc) && is.matrix(doc) && nrow(doc) > 0 && ncol(doc) > 0) {
-      # Check if transposition is needed
-      if (ncol(doc) > nrow(doc)) {
-        # Transpose the matrix
-        doc <- t(doc)
-      }
-      
-      # Ensure it has exactly 2 columns
-      if (ncol(doc) != 2) {
-        log_message(paste("Document", i, "has incorrect number of columns:", 
-                          ncol(doc), "- creating empty document"), "prep_documents", "WARNING")
-        doc <- matrix(integer(0), ncol = 2)
-      } else {
-        # Validate that all indices are within bounds (1 to vocab_size)
-        invalid_indices <- which(doc[,1] < 1 | doc[,1] > vocab_size)
-        if (length(invalid_indices) > 0) {
-          log_message(paste("Document", i, "has", length(invalid_indices), 
-                            "invalid indices - removing them"), "prep_documents", "WARNING")
-          if (length(invalid_indices) < nrow(doc)) {
-            # Remove invalid indices
-            doc <- doc[-invalid_indices, , drop = FALSE]
-          } else {
-            # All indices are invalid, create empty document
-            doc <- matrix(integer(0), ncol = 2)
-          }
-        }
-      }
-    } else {
-      # Create empty document
-      doc <- matrix(integer(0), ncol = 2)
-    }
-    
-    # Set column names and add to fixed_docs
-    colnames(doc) <- c("indices", "counts")
-    fixed_docs[[i]] <- doc
-  }
-  
-  # Preserve document names
-  if (!is.null(names(processed$documents))) {
-    names(fixed_docs) <- names(processed$documents)
-  }
-  
-  log_message(paste("Processed", length(fixed_docs), "document matrices"), "prep_documents")
-  
-  ## --- Remove empty documents -------------------------------------------
   # Count non-empty documents
-  doc_lengths <- sapply(fixed_docs, function(d) nrow(d))
+  doc_lengths <- sapply(processed$documents, function(d) nrow(d))
   empty_docs <- which(doc_lengths == 0)
   
-  # Remove empty documents and corresponding metadata
-  if (length(empty_docs) > 0) {
-    log_message(paste("Removing", length(empty_docs), "empty documents"), "prep_documents", "WARNING")
-    fixed_docs <- fixed_docs[-empty_docs]
-    
-    # Also update metadata if possible
-    if (!is.null(processed$meta) && nrow(processed$meta) == length(processed$documents)) {
-      processed$meta <- processed$meta[-empty_docs, , drop = FALSE]
+  log_message(paste("Found", length(empty_docs), "empty documents out of", 
+                    length(processed$documents), "total"), "prep_documents")
+  
+  # Validate indices are within bounds
+  valid_docs <- processed$documents
+  fixed_count <- 0
+  
+  for (i in seq_along(valid_docs)) {
+    if (nrow(valid_docs[[i]]) > 0) {
+      invalid_indices <- which(valid_docs[[i]][, "indices"] < 1 | 
+                                 valid_docs[[i]][, "indices"] > vocab_size)
+      
+      if (length(invalid_indices) > 0) {
+        if (length(invalid_indices) < nrow(valid_docs[[i]])) {
+          # Remove invalid indices
+          valid_docs[[i]] <- valid_docs[[i]][-invalid_indices, , drop = FALSE]
+          fixed_count <- fixed_count + 1
+        } else {
+          # All indices are invalid, create empty document
+          valid_docs[[i]] <- matrix(integer(0), ncol = 2)
+          colnames(valid_docs[[i]]) <- c("indices", "counts")
+        }
+      }
     }
   }
   
-  # Recount non-empty documents
-  non_empty_count <- length(fixed_docs)
+  if (fixed_count > 0) {
+    log_message(paste("Fixed indices in", fixed_count, "documents"), "prep_documents", "WARNING")
+  }
   
-  ## --- Record vocabulary statistics before filtering --------------------
+  ## --- Record vocabulary statistics before filtering -------------------------
   initial_vocab_size <- length(processed$vocab)
   initial_doc_count <- length(processed$documents)
+  non_empty_count <- sum(sapply(valid_docs, function(d) nrow(d) > 0))
   
   log_message(paste("Initial vocabulary size:", initial_vocab_size), "prep_documents")
   log_message(paste("Initial document count:", initial_doc_count, 
-                    "(", non_empty_count, "after removing empty documents)"), "prep_documents")
+                    "(", non_empty_count, "non-empty)"), "prep_documents")
   
-  ## --- Apply prepDocuments function -------------------------------------
+  ## --- Apply prepDocuments function ------------------------------------------
   log_message(paste("Preparing documents with thresh:", lower.thresh, "to", upper.thresh), 
               "prep_documents")
   
-  # Check if we have any documents left
+  # Check if we have any non-empty documents
   if (non_empty_count == 0) {
-    error_msg <- "No non-empty documents after processing"
+    error_msg <- "No non-empty documents after validation"
     diagnostics$processing_issues <- c(diagnostics$processing_issues, error_msg)
     log_message(error_msg, "prep_documents", "ERROR")
     
@@ -189,7 +154,7 @@ prep_documents <- function(
   # Apply prepDocuments with error handling
   prepped <- tryCatch({
     stm::prepDocuments(
-      documents = fixed_docs,
+      documents = valid_docs,
       vocab = processed$vocab,
       meta = processed$meta,
       lower.thresh = lower.thresh,
@@ -205,7 +170,7 @@ prep_documents <- function(
     log_message("Trying with minimal thresholds as fallback", "prep_documents", "WARNING")
     tryCatch({
       stm::prepDocuments(
-        documents = fixed_docs,
+        documents = valid_docs,
         vocab = processed$vocab,
         meta = processed$meta,
         lower.thresh = 1,
@@ -213,7 +178,6 @@ prep_documents <- function(
         verbose = FALSE
       )
     }, error = function(e2) {
-      # If that also fails, return processed data
       log_message(paste("Fallback also failed:", e2$message), "prep_documents", "WARNING")
       NULL
     })
@@ -221,16 +185,21 @@ prep_documents <- function(
   
   # Check if processing was successful
   if (is.null(prepped)) {
-    # Create a fallback minimal result structure
-    log_message("Creating fallback result without filtering", "prep_documents", "WARNING")
-    prepped <- list(
-      documents = fixed_docs,
-      vocab = processed$vocab,
-      meta = processed$meta
-    )
+    error_msg <- "Failed to prepare documents with both primary and fallback settings"
+    diagnostics$processing_issues <- c(diagnostics$processing_issues, error_msg)
+    log_message(error_msg, "prep_documents", "ERROR")
+    
+    return(create_result(
+      data = NULL,
+      metadata = list(
+        timestamp = Sys.time(),
+        success = FALSE
+      ),
+      diagnostics = diagnostics
+    ))
   }
   
-  ## --- Calculate filtering statistics -----------------------------------
+  ## --- Calculate filtering statistics ----------------------------------------
   final_vocab_size <- length(prepped$vocab)
   final_doc_count <- length(prepped$documents)
   
@@ -259,7 +228,33 @@ prep_documents <- function(
                       docs_removed_pct, "%)"), "prep_documents", "WARNING")
   }
   
-  ## --- Calculate processing time and create result ----------------------
+  ## --- Validate final document format ----------------------------------------
+  log_message("Ensuring consistent document format in output", "prep_documents")
+  
+  standardized_docs <- list()
+  
+  for (i in seq_along(prepped$documents)) {
+    doc <- prepped$documents[[i]]
+    
+    # Ensure standard format (2-column matrix with named columns)
+    if (is.matrix(doc) && ncol(doc) >= 2) {
+      doc_matrix <- doc[, 1:2, drop = FALSE]
+    } else if (is.list(doc) && all(c("indices", "counts") %in% names(doc))) {
+      doc_matrix <- cbind(doc$indices, doc$counts)
+    } else {
+      # Create empty document as fallback
+      doc_matrix <- matrix(integer(0), ncol = 2)
+    }
+    
+    # Set column names
+    colnames(doc_matrix) <- c("indices", "counts")
+    standardized_docs[[i]] <- doc_matrix
+  }
+  
+  # Replace with standardized documents
+  prepped$documents <- standardized_docs
+  
+  ## --- Calculate processing time and create result ---------------------------
   end_time <- Sys.time()
   processing_time <- as.numeric(difftime(end_time, start_time, units = "secs"))
   
