@@ -1,48 +1,33 @@
-#' @title Name topics and create summary table
-#' @description Assigns meaningful names to topics based on word distributions
-#'   and creates a formatted table for reporting. Works in either automated mode
-#'   (generating names from top terms) or interactive mode (prompting user for names).
-#'   
-#' @param model Result from fit_model() containing topic information
-#' @param mode Naming mode: "auto" or "interactive" (default: "auto")
-#' @param method Method for auto-naming: "frex", "prob", "lift", "score" (default: "frex")
-#' @param include_examples Whether to extract example text for topics (default: TRUE)
+#' @title Interactive Qualitative Topic Naming
+#' @description Guides researchers through an interactive process of naming topics
+#'   based on term lists and representative document excerpts. Supports automatic
+#'   naming as a fallback if the interactive process is interrupted.
+#'
+#' @param model_result Result from fit_model() containing an STM model
+#' @param mode Naming mode: "interactive" or "auto" (default: "interactive")
+#' @param n_terms Number of terms to display for each ranking method (default: 10)
+#' @param n_docs Number of representative documents to display (default: 3)
+#' @param doc_length Maximum length of document excerpts to display (default: 300)
 #'
 #' @return A list containing:
 #'   \item{data}{
 #'     \itemize{
-#'       \item topics_table - Formatted table with topic IDs, names, and top terms
-#'       \item topic_names - Dataframe with topic_id, topic_name, and short_name
-#'       \item topic_terms - Top terms for each naming method
-#'       \item topic_examples - Example text snippets for each topic (if requested)
+#'       \item topics_table - Data frame with topic IDs, names, and explanations
+#'       \item topic_terms - Top terms for each method
+#'       \item topic_examples - Example text snippets for each topic
 #'     }
 #'   }
 #'   \item{metadata}{Process information and configuration}
 #'   \item{diagnostics}{Naming issues and statistics}
-#'
-#' @examples
-#' \dontrun{
-#' # Automatic naming based on FREX terms
-#' topic_results <- name_topics(model)
-#' 
-#' # Use the topics table directly for reporting
-#' topics_table <- topic_results$data$topics_table
-#' print(topics_table)
-#' 
-#' # Interactive naming with user input
-#' topic_results <- name_topics(model, mode = "interactive")
-#' }
 name_topics <- function(
-    model,
-    mode = "auto",           # "auto" or "interactive"
-    method = "frex",         # "frex", "prob", "lift", "score"
-    include_examples = TRUE  # Whether to extract example text
+    model_result,
+    mode = "interactive",
+    n_terms = 10,
+    n_docs = 3,
+    doc_length = 300
 ) {
   ## --- Setup & Initialization -------------------------------------------------
   start_time <- Sys.time()
-  
-  # Import the pipe operator
-  `%>%` <- magrittr::`%>%`
   
   # Initialize diagnostics tracking
   diagnostics <- list(
@@ -55,8 +40,8 @@ name_topics <- function(
   log_message("Validating input data", "name_topics")
   
   # Validate model structure
-  if (!is.list(model) || !"data" %in% names(model)) {
-    error_msg <- "model must be the output from fit_model() with a 'data' component"
+  if (!is.list(model_result) || !"data" %in% names(model_result) || !"model" %in% names(model_result$data)) {
+    error_msg <- "model_result must be the output from fit_model() with a 'model' component"
     diagnostics$naming_issues <- c(diagnostics$naming_issues, error_msg)
     log_message(error_msg, "name_topics", "ERROR")
     
@@ -68,528 +53,315 @@ name_topics <- function(
       ),
       diagnostics = diagnostics
     ))
-  }
-  
-  # Check for required model components
-  if (!("topic_terms" %in% names(model$data))) {
-    # If model doesn't have topic_terms, try to generate them from the model
-    if ("model" %in% names(model$data) && !is.null(model$data$model)) {
-      log_message("Generating topic terms from model", "name_topics")
-      try({
-        model$data$topic_terms <- list(
-          label_summary = stm::labelTopics(model$data$model, n = 10)
-        )
-      }, silent = TRUE)
-    }
-    
-    # If still missing, return error
-    if (!("topic_terms" %in% names(model$data))) {
-      error_msg <- "Model missing topic_terms component"
-      diagnostics$naming_issues <- c(diagnostics$naming_issues, error_msg)
-      log_message(error_msg, "name_topics", "ERROR")
-      
-      return(create_result(
-        data = NULL,
-        metadata = list(
-          timestamp = Sys.time(),
-          success = FALSE
-        ),
-        diagnostics = diagnostics
-      ))
-    }
   }
   
   # Validate mode parameter
   valid_modes <- c("auto", "interactive")
   if (!mode %in% valid_modes) {
-    warning_msg <- paste("Invalid mode:", mode, "- using 'auto' instead")
+    warning_msg <- paste("Invalid mode:", mode, "- using 'interactive' instead")
     diagnostics$naming_issues <- c(diagnostics$naming_issues, warning_msg)
     log_message(warning_msg, "name_topics", "WARNING")
-    mode <- "auto"
+    mode <- "interactive"
   }
   
-  # Validate method parameter
-  valid_methods <- c("frex", "prob", "lift", "score")
-  if (!method %in% valid_methods) {
-    warning_msg <- paste("Invalid method:", method, "- using 'frex' instead")
-    diagnostics$naming_issues <- c(diagnostics$naming_issues, warning_msg)
-    log_message(warning_msg, "name_topics", "WARNING")
-    method <- "frex"
-  }
+  ## --- Extract model and prepare data -----------------------------------------
+  log_message("Extracting model and preparing data", "name_topics")
   
-  # Validate include_examples parameter
-  if (!is.logical(include_examples)) {
-    warning_msg <- "include_examples must be logical - using TRUE instead"
-    diagnostics$naming_issues <- c(diagnostics$naming_issues, warning_msg)
-    log_message(warning_msg, "name_topics", "WARNING")
-    include_examples <- TRUE
-  }
-  
-  ## --- Extract topic information ----------------------------------------------
-  log_message("Extracting topic information", "name_topics")
-  
-  # Get topic terms
-  topic_terms <- model$data$topic_terms
-  
-  # Try both possible structures for topic terms
-  topic_label_summary <- NULL
-  
-  if ("label_summary" %in% names(topic_terms)) {
-    topic_label_summary <- topic_terms$label_summary
-  } else if ("all_labels" %in% names(topic_terms)) {
-    # Reshape from long to wide format
-    label_types <- unique(topic_terms$all_labels$label_type)
-    topic_ids <- unique(topic_terms$all_labels$topic_id)
-    
-    topic_label_summary <- data.frame(topic_id = topic_ids)
-    
-    for (lt in label_types) {
-      lt_data <- topic_terms$all_labels[topic_terms$all_labels$label_type == lt, ]
-      lt_data <- lt_data[match(topic_ids, lt_data$topic_id), ]
-      topic_label_summary[[paste0(lt, "_words")]] <- lt_data$words
-    }
-  } else {
-    # Try direct access
-    topic_label_summary <- topic_terms
-  }
-  
-  # Check we have a valid topic_label_summary
-  if (is.null(topic_label_summary) || nrow(topic_label_summary) == 0) {
-    error_msg <- "Could not extract topic terms from model"
-    diagnostics$naming_issues <- c(diagnostics$naming_issues, error_msg)
-    log_message(error_msg, "name_topics", "ERROR")
-    
-    return(create_result(
-      data = NULL,
-      metadata = list(
-        timestamp = Sys.time(),
-        success = FALSE
-      ),
-      diagnostics = diagnostics
-    ))
-  }
+  # Extract STM model
+  stm_model <- model_result$data$model
   
   # Get topic count
-  k <- nrow(topic_label_summary)
+  k <- stm_model$settings$dim$K
   log_message(paste("Processing", k, "topics"), "name_topics")
   
-  ## --- Extract example documents (if requested) -------------------------------
-  topic_examples <- NULL
+  # Generate different types of topic labels
+  log_message("Generating topic labels", "name_topics")
+  topic_labels <- stm::labelTopics(stm_model, n = n_terms)
   
-  if (include_examples) {
-    log_message("Extracting example text for topics", "name_topics")
-    
-    # Check for required components
-    if (!all(c("topic_proportions", "topic_data") %in% names(model$data))) {
-      warning_msg <- "Cannot extract examples: missing topic_proportions or topic_data"
-      diagnostics$example_issues <- c(diagnostics$example_issues, warning_msg)
-      log_message(warning_msg, "name_topics", "WARNING")
-    } else {
-      # Get topic proportions and data
-      topic_props <- model$data$topic_proportions
-      topic_data <- model$data$topic_data
+  # Try to get representative documents for each topic
+  log_message("Finding representative documents", "name_topics")
+  topic_docs <- list()
+  topic_texts <- list()
+  
+  # Attempt to retrieve document information
+  doc_success <- tryCatch({
+    for (i in 1:k) {
+      # Get representative documents
+      thoughts <- stm::findThoughts(stm_model, texts = stm_model$documents$meta$text,
+                                    n = n_docs, topics = i)
       
-      # Initialize examples dataframe
-      topic_examples <- data.frame(
-        topic_id = 1:k,
-        doc_id = character(k),
-        example_text = character(k),
-        topic_proportion = numeric(k),
-        stringsAsFactors = FALSE
-      )
-      
-      # Get original document text if available
-      original_docs <- NULL
-      if ("segments" %in% names(model$data) && !is.null(model$data$segments)) {
-        # Try to get original text via segments info
-        segments <- model$data$segments$mapping
-        if (is.data.frame(segments) && "original_doc_id" %in% names(segments)) {
-          # Look for original document text
-          if (exists("nap_data") && is.list(nap_data)) {
-            if (is.list(nap_data$data) && "documents" %in% names(nap_data$data)) {
-              original_docs <- nap_data$data$documents
-            }
-          }
-        }
-      }
-      
-      # Fallback - use topic_props if it has a text column
-      if (is.null(original_docs) && "text" %in% names(topic_props)) {
-        original_docs <- topic_props[, c("doc_id", "text")]
-      }
-      
-      # Process each topic
-      for (i in 1:k) {
-        topic_col <- paste0("Topic_", i)
-        
-        # Skip if topic column missing
-        if (!topic_col %in% names(topic_props)) {
-          warning_msg <- paste("Topic column", topic_col, "not found in topic_proportions")
-          diagnostics$example_issues <- c(diagnostics$example_issues, warning_msg)
-          next
-        }
-        
-        # Find document with highest proportion of this topic
-        best_doc_idx <- which.max(topic_props[[topic_col]])
-        
-        if (length(best_doc_idx) == 0 || is.na(best_doc_idx)) {
-          warning_msg <- paste("Could not find representative document for topic", i)
-          diagnostics$example_issues <- c(diagnostics$example_issues, warning_msg)
-          next
-        }
-        
-        best_doc_id <- topic_props$doc_id[best_doc_idx]
-        best_prop <- topic_props[[topic_col]][best_doc_idx]
-        
-        # Try to get example text
-        example_text <- ""
-        
-        if (!is.null(original_docs)) {
-          # Get text from original docs
-          doc_text <- original_docs$text[original_docs$doc_id == best_doc_id]
+      # Extract document metadata if available
+      meta_info <- NULL
+      if (!is.null(stm_model$documents$meta)) {
+        doc_indices <- thoughts$index[[1]]
+        if (length(doc_indices) > 0) {
+          meta_subset <- stm_model$documents$meta[doc_indices, ]
           
-          if (length(doc_text) > 0 && !is.na(doc_text[1])) {
-            # Extract a snippet (first 200 characters)
-            example_text <- substr(doc_text[1], 1, 200)
-            
-            # Add ellipsis if shortened
-            if (nchar(doc_text[1]) > 200) {
-              example_text <- paste0(example_text, "...")
-            }
+          # Try to get country information
+          country_col <- intersect(c("country", "country_name", "country_iso3c"), 
+                                   names(meta_subset))
+          
+          if (length(country_col) > 0) {
+            meta_info <- meta_subset[, country_col[1], drop = FALSE]
           }
         }
-        
-        # Store in examples dataframe
-        topic_examples$doc_id[i] <- best_doc_id
-        topic_examples$example_text[i] <- example_text
-        topic_examples$topic_proportion[i] <- best_prop
       }
+      
+      # Store documents and metadata
+      topic_docs[[i]] <- meta_info
+      topic_texts[[i]] <- thoughts$docs[[1]]
     }
-  }
+    TRUE
+  }, error = function(e) {
+    warning_msg <- paste("Could not extract document examples:", e$message)
+    diagnostics$example_issues <- c(diagnostics$example_issues, warning_msg)
+    log_message(warning_msg, "name_topics", "WARNING")
+    FALSE
+  })
   
-  ## --- Generate topic names ---------------------------------------------------
-  log_message(paste("Generating topic names using", mode, "mode"), "name_topics")
+  ## --- Initialize topic names dataframe ---------------------------------------
+  log_message("Initializing topic names data frame", "name_topics")
   
-  # Initialize topic names dataframe
+  # Initialize dataframe for topic names
   topic_names <- data.frame(
     topic_id = 1:k,
     topic_name = character(k),
-    short_name = character(k),
+    topic_explanation = character(k),
+    auto_generated = logical(k),
     stringsAsFactors = FALSE
   )
   
-  if (mode == "auto") {
-    # Generate names automatically based on top terms
-    log_message(paste("Using", method, "method for automatic naming"), "name_topics")
+  ## --- Topic review and naming (interactive or automatic) ---------------------
+  if (mode == "interactive") {
+    log_message("Starting interactive topic naming", "name_topics")
     
-    # Choose the words column based on method
-    words_col <- paste0(method, "_words")
+    cat("\n=================================================================\n")
+    cat("INTERACTIVE TOPIC NAMING\n")
+    cat("=================================================================\n")
+    cat("For each topic, you'll see term lists and representative documents.\n")
+    cat("You'll be asked to provide:\n")
+    cat("1. A descriptive name for the topic\n")
+    cat("2. A brief explanation of the topic and its conceptual meaning\n")
+    cat("\nType 'exit' at any prompt to switch to automatic naming for remaining topics.\n\n")
     
-    if (!words_col %in% names(topic_label_summary)) {
-      warning_msg <- paste("Method", method, "not available, falling back to first available")
-      diagnostics$naming_issues <- c(diagnostics$naming_issues, warning_msg)
-      log_message(warning_msg, "name_topics", "WARNING")
-      
-      # Use first words column available
-      words_col <- grep("_words$", names(topic_label_summary), value = TRUE)[1]
-    }
-    
-    # Generate names for each topic
+    # Interactive loop for naming topics
     for (i in 1:k) {
-      # Get words for this topic
-      words <- topic_label_summary[[words_col]][i]
+      cat("\n=================================================================\n")
+      cat(paste0("TOPIC ", i, " OF ", k, "\n"))
+      cat("=================================================================\n\n")
       
-      # Split into array
-      word_array <- unlist(strsplit(words, ", "))
+      # Display term rankings
+      cat("FREX terms (frequent and exclusive):\n")
+      cat(paste(topic_labels$frex[i,], collapse = ", "), "\n\n")
       
-      # Generate descriptive name (first 3-4 words)
-      topic_words <- word_array[1:min(4, length(word_array))]
-      descriptive_name <- paste0(
-        toupper(substr(topic_words[1], 1, 1)),
-        substr(topic_words[1], 2, nchar(topic_words[1])),
-        ": ",
-        paste(topic_words[2:length(topic_words)], collapse = ", ")
-      )
+      cat("Highest probability terms:\n")
+      cat(paste(topic_labels$prob[i,], collapse = ", "), "\n\n")
       
-      # Generate short name (first word or acronym)
-      short_name <- word_array[1]
+      cat("Lift terms (distinctive):\n")
+      cat(paste(topic_labels$lift[i,], collapse = ", "), "\n\n")
       
-      # Store names
-      topic_names$topic_name[i] <- descriptive_name
-      topic_names$short_name[i] <- short_name
-    }
-  } else {
-    # Interactive naming
-    cat("\nInteractive Topic Naming\n")
-    cat("=======================\n")
-    cat("For each topic, you'll see the top words and be prompted to enter:\n")
-    cat("1. A descriptive name (e.g., 'Climate Finance')\n")
-    cat("2. A short name/abbreviation (e.g., 'Finance')\n\n")
-    cat("To exit naming early, type 'exit' or 'quit' at any prompt.\n\n")
-    
-    for (i in 1:k) {
-      cat(paste0("\n------ Topic ", i, " of ", k, " ------\n"))
-      
-      # Display top words from each method
-      if ("prob_words" %in% names(topic_label_summary)) {
-        cat(paste0("Probability: ", topic_label_summary$prob_words[i], "\n"))
-      }
-      if ("frex_words" %in% names(topic_label_summary)) {
-        cat(paste0("FREX: ", topic_label_summary$frex_words[i], "\n"))
-      }
-      if ("lift_words" %in% names(topic_label_summary)) {
-        cat(paste0("Lift: ", topic_label_summary$lift_words[i], "\n"))
-      }
-      if ("score_words" %in% names(topic_label_summary)) {
-        cat(paste0("Score: ", topic_label_summary$score_words[i], "\n"))
-      }
-      
-      # Display example text if available
-      if (!is.null(topic_examples) && !is.na(topic_examples$example_text[i]) && 
-          nchar(topic_examples$example_text[i]) > 0) {
-        cat("\nExample text:\n")
-        cat(paste0("\"", topic_examples$example_text[i], "\"\n"))
-        cat(paste0("(Document: ", topic_examples$doc_id[i], ", Topic proportion: ", 
-                   round(topic_examples$topic_proportion[i] * 100, 1), "%)\n\n"))
-      } else {
+      # Display representative documents if available
+      if (doc_success && i <= length(topic_texts) && length(topic_texts[[i]]) > 0) {
+        cat("REPRESENTATIVE DOCUMENTS:\n")
+        
+        for (j in 1:length(topic_texts[[i]])) {
+          # Get document text and truncate if needed
+          doc_text <- topic_texts[[i]][j]
+          if (nchar(doc_text) > doc_length) {
+            doc_text <- paste0(substr(doc_text, 1, doc_length), "...")
+          }
+          
+          # Display document with metadata if available
+          if (!is.null(topic_docs[[i]]) && nrow(topic_docs[[i]]) >= j) {
+            meta_str <- paste(names(topic_docs[[i]]), topic_docs[[i]][j,], sep = ": ", collapse = ", ")
+            cat(paste0("\nDocument ", j, " (", meta_str, "):\n"))
+          } else {
+            cat(paste0("\nDocument ", j, ":\n"))
+          }
+          cat(doc_text, "\n")
+        }
         cat("\n")
       }
       
       # Prompt for topic name
-      cat("Enter descriptive name (or 'exit' to quit): ")
+      cat("Enter topic name: ")
       topic_name <- readline()
       
       # Check for exit command
       if (tolower(topic_name) %in% c("exit", "quit", "q")) {
         log_message("User exited interactive naming", "name_topics")
-        # Fill remaining topics with automatic names
-        if (i < k) {
-          warning_msg <- paste("Interactive naming exited early at topic", i, "- using auto names for remaining topics")
-          diagnostics$naming_issues <- c(diagnostics$naming_issues, warning_msg)
-          log_message(warning_msg, "name_topics", "WARNING")
+        # Switch to auto mode for remaining topics
+        log_message(paste("Switching to automatic naming from topic", i), "name_topics")
+        
+        # Store that this topic was auto-generated
+        topic_names$auto_generated[i:k] <- TRUE
+        
+        # Generate automatic names for remaining topics
+        for (j in i:k) {
+          # Use first FREX term capitalized followed by next 2-3 terms
+          frex_terms <- topic_labels$frex[j,]
+          topic_names$topic_name[j] <- paste0(
+            toupper(substr(frex_terms[1], 1, 1)),
+            substr(frex_terms[1], 2, nchar(frex_terms[1])),
+            ": ",
+            paste(frex_terms[2:min(4, length(frex_terms))], collapse = ", ")
+          )
           
-          # Switch to auto mode for remaining topics
-          # Get words column based on method parameter
-          words_col <- paste0(method, "_words")
-          if (!words_col %in% names(topic_label_summary)) {
-            words_col <- grep("_words$", names(topic_label_summary), value = TRUE)[1]
-          }
-          
-          for (j in i:k) {
-            # Get words for this topic
-            words <- topic_label_summary[[words_col]][j]
-            
-            # Split into array
-            word_array <- unlist(strsplit(words, ", "))
-            
-            # Generate names
-            topic_words <- word_array[1:min(4, length(word_array))]
-            descriptive_name <- paste0(
-              toupper(substr(topic_words[1], 1, 1)),
-              substr(topic_words[1], 2, nchar(topic_words[1])),
-              ": ",
-              paste(topic_words[2:length(topic_words)], collapse = ", ")
-            )
-            
-            topic_names$topic_name[j] <- descriptive_name
-            topic_names$short_name[j] <- word_array[1]
-          }
-          
-          break
+          # Generate basic explanation
+          topic_names$topic_explanation[j] <- paste(
+            "This topic is characterized by terms related to",
+            paste(frex_terms[1:min(5, length(frex_terms))], collapse = ", "),
+            "."
+          )
         }
+        
+        # Break out of the loop
+        break
       }
       
-      # If user entered nothing, use default
+      # If user entered nothing, generate a default name
       if (topic_name == "") {
-        # Generate default from top words
-        words_col <- paste0(method, "_words")
-        if (!words_col %in% names(topic_label_summary)) {
-          words_col <- grep("_words$", names(topic_label_summary), value = TRUE)[1]
-        }
-        
-        words <- topic_label_summary[[words_col]][i]
-        word_array <- unlist(strsplit(words, ", "))
-        topic_words <- word_array[1:min(4, length(word_array))]
-        
+        frex_terms <- topic_labels$frex[i,]
         topic_name <- paste0(
-          toupper(substr(topic_words[1], 1, 1)),
-          substr(topic_words[1], 2, nchar(topic_words[1])),
+          toupper(substr(frex_terms[1], 1, 1)),
+          substr(frex_terms[1], 2, nchar(frex_terms[1])),
           ": ",
-          paste(topic_words[2:length(topic_words)], collapse = ", ")
+          paste(frex_terms[2:min(4, length(frex_terms))], collapse = ", ")
         )
-        
         cat(paste0("Using default: '", topic_name, "'\n"))
       }
       
-      # Prompt for short name
-      cat("Enter short name/abbreviation: ")
-      short_name <- readline()
-      
-      # Check for exit command again
-      if (tolower(short_name) %in% c("exit", "quit", "q")) {
-        log_message("User exited interactive naming", "name_topics")
-        # Use topic name first word as short name and continue exiting
-        short_name <- unlist(strsplit(topic_name, " "))[1]
-        cat(paste0("Using default: '", short_name, "'\n"))
-        
-        # Fill remaining topics with automatic names
-        if (i < k) {
-          warning_msg <- paste("Interactive naming exited early at topic", i, "- using auto names for remaining topics")
-          diagnostics$naming_issues <- c(diagnostics$naming_issues, warning_msg)
-          log_message(warning_msg, "name_topics", "WARNING")
-          
-          # Save this topic
-          topic_names$topic_name[i] <- topic_name
-          topic_names$short_name[i] <- short_name
-          
-          # Switch to auto mode for remaining topics
-          words_col <- paste0(method, "_words")
-          if (!words_col %in% names(topic_label_summary)) {
-            words_col <- grep("_words$", names(topic_label_summary), value = TRUE)[1]
-          }
-          
-          for (j in (i+1):k) {
-            # Get words for this topic
-            words <- topic_label_summary[[words_col]][j]
-            
-            # Split into array
-            word_array <- unlist(strsplit(words, ", "))
-            
-            # Generate names
-            topic_words <- word_array[1:min(4, length(word_array))]
-            descriptive_name <- paste0(
-              toupper(substr(topic_words[1], 1, 1)),
-              substr(topic_words[1], 2, nchar(topic_words[1])),
-              ": ",
-              paste(topic_words[2:length(topic_words)], collapse = ", ")
-            )
-            
-            topic_names$topic_name[j] <- descriptive_name
-            topic_names$short_name[j] <- word_array[1]
-          }
-          
-          break
-        }
-      }
-      
-      # If user entered nothing, use default
-      if (short_name == "") {
-        # Extract first word of topic name as default short name
-        first_word <- unlist(strsplit(topic_name, " "))[1]
-        first_word <- gsub(":", "", first_word)  # Remove colon if present
-        short_name <- first_word
-        cat(paste0("Using default: '", short_name, "'\n"))
-      }
-      
-      # Store in data frame
+      # Store the topic name
       topic_names$topic_name[i] <- topic_name
-      topic_names$short_name[i] <- short_name
+      
+      # Prompt for explanation
+      cat("Enter topic explanation (describing its conceptual meaning): \n")
+      topic_explanation <- readline()
+      
+      # Store explanation (or default if empty)
+      if (topic_explanation == "") {
+        frex_terms <- topic_labels$frex[i,]
+        topic_explanation <- paste(
+          "This topic is characterized by terms related to",
+          paste(frex_terms[1:min(5, length(frex_terms))], collapse = ", "),
+          "."
+        )
+        cat(paste0("Using default explanation.\n"))
+      }
+      topic_names$topic_explanation[i] <- topic_explanation
+      
+      # Mark as manually named
+      topic_names$auto_generated[i] <- FALSE
+      
+      cat("\nTopic", i, "named successfully.\n")
     }
     
-    # Summarize results
-    cat("\nTopic naming complete!\n")
-  }
-  
-  ## --- Validate final topic names ---------------------------------------------
-  log_message("Validating final topic names", "name_topics")
-  
-  # Check for empty names
-  empty_names <- which(topic_names$topic_name == "")
-  if (length(empty_names) > 0) {
-    warning_msg <- paste("Found", length(empty_names), "empty topic names - using defaults")
-    diagnostics$naming_issues <- c(diagnostics$naming_issues, warning_msg)
-    log_message(warning_msg, "name_topics", "WARNING")
+  } else {
+    # Automatic naming mode
+    log_message("Using automatic naming mode", "name_topics")
     
-    # Generate default names for empty entries
-    for (i in empty_names) {
-      words_col <- paste0(method, "_words")
-      if (!words_col %in% names(topic_label_summary)) {
-        words_col <- grep("_words$", names(topic_label_summary), value = TRUE)[1]
-      }
-      
-      words <- topic_label_summary[[words_col]][i]
-      word_array <- unlist(strsplit(words, ", "))
-      topic_words <- word_array[1:min(4, length(word_array))]
-      
+    for (i in 1:k) {
+      # Use first FREX term capitalized followed by next 2-3 terms
+      frex_terms <- topic_labels$frex[i,]
       topic_names$topic_name[i] <- paste0(
-        toupper(substr(topic_words[1], 1, 1)),
-        substr(topic_words[1], 2, nchar(topic_words[1])),
+        toupper(substr(frex_terms[1], 1, 1)),
+        substr(frex_terms[1], 2, nchar(frex_terms[1])),
         ": ",
-        paste(topic_words[2:length(topic_words)], collapse = ", ")
+        paste(frex_terms[2:min(4, length(frex_terms))], collapse = ", ")
       )
       
-      topic_names$short_name[i] <- word_array[1]
-    }
-  }
-  
-  # Check for empty short names
-  empty_short <- which(topic_names$short_name == "")
-  if (length(empty_short) > 0) {
-    warning_msg <- paste("Found", length(empty_short), "empty short names - using defaults")
-    diagnostics$naming_issues <- c(diagnostics$naming_issues, warning_msg)
-    log_message(warning_msg, "name_topics", "WARNING")
-    
-    # Generate default short names for empty entries
-    for (i in empty_short) {
-      # Get first word of topic name
-      first_word <- unlist(strsplit(topic_names$topic_name[i], " "))[1]
-      first_word <- gsub(":", "", first_word)  # Remove colon if present
+      # Generate basic explanation
+      topic_names$topic_explanation[i] <- paste(
+        "This topic is characterized by terms related to",
+        paste(frex_terms[1:min(5, length(frex_terms))], collapse = ", "),
+        "."
+      )
       
-      topic_names$short_name[i] <- first_word
+      # Mark as auto-generated
+      topic_names$auto_generated[i] <- TRUE
     }
   }
   
-  ## --- Create topics table ----------------------------------------------------
-  log_message("Creating topics table for reporting", "name_topics")
+  ## --- Prepare result ---------------------------------------------------------
+  log_message("Preparing result", "name_topics")
   
-  # Start with basic topic names
-  topics_table <- topic_names
+  # Create topics table for easy reference
+  topics_table <- data.frame(
+    topic_id = topic_names$topic_id,
+    topic_name = topic_names$topic_name,
+    topic_explanation = topic_names$topic_explanation,
+    top_frex_terms = sapply(1:k, function(i) paste(topic_labels$frex[i,], collapse = ", ")),
+    top_prob_terms = sapply(1:k, function(i) paste(topic_labels$prob[i,], collapse = ", ")),
+    auto_generated = topic_names$auto_generated,
+    stringsAsFactors = FALSE
+  )
   
-  # Add top terms from the chosen method
-  words_col <- paste0(method, "_words")
-  if (words_col %in% names(topic_label_summary)) {
-    topics_table$top_terms <- topic_label_summary[[words_col]]
-  } else {
-    # If chosen method not available, use the first available method
-    available_cols <- grep("_words$", names(topic_label_summary), value = TRUE)
-    if (length(available_cols) > 0) {
-      topics_table$top_terms <- topic_label_summary[[available_cols[1]]]
-    } else {
-      topics_table$top_terms <- NA_character_
+  # Create examples table if document extraction was successful
+  topic_examples <- NULL
+  if (doc_success) {
+    example_rows <- list()
+    
+    for (i in 1:k) {
+      if (i <= length(topic_texts) && length(topic_texts[[i]]) > 0) {
+        for (j in 1:length(topic_texts[[i]])) {
+          # Truncate text if needed
+          doc_text <- topic_texts[[i]][j]
+          if (nchar(doc_text) > doc_length) {
+            doc_text <- paste0(substr(doc_text, 1, doc_length), "...")
+          }
+          
+          # Get metadata if available
+          meta_info <- if (!is.null(topic_docs[[i]]) && nrow(topic_docs[[i]]) >= j) {
+            topic_docs[[i]][j,]
+          } else {
+            NA
+          }
+          
+          # Create row
+          example_rows[[length(example_rows) + 1]] <- list(
+            topic_id = i,
+            doc_id = j,
+            doc_text = doc_text,
+            country = if (is.data.frame(meta_info)) as.character(meta_info[1,1]) else NA
+          )
+        }
+      }
+    }
+    
+    # Convert to data frame if we have examples
+    if (length(example_rows) > 0) {
+      topic_examples <- do.call(rbind, lapply(example_rows, function(x) {
+        data.frame(
+          topic_id = x$topic_id,
+          doc_id = x$doc_id,
+          doc_text = x$doc_text,
+          country = x$country,
+          stringsAsFactors = FALSE
+        )
+      }))
     }
   }
   
-  # Ensure topic_id is formatted consistently
-  topics_table$topic_id <- as.integer(topics_table$topic_id)
-  
-  # Sort by topic_id
-  topics_table <- topics_table[order(topics_table$topic_id), ]
-  
-  ## --- Create result object ---------------------------------------------------
-  # Calculate processing time
+  ## --- Calculate processing time and create result ----------------------------
   end_time <- Sys.time()
   processing_time <- as.numeric(difftime(end_time, start_time, units = "secs"))
   
   # Create data result
   result_data <- list(
-    topics_table = topics_table,      # New formatted table for reporting
-    topic_names = topic_names,        # Original topic names dataframe
-    topic_terms = topic_label_summary # Terms for each topic
+    topics_table = topics_table,
+    topic_terms = topic_labels,
+    topic_examples = topic_examples
   )
-  
-  # Add examples if generated
-  if (!is.null(topic_examples)) {
-    result_data$topic_examples <- topic_examples
-  }
   
   # Create metadata
   result_metadata <- list(
     timestamp = start_time,
     processing_time_sec = processing_time,
-    topic_count = k,
+    k = k,
     naming_mode = mode,
-    naming_method = method,
-    include_examples = include_examples
+    manually_named = sum(!topic_names$auto_generated, na.rm = TRUE),
+    auto_named = sum(topic_names$auto_generated, na.rm = TRUE),
+    success = TRUE
   )
   
   # Update diagnostics
