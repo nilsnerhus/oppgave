@@ -49,7 +49,7 @@ source("scripts/fit_model.R")
 dfm <- auto_cache(process_dfm, tokens, metadata)
 k_result <- auto_cache(find_k, dfm)
 k_value <- k_result$data$best_k
-model <- auto_cache(fit_model, dfm, k = k_value, category_map = category_map, overwrite = TRUE)
+model <- auto_cache(fit_model, dfm, k = k_value, category_map = category_map)
 
 # Step 3: Analysis
 source("scripts/name_topics.R")
@@ -60,12 +60,3 @@ source("scripts/estimate_effect.R")
 topics <- auto_cache(name_topics, model, mode = "auto")
 dominance <- auto_cache(calculate_dominance, model, topics, overwrite = TRUE)
 effects <- auto_cache(estimate_effect, model, metadata, category_map)
-
-# Get just document-level metrics
-document_metrics <- dominance$data$metrics %>% dplyr::filter(level_type == "document")
-
-# Get just corpus-level metrics
-corpus_metrics <- dominance$data$metrics %>% dplyr::filter(level_type == "corpus")  
-
-# Format a nice table with kable
-knitr::kable(document_metrics, caption = "Document-Level Dominance Metrics")
