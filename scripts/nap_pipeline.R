@@ -27,13 +27,18 @@ sids <- c("ATG", "BHS", "BRB", "BLZ", "CPV", "COM", "CUB", "DMA", "DOM",
           "STP", "SYC", "SGP", "SLB", "SUR", "TLS", "TON", "TTO", "TUV", 
           "VUT")
 
+geo_config <- list(
+  sids_list = sids,
+  lldc_list = lldc
+)
+
 category_map <- list(
   Income = "wb_income_level", 
   Region = "region", 
   Geography = c("is_sids", "is_lldc")
 )
 
-metadata <- auto_cache(add_metadata, web$data$metadata)
+metadata <- auto_cache(add_metadata, web$data$metadata, geo_config = geo_config, category_map = category_map)
 tokens <- auto_cache(validate_tokens, docs$data$tokens)
 
 # Step 2: Structural topic modeling
@@ -42,14 +47,15 @@ source("scripts/find_k.R")
 source("scripts/fit_model.R")
 
 dfm <- auto_cache(process_dfm, tokens, metadata)
-k <- auto_cache(find_k, dfm)
-model <- auto_cache(fit_model, dfm, k = k, category_map = category_map)
+k_result <- auto_cache(find_k, dfm)
+k_value <- k_result$data$best_k
+model <- auto_cache(fit_model, dfm, k = k_value, category_map = category_map)
 
 # Step 3: Analysis
 source("scripts/name_topics.R")
-source("scripts/find_dominance.R")
+source("scripts/calculate_dominance.R")
 source("scripts/estimate_effect.R")
 
 topics <- auto_cache(name_topics, model)
-dominance <- auto_cache(find_dominance, model)
+dominance <- auto_cache(calculate_dominance, model$data$model, topics, overwrite = TRUE)
 effects <- auto_cache(estimate_effect, model, metadata, category_map)
