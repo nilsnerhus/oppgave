@@ -58,5 +58,5 @@ source("scripts/find_dominance.R")
 source("scripts/estimate_effect.R")
 
 topics <- auto_cache(name_topics, model, mode = "auto")
-dominance <- auto_cache(calculate_dominance, model, topics, overwrite = TRUE)
-effects <- auto_cache(estimate_effect, model, metadata, category_map)
+dominance <- auto_cache(calculate_dominance, model, topics)
+effects <- auto_cache(estimate_effect, model)
