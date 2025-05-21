@@ -152,7 +152,10 @@ fit_model <- function(dfm, k = 15, category_map = NULL, iterations = 200, seed =
   return(create_result(
     data = list(
       model = model_result,
-      summary = model_summary
+      summary = model_summary,
+      topic_proportions = model_result$theta,
+      aligned_meta = meta,  # This is already the properly aligned metadata
+      category_map = category_map  # Store the category map
     ),
     metadata = list(
       timestamp = start_time,
