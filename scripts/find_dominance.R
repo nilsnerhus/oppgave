@@ -8,7 +8,7 @@
 #' @param normalize Whether to normalize dominance values (default: TRUE)
 #'
 #' @return List with document-level and corpus-level metrics
-calc_dominance <- function(model, doc_indices = NULL, n = 3, normalize = TRUE) {
+find_dominance <- function(model, doc_indices = NULL, n = 3, normalize = TRUE) {
   # Use all documents if none specified
   if (is.null(doc_indices)) {
     doc_indices <- 1:nrow(theta)

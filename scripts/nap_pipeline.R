@@ -54,6 +54,7 @@ model <- auto_cache(fit_model, dfm, k = k_value, category_map = category_map, ov
 # Step 3: Analysis
 source("scripts/name_topics.R")
 source("scripts/calculate_dominance.R")
+source("scripts/find_dominance.R")
 source("scripts/estimate_effect.R")
 
 topics <- auto_cache(name_topics, model, mode = "auto")
