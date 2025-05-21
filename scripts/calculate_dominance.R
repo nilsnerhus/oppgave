@@ -19,13 +19,13 @@ calculate_dominance <- function(model, topics, n = 3, normalize = TRUE) {
     category_stats = list()
   )
   
-  # Extract components
+  ## --- Extract needed components ----------------------------------------------
   theta <- model$data$model$theta
   meta <- model$data$aligned_meta
   category_map <- model$data$category_map
   topics_table <- topics$data$topics_table
   
-  # Initialize results dataframe
+  # Initialize results dataframe with the new column
   results <- data.frame(
     level_type = character(),
     category = character(),
@@ -35,6 +35,7 @@ calculate_dominance <- function(model, topics, n = 3, normalize = TRUE) {
     normalized_dominance = numeric(),
     variance = numeric(),
     top_topics = character(),
+    top_topic_ids = character(),  # Added this column
     stringsAsFactors = FALSE
   )
   
@@ -57,6 +58,9 @@ calculate_dominance <- function(model, topics, n = 3, normalize = TRUE) {
     })
     top_topics_str <- paste(top_topics, collapse = ", ")
     
+    # Add the topic IDs as a separate field
+    top_topic_ids_str <- paste(top_indices, collapse = ",")
+    
     # Add to results
     results <- rbind(results,
                      data.frame(
@@ -68,6 +72,7 @@ calculate_dominance <- function(model, topics, n = 3, normalize = TRUE) {
                        normalized_dominance = global_result$doc_level$normalized,
                        variance = global_result$doc_level$variance,
                        top_topics = top_topics_str,
+                       top_topic_ids = top_topic_ids_str,  # New field
                        stringsAsFactors = FALSE
                      ),
                      data.frame(
@@ -79,6 +84,7 @@ calculate_dominance <- function(model, topics, n = 3, normalize = TRUE) {
                        normalized_dominance = global_result$corpus_level$normalized,
                        variance = global_result$corpus_level$variance,
                        top_topics = top_topics_str,
+                       top_topic_ids = top_topic_ids_str,  # New field
                        stringsAsFactors = FALSE
                      ))
   }
@@ -144,6 +150,9 @@ calculate_dominance <- function(model, topics, n = 3, normalize = TRUE) {
           })
           top_topics_str <- paste(top_topics, collapse = ", ")
           
+          # Add the topic IDs as a separate field
+          top_topic_ids_str <- paste(top_indices, collapse = ",")
+          
           # Add to results
           results <- rbind(results,
                            data.frame(
@@ -155,6 +164,7 @@ calculate_dominance <- function(model, topics, n = 3, normalize = TRUE) {
                              normalized_dominance = result$doc_level$normalized,
                              variance = result$doc_level$variance,
                              top_topics = top_topics_str,
+                             top_topic_ids = top_topic_ids_str,  # New field
                              stringsAsFactors = FALSE
                            ),
                            data.frame(
@@ -166,6 +176,7 @@ calculate_dominance <- function(model, topics, n = 3, normalize = TRUE) {
                              normalized_dominance = result$corpus_level$normalized,
                              variance = result$corpus_level$variance,
                              top_topics = top_topics_str,
+                             top_topic_ids = top_topic_ids_str,  # New field
                              stringsAsFactors = FALSE
                            ))
           
@@ -204,6 +215,9 @@ calculate_dominance <- function(model, topics, n = 3, normalize = TRUE) {
             })
             top_topics_str <- paste(top_topics, collapse = ", ")
             
+            # Add the topic IDs as a separate field
+            top_topic_ids_str <- paste(top_indices, collapse = ",")
+            
             # Add to results
             results <- rbind(results,
                              data.frame(
@@ -215,6 +229,7 @@ calculate_dominance <- function(model, topics, n = 3, normalize = TRUE) {
                                normalized_dominance = result$doc_level$normalized,
                                variance = result$doc_level$variance,
                                top_topics = top_topics_str,
+                               top_topic_ids = top_topic_ids_str,  # New field
                                stringsAsFactors = FALSE
                              ),
                              data.frame(
@@ -226,6 +241,7 @@ calculate_dominance <- function(model, topics, n = 3, normalize = TRUE) {
                                normalized_dominance = result$corpus_level$normalized,
                                variance = result$corpus_level$variance,
                                top_topics = top_topics_str,
+                               top_topic_ids = top_topic_ids_str,  # New field
                                stringsAsFactors = FALSE
                              ))
             
@@ -249,7 +265,7 @@ calculate_dominance <- function(model, topics, n = 3, normalize = TRUE) {
   log_message(paste("Dominance calculation complete,", nrow(results)/2, "entries processed"), 
               "calculate_dominance")
   
-  # Return results (directly in data, not nested under metrics)
+  # Return results
   return(create_result(
     data = results,
     metadata = list(
