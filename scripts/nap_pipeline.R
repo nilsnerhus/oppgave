@@ -59,4 +59,4 @@ source("scripts/calculate_direct_variance.R")
 
 topics <- auto_cache(name_topics, model, mode = "auto")
 dominance <- auto_cache(calculate_dominance, model, topics)
-varience <- auto_cache(calculate_direct_variance, model, overwrite = TRUE)
+varience <- auto_cache(calculate_direct_variance, model)
