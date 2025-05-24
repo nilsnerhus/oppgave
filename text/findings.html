@@ -20,41 +20,6 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
@@ -337,21 +302,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
 
 <blockquote class="blockquote">
-<p>Adaptation discourse in National Adaptation Plans shows remarkably high centralization, with income level explaining more variance than region or geography, revealing how adaptation planning follows existing development categories despite diverse geographical contexts.</p>
+<p>Adaptation discourse in National Adaptation Plans shows a high general degree of centralization of high centralization, with income level explaining more variance than region or geography, revealing how adaptation planning follows existing development categories despite diverse geographical contexts.</p>
 </blockquote>
 <p>The analysis of discourse centralization in National Adaptation Plans (NAPs) reveals striking patterns in how climate adaptation is conceptualized across different contexts. This chapter presents the findings from applying the Dominance Index methodology to the corpus of 45 English-language NAPs submitted to the UNFCCC as of March 2025.</p>
 <p>The most remarkable finding is the extremely high overall centralization of adaptation discourse, with a Dominance Index of 0.949 (where 1.0 would represent complete centralization). This indicates that across all NAPs, discourse is concentrated around a small number of dominant topics, with remarkably little variation in how adaptation is conceptualized despite the diverse contexts these plans address. This high level of centralization suggests a global standardization of adaptation discourse that transcends national and regional boundaries.</p>
 <p>When examining which factors best explain the variation that does exist, we find that income level emerges as the primary explanatory dimension, accounting for 8.1% of the variance in discourse centralization. This is closely followed by regional groupings, which explain 8.0% of variance. Geographical characteristics such as being a Small Island Developing State (SIDS) or Landlocked Developing Country (LLDC) explain substantially less variance at just 3.7%.</p>
 <p>These patterns suggest that adaptation discourse is shaped more by economic positioning and regional institutional influences than by similar geographical vulnerabilities. The dominance of income level as an explanatory factor indicates that adaptation planning follows existing development categories despite the diverse geographical contexts in which adaptation occurs.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "Dominance Index values across dimensions (n=3)"</span></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fig-dominance</span></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="co"># This is a placeholder for the actual visualization</span></span>
-<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="co"># The actual implementation would display the Dominance Index values</span></span>
-<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="co"># across different dimensions, likely as a bar chart or similar</span></span>
-<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <section id="income" class="level2" data-number="6.1">
 <h2 data-number="6.1" class="anchored" data-anchor-id="income"><span class="header-section-number">6.1</span> Income</h2>
 <blockquote class="blockquote">
@@ -369,15 +325,6 @@ document.addEventListener('DOMContentLoaded', function() {
 <p>Regional analysis provides important insights into how adaptation discourse is shaped by regional institutions, knowledge networks, and shared historical contexts. While regional groupings explain slightly less variance than income level (8.0% versus 8.1%), they emerge as the second strongest explanatory factor for discourse centralization patterns.</p>
 <p>Sub-Saharan Africa shows high centralization (Dominance Index of 0.967) with relatively low internal variation (standard deviation of 0.044), suggesting a relatively homogeneous regional discourse.</p>
 <p>East Asia and the Pacific displays the lowest centralization (0.924) and highest internal variation (0.089), indicating greater diversity in how adaptation is conceptualized across this geographically and economically diverse region.</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "Dominance Index and internal variation by region"</span></span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fig-region-variation</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="co"># This is a placeholder for a visualization showing</span></span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="co"># Dominance Index values and standard deviations across regions</span></span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Possibly a scatter plot or dual-axis chart</span></span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>South Asia demonstrates high centralization (0.959) with moderate internal variation (0.042).</p>
 <p>Latin America and the Caribbean shows moderate centralization (0.941) with significant internal variation (0.071), suggesting diversity within a broadly similar regional approach.</p>
 <p>The Middle East and North Africa region exhibits the second-lowest centralization (0.919) but the highest internal variation (0.149), suggesting significant diversity within the region despite some shared approaches. This may reflect the diverse economic circumstances within the region, from oil-rich Gulf states to lower-income countries.</p>
@@ -391,15 +338,6 @@ document.addEventListener('DOMContentLoaded', function() {
 </blockquote>
 <p>The analysis of discourse centralization by geographical characteristics—specifically, whether countries are classified as Small Island Developing States (SIDS) or Landlocked Developing Countries (LLDC)—reveals that these factors explain substantially less variance (3.7%) than income level or regional groupings. This finding challenges expectations that similar climate vulnerabilities would produce distinctive discourse patterns regardless of economic positioning.</p>
 <p>Small Island Developing States show lower centralization (Dominance Index of 0.932) than the overall average (0.949), with moderate internal variation (standard deviation of 0.082). This suggests some diversification of adaptation discourse among SIDS, potentially reflecting their specific vulnerabilities to sea-level rise, extreme weather events, and ecosystem disruption. However, this diversification is less pronounced than might be expected given their distinctive geographical circumstances and climate vulnerabilities.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-cap: "Comparison of discourse topics across geographical categories"</span></span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#| label: fig-geo-topics</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co"># This is a placeholder for a visualization comparing</span></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># the most prevalent topics across geographical categories</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Possibly a heatmap or similar visualization</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <p>Landlocked Developing Countries, in contrast, show higher centralization (0.971) with low internal variation (0.030), indicating a more homogeneous discourse despite the diverse regional contexts of LLDCs across Africa, Asia, and Latin America. This homogeneity suggests that for LLDCs, economic positioning and institutional factors may shape adaptation discourse more strongly than their shared geographical characteristic of being landlocked.</p>
 <p>The finding that geographical characteristics explain relatively little variance in discourse centralization suggests that adaptation discourse is shaped more by economic and institutional factors than by specific climate vulnerabilities.</p>
 <p>This pattern raises important questions about the responsiveness of adaptation planning to local contexts and specific vulnerabilities. If geographical characteristics—which directly shape climate vulnerability profiles—have less influence on adaptation discourse than economic positioning or regional institutional affiliations, this suggests potential limitations in how adaptation is currently conceptualized and planned. It may indicate that the global adaptation architecture prioritizes standardized approaches over context-specific responses, potentially limiting the effectiveness of adaptation interventions in addressing the diverse challenges faced by differently positioned countries.</p>
