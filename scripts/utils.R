@@ -273,3 +273,13 @@ web_cache <- function(func, ..., url = "https://napcentral.org/submitted-naps",
     }
   }
 }
+
+# Formatting helpers for inline text
+pct <- function(x, digits = 1) paste0(round(x * 100, digits), "%")
+num <- function(x) {
+  if (x < 10000) {
+    return(as.character(round(x)))  # No separator for numbers under 10,000
+  } else {
+    return(format(round(x), big.mark = " "))  # Space separator for 10,000+
+  }
+}
