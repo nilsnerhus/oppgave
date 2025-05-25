@@ -163,7 +163,7 @@ process_dfm <- function(
   ## --- Document Preparation ---------------------------------------------------
   log_message(paste("Preparing documents with min_docs =", min_docs, 
                     "and max_docs =", upper_thresh, 
-                    "(keeping words in", min_docs, "to", upper_thresh-1, "documents)"), 
+                    "(keeping words in", min_docs, "to", upper_thresh, "documents)"), 
               "process_dfm")
   
   # Apply prepDocuments with error handling
@@ -172,7 +172,7 @@ process_dfm <- function(
       documents = processed$documents,
       vocab = processed$vocab,
       meta = processed$meta,
-      lower.thresh = min_docs - 1,  # Convert to STM parameter (exclusive threshold)
+      lower.thresh = min_docs,  # Convert to STM parameter (exclusive threshold)
       upper.thresh = upper_thresh,  # Maximum number of documents
       verbose = TRUE
     )
