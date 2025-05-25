@@ -1,27 +1,35 @@
 # Methods {#sec-methods}
 
+```{r setup, include=FALSE}
+# Set root directory for all subsequent chunks
+knitr::opts_knit$set(root.dir = "..")
+```
+
 > To empirically examine whether adaptation discourse reflects epistemological diversity or monoculture, I develop a methodological approach centered around the "Dominance Index"—a measurement tool for quantifying the degree to which adaptation discourse is concentrated around particular topics or perspectives.
 
-The theoretical tensions between epistemological diversity and monoculture in climate adaptation, while conceptually rich, require empirical grounding to move beyond assertion and critique. How can we systematically assess whether the adaptation regime operates as a homogenizing force that constrains how vulnerability and response are imagined, or whether it accommodates diverse ways of knowing and being? This chapter presents a methodological approach that translates these theoretical concerns into measurable patterns, examining National Adaptation Plans as windows into how different countries conceptualize climate adaptation within the constraints and possibilities of international climate governance.
+The theoretical tensions between epistemological diversity and monoculture in climate adaptation, while conceptually rich, require empirical grounding to move beyond assertion and critique. This chapter presents a methodological approach that translates these theoretical concerns into measurable patterns, examining National Adaptation Plans as windows into how different countries conceptualize climate adaptation within the constraints and possibilities of international climate governance.
 
 National Adaptation Plans offer a unique opportunity for this analysis because they represent how countries formally articulate their understanding of climate vulnerability and appropriate responses within a standardized international framework. While these documents are shaped by UNFCCC guidelines, technical assistance, and funding requirements, they also reflect national contexts, priorities, and potentially diverse knowledge systems. By analyzing patterns across a comprehensive corpus of NAPs, we can identify whether this institutional framework produces convergence toward particular ways of understanding adaptation or preserves space for alternative conceptualizations that might draw on different epistemological foundations.
 
-The analytical pipeline developed for this research proceeds through three integrated stages, each designed to build toward a systematic assessment of discourse patterns. First, document preparation creates comparability across diverse national contexts through careful preprocessing that removes superficial differences while preserving meaningful variation in how adaptation is conceptualized. Second, structural topic modeling identifies the latent thematic patterns that structure adaptation discourse, revealing what aspects of adaptation receive attention and how different topics cluster together. Third, the analysis stage introduces the Dominance Index to measure how concentrated discourse is around a small number of dominant topics, providing a quantifiable metric for discourse centralization that can be compared across different country groupings.
+The analytical pipeline developed for this research proceeds through three integrated stages, each designed to build toward a systematic assessment of discourse patterns. First, the document preparation creates comparability across diverse national contexts through careful preprocessing that removes superficial differences while preserving meaningful variation in how adaptation is conceptualized. Second, the structural topic modeling identifies the latent thematic patterns that structure adaptation discourse, revealing what aspects of adaptation receive attention and how different topics cluster together. Third, the analysis stage introduces the Dominance Index to measure how concentrated discourse is around a small number of dominant topics, providing a quantifiable metric for discourse centralization that can be compared across different country groupings.
 
 The patterns we seek through this analysis directly address the research questions about power, knowledge, and development paradigms in climate adaptation. If adaptation discourse shows high centralization—with most countries emphasizing the same narrow set of topics—this would support arguments that adaptation functions as an epistemological monoculture that forecloses alternative understandings. The specific topics that dominate would reveal what kinds of knowledge and approaches are privileged within this regime. Conversely, lower centralization would indicate space for diverse conceptualizations, though the degree and nature of this diversity would require careful interpretation. Most critically, examining how centralization patterns vary across income levels, regions, and geographic vulnerabilities can reveal whether discourse is shaped more by economic positioning within global systems or by the specific nature of climate challenges faced.
 
 This chapter presents each methodological stage with sufficient detail to ensure transparency and reproducibility while remaining accessible to readers without extensive technical background in computational text analysis. The following sections on document preparation, structural topic modeling, and analysis each begin with a brief overview of purpose and approach before explaining the specific procedures and their justification. Throughout, the emphasis remains on how these methodological choices serve the broader research objective of empirically examining the epistemological politics of climate adaptation.
+
 ## Corpus Collection and Preparation
 
 > National Adaptation Plans provide a window into how countries conceptualize climate vulnerability and appropriate responses. To make these documents comparable, we developed a systematic approach to extract, clean, and prepare the text while preserving the ability to analyze patterns across different country groupings.
 
-```{r setup, include=FALSE}
+```{r load_corpus, include=FALSE}
+
 # Load required functions and set parameters
-source("../scripts/utils.R")
-source("../scripts/scrape_web.R")
-source("../scripts/extract_pdfs.R")
-source("../scripts/add_metadata.R")
-source("../scripts/validate_tokens.R")
+source("scripts/utils.R")
+source("scripts/scrape_web.R")
+source("scripts/extract_pdfs.R")
+source("scripts/add_metadata.R")
+source("scripts/validate_tokens.R")
+source("scripts/process_dfm.R")
 
 # Define geographic classifications
 lldc <- c("AFG", "ARM", "AZE", "BFA", "BDI", "CAF", "TCD", "ETH", "KAZ", 
@@ -48,7 +56,8 @@ category_map <- list(
 )
 ```
 
-```{r data_collection, cache=TRUE}
+```{r run_corpus}
+
 # Collect NAP documents from UNFCCC repository
 web <- web_cache(scrape_web)
 docs <- auto_cache(extract_pdfs, web$data$tokens)
@@ -58,113 +67,130 @@ metadata <- auto_cache(add_metadata, web$data$metadata,
                       geo_config = geo_config, 
                       category_map = category_map)
 tokens <- auto_cache(validate_tokens, docs$data$tokens)
+
+# Process documents for STM
+dfm <- auto_cache(process_dfm, tokens, metadata)
 ```
 
-The analysis begins with the systematic collection of National Adaptation Plans from the UNFCCC's NAP Central repository, which serves as the authoritative source for these policy documents [@mizuno2024]. As of March 2025, this repository contained submissions from countries representing diverse geographic contexts, economic circumstances, and climate vulnerabilities. Our automated collection process identified and downloaded `r nrow(web$data$tokens)` English-language NAPs, representing a substantial portion of global adaptation planning efforts. While focusing on English-language documents introduces a potential bias toward Anglophone countries or those with stronger ties to international institutions, this constraint was necessary to ensure meaningful textual comparison using consistent analytical methods [@wright2023].
+```{r define_corpus, include=FALSE}
+start_year <- min(metadata$data$metadata$year, na.rm=TRUE)
+end_year <- max(metadata$data$metadata$year, na.rm=TRUE)
 
-The temporal distribution of these documents spans from `r min(metadata$data$metadata$year, na.rm=TRUE)` to `r max(metadata$data$metadata$year, na.rm=TRUE)`, capturing the evolution of adaptation planning as countries have developed their approaches to addressing climate vulnerability. This timeframe is particularly significant as it encompasses the period following the Cancun Adaptation Framework (2010), which formally established adaptation as a pillar of climate governance, through to the post-Paris Agreement era where adaptation has gained equal standing with mitigation in international climate policy.
+num_sids <- sum(metadata$data$metadata$is_sids, na.rm=TRUE)
+num_lldc <- sum(metadata$data$metadata$is_lldc, na.rm=TRUE)
 
-To enable meaningful analysis across different country contexts, each document was enriched with standardized metadata drawn from World Bank country classifications and established geographic categories. This process involved matching country names to ISO codes and incorporating income level classifications (low, lower-middle, upper-middle, and high income), regional groupings, and special geographic designations. Specifically, we identified `r sum(metadata$data$metadata$is_sids, na.rm=TRUE)` Small Island Developing States (SIDS) and `r sum(metadata$data$metadata$is_lldc, na.rm=TRUE)` Landlocked Developing Countries (LLDCs) within our corpus. These categorizations are not merely descriptive labels but analytical dimensions that allow us to examine whether discourse patterns align more strongly with economic positioning, regional institutions, or shared geographic vulnerabilities.
+# Get the initial country names
+initial_meta <- metadata$data$metadata  # This should have 47 rows
+final_meta <- dfm$data$meta  # This has 45 rows
 
-The process of extracting text from PDF documents presented several technical challenges that required careful attention to preserve the integrity of the analysis. Government documents often contain complex formatting, tables, figures, and multilingual text that can introduce artifacts during extraction. Our extraction pipeline successfully converted `r nrow(tokens$data$documents)` documents into analyzable text, with one document removed from the corpus due to insufficient textual content after processing. The final corpus contains approximately `r format(sum(nchar(tokens$data$documents$text)), big.mark=",")` characters of text, providing a substantial foundation for discourse analysis.
+# Find which countries were removed by comparing doc_ids
+removed_ids <- setdiff(initial_meta$doc_id, final_meta$doc_id)
 
-Creating comparability across this diverse set of documents required systematic preprocessing that balanced standardization with preservation of meaningful content. The text cleaning process began with tokenization—breaking documents into individual words—followed by validation against a comprehensive English dictionary containing `r format(120644, big.mark=",")` terms. This validation step was crucial for removing formatting artifacts, acronyms, and non-English text that could skew the analysis. Importantly, we removed all country and city names from the corpus to prevent geographic references from dominating the discourse patterns. This ensures that similarities or differences between documents reflect how adaptation is conceptualized rather than which locations are mentioned [@silge2017].
+# Get the country names for those removed IDs
+removed_countries <- initial_meta$country_name[initial_meta$doc_id %in% removed_ids]
 
-The preprocessing pipeline applied consistent rules across all documents: converting text to lowercase, removing punctuation and numbers, eliminating common English stopwords that carry little semantic meaning, and filtering out terms that appeared in fewer than 2% or more than 70% of documents. This frequency filtering focuses the analysis on terms that are neither so rare as to be idiosyncratic nor so common as to be uninformative [@roberts2019]. After these preprocessing steps, the corpus was reduced to approximately `r format(1131307, big.mark=",")` tokens representing `r format(25317, big.mark=",")` unique terms.
+# Create a string with the country names
+removed_string <- paste(removed_countries, collapse = " and ")
+
+init_tokens <- sum(nchar(tokens$data$documents$text))
+vocab <- length(dfm$data$vocab)
+
+valid_words <- length(tokens$data$valid_words)
+
+lower_thresh <- dfm$metadata$min_docs
+upper_thresh <- nrow(final_meta) - dfm$metadata$exclusivity_docs
+```
+
+
+The analysis begins with the systematic collection of National Adaptation Plans from the UNFCCC's NAP Central repository, which serves as the authoritative source for these policy documents [@mizuno2024]. As of March 2025, this repository contained submissions from countries representing diverse geographic contexts, economic circumstances, and climate vulnerabilities. Our automated collection process identified and downloaded `r nrow(initial_meta)` English-language NAPs, representing a substantial portion of global adaptation planning efforts. While focusing on English-language documents introduces a potential bias toward Anglophone countries or those with stronger ties to international institutions, this constraint was necessary to ensure meaningful textual comparison using consistent analytical methods [@wright2023].
+
+The temporal distribution of these documents spans from `r num(start_year) ` to `r num(end_year)`, capturing the evolution of adaptation planning as countries have developed their approaches to addressing climate vulnerability. This timeframe is particularly significant as it encompasses the period following the Cancun Adaptation Framework (2010), which formally established adaptation as a pillar of climate governance, through to the post-Paris Agreement era where adaptation has gained equal standing with mitigation in international climate policy.
+
+To enable meaningful analysis across different country contexts, each document was enriched with standardized metadata drawn from World Bank country classifications and established geographic categories. This process involved matching country names to ISO codes and incorporating income level classifications (low, lower-middle, upper-middle, and high income), regional groupings, and special geographic designations. Specifically, we identified `r num(num_sids)` Small Island Developing States (SIDS) and `r num(num_sids)` Landlocked Developing Countries (LLDCs) within our corpus. These categorizations are not merely descriptive labels but analytical dimensions that allow us to examine whether discourse patterns align more strongly with economic positioning, regional institutions, or shared geographic vulnerabilities.
+
+The process of extracting text from PDF documents presented several technical challenges that required careful attention to preserve the integrity of the analysis. Government documents often contain complex formatting, tables, figures, and multilingual text that can introduce artifacts during extraction. Our extraction pipeline successfully converted `r nrow(initial_meta)` documents into analyzable text, with `r removed_string`s plans removed from the corpus due to insufficient textual content after processing, leaving the analysis with `r nrow(final_meta)` plans. The final corpus contains approximately `r num(init_tokens)` characters of text, providing a substantial foundation for discourse analysis.
+
+Creating comparability across this diverse set of documents required systematic preprocessing that balanced standardization with preservation of meaningful content. The text cleaning process began with tokenization—breaking documents into individual words—followed by validation against a comprehensive English dictionary containing `r num(valid_words)` terms. This validation step was crucial for removing formatting artifacts, acronyms, and non-English text that could skew the analysis. Importantly, we removed all country and city names from the corpus to prevent geographic references from dominating the discourse patterns. This ensures that similarities or differences between documents reflect how adaptation is conceptualized rather than which locations are mentioned [@silge2017].
+
+The preprocessing pipeline applied consistent rules across all documents: converting text to lowercase, removing punctuation and numbers, eliminating common English stopwords that carry little semantic meaning, and filtering out terms that appeared in fewer than `r num(lower_thresh)` or more than `r num(upper_thresh)` documents. This frequency filtering focuses the analysis on terms that are neither so rare as to be idiosyncratic nor so common as to be uninformative [@roberts2019]. After these preprocessing steps, the corpus was reduced to `r num(vocab)` unique terms.
 
 This systematic approach to document preparation creates what can be understood as a "level playing field" for comparison. By removing country-specific references and standardizing the vocabulary, we ensure that any patterns identified in the subsequent analysis reflect genuine differences in how adaptation is conceptualized rather than superficial variations in terminology or geographic focus. The preprocessing choices—particularly the removal of geographic terms and the frequency thresholds—were designed to reveal the underlying structure of adaptation discourse while acknowledging that such standardization inevitably involves trade-offs between comparability and contextual richness.
 
-The final prepared corpus of `r nrow(tokens$data$documents)` documents, enriched with systematic metadata and processed to ensure comparability, provides the foundation for the structural topic modeling analysis that follows. This careful preparation ensures that when we examine patterns of discourse centralization, we can be confident that these patterns reflect meaningful differences in how countries conceptualize climate adaptation rather than artifacts of data collection or processing.
+The final prepared corpus of `r nrow(final_meta)` documents, enriched with systematic metadata and processed to ensure comparability, provides the foundation for the structural topic modeling analysis that follows. This careful preparation ensures that when we examine patterns of discourse centralization, we can be confident that these patterns reflect meaningful differences in how countries conceptualize climate adaptation rather than artifacts of data collection or processing.
 
 ## Structural Topic Modeling
 
 > Structural topic modeling allows us to discover latent themes in how countries conceptualize adaptation while accounting for document metadata. This approach reveals patterns in discourse that might not be apparent from reading individual documents, enabling systematic comparison across our analytical categories.
 
-```{r
+```{r load_stm, include=FALSE}
 # Load STM functions
-source("../scripts/process_dfm.R")
-source("../scripts/find_k.R")
-source("../scripts/fit_model.R")
-
-# Document processing parameters
-min_docs <- 2  # Minimum documents a term must appear in
-exclusivity_docs <- 1  # Maximum documents a term can be absent from
+source("scripts/find_k.R")
+source("scripts/fit_model.R")
 ```
 
-```{r
-# Process documents for STM
-dfm <- auto_cache(process_dfm, tokens, metadata,
-                  min_docs = min_docs,
-                  exclusivity_docs = exclusivity_docs)
-```
-
-```{r
+```{r run_stm}
 # Determine optimal number of topics
-k_result <- auto_cache(find_k, dfm, 
-                       range = c(10, 15, 20, 25, 30, 35, 40),
-                       iterations = 100)
+k_result <- auto_cache(find_k, dfm)
 k_value <- k_result$data$best_k
+
+# Fit STM with metadata covariates
+model <- auto_cache(fit_model, dfm, k = k_value, category_map = category_map)
 ```
 
-```{r
-# Fit STM with metadata covariates
-model <- auto_cache(fit_model, dfm, 
-                    k = k_value, 
-                    category_map = category_map,
-                    iterations = 200)
+```{r define_stm}
+income_categories <- length(unique(metadata$data$metadata$wb_income_level))
+region_categories <- length(unique(metadata$data$metadata$region))
+geographic_categories <- length(unique(metadata$data$metadata$is_sids)) + 
+  length(unique(metadata$data$metadata$is_lldc))
+
+iterations_run <- model$data$summary$iterations_run
+
 ```
+
 
 Structural topic modeling (STM) provides a sophisticated approach to uncovering latent thematic patterns in large text corpora while simultaneously accounting for document-level metadata [@roberts2016]. Unlike simple word frequency analysis or manual coding, topic models identify clusters of words that tend to co-occur across documents, revealing underlying themes that structure the discourse. The fundamental assumption is that each document contains a mixture of topics, where topics are probability distributions over words. For instance, a topic related to agricultural adaptation might have high probabilities for words like "crop," "drought," "irrigation," and "yield," while a topic about coastal adaptation might emphasize "sea-level," "erosion," "storm," and "infrastructure."
 
-The structural variant of topic modeling is particularly well-suited to our research questions because it allows document metadata—such as income level, region, and geographic characteristics—to influence topic prevalence [@roberts2019]. This means we can examine not just what topics exist in the corpus, but how their prevalence varies across different types of countries. This capability is crucial for understanding whether low-income countries emphasize different aspects of adaptation compared to high-income countries, or whether Small Island Developing States frame adaptation differently than landlocked nations. The model treats documents as "bags of words," meaning word order is not considered, but this simplification allows for computationally efficient discovery of thematic patterns across our `r nrow(dfm$data$meta)` documents.
+The structural variant of topic modeling is particularly well-suited to our research questions because it allows document metadata—such as income level, region, and geographic characteristics—to influence topic prevalence [@roberts2019]. This means we can examine not just what topics exist in the corpus, but how their prevalence varies across different types of countries. This capability is crucial for understanding whether low-income countries emphasize different aspects of adaptation compared to high-income countries, or whether Small Island Developing States frame adaptation differently than landlocked nations. The model treats documents as "bags of words," meaning word order is not considered, but this simplification allows for computationally efficient discovery of thematic patterns across our `r nrow(final_meta)` documents.
 
-Determining the appropriate number of topics (k) represents a critical methodological decision that balances granularity with interpretability. Too few topics may obscure important distinctions in how adaptation is conceptualized, while too many topics can result in redundant or overly specific themes that fragment coherent concepts. We employed a data-driven approach to model selection, testing models with varying numbers of topics (k = `r paste(k_result$data$metrics$k, collapse=", ")`) and evaluating them across multiple metrics. Semantic coherence measures how frequently the most probable words for a topic co-occur within documents, indicating whether topics capture meaningful themes. Exclusivity assesses how distinctive topics are from one another, ensuring we identify unique rather than overlapping concepts. Held-out likelihood evaluates the model's ability to predict word usage in documents not used for training, providing a measure of generalizability [@roberts2019].
+Determining the appropriate number of topics (k) represents a critical methodological decision that balances granularity with interpretability. Too few topics may obscure important distinctions in how adaptation is conceptualized, while too many topics can result in redundant or overly specific themes that fragment coherent concepts. We employed a data-driven approach to model selection, testing models with varying numbers of topics and evaluating them across multiple metrics. Semantic coherence measures how frequently the most probable words for a topic co-occur within documents, indicating whether topics capture meaningful themes. Exclusivity assesses how distinctive topics are from one another, ensuring we identify unique rather than overlapping concepts. Held-out likelihood evaluates the model's ability to predict word usage in documents not used for training, providing a measure of generalizability [@roberts2019].
 
 Our optimization process identified k = `r k_value` as the optimal number of topics, providing sufficient granularity to capture meaningful variation in adaptation discourse while maintaining interpretable and distinct themes. This selection process involved balancing the statistical metrics with substantive considerations about what level of detail would be most useful for understanding patterns in adaptation planning. The model with `r k_value` topics achieved strong performance on coherence (indicating interpretable topics) and exclusivity (indicating distinct themes) while avoiding the fragmentation that occurred with higher k values.
 
-The specification of our structural topic model incorporated the metadata categories identified during document preparation, allowing us to examine how topic prevalence varies with income level, regional grouping, and special geographic designations. The model includes a prevalence formula that incorporates these covariates: income level (with `r length(unique(metadata$data$metadata$wb_income_level))` categories), region (with `r length(unique(metadata$data$metadata$region))` groups), and binary indicators for SIDS and LLDC status. This specification enables the model to estimate not just the overall prevalence of each topic across the corpus, but how that prevalence shifts based on document characteristics.
+The specification of our structural topic model incorporated the metadata categories identified during document preparation, allowing us to examine how topic prevalence varies with income level, regional grouping, and special geographic designations. The model includes a prevalence formula that incorporates these covariates: income level (with `r num(income_categories)` categories), region (with `r num(region_categories)` groups), and geography (with `r geographic_categories`). This specification enables the model to estimate not just the overall prevalence of each topic across the corpus, but how that prevalence shifts based on document characteristics.
 
-The model was initialized using spectral decomposition, which provides more stable and reproducible results compared to random initialization. After `r model$data$summary$iterations_run` iterations, the model converged successfully, indicating that the algorithm had identified stable topic distributions. The quality of the final model is reflected in its ability to identify coherent topics that align with recognizable themes in adaptation planning while maintaining sufficient distinctiveness to capture the diversity of approaches across countries.
+The model was initialized using spectral decomposition, which provides more stable and reproducible results compared to random initialization. After `r num(iterations_run)` iterations, the model converged successfully, indicating that the algorithm had identified stable topic distributions. The quality of the final model is reflected in its ability to identify coherent topics that align with recognizable themes in adaptation planning while maintaining sufficient distinctiveness to capture the diversity of approaches across countries.
 
 Topic interpretation in our analysis relies on examining the words most strongly associated with each topic through three complementary metrics. FREX (frequency-exclusivity) words balance how often a word appears in a topic with how exclusive it is to that topic, identifying terms that are both central and distinctive. High-probability words show the terms most likely to appear when a topic is discussed, regardless of their distinctiveness. Lift words identify terms that are most strongly associated with a topic compared to their baseline frequency in the corpus [@roberts2019]. By examining these three word lists for each of our `r k_value` topics, we can qualitatively interpret what aspects of adaptation each topic represents.
 
 This word-based interpretation approach allows us to assign meaningful labels to the statistical constructs identified by the model. For example, a topic with FREX words including "assessment," "vulnerability," "index," and "methodology" clearly relates to vulnerability assessment approaches, while a topic featuring "indigenous," "traditional," "community," and "knowledge" indicates attention to local and traditional adaptation practices. This interpretation process, while necessarily involving qualitative judgment, is grounded in the statistical patterns identified by the model and provides the foundation for our subsequent analysis of how these topics are distributed across different country groupings.
+
 ## Analysis
 
 > The Dominance Index quantifies how concentrated adaptation discourse is around a small number of topics, providing a measure of discourse centralization that can be compared across different country groupings. This novel application of concentration metrics to discourse analysis reveals patterns of epistemological diversity or homogeneity in how adaptation is conceptualized.
 
-```{r
+```{r load_analysis, include=FALSE}
 # Load analysis functions
-source("../scripts/name_topics.R")
-source("../scripts/calculate_dominance.R")
-source("../scripts/find_dominance.R")
-source("../scripts/calculate_direct_variance.R")
+source("scripts/name_topics.R")
+source("scripts/calculate_dominance.R")
+source("scripts/find_dominance.R")
+source("scripts/calculate_direct_variance.R")
 
-# Analysis parameters
-n_topics <- 3  # Number of top topics to consider for dominance
-normalize <- TRUE  # Normalize dominance values to 0-1 scale
 ```
 
-```{r
+```{r run_analysis}
 # Name topics based on word associations
 topics <- auto_cache(name_topics, model, mode = "auto")
-```
 
-```{r
 # Calculate dominance metrics across all groupings
-dominance <- auto_cache(calculate_dominance, model, topics, 
-                       n = n_topics, 
-                       normalize = normalize)
-```
+dominance <- auto_cache(calculate_dominance, model, topics)
 
-```{r
 # Analyze which factors explain variance in dominance
 variance <- auto_cache(calculate_direct_variance, model)
 ```
 
-Discourse centralization represents the degree to which adaptation planning documents concentrate their attention on a limited set of themes versus distributing attention across many diverse topics. In a highly centralized discourse, most documents emphasize the same few topics, suggesting a convergence around particular ways of understanding and addressing adaptation. Conversely, a decentralized discourse would show documents emphasizing different combinations of topics, indicating greater diversity in how adaptation challenges and responses are conceptualized. This pattern of concentration or dispersion serves as a proxy for epistemological diversity—the range of knowledge systems, values, and worldviews that inform adaptation planning.
-
-The significance of measuring discourse centralization lies in what it reveals about the constraints and possibilities within adaptation planning. When discourse is highly centralized, it suggests that despite the diverse contexts in which adaptation occurs—from small island states facing sea-level rise to landlocked countries confronting desertification—there is a remarkable uniformity in how these challenges are understood and articulated. This uniformity might reflect the influence of international frameworks, funding requirements, or technical assistance that promote particular approaches. Alternatively, decentralized discourse would indicate space for diverse conceptualizations that might draw on local knowledge, alternative development paradigms, or context-specific understandings of vulnerability and resilience.
+```{r define_analysis}
+n_topics <- k_value  # Number of topics from STM
+```
 
 The Dominance Index operationalizes this concept by measuring what proportion of discourse is concentrated in the top three most prevalent topics for any given group of documents. The choice of three topics balances sensitivity to concentration with robustness to minor variations. If we examined only the single most prevalent topic, we might miss important patterns where discourse is dominated by a small cluster of related themes. Conversely, including too many topics would dilute the measure's ability to detect meaningful concentration. Three topics typically capture the core themes while remaining sensitive to differences in concentration patterns.
 
