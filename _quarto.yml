@@ -49,6 +49,10 @@ format:
     include-before-body: _includes/page_metrics.html
   pdf:
     documentclass: scrreprt
+    classoption:
+      - a4paper
+      - openright
+      - cleardoublepage
     toc: true
     number-sections: true
     number-depth: 2
