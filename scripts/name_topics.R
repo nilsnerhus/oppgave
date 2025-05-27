@@ -67,8 +67,10 @@ name_topics <- function(
   ## --- Extract model and prepare data -----------------------------------------
   log_message("Extracting model and preparing data", "name_topics")
   
-  # Extract STM model
+  # Extract STM model and other components
   stm_model <- model_result$data$model
+  theta <- model_result$data$topic_proportions
+  meta <- model_result$data$aligned_meta
   
   # Get topic count
   k <- stm_model$settings$dim$K
@@ -78,46 +80,61 @@ name_topics <- function(
   log_message("Generating topic labels", "name_topics")
   topic_labels <- stm::labelTopics(stm_model, n = n_terms)
   
-  # Try to get representative documents for each topic
-  log_message("Finding representative documents", "name_topics")
+  ## --- Calculate top countries for each topic ---------------------------------
+  log_message("Calculating top countries for each topic", "name_topics")
+  
+  top_countries_per_topic <- list()
+  
+  if ("country_name" %in% names(meta)) {
+    for (idx in 1:k) {
+      scores <- data.frame(
+        country = meta$country_name,
+        score = theta[, idx],
+        stringsAsFactors = FALSE
+      )
+      top_2 <- scores[order(scores$score, decreasing = TRUE)[1:2], ]
+      
+      # Format with scores
+      country_info <- paste0(top_2$country, " (", round(top_2$score, 3), ")")
+      top_countries_per_topic[[idx]] <- paste(country_info, collapse = ", ")
+    }
+  } else {
+    # Fill with NA if no country data
+    for (idx in 1:k) {
+      top_countries_per_topic[[idx]] <- "No country data"
+    }
+  }
+  
+  ## --- Process representative documents ---------------------------------------
+  log_message("Processing representative documents", "name_topics")
+  
   topic_docs <- list()
   topic_texts <- list()
+  doc_success <- FALSE
   
-  # Attempt to retrieve document information
-  doc_success <- tryCatch({
+  # Use pre-calculated thoughts if available
+  if ("thoughts_by_topic" %in% names(model_result$data) && !is.null(model_result$data$thoughts_by_topic)) {
+    thoughts_by_topic <- model_result$data$thoughts_by_topic
+    
     for (i in 1:k) {
-      # Get representative documents
-      thoughts <- stm::findThoughts(stm_model, texts = stm_model$documents$meta$text,
-                                    n = n_docs, topics = i)
-      
-      # Extract document metadata if available
-      meta_info <- NULL
-      if (!is.null(stm_model$documents$meta)) {
-        doc_indices <- thoughts$index[[1]]
-        if (length(doc_indices) > 0) {
-          meta_subset <- stm_model$documents$meta[doc_indices, ]
-          
-          # Try to get country information
-          country_col <- intersect(c("country", "country_name", "country_iso3c"), 
-                                   names(meta_subset))
-          
-          if (length(country_col) > 0) {
-            meta_info <- meta_subset[, country_col[1], drop = FALSE]
-          }
+      if (!is.null(thoughts_by_topic[[i]])) {
+        topic_texts[[i]] <- thoughts_by_topic[[i]]$docs[[1]]
+        
+        # Extract country info if available
+        doc_indices <- thoughts_by_topic[[i]]$index[[1]]
+        if (length(doc_indices) > 0 && "country_name" %in% names(meta)) {
+          topic_docs[[i]] <- data.frame(
+            country_name = meta$country_name[doc_indices],
+            stringsAsFactors = FALSE
+          )
         }
       }
-      
-      # Store documents and metadata
-      topic_docs[[i]] <- meta_info
-      topic_texts[[i]] <- thoughts$docs[[1]]
     }
-    TRUE
-  }, error = function(e) {
-    warning_msg <- paste("Could not extract document examples:", e$message)
-    diagnostics$example_issues <- c(diagnostics$example_issues, warning_msg)
-    log_message(warning_msg, "name_topics", "WARNING")
-    FALSE
-  })
+    doc_success <- TRUE
+    log_message("Using pre-calculated document examples", "name_topics")
+  } else {
+    log_message("No pre-calculated thoughts available", "name_topics")
+  }
   
   ## --- Initialize topic names dataframe ---------------------------------------
   log_message("Initializing topic names data frame", "name_topics")
@@ -160,6 +177,9 @@ name_topics <- function(
       cat("Lift terms (distinctive):\n")
       cat(paste(topic_labels$lift[i,], collapse = ", "), "\n\n")
       
+      cat("TOP COUNTRIES:\n")
+      cat(top_countries_per_topic[[i]], "\n\n")
+      
       # Display representative documents if available
       if (doc_success && i <= length(topic_texts) && length(topic_texts[[i]]) > 0) {
         cat("REPRESENTATIVE DOCUMENTS:\n")
@@ -173,8 +193,7 @@ name_topics <- function(
           
           # Display document with metadata if available
           if (!is.null(topic_docs[[i]]) && nrow(topic_docs[[i]]) >= j) {
-            meta_str <- paste(names(topic_docs[[i]]), topic_docs[[i]][j,], sep = ": ", collapse = ", ")
-            cat(paste0("\nDocument ", j, " (", meta_str, "):\n"))
+            cat(paste0("\nDocument ", j, " (", topic_docs[[i]]$country_name[j], "):\n"))
           } else {
             cat(paste0("\nDocument ", j, ":\n"))
           }
@@ -292,6 +311,7 @@ name_topics <- function(
     topic_explanation = topic_names$topic_explanation,
     top_frex_terms = sapply(1:k, function(i) paste(topic_labels$frex[i,], collapse = ", ")),
     top_prob_terms = sapply(1:k, function(i) paste(topic_labels$prob[i,], collapse = ", ")),
+    top_countries = unlist(top_countries_per_topic),  # ADD THIS LINE
     auto_generated = topic_names$auto_generated,
     stringsAsFactors = FALSE
   )
@@ -311,18 +331,19 @@ name_topics <- function(
           }
           
           # Get metadata if available
-          meta_info <- if (!is.null(topic_docs[[i]]) && nrow(topic_docs[[i]]) >= j) {
-            topic_docs[[i]][j,]
+          country_name <- if (!is.null(topic_docs[[i]]) && nrow(topic_docs[[i]]) >= j) {
+            topic_docs[[i]]$country_name[j]
           } else {
             NA
           }
           
           # Create row
-          example_rows[[length(example_rows) + 1]] <- list(
+          example_rows[[length(example_rows) + 1]] <- data.frame(
             topic_id = i,
             doc_id = j,
             doc_text = doc_text,
-            country = if (is.data.frame(meta_info)) as.character(meta_info[1,1]) else NA
+            country = country_name,
+            stringsAsFactors = FALSE
           )
         }
       }
@@ -330,15 +351,7 @@ name_topics <- function(
     
     # Convert to data frame if we have examples
     if (length(example_rows) > 0) {
-      topic_examples <- do.call(rbind, lapply(example_rows, function(x) {
-        data.frame(
-          topic_id = x$topic_id,
-          doc_id = x$doc_id,
-          doc_text = x$doc_text,
-          country = x$country,
-          stringsAsFactors = FALSE
-        )
-      }))
+      topic_examples <- do.call(rbind, example_rows)
     }
   }
   

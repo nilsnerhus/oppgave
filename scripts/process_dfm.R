@@ -39,7 +39,7 @@ process_dfm <- function(
     remove_stopwords = TRUE,
     stem = TRUE,
     min_docs = 2,            # Minimum docs for a term to be kept
-    exclusivity_docs = 1     # How many docs a term can be absent from
+    exclusivity_docs = 3     # How many docs a term can be absent from
 ) {
   ## --- Setup & Initialization -------------------------------------------------
   start_time <- Sys.time()

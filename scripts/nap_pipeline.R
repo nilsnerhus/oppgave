@@ -46,10 +46,10 @@ source("scripts/process_dfm.R")
 source("scripts/find_k.R")
 source("scripts/fit_model.R")
 
-dfm <- auto_cache(process_dfm, tokens, metadata, overwrite = TRUE)
+dfm <- auto_cache(process_dfm, tokens, metadata)
 k_result <- auto_cache(find_k, dfm)
 k_value <- k_result$data$best_k
-model <- auto_cache(fit_model, dfm, k = k_value, category_map = category_map)
+model <- auto_cache(fit_model, dfm, k = k_value)
 
 # Step 3: Analysis
 source("scripts/name_topics.R")
