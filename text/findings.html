@@ -315,17 +315,17 @@ document.addEventListener('DOMContentLoaded', function() {
 <p>The structural topic model identified topics that capture how climate adaptation is conceptualized across National Adaptation Plans, providing the foundation for understanding patterns of discourse concentration and variation.</p>
 </blockquote>
 <p>The process of identifying an optimal number of topics involved systematic testing across a range of model specifications, each offering different granularity in capturing adaptation discourse. Models were evaluated with k ranging from 10 to 40 topics in increments of 5, with each specification estimated until convergence. The evaluation process considered multiple metrics simultaneously: semantic coherence, which measures how frequently the high-probability words for each topic co-occur within documents; exclusivity, which captures how distinctive each topic’s words are from other topics; and held-out likelihood, which assesses the model’s ability to predict word usage in documents not used for estimation. Lower values of k (10-15 topics) produced broad thematic categories that, while coherent, obscured important distinctions—for instance, conflating all water-related adaptation into a single topic regardless of whether the focus was irrigation, flooding, or water quality. Higher values of k (30-40 topics) resulted in excessive fragmentation, splitting coherent themes like agricultural adaptation into narrow subtopics that appeared sporadically across documents.</p>
-<p>The selected model with k=15 achieved a semantic coherence score of 0 and an exclusivity score of 8, representing the best balance among tested specifications. This model’s coherence score indicates that the most probable words within each topic genuinely appear together in documents rather than being statistical artifacts. The exclusivity score confirms that topics capture distinct aspects of adaptation discourse rather than variations on the same theme. The combined optimization score of 0 exceeded all other specifications, providing quantitative support for this selection. Beyond these metrics, the 15-topic model produced themes that aligned with established categories in adaptation planning while revealing nuanced distinctions that might inform policy analysis.</p>
+<p>The selected model with k=10 achieved a semantic coherence score of -8 and an exclusivity score of 9, representing the best balance among tested specifications. This model’s coherence score indicates that the most probable words within each topic genuinely appear together in documents rather than being statistical artifacts. The exclusivity score confirms that topics capture distinct aspects of adaptation discourse rather than variations on the same theme. The combined optimization score of 0 exceeded all other specifications, providing quantitative support for this selection. Beyond these metrics, the 10-topic model produced themes that aligned with established categories in adaptation planning while revealing nuanced distinctions that might inform policy analysis.</p>
 <div class="cell">
 <div class="cell-output-display">
 <table class="table table-sm table-striped small">
 <caption>Topic Prevalence Across All National Adaptation Plans</caption>
 <colgroup>
 <col style="width: 3%">
-<col style="width: 47%">
+<col style="width: 46%">
 <col style="width: 19%">
-<col style="width: 12%">
-<col style="width: 16%">
+<col style="width: 13%">
+<col style="width: 17%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -339,108 +339,73 @@ document.addEventListener('DOMContentLoaded', function() {
 <tbody>
 <tr class="odd">
 <td style="text-align: right;">2</td>
-<td style="text-align: left;">Financ: ongo, strateg, output</td>
-<td style="text-align: right;">16.2</td>
-<td style="text-align: right;">19</td>
-<td style="text-align: right;">42.2</td>
+<td style="text-align: left;">Readi: mandat, chapter, annex</td>
+<td style="text-align: right;">22.1</td>
+<td style="text-align: right;">24</td>
+<td style="text-align: right;">53.3</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">5</td>
-<td style="text-align: left;">Chapter: provinci, world, describ</td>
+<td style="text-align: right;">10</td>
+<td style="text-align: left;">Rangeland: hill, nationwid, disabl</td>
 <td style="text-align: right;">11.2</td>
 <td style="text-align: right;">11</td>
 <td style="text-align: right;">24.4</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">14</td>
-<td style="text-align: left;">Tourism: provinci, provinc, counti</td>
-<td style="text-align: right;">7.9</td>
-<td style="text-align: right;">15</td>
-<td style="text-align: right;">33.3</td>
+<td style="text-align: right;">4</td>
+<td style="text-align: left;">Hurrican: gulf, name, beach</td>
+<td style="text-align: right;">10.3</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">26.7</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">9</td>
-<td style="text-align: left;">Outcom: involv, term, short</td>
-<td style="text-align: right;">7.3</td>
+<td style="text-align: right;">8</td>
+<td style="text-align: left;">Des: les, counti, refuge</td>
+<td style="text-align: right;">9.7</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">24.4</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">3</td>
+<td style="text-align: left;">Pacif: outer, secretariat, cent</td>
+<td style="text-align: right;">8.7</td>
 <td style="text-align: right;">9</td>
 <td style="text-align: right;">20.0</td>
 </tr>
-<tr class="odd">
-<td style="text-align: right;">4</td>
-<td style="text-align: left;">Line: citi, territori, transit</td>
-<td style="text-align: right;">6.9</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">17.8</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">6</td>
-<td style="text-align: left;">Rangeland: mountain, initi, moham</td>
-<td style="text-align: right;">6.7</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">17.8</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">13</td>
-<td style="text-align: left;">Des: les, refuge, nutrit</td>
-<td style="text-align: right;">6.7</td>
-<td style="text-align: right;">5</td>
-<td style="text-align: right;">11.1</td>
-</tr>
 <tr class="even">
 <td style="text-align: right;">7</td>
-<td style="text-align: left;">Yet: nationwid, commenc, salin</td>
-<td style="text-align: right;">6.6</td>
-<td style="text-align: right;">8</td>
-<td style="text-align: right;">17.8</td>
+<td style="text-align: left;">Typhoon: atol, pluvial, nanc</td>
+<td style="text-align: right;">8.7</td>
+<td style="text-align: right;">11</td>
+<td style="text-align: right;">24.4</td>
 </tr>
 <tr class="odd">
-<td style="text-align: right;">15</td>
-<td style="text-align: left;">Atol: pacif, outer, typhoon</td>
-<td style="text-align: right;">6.3</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: left;">Defens: task, mountain, norm</td>
+<td style="text-align: right;">8.2</td>
+<td style="text-align: right;">9</td>
+<td style="text-align: right;">20.0</td>
+</tr>
+<tr class="even">
+<td style="text-align: right;">9</td>
+<td style="text-align: left;">Strip: appendix, ensembl, centuri</td>
+<td style="text-align: right;">8.2</td>
+<td style="text-align: right;">12</td>
+<td style="text-align: right;">26.7</td>
+</tr>
+<tr class="odd">
+<td style="text-align: right;">1</td>
+<td style="text-align: left;">Transit: actor, spanish, habit</td>
+<td style="text-align: right;">7.9</td>
 <td style="text-align: right;">7</td>
 <td style="text-align: right;">15.6</td>
 </tr>
 <tr class="even">
-<td style="text-align: right;">1</td>
-<td style="text-align: left;">Secretariat: director, cent, conduct</td>
-<td style="text-align: right;">5.5</td>
-<td style="text-align: right;">6</td>
-<td style="text-align: right;">13.3</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">11</td>
-<td style="text-align: left;">Feder: percentag, indic, hectar</td>
-<td style="text-align: right;">4.3</td>
-<td style="text-align: right;">6</td>
-<td style="text-align: right;">13.3</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">12</td>
-<td style="text-align: left;">Green: enhanc, perform, activ</td>
-<td style="text-align: right;">4.2</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">8.9</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">3</td>
-<td style="text-align: left;">Centuri: period, condit, valu</td>
-<td style="text-align: right;">3.5</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">8.9</td>
-</tr>
-<tr class="even">
-<td style="text-align: right;">8</td>
-<td style="text-align: left;">Author: task, defens, ministri</td>
-<td style="text-align: right;">3.5</td>
 <td style="text-align: right;">5</td>
-<td style="text-align: right;">11.1</td>
-</tr>
-<tr class="odd">
-<td style="text-align: right;">10</td>
-<td style="text-align: left;">Strip: west, confid, ensembl</td>
-<td style="text-align: right;">3.3</td>
-<td style="text-align: right;">4</td>
-<td style="text-align: right;">8.9</td>
+<td style="text-align: left;">Biom: view, ana, municip</td>
+<td style="text-align: right;">5.0</td>
+<td style="text-align: right;">6</td>
+<td style="text-align: right;">13.3</td>
 </tr>
 </tbody>
 </table>
@@ -452,8 +417,8 @@ document.addEventListener('DOMContentLoaded', function() {
 <caption>Topics Identified in National Adaptation Plans</caption>
 <colgroup>
 <col style="width: 5%">
-<col style="width: 27%">
-<col style="width: 67%">
+<col style="width: 28%">
+<col style="width: 66%">
 </colgroup>
 <thead>
 <tr class="header">
@@ -465,85 +430,60 @@ document.addEventListener('DOMContentLoaded', function() {
 <tbody>
 <tr class="odd">
 <td style="text-align: center;">1</td>
-<td style="text-align: left;">Secretariat: director, cent, conduct</td>
-<td style="text-align: left;">secretariat, director, cent, conduct, unoffici, offic, money, member, translat, minim</td>
+<td style="text-align: left;">Transit: actor, spanish, habit</td>
+<td style="text-align: left;">transit, actor, spanish, habit, del, territori, nativ, insuffici, perspect, labor</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">2</td>
-<td style="text-align: left;">Financ: ongo, strateg, output</td>
-<td style="text-align: left;">financ, ongo, strateg, output, overarch, process, donor, linkag, elabor, within</td>
+<td style="text-align: left;">Readi: mandat, chapter, annex</td>
+<td style="text-align: left;">readi, mandat, chapter, annex, entri, pro, outreach, mainstream, donor, nap</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">3</td>
-<td style="text-align: left;">Centuri: period, condit, valu</td>
-<td style="text-align: left;">centuri, period, condit, valu, accord, grow, yes, hazard, precipit, deficit</td>
+<td style="text-align: left;">Pacif: outer, secretariat, cent</td>
+<td style="text-align: left;">pacif, outer, secretariat, cent, unoffici, money, coconut, mia, aid, moe</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">4</td>
-<td style="text-align: left;">Line: citi, territori, transit</td>
-<td style="text-align: left;">line, citi, territori, transit, famili, indigen, instrument, perspect, view, nativ</td>
+<td style="text-align: left;">Hurrican: gulf, name, beach</td>
+<td style="text-align: left;">hurrican, gulf, name, beach, marin, test, offic, reef, bangkok, fisher</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">5</td>
-<td style="text-align: left;">Chapter: provinci, world, describ</td>
-<td style="text-align: left;">chapter, provinci, world, describ, valid, nanc, arrang, nap, con, legal</td>
+<td style="text-align: left;">Biom: view, ana, municip</td>
+<td style="text-align: left;">biom, view, ana, municip, deploy, northeast, defenc, therebi, foster, famili</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">6</td>
-<td style="text-align: left;">Rangeland: mountain, initi, moham</td>
-<td style="text-align: left;">rangeland, mountain, initi, moham, malaria, fluctuat, box, modern, desert, meter</td>
+<td style="text-align: left;">Defens: task, mountain, norm</td>
+<td style="text-align: left;">defens, task, mountain, norm, basin, river, summer, advocaci, thousand, welfar</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">7</td>
-<td style="text-align: left;">Yet: nationwid, commenc, salin</td>
-<td style="text-align: left;">yet, nationwid, commenc, salin, stress, surg, fisher, code, fisheri, disabl</td>
+<td style="text-align: left;">Typhoon: atol, pluvial, nanc</td>
+<td style="text-align: left;">typhoon, atol, pluvial, nanc, immedi, provinci, super, cyclon, expos, insight</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">8</td>
-<td style="text-align: left;">Author: task, defens, ministri</td>
-<td style="text-align: left;">author, task, defens, ministri, background, barrier, economi, regulatori, advocaci, million</td>
+<td style="text-align: left;">Des: les, counti, refuge</td>
+<td style="text-align: left;">des, les, counti, refuge, yet, commenc, pour, percent, humanitarian, lac</td>
 </tr>
 <tr class="odd">
 <td style="text-align: center;">9</td>
-<td style="text-align: left;">Outcom: involv, term, short</td>
-<td style="text-align: left;">outcom, involv, term, short, medium, municip, evalu, page, long, depart</td>
+<td style="text-align: left;">Strip: appendix, ensembl, centuri</td>
+<td style="text-align: left;">strip, appendix, ensembl, centuri, paramet, frost, confid, day, calcul, west</td>
 </tr>
 <tr class="even">
 <td style="text-align: center;">10</td>
-<td style="text-align: left;">Strip: west, confid, ensembl</td>
-<td style="text-align: left;">strip, west, confid, ensembl, calcul, rainfal, perhap, score, might, trend</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">11</td>
-<td style="text-align: left;">Feder: percentag, indic, hectar</td>
-<td style="text-align: left;">feder, percentag, indic, hectar, propos, basin, percent, procedur, fund, river</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">12</td>
-<td style="text-align: left;">Green: enhanc, perform, activ</td>
-<td style="text-align: left;">green, enhanc, perform, activ, readi, collabor, offic, short, program, strateg</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">13</td>
-<td style="text-align: left;">Des: les, refuge, nutrit</td>
-<td style="text-align: left;">des, les, refuge, nutrit, main, percent, pour, host, lac, beneficiari</td>
-</tr>
-<tr class="even">
-<td style="text-align: center;">14</td>
-<td style="text-align: left;">Tourism: provinci, provinc, counti</td>
-<td style="text-align: left;">tourism, provinci, provinc, counti, forest, wildlif, livelihood, promot, mountain, local</td>
-</tr>
-<tr class="odd">
-<td style="text-align: center;">15</td>
-<td style="text-align: left;">Atol: pacif, outer, typhoon</td>
-<td style="text-align: left;">atol, pacif, outer, typhoon, cyclon, retriev, tropic, pluvial, immedi, sea</td>
+<td style="text-align: left;">Rangeland: hill, nationwid, disabl</td>
+<td style="text-align: left;">rangeland, hill, nationwid, disabl, wildlif, wash, induc, youth, smart, box</td>
 </tr>
 </tbody>
 </table>
 </div>
 </div>
-<p>The 15 topics identified through this process reveal both expected patterns and surprising emphases in global adaptation discourse. Sectoral topics constitute the largest category, with distinct topics emerging for water resources, agriculture, coastal zones, health systems, and infrastructure. The separation of these sectors into distinct topics rather than a general “sectoral adaptation” theme indicates that each sector has developed specialized vocabulary and concerns within adaptation planning. For instance, the water resources topic emphasizes basin-level management and irrigation infrastructure, while the coastal topic focuses on sea-level rise and storm protection. This sectoral differentiation suggests that adaptation planning often proceeds through established ministerial boundaries rather than integrated approaches.</p>
-<p>Institutional and procedural topics emerge as a substantial component of adaptation discourse, occupying several of the 15 topics. These topics reveal the mechanisms through which adaptation moves from planning to implementation. The financial mechanisms topic encompasses not only funding amounts but the complex architecture of climate finance, including donor coordination, budget integration, and financial tracking systems. The governance topic focusing on subnational implementation highlights the multi-level nature of adaptation, with terms indicating vertical coordination from national to municipal levels. A separate topic on planning processes captures the procedural aspects of developing NAPs themselves, suggesting that the process of planning has become as important as the content of plans.</p>
+<p>The 10 topics identified through this process reveal both expected patterns and surprising emphases in global adaptation discourse. Sectoral topics constitute the largest category, with distinct topics emerging for water resources, agriculture, coastal zones, health systems, and infrastructure. The separation of these sectors into distinct topics rather than a general “sectoral adaptation” theme indicates that each sector has developed specialized vocabulary and concerns within adaptation planning. For instance, the water resources topic emphasizes basin-level management and irrigation infrastructure, while the coastal topic focuses on sea-level rise and storm protection. This sectoral differentiation suggests that adaptation planning often proceeds through established ministerial boundaries rather than integrated approaches.</p>
+<p>Institutional and procedural topics emerge as a substantial component of adaptation discourse, occupying several of the 10 topics. These topics reveal the mechanisms through which adaptation moves from planning to implementation. The financial mechanisms topic encompasses not only funding amounts but the complex architecture of climate finance, including donor coordination, budget integration, and financial tracking systems. The governance topic focusing on subnational implementation highlights the multi-level nature of adaptation, with terms indicating vertical coordination from national to municipal levels. A separate topic on planning processes captures the procedural aspects of developing NAPs themselves, suggesting that the process of planning has become as important as the content of plans.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -554,9 +494,9 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 </div>
 <p>Geographic and hazard-specific topics reveal how physical geography shapes adaptation discourse, though perhaps not in expected ways. Rather than broad topics on “mountain adaptation” or “island adaptation,” the model identifies specific geographic contexts tied to particular challenges. The mountain and river basin topic links topography to water management, while the island topic specifically emphasizes atolls and outer islands, suggesting attention to the most vulnerable island contexts. The presence of a distinct topic on tropical cyclones and typhoons indicates that countries experiencing these hazards frame adaptation significantly differently from those focused on gradual changes like temperature increases or shifting precipitation patterns.</p>
-<p>Examining which topics appear most and least frequently across the corpus provides insight into the priorities and gaps in global adaptation planning. The five most prevalent topics—Financ: ongo, strateg, output, Chapter: provinci, world, describ, Tourism: provinci, provinc, counti, Outcom: involv, term, short, Line: citi, territori, transit—collectively account for 49.5% of the total discourse. The dominance of financial and implementation topics among the most prevalent themes suggests that “how to adapt” receives as much or more attention than “what adaptation looks like.” This emphasis on process and mechanisms over substantive actions may reflect the influence of international guidelines and donor requirements in shaping NAP development.</p>
-<p>Conversely, the least prevalent topics—Centuri: period, condit, valu, Author: task, defens, ministri, Strip: west, confid, ensembl—collectively represent only 10.3% of discourse. The marginal presence of topics related to indigenous knowledge, transformational change, or justice-oriented approaches suggests that alternative framings of adaptation remain peripheral to mainstream planning despite their prominence in academic and civil society discussions. This absence is particularly notable given the theoretical literature on adaptation that emphasizes the importance of local knowledge and transformative approaches.</p>
-<p>The distribution of topics across documents reveals additional patterns in how adaptation discourse is structured. On average, each NAP substantially engages with 2 topics (using a 10% threshold for substantial engagement), while touching on 4 topics to some degree. This concentration suggests that most countries focus their adaptation planning on a core set of concerns while giving cursory attention to others. The most “universal” topics—those appearing in over 90% of documents—are 0 in number, primarily covering financial mechanisms and general planning processes. In contrast, 15 topics appear in fewer than half of all documents, indicating specialized concerns relevant only to specific contexts.</p>
+<p>Examining which topics appear most and least frequently across the corpus provides insight into the priorities and gaps in global adaptation planning. The five most prevalent topics—Readi: mandat, chapter, annex, Rangeland: hill, nationwid, disabl, Hurrican: gulf, name, beach, Des: les, counti, refuge, Pacif: outer, secretariat, cent—collectively account for 62% of the total discourse. The dominance of financial and implementation topics among the most prevalent themes suggests that “how to adapt” receives as much or more attention than “what adaptation looks like.” This emphasis on process and mechanisms over substantive actions may reflect the influence of international guidelines and donor requirements in shaping NAP development.</p>
+<p>Conversely, the least prevalent topics—Strip: appendix, ensembl, centuri, Transit: actor, spanish, habit, Biom: view, ana, municip—collectively represent only 21.1% of discourse. The marginal presence of topics related to indigenous knowledge, transformational change, or justice-oriented approaches suggests that alternative framings of adaptation remain peripheral to mainstream planning despite their prominence in academic and civil society discussions. This absence is particularly notable given the theoretical literature on adaptation that emphasizes the importance of local knowledge and transformative approaches.</p>
+<p>The distribution of topics across documents reveals additional patterns in how adaptation discourse is structured. On average, each NAP substantially engages with 2 topics (using a 10% threshold for substantial engagement), while touching on 4 topics to some degree. This concentration suggests that most countries focus their adaptation planning on a core set of concerns while giving cursory attention to others. The most “universal” topics—those appearing in over 90% of documents—are 0 in number, primarily covering financial mechanisms and general planning processes. In contrast, 9 topics appear in fewer than half of all documents, indicating specialized concerns relevant only to specific contexts.</p>
 <p>The statistical quality of individual topics varies in revealing ways. Topics with the highest semantic coherence scores tend to be those with technical vocabulary, such as climate modeling or vulnerability assessment, where specialized terms consistently co-occur. Topics with lower coherence often address cross-cutting issues like gender or participation, where vocabulary is more diffuse. Exclusivity scores are highest for geographically specific topics (atolls, mountains) and hazard-specific topics (cyclones), while lower for general planning and implementation topics that share vocabulary across themes. This pattern suggests that the model most clearly identifies discourse when it is technically specialized or geographically specific, while more integrated or holistic approaches to adaptation may be harder to capture as distinct topics.</p>
 </section>
 <section id="patterns-of-discourse-centralization" class="level2" data-number="6.2">
@@ -565,9 +505,9 @@ document.addEventListener('DOMContentLoaded', function() {
 <p>Analysis of discourse centralization reveals remarkably high concentration across all National Adaptation Plans, with both document-level and corpus-level patterns suggesting limited epistemological diversity in how climate adaptation is conceptualized globally.</p>
 </blockquote>
 <p>The Dominance Index captures discourse centralization at two complementary levels, each revealing different aspects of how adaptation is conceptualized. Document-level dominance measures how concentrated each individual NAP is on its top three topics—a high value indicates that a country’s adaptation plan focuses heavily on a narrow set of themes rather than addressing adaptation comprehensively. Corpus-level dominance examines the collective discourse of a group of countries, measuring whether they converge on the same dominant topics or emphasize different aspects of adaptation. Together, these measures reveal both the internal coherence of individual plans and the degree of convergence across countries. Values approaching 1.0 indicate extreme concentration, while values closer to 0 would suggest more balanced attention across multiple topics—though such low values are not observed in our corpus.</p>
-<p>The document-level findings present a striking picture of universal concentration. Across all 45 NAPs, the normalized dominance value is 90.7%, indicating that the typical adaptation plan devotes the vast majority of its content to just three topics out of the 15 identified. This pattern holds with remarkable consistency across different country groupings. Low-income countries show a document-level dominance of 90.8%, while high-income countries register 91.8%—a difference of less than 0 despite vastly different resources and institutional capacities. The uniformity extends across regional groupings, with values ranging only from 51.7% to 81.3%, and geographic categories showing similarly minimal variation.</p>
+<p>The document-level findings present a striking picture of universal concentration. Across all 45 NAPs, the normalized dominance value is 93%, indicating that the typical adaptation plan devotes the vast majority of its content to just three topics out of the 10 identified. This pattern holds with remarkable consistency across different country groupings. Low-income countries show a document-level dominance of 87.6%, while high-income countries register 99.6%—a difference of less than 0 despite vastly different resources and institutional capacities. The uniformity extends across regional groupings, with values ranging only from 53.3% to 90.8%, and geographic categories showing similarly minimal variation.</p>
 <p>This universal pattern of document-level concentration suggests that the structure of adaptation planning itself—shaped by international guidelines, funding requirements, and technical assistance—produces focused rather than comprehensive plans regardless of national context. The practical implication is that any given NAP reads as a deep dive into a small number of adaptation priorities rather than a broad survey of climate vulnerabilities and responses. Whether this focus reflects strategic prioritization or constraints on what can be included in adaptation planning remains an open question, but the pattern is unmistakable: adaptation plans are exercises in selective attention rather than comprehensive vulnerability assessment.</p>
-<p>The corpus-level patterns reveal more nuanced differences in how countries converge or diverge in their adaptation priorities. Among income groups, a surprising U-shaped pattern emerges that challenges linear assumptions about development and discourse diversity. High-income countries show the highest corpus-level dominance at 58.5%, indicating strong convergence on similar topics—specifically Author: task, defens, ministri, Yet: nationwid, commenc, salin, Line: citi, territori, transit. However, with only four high-income countries in the sample (Israel, Kuwait, Trinidad and Tobago, and Uruguay), this finding must be interpreted cautiously. These countries span different regions and face different climate challenges, yet their adaptation discourse converges remarkably, potentially reflecting shared access to international expertise or similar institutional models.</p>
+<p>The corpus-level patterns reveal more nuanced differences in how countries converge or diverge in their adaptation priorities. Among income groups, a surprising U-shaped pattern emerges that challenges linear assumptions about development and discourse diversity. High-income countries show the highest corpus-level dominance at 65.3%, indicating strong convergence on similar topics—specifically Hurrican: gulf, name, beach, Defens: task, mountain, norm, Transit: actor, spanish, habit. However, with only four high-income countries in the sample (Israel, Kuwait, Trinidad and Tobago, and Uruguay), this finding must be interpreted cautiously. These countries span different regions and face different climate challenges, yet their adaptation discourse converges remarkably, potentially reflecting shared access to international expertise or similar institutional models.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -577,11 +517,11 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 </div>
 </div>
-<p>Low-income countries display the second-highest corpus-level dominance at 58.9%, with discourse concentrated on Des: les, refuge, nutrit, Chapter: provinci, world, describ, Outcom: involv, term, short. This high centralization among low-income countries aligns with theoretical expectations about the constraining effects of international development frameworks on adaptation planning. The dominant topics emphasize process-oriented and finance-related themes, suggesting that low-income countries’ adaptation discourse is significantly shaped by donor requirements and international guidelines. The limited epistemological space reflected in this high dominance value indicates that despite facing diverse climate challenges—from drought in African nations to sea-level rise in Pacific islands—low-income countries articulate adaptation through remarkably similar framings.</p>
-<p>The middle-income countries present a markedly different pattern, with lower-middle income countries showing the lowest corpus-level dominance at 31.9% and upper-middle income countries at 38.8%. This greater diversity in middle-income countries’ adaptation discourse suggests more epistemological space for varied approaches. Lower-middle income countries emphasize Chapter: provinci, world, describ, Tourism: provinci, provinc, counti, Secretariat: director, cent, conduct, while upper-middle income countries focus on Financ: ongo, strateg, output, Line: citi, territori, transit, Feder: percentag, indic, hectar. The different dominant topics and lower overall concentration indicate that middle-income countries may have greater autonomy in framing adaptation according to national priorities rather than international templates. This could reflect their intermediate position—less dependent on climate finance than low-income countries but not yet fully integrated into high-income knowledge networks.</p>
-<p>Regional patterns in corpus-level dominance provide additional insight into the factors shaping adaptation discourse. The highest regional concentration appears in Latin America &amp; Caribbean at 81.3%, where countries converge strongly on topics related to Financ: ongo, strateg, output, Line: citi, territori, transit, Yet: nationwid, commenc, salin. This high concentration may reflect shared regional institutions, similar colonial histories, or common climate challenges. In contrast, Sub-Saharan Africa shows the lowest regional dominance at 51.7%, with more diverse emphasis across topics including Des: les, refuge, nutrit, Outcom: involv, term, short, Chapter: provinci, world, describ. This regional variation suggests that epistemic communities operating at the regional scale—through bodies like regional development banks, economic communities, or technical cooperation networks—play a significant role in shaping how adaptation is conceptualized.</p>
+<p>Low-income countries display the second-highest corpus-level dominance at 57.5%, with discourse concentrated on Readi: mandat, chapter, annex, Des: les, counti, refuge, Transit: actor, spanish, habit. This high centralization among low-income countries aligns with theoretical expectations about the constraining effects of international development frameworks on adaptation planning. The dominant topics emphasize process-oriented and finance-related themes, suggesting that low-income countries’ adaptation discourse is significantly shaped by donor requirements and international guidelines. The limited epistemological space reflected in this high dominance value indicates that despite facing diverse climate challenges—from drought in African nations to sea-level rise in Pacific islands—low-income countries articulate adaptation through remarkably similar framings.</p>
+<p>The middle-income countries present a markedly different pattern, with lower-middle income countries showing the lowest corpus-level dominance at 44.9% and upper-middle income countries at 31.7%. This greater diversity in middle-income countries’ adaptation discourse suggests more epistemological space for varied approaches. Lower-middle income countries emphasize Rangeland: hill, nationwid, disabl, Readi: mandat, chapter, annex, Pacif: outer, secretariat, cent, while upper-middle income countries focus on Readi: mandat, chapter, annex, Hurrican: gulf, name, beach, Defens: task, mountain, norm. The different dominant topics and lower overall concentration indicate that middle-income countries may have greater autonomy in framing adaptation according to national priorities rather than international templates. This could reflect their intermediate position—less dependent on climate finance than low-income countries but not yet fully integrated into high-income knowledge networks.</p>
+<p>Regional patterns in corpus-level dominance provide additional insight into the factors shaping adaptation discourse. The highest regional concentration appears in Europe &amp; Central Asia at 90.8%, where countries converge strongly on topics related to Readi: mandat, chapter, annex, Strip: appendix, ensembl, centuri, Defens: task, mountain, norm. This high concentration may reflect shared regional institutions, similar colonial histories, or common climate challenges. In contrast, Sub-Saharan Africa shows the lowest regional dominance at 53.3%, with more diverse emphasis across topics including Readi: mandat, chapter, annex, Des: les, counti, refuge, Rangeland: hill, nationwid, disabl. This regional variation suggests that epistemic communities operating at the regional scale—through bodies like regional development banks, economic communities, or technical cooperation networks—play a significant role in shaping how adaptation is conceptualized.</p>
 <p>The middle-range regional dominance values reveal interesting patterns of partial convergence. The regions show moderate concentration, with each region emphasizing distinct combinations of sectoral and procedural topics. The variation in dominant topics across regions—from water and agriculture in some regions to coastal and financial themes in others—indicates that regional discourse coalescence occurs around different substantive priorities even as the overall level of concentration remains high.</p>
-<p>Geographic vulnerability categories reveal yet another pattern in discourse centralization. Small Island Developing States show a corpus-level dominance of 57.5%, with convergence around Financ: ongo, strateg, output, Chapter: provinci, world, describ, Atol: pacif, outer, typhoon. The presence of Pacific-specific and ocean-related topics among SIDS’ dominant themes appears logical given their shared vulnerabilities to sea-level rise and ocean changes. Landlocked Developing Countries display lower dominance at 33.7%, emphasizing Tourism: provinci, provinc, counti, Outcom: involv, term, short, Rangeland: mountain, initi, moham. The relatively low dominance values for both geographic categories—lower than most income and regional groupings—suggests that geographic vulnerability alone does not produce convergent adaptation discourse. Instead, countries facing similar physical challenges may still conceptualize adaptation differently based on other factors.</p>
+<p>Geographic vulnerability categories reveal yet another pattern in discourse centralization. Small Island Developing States show a corpus-level dominance of 50.3%, with convergence around Hurrican: gulf, name, beach, Readi: mandat, chapter, annex, Pacif: outer, secretariat, cent. The presence of Pacific-specific and ocean-related topics among SIDS’ dominant themes appears logical given their shared vulnerabilities to sea-level rise and ocean changes. Landlocked Developing Countries display lower dominance at 61.4%, emphasizing Readi: mandat, chapter, annex, Rangeland: hill, nationwid, disabl, Defens: task, mountain, norm. The relatively low dominance values for both geographic categories—lower than most income and regional groupings—suggests that geographic vulnerability alone does not produce convergent adaptation discourse. Instead, countries facing similar physical challenges may still conceptualize adaptation differently based on other factors.</p>
 <p>The variance patterns within each grouping provide additional insight into discourse dynamics. Document-level variance is consistently low across all categories, reinforcing the finding of universal concentration in individual NAPs. However, corpus-level variance tells a different story. High-income countries show the highest variance (0), suggesting that despite high average concentration, there is considerable variation among these four countries—possibly reflecting their different regional contexts and climate challenges. Low-income countries show much lower variance (0), indicating more uniform convergence on similar topics, potentially due to common constraints and dependencies on international frameworks.</p>
 <p>Examining which specific topics dominate across different groupings reveals the substantive content of discourse convergence. Financial and procedural topics appear among the top three for multiple groupings, suggesting these themes form a common core of adaptation discourse globally. However, the specific combinations vary meaningfully. Low-income countries’ emphasis on chapters, descriptions, and processes alongside nutritional and refugee concerns suggests a discourse shaped by both procedural requirements and humanitarian vulnerabilities. High-income countries’ focus on marine and other themes indicates a different framing of adaptation. Middle-income countries show more varied patterns, with some emphasizing provincial and municipal implementation while others focus on sectoral themes like water and agriculture.</p>
 <p>The overall pattern emerging from these dominance analyses is one of constrained epistemological space in climate adaptation planning. The uniformly high document-level concentration indicates that structural factors in how NAPs are conceived and developed lead to focused rather than comprehensive plans. The varying corpus-level patterns suggest that while all countries produce concentrated documents, they concentrate on different aspects based primarily on their economic positioning and regional contexts. The U-shaped relationship with income—highest dominance at both extremes—challenges simple narratives about development and discursive autonomy. Instead, it suggests that different types of constraints operate at different income levels: international dependency for low-income countries and perhaps technocratic convergence for high-income countries, with middle-income countries occupying a space of relatively greater discursive freedom. These patterns set the stage for examining which factors best explain the limited variation that does exist in global adaptation discourse.</p>
@@ -591,11 +531,11 @@ document.addEventListener('DOMContentLoaded', function() {
 <blockquote class="blockquote">
 <p>While adaptation discourse shows high centralization overall, examining which factors explain the variation that does exist reveals that regional and economic positioning shape discourse patterns far more than the physical geography of climate vulnerability.</p>
 </blockquote>
-<p>Understanding which factors drive the variation in adaptation discourse requires decomposing the differences we observe into their constituent sources. Variance decomposition operates like examining why students in different classrooms achieve different test scores—how much is due to the teacher, the curriculum, the school resources, or student backgrounds? In our analysis, we partition the variation in discourse centralization across countries into three potential sources: regional groupings (which classroom), income levels (resource availability), and geographic vulnerability (environmental conditions). The percentage of variance explained by each factor reveals its relative importance in shaping how countries conceptualize adaptation. If regional groupings explain 20.5% of variance, this means that knowing a country’s region helps predict its discourse patterns substantially more than if regions explained only 5%. The total variance explained by all factors together indicates how well these categorical divisions capture the patterns in adaptation discourse, with unexplained variance representing country-specific factors, historical contingencies, or other unmeasured influences.</p>
-<p>The analysis reveals a clear hierarchy among factors shaping adaptation discourse, with region emerging as the dominant influence at 20.5% of variance explained. This regional effect substantially exceeds both income (10.2%) and geography (2.9%), suggesting that adaptation discourse is shaped more by regional institutional contexts than by economic resources or physical vulnerability. Together, these three factors explain approximately 33.6% of the variation in discourse centralization, leaving 66.4% attributable to country-specific factors or unmeasured variables. This hierarchy—institutions over economics over geography—challenges assumptions about what drives adaptation planning and suggests that discourse patterns reflect political and institutional arrangements more than material conditions.</p>
-<p>The regional effect’s dominance in explaining discourse variation reveals the powerful role of regional institutions, networks, and shared histories in shaping adaptation planning. The 20.5% of variance explained by region emerges from substantial differences in how the six regional groupings approach adaptation. Sub-Saharan Africa contributes most strongly to this regional effect with 4.9% variance explained within the regional category, reflecting its distinctive discourse patterns. The high contribution suggests this region has developed a particularly coherent regional approach to adaptation that differs markedly from global patterns. Conversely, East Asia &amp; Pacific shows the lowest contribution at 3.3%, indicating its discourse patterns align more closely with global averages.</p>
+<p>Understanding which factors drive the variation in adaptation discourse requires decomposing the differences we observe into their constituent sources. Variance decomposition operates like examining why students in different classrooms achieve different test scores—how much is due to the teacher, the curriculum, the school resources, or student backgrounds? In our analysis, we partition the variation in discourse centralization across countries into three potential sources: regional groupings (which classroom), income levels (resource availability), and geographic vulnerability (environmental conditions). The percentage of variance explained by each factor reveals its relative importance in shaping how countries conceptualize adaptation. If regional groupings explain 20.6% of variance, this means that knowing a country’s region helps predict its discourse patterns substantially more than if regions explained only 5%. The total variance explained by all factors together indicates how well these categorical divisions capture the patterns in adaptation discourse, with unexplained variance representing country-specific factors, historical contingencies, or other unmeasured influences.</p>
+<p>The analysis reveals a clear hierarchy among factors shaping adaptation discourse, with region emerging as the dominant influence at 20.6% of variance explained. This regional effect substantially exceeds both income (9.5%) and geography (3.7%), suggesting that adaptation discourse is shaped more by regional institutional contexts than by economic resources or physical vulnerability. Together, these three factors explain approximately 33.8% of the variation in discourse centralization, leaving 66.2% attributable to country-specific factors or unmeasured variables. This hierarchy—institutions over economics over geography—challenges assumptions about what drives adaptation planning and suggests that discourse patterns reflect political and institutional arrangements more than material conditions.</p>
+<p>The regional effect’s dominance in explaining discourse variation reveals the powerful role of regional institutions, networks, and shared histories in shaping adaptation planning. The 20.6% of variance explained by region emerges from substantial differences in how the six regional groupings approach adaptation. Europe &amp; Central Asia contributes most strongly to this regional effect with 4.7% variance explained within the regional category, reflecting its distinctive discourse patterns. The high contribution suggests this region has developed a particularly coherent regional approach to adaptation that differs markedly from global patterns. Conversely, Middle East &amp; North Africa shows the lowest contribution at 2.9%, indicating its discourse patterns align more closely with global averages.</p>
 <p>The mechanisms through which regional groupings shape discourse likely operate through multiple channels. Regional development banks—such as the Asian Development Bank, African Development Bank, and Inter-American Development Bank—provide not only funding but technical assistance and knowledge products that promote particular framings of adaptation. Regional economic communities like ASEAN, ECOWAS, and CARICOM facilitate policy learning and convergence among member states. Shared colonial histories within regions may also create common institutional structures and languages that influence how adaptation is conceptualized. The strength of the regional effect suggests these mechanisms successfully create distinctive regional “styles” of adaptation planning that transcend national boundaries. However, whether regional convergence represents beneficial knowledge sharing or problematic homogenization depends on whether regional approaches are well-suited to member countries’ specific contexts.</p>
-<p>The income effect, while secondary to region, still explains a substantial 10.2% of discourse variation, confirming that economic positioning shapes adaptation planning in important ways. Within this income effect, the contribution of different income levels varies significantly. Low income contributes 3.8% to the income effect, while High income contributes 2.9%. This variation in contributions reflects the U-shaped pattern identified earlier—the extremes of the income distribution (low and high) show more distinctive discourse patterns than middle-income countries. The income effect likely operates through several mechanisms: access to technical expertise, dependence on climate finance, integration into international knowledge networks, and domestic institutional capacity.</p>
+<p>The income effect, while secondary to region, still explains a substantial 9.5% of discourse variation, confirming that economic positioning shapes adaptation planning in important ways. Within this income effect, the contribution of different income levels varies significantly. Lower middle income contributes 4.7% to the income effect, while Upper middle income contributes 2.3%. This variation in contributions reflects the U-shaped pattern identified earlier—the extremes of the income distribution (low and high) show more distinctive discourse patterns than middle-income countries. The income effect likely operates through several mechanisms: access to technical expertise, dependence on climate finance, integration into international knowledge networks, and domestic institutional capacity.</p>
 <div class="cell">
 <div class="cell-output-display">
 <div>
@@ -606,10 +546,10 @@ document.addEventListener('DOMContentLoaded', function() {
 </div>
 </div>
 <p>The relatively lower contribution of middle-income countries to income-based variance aligns with their greater discourse diversity identified in the dominance analysis. These countries appear to occupy a “sweet spot” where they have sufficient autonomy to develop nationally-specific approaches but remain diverse enough as a group to avoid convergence on common patterns. Low-income countries’ higher contribution to variance reflects their convergence on finance and process-oriented topics, driven by common dependencies on international support. High-income countries’ contribution, while based on a small sample, suggests a different form of convergence, possibly around technical sophistication or security framings. The income effect thus captures not a linear relationship between resources and discourse but different forms of constraint and convergence operating at different economic levels.</p>
-<p>The surprisingly minimal geographic effect—explaining only 2.9% of variance—represents one of the most counterintuitive findings of this analysis. Small Island Developing States face fundamentally different climate vulnerabilities than Landlocked Developing Countries: sea-level rise versus desertification, coastal erosion versus mountain glacial melt, marine ecosystem changes versus terrestrial transformations. Yet these dramatic physical differences translate into minimal discourse differences. SIDS contribute 3.4% to the geographic effect, while LLDCs contribute 2.5%. Both contributions are modest, suggesting that countries facing similar physical vulnerabilities do not necessarily develop similar ways of conceptualizing and planning adaptation.</p>
+<p>The surprisingly minimal geographic effect—explaining only 3.7% of variance—represents one of the most counterintuitive findings of this analysis. Small Island Developing States face fundamentally different climate vulnerabilities than Landlocked Developing Countries: sea-level rise versus desertification, coastal erosion versus mountain glacial melt, marine ecosystem changes versus terrestrial transformations. Yet these dramatic physical differences translate into minimal discourse differences. SIDS contribute 3.8% to the geographic effect, while LLDCs contribute 3.6%. Both contributions are modest, suggesting that countries facing similar physical vulnerabilities do not necessarily develop similar ways of conceptualizing and planning adaptation.</p>
 <p>This geographic non-effect challenges fundamental assumptions about climate adaptation planning. If adaptation is primarily about responding to physical climate impacts, we would expect countries facing similar impacts to develop similar responses and discourse. The minimal variance explained by geography suggests instead that adaptation planning is shaped more by institutional templates, available resources, and regional knowledge networks than by the specific nature of climate vulnerabilities. A drought-prone landlocked country may have more in common discursively with its coastal regional neighbors than with other drought-prone nations globally. This pattern raises questions about whether current adaptation planning adequately responds to specific vulnerabilities or primarily reproduces institutional and regional templates regardless of physical context.</p>
-<p>The hierarchy of effects—regional institutional (20.5%) &gt; economic positioning (10.2%) &gt; geographic vulnerability (2.9%)—reveals adaptation discourse as primarily shaped by political economy rather than physical geography. This finding aligns with critical perspectives on adaptation that emphasize how institutional power and economic relations determine vulnerability more than physical exposure. The dominance of regional effects suggests that adaptation knowledge circulates primarily through regional networks, creating distinctive regional approaches that may or may not align with the specific needs of member countries. The substantial income effect confirms that position in the global economic hierarchy shapes discourse possibilities, though not in straightforward ways. The minimal geographic effect indicates that shared physical vulnerabilities alone do not create shared discourse—institutional and economic factors intervene to shape how physical vulnerabilities are understood and addressed.</p>
-<p>The approximately 66.4% of variance that remains unexplained by our three factors represents the space for country-specific approaches, historical contingencies, and factors not captured by our broad categories. This substantial unexplained variance suggests that while regional, economic, and geographic categories capture important patterns, considerable room remains for national variation based on factors such as political leadership, civil society strength, particular colonial histories, or specific disaster experiences. Some countries may develop distinctive approaches despite their regional and income contexts, while others may closely follow regional or income-group patterns. The unexplained variance also represents the limitations of categorical analysis—countries are not simply representatives of their categories but complex entities shaped by multiple intersecting factors.</p>
+<p>The hierarchy of effects—regional institutional (20.6%) &gt; economic positioning (9.5%) &gt; geographic vulnerability (3.7%)—reveals adaptation discourse as primarily shaped by political economy rather than physical geography. This finding aligns with critical perspectives on adaptation that emphasize how institutional power and economic relations determine vulnerability more than physical exposure. The dominance of regional effects suggests that adaptation knowledge circulates primarily through regional networks, creating distinctive regional approaches that may or may not align with the specific needs of member countries. The substantial income effect confirms that position in the global economic hierarchy shapes discourse possibilities, though not in straightforward ways. The minimal geographic effect indicates that shared physical vulnerabilities alone do not create shared discourse—institutional and economic factors intervene to shape how physical vulnerabilities are understood and addressed.</p>
+<p>The approximately 66.2% of variance that remains unexplained by our three factors represents the space for country-specific approaches, historical contingencies, and factors not captured by our broad categories. This substantial unexplained variance suggests that while regional, economic, and geographic categories capture important patterns, considerable room remains for national variation based on factors such as political leadership, civil society strength, particular colonial histories, or specific disaster experiences. Some countries may develop distinctive approaches despite their regional and income contexts, while others may closely follow regional or income-group patterns. The unexplained variance also represents the limitations of categorical analysis—countries are not simply representatives of their categories but complex entities shaped by multiple intersecting factors.</p>
 <p>Several important caveats temper these variance decomposition findings. The small sample size in some categories—particularly the four high-income countries—means their contribution to variance may be unstable. The analysis treats the three factors as independent, but in reality, they interact: regional groupings correlate partially with income levels, and geography influences both. For instance, many SIDS are also lower-income and concentrated in specific regions, making it difficult to fully separate these effects. Additionally, the variance decomposition captures only linear relationships between categories and discourse patterns, potentially missing non-linear dynamics or threshold effects. Despite these limitations, the clear hierarchy of effects and the minimal role of geography in shaping discourse patterns represent robust findings with important implications for understanding adaptation planning.</p>
 <p>These variance patterns reveal adaptation discourse as shaped primarily by institutional and economic factors rather than the physical realities of climate vulnerability. The dominance of regional effects points to the powerful role of regional organizations and networks in creating distinctive approaches to adaptation—whether these approaches serve member countries well deserves further scrutiny. The substantial income effect confirms that position in the global economic hierarchy shapes discourse possibilities, though middle-income countries’ greater diversity suggests that economic constraints are not deterministic. Most surprisingly, the minimal geographic effect indicates that current adaptation planning may be inadequately tailored to specific physical vulnerabilities, instead reproducing institutional templates across diverse contexts. These patterns provide crucial context for interpreting what the high discourse centralization identified earlier means for climate justice and the future of adaptation governance.</p>
 
