@@ -66,95 +66,95 @@ source("scripts/find_dominance.R")
 source("scripts/estimate_variance.R")
 
 topics <- auto_cache(name_topics, model, mode = "auto")
-dominance <- auto_cache(calculate_dominance, model, topics, min_group_size = 8, overwrite = TRUE)
-variance <- auto_cache(estimate_variance, model, overwrite = TRUE)
+dominance <- auto_cache(calculate_dominance, model, topics, min_group_size = 8)
+variance <- auto_cache(estimate_variance, model)
 
-# Filter and select specific columns
-corpus_only <- dominance$data[dominance$data$level_type == "corpus", 
-                              c("category", "subcategory", "documents", 
-                                "normalized_dominance", "ci_lower", "ci_upper")]
+corpus_level <- dominance$data[dominance$data$level_type == "corpus", ]
 
-# Print the table
-knitr::kable(corpus_only, 
-             caption = "Corpus-level dominance values",
-             col.names = c("Category", "Subcategory", "N", 
-                           "Dominance", "CI Lower", "CI Upper"),
-             digits = 3)
-
-# Prepare data
-plot_data <- dominance$data[dominance$data$level_type == "corpus" & 
-                              dominance$data$category != "Overall", ]
-
-# Order by dominance within categories
-plot_data <- plot_data %>%
-  dplyr::group_by(category) %>%
-  dplyr::mutate(subcategory = forcats::fct_reorder(subcategory, normalized_dominance)) %>%
-  dplyr::ungroup()
-
-# Create plot with bars and shaded uncertainty
-dominance_bar_plot <- ggplot2::ggplot(plot_data, 
-                                      ggplot2::aes(x = normalized_dominance, 
-                                                   y = subcategory,
-                                                   fill = category)) +
-  # Shaded uncertainty range (behind bars)
-  ggplot2::geom_rect(
-    ggplot2::aes(xmin = ci_lower, xmax = ci_upper, 
-                 ymin = as.numeric(subcategory) - 0.35, 
-                 ymax = as.numeric(subcategory) + 0.35),
-    alpha = 0.3
-  ) +
-  
-  # Main bars
-  ggplot2::geom_col(width = 0.7, alpha = 0.8) +
-  
-  # Value labels at the end of bars
-  ggplot2::geom_text(
-    ggplot2::aes(label = sprintf("%.3f", normalized_dominance)),
-    hjust = -0.1,
-    size = 3.5,
-    color = "#212529"
-  ) +
-  
-  # Facet without strip headers
-  ggplot2::facet_grid(category ~ ., 
-                      scales = "free_y", 
-                      space = "free_y") +
-  
-  # Color scheme
-  ggplot2::scale_fill_manual(values = c("Income" = "#0d6efd", 
-                                        "Region" = "#6f42c1", 
-                                        "Geography" = "#198754"),
-                             guide = "none") +
-  
-  # X-axis with extra space for labels
-  ggplot2::scale_x_continuous(
-    limits = c(0, 0.75),
-    expand = c(0, 0)
-  ) +
-  
-  # Labels
-  ggplot2::labs(
+# Create the main plot
+p1 <- ggplot(corpus_level, aes(x = reorder(subcategory, dominance), y = dominance)) +
+  # Add shaded confidence interval first
+  geom_ribbon(aes(ymin = lower_ci, ymax = upper_ci, fill = category), 
+              alpha = 0.2) +
+  # Add the main line
+  geom_point(aes(color = category), size = 3) +
+  # Add value labels
+  geom_text(aes(label = sprintf("%.3f", dominance)), 
+            vjust = -1, size = 3, color = "#495057") +
+  # Facet by category
+  facet_wrap(~ category, scales = "free_x", ncol = 1) +
+  # Color scheme matching thesis
+  scale_fill_manual(values = c("Income" = "#0d6efd", 
+                               "Region" = "#6f42c1", 
+                               "Geography" = "#198754")) +
+  scale_color_manual(values = c("Income" = "#0d6efd", 
+                                "Region" = "#6f42c1", 
+                                "Geography" = "#198754")) +
+  # Styling
+  scale_y_continuous(limits = c(0.92, 1.0), 
+                     labels = scales::percent_format(accuracy = 1)) +
+  labs(
     title = "Discourse Centralization by Country Groupings",
-    subtitle = "Bars show dominance index with shaded 95% confidence intervals",
-    x = "Dominance Index",
-    y = NULL
+    subtitle = "With 95% Confidence Intervals",
+    x = NULL,
+    y = "Dominance Index",
+    caption = "Note: Shaded areas represent 95% confidence intervals"
   ) +
-  
-  # Theme with no strip text
-  ggplot2::theme_minimal() +
-  ggplot2::theme(
-    plot.title = ggplot2::element_text(size = 14, face = "bold", color = "#212529"),
-    plot.subtitle = ggplot2::element_text(size = 11, color = "#6c757d"),
-    axis.text = ggplot2::element_text(size = 10, color = "#495057"),
-    axis.title = ggplot2::element_text(size = 11, color = "#495057"),
-    strip.text = ggplot2::element_blank(),  # Remove facet labels
-    strip.background = ggplot2::element_blank(),  # Remove facet background
-    panel.grid.major.y = ggplot2::element_blank(),
-    panel.grid.minor = ggplot2::element_blank(),
-    panel.grid.major.x = ggplot2::element_line(color = "#dee2e6", size = 0.5),
-    panel.spacing = ggplot2::unit(0.5, "lines"),
-    plot.background = ggplot2::element_rect(fill = "white", color = NA),
-    panel.background = ggplot2::element_rect(fill = "white", color = NA)
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold", color = "#212529"),
+    plot.subtitle = element_text(size = 11, color = "#6c757d"),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 9),
+    axis.text.y = element_text(size = 10),
+    axis.title = element_text(size = 11, color = "#495057"),
+    strip.text = element_text(size = 11, face = "bold"),
+    panel.grid.minor = element_blank(),
+    legend.position = "none",
+    plot.caption = element_text(size = 9, color = "#6c757d", hjust = 0)
   )
 
-print(dominance_bar_plot)
+# Alternative: Single panel with all groups
+p2 <- ggplot(corpus_level, aes(x = reorder(subcategory, dominance), y = dominance)) +
+  # Shaded confidence intervals
+  geom_ribbon(aes(ymin = lower_ci, ymax = upper_ci, fill = category, group = category), 
+              alpha = 0.25) +
+  # Error bars for clearer visualization
+  geom_errorbar(aes(ymin = lower_ci, ymax = upper_ci, color = category), 
+                width = 0.2, alpha = 0.7) +
+  # Points for actual values
+  geom_point(aes(color = category), size = 4) +
+  # Value labels
+  geom_text(aes(label = sprintf("%.3f", dominance)), 
+            vjust = -1.5, size = 3, color = "#212529") +
+  # Colors
+  scale_fill_manual(values = c("Income" = "#0d6efd", 
+                               "Region" = "#6f42c1", 
+                               "Geography" = "#198754")) +
+  scale_color_manual(values = c("Income" = "#0d6efd", 
+                                "Region" = "#6f42c1", 
+                                "Geography" = "#198754")) +
+  # Styling
+  scale_y_continuous(limits = c(0.90, 1.0), 
+                     labels = scales::percent_format(accuracy = 1),
+                     breaks = seq(0.90, 1.0, 0.02)) +
+  labs(
+    title = "Dominance Index Across All Groupings",
+    subtitle = "Shaded areas show 95% confidence intervals",
+    x = NULL,
+    y = "Dominance Index",
+    fill = "Category",
+    color = "Category"
+  ) +
+  theme_minimal() +
+  theme(
+    plot.title = element_text(size = 14, face = "bold", color = "#212529"),
+    plot.subtitle = element_text(size = 11, color = "#6c757d"),
+    axis.text.x = element_text(angle = 45, hjust = 1, size = 9),
+    axis.text.y = element_text(size = 10),
+    axis.title.y = element_text(size = 11, color = "#495057"),
+    panel.grid.major.x = element_blank(),
+    panel.grid.minor = element_blank(),
+    legend.position = "bottom",
+    legend.title = element_text(size = 10),
+    legend.text = element_text(size = 9)
+  )
