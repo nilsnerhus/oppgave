@@ -25,6 +25,8 @@ book:
     - text/conclusion.qmd
 
 cap-location: bottom
+column: page-inset-shaded
+
 bibliography: 
   - references/references.bib
   - references/grateful-refs.bib
