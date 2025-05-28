@@ -39,10 +39,10 @@ find_k <- function(
     dfm,
     range = c(10, 15, 20, 25, 30, 35, 40),
     iterations = 100,
-    coherence = 0.45,
-    exclusivity = 0.4,
-    residual = 0.2,
-    penalty = 0.025
+    coherence = 0.20,
+    exclusivity = 0.15,
+    residual = 0.15,
+    penalty = 0
 ) {
   ## --- Setup & Initialization -------------------------------------------------
   start_time <- Sys.time()

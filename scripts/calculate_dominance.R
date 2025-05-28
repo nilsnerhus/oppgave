@@ -1,14 +1,16 @@
 #' @title Calculate Topic Dominance Across Categories
 #' @description Calculates dominance metrics for all category/subcategory combinations
-#'   defined in the category map.
+#'   defined in the category map. Uses rarefaction to standardize comparisons across
+#'   groups of different sizes.
 #'
 #' @param model STM model result from fit_model()
 #' @param topics Named topics result from name_topics()
 #' @param n Number of top topics to consider (default: 3)
-#' @param normalize Whether to normalize dominance values (default: TRUE)
+#' @param normalize Whether to apply rarefaction normalization (default: TRUE)
+#' @param min_group_size Minimum group size to include in analysis (default: 8)
 #'
 #' @return A list containing dominance metrics for various categories
-calculate_dominance <- function(model, topics, n = 3, normalize = TRUE) {
+calculate_dominance <- function(model, topics, n = 3, normalize = TRUE, min_group_size = 8) {
   ## --- Setup & Initialization -------------------------------------------------
   log_message("Starting dominance calculation", "calculate_dominance")
   start_time <- Sys.time()
@@ -16,7 +18,8 @@ calculate_dominance <- function(model, topics, n = 3, normalize = TRUE) {
   # Initialize diagnostics tracking
   diagnostics <- list(
     processing_issues = character(),
-    category_stats = list()
+    category_stats = list(),
+    excluded_groups = list()
   )
   
   ## --- Extract needed components ----------------------------------------------
@@ -25,7 +28,51 @@ calculate_dominance <- function(model, topics, n = 3, normalize = TRUE) {
   category_map <- model$data$category_map
   topics_table <- topics$data$topics_table
   
-  # Initialize results dataframe with the new column
+  ## --- Determine minimum group size for rarefaction if normalizing ------------
+  if (normalize) {
+    log_message("Determining minimum group size for rarefaction", "calculate_dominance")
+    
+    # Get all group sizes (only those meeting minimum threshold)
+    group_sizes <- c()
+    
+    for (category_name in names(category_map)) {
+      category_columns <- category_map[[category_name]]
+      
+      for (col_name in category_columns) {
+        if (col_name %in% names(meta)) {
+          if (is.logical(meta[[col_name]])) {
+            size <- sum(meta[[col_name]] == TRUE, na.rm = TRUE)
+            if (size >= min_group_size) {
+              group_sizes <- c(group_sizes, size)
+            }
+          } else {
+            unique_values <- unique(meta[[col_name]])
+            unique_values <- unique_values[!is.na(unique_values)]
+            for (value in unique_values) {
+              size <- sum(meta[[col_name]] == value, na.rm = TRUE)
+              if (size >= min_group_size) {
+                group_sizes <- c(group_sizes, size)
+              }
+            }
+          }
+        }
+      }
+    }
+    
+    # Set minimum as rarefaction target
+    if (length(group_sizes) > 0) {
+      rarefaction_target <- min(group_sizes)
+      log_message(paste("Using rarefaction target of", rarefaction_target, "documents"), "calculate_dominance")
+      
+      # Set as environment variable for find_dominance
+      Sys.setenv(RAREFACTION_TARGET = rarefaction_target)
+    } else {
+      log_message("No groups meet minimum size requirement", "calculate_dominance", "WARNING")
+      normalize <- FALSE
+    }
+  }
+  
+  # Initialize results dataframe with confidence interval columns
   results <- data.frame(
     level_type = character(),
     category = character(),
@@ -34,8 +81,10 @@ calculate_dominance <- function(model, topics, n = 3, normalize = TRUE) {
     raw_dominance = numeric(),
     normalized_dominance = numeric(),
     variance = numeric(),
+    ci_lower = numeric(),
+    ci_upper = numeric(),
     top_topics = character(),
-    top_topic_ids = character(),  # Added this column
+    top_topic_ids = character(),
     stringsAsFactors = FALSE
   )
   
@@ -71,8 +120,10 @@ calculate_dominance <- function(model, topics, n = 3, normalize = TRUE) {
                        raw_dominance = global_result$doc_level$raw,
                        normalized_dominance = global_result$doc_level$normalized,
                        variance = global_result$doc_level$variance,
+                       ci_lower = global_result$doc_level$ci_lower,
+                       ci_upper = global_result$doc_level$ci_upper,
                        top_topics = top_topics_str,
-                       top_topic_ids = top_topic_ids_str,  # New field
+                       top_topic_ids = top_topic_ids_str,
                        stringsAsFactors = FALSE
                      ),
                      data.frame(
@@ -83,8 +134,10 @@ calculate_dominance <- function(model, topics, n = 3, normalize = TRUE) {
                        raw_dominance = global_result$corpus_level$raw,
                        normalized_dominance = global_result$corpus_level$normalized,
                        variance = global_result$corpus_level$variance,
+                       ci_lower = global_result$corpus_level$ci_lower,
+                       ci_upper = global_result$corpus_level$ci_upper,
                        top_topics = top_topics_str,
-                       top_topic_ids = top_topic_ids_str,  # New field
+                       top_topic_ids = top_topic_ids_str,
                        stringsAsFactors = FALSE
                      ))
   }
@@ -120,16 +173,19 @@ calculate_dominance <- function(model, topics, n = 3, normalize = TRUE) {
           ## --- Binary column processing ---------------------------------------
           doc_indices <- which(meta[[col_name]] == TRUE)
           
-          # Skip if too few documents
-          if (length(doc_indices) < 3) {
-            next
-          }
-          
           # Format subcategory name
           if (grepl("^is_", col_name)) {
             subcategory <- toupper(gsub("^is_", "", col_name))
           } else {
             subcategory <- col_name
+          }
+          
+          # Skip if too few documents
+          if (length(doc_indices) < min_group_size) {
+            excluded_msg <- paste(subcategory, "(n=", length(doc_indices), ")")
+            diagnostics$excluded_groups[[category_name]] <- c(diagnostics$excluded_groups[[category_name]], excluded_msg)
+            log_message(paste("Excluding", excluded_msg, "- below minimum group size"), "calculate_dominance")
+            next
           }
           
           # Calculate dominance
@@ -163,8 +219,10 @@ calculate_dominance <- function(model, topics, n = 3, normalize = TRUE) {
                              raw_dominance = result$doc_level$raw,
                              normalized_dominance = result$doc_level$normalized,
                              variance = result$doc_level$variance,
+                             ci_lower = result$doc_level$ci_lower,
+                             ci_upper = result$doc_level$ci_upper,
                              top_topics = top_topics_str,
-                             top_topic_ids = top_topic_ids_str,  # New field
+                             top_topic_ids = top_topic_ids_str,
                              stringsAsFactors = FALSE
                            ),
                            data.frame(
@@ -175,8 +233,10 @@ calculate_dominance <- function(model, topics, n = 3, normalize = TRUE) {
                              raw_dominance = result$corpus_level$raw,
                              normalized_dominance = result$corpus_level$normalized,
                              variance = result$corpus_level$variance,
+                             ci_lower = result$corpus_level$ci_lower,
+                             ci_upper = result$corpus_level$ci_upper,
                              top_topics = top_topics_str,
-                             top_topic_ids = top_topic_ids_str,  # New field
+                             top_topic_ids = top_topic_ids_str,
                              stringsAsFactors = FALSE
                            ))
           
@@ -193,7 +253,10 @@ calculate_dominance <- function(model, topics, n = 3, normalize = TRUE) {
             doc_indices <- which(meta[[col_name]] == value)
             
             # Skip if too few documents
-            if (length(doc_indices) < 3) {
+            if (length(doc_indices) < min_group_size) {
+              excluded_msg <- paste(value, "(n=", length(doc_indices), ")")
+              diagnostics$excluded_groups[[category_name]] <- c(diagnostics$excluded_groups[[category_name]], excluded_msg)
+              log_message(paste("Excluding", excluded_msg, "- below minimum group size"), "calculate_dominance")
               next
             }
             
@@ -228,8 +291,10 @@ calculate_dominance <- function(model, topics, n = 3, normalize = TRUE) {
                                raw_dominance = result$doc_level$raw,
                                normalized_dominance = result$doc_level$normalized,
                                variance = result$doc_level$variance,
+                               ci_lower = result$doc_level$ci_lower,
+                               ci_upper = result$doc_level$ci_upper,
                                top_topics = top_topics_str,
-                               top_topic_ids = top_topic_ids_str,  # New field
+                               top_topic_ids = top_topic_ids_str,
                                stringsAsFactors = FALSE
                              ),
                              data.frame(
@@ -240,8 +305,10 @@ calculate_dominance <- function(model, topics, n = 3, normalize = TRUE) {
                                raw_dominance = result$corpus_level$raw,
                                normalized_dominance = result$corpus_level$normalized,
                                variance = result$corpus_level$variance,
+                               ci_lower = result$corpus_level$ci_lower,
+                               ci_upper = result$corpus_level$ci_upper,
                                top_topics = top_topics_str,
-                               top_topic_ids = top_topic_ids_str,  # New field
+                               top_topic_ids = top_topic_ids_str,
                                stringsAsFactors = FALSE
                              ))
             
@@ -254,8 +321,19 @@ calculate_dominance <- function(model, topics, n = 3, normalize = TRUE) {
     # Update diagnostics with stats
     diagnostics$category_stats <- list(
       categories_processed = categories_processed,
-      subcategories_processed = subcategories_processed
+      subcategories_processed = subcategories_processed,
+      min_group_size = min_group_size,
+      rarefaction_target = if(exists("rarefaction_target")) rarefaction_target else NA
     )
+  }
+  
+  ## --- Report excluded groups -------------------------------------------------
+  if (length(diagnostics$excluded_groups) > 0) {
+    log_message("Groups excluded from analysis due to small sample size:", "calculate_dominance")
+    for (cat in names(diagnostics$excluded_groups)) {
+      log_message(paste("  ", cat, ":", paste(diagnostics$excluded_groups[[cat]], collapse = ", ")), 
+                  "calculate_dominance")
+    }
   }
   
   ## --- Finalize and return results -------------------------------------------
@@ -273,6 +351,7 @@ calculate_dominance <- function(model, topics, n = 3, normalize = TRUE) {
       processing_time_sec = processing_time,
       n_value = n,
       normalize = normalize,
+      min_group_size = min_group_size,
       success = TRUE
     ),
     diagnostics = diagnostics
