@@ -10,7 +10,7 @@ knitr::opts_knit$set(root.dir = "..")
 source("scripts/utils.R")
 source("scripts/name_topics.R")
 source("scripts/calculate_dominance.R")
-source("scripts/calculate_direct_variance.R")
+source("scripts/estimate_variance.R")
 ```
 
 > The analysis of National Adaptation Plans through structural topic modeling and discourse centralization metrics reveals patterns that speak directly to questions of epistemological diversity, institutional influence, and the relationship between climate vulnerability and adaptation planning.
@@ -278,7 +278,7 @@ The overall pattern emerging from these dominance analyses is one of constrained
 > While adaptation discourse shows high centralization overall, examining which factors explain the variation that does exist reveals that regional and economic positioning shape discourse patterns far more than the physical geography of climate vulnerability.
 
 ```{r variance_analysis}
-variance <- readRDS("data/calculate_direct_variance.rds")
+variance <- readRDS("data/estimate_variance.rds")
 var_results <- variance$data
 
 # Category-level variance explained (convert to decimals)

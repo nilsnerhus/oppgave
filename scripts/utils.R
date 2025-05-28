@@ -283,3 +283,152 @@ num <- function(x) {
     return(format(round(x), big.mark = " "))  # Space separator for 10,000+
   }
 }
+
+#' @title Count thesis in standard pages (2400 characters)
+#' @description Counts thesis length in standard pages as defined by university regulations
+#' @param include_index Whether to include index.qmd (default: FALSE)
+#' @param verbose Whether to print detailed breakdown (default: TRUE)
+#' @return List with page count and statistics
+count_thesis_pages <- function(include_index = TRUE, verbose = TRUE) {
+  
+  # Constants
+  CHARS_PER_PAGE <- 2400
+  MIN_PAGES <- 60
+  MAX_PAGES <- 80
+  
+  # Get all QMD files
+  qmd_files <- list.files("text", pattern = "\\.qmd$", full.names = TRUE)
+  
+  # Add index.qmd if requested
+  if (include_index && file.exists("index.qmd")) {
+    qmd_files <- c("index.qmd", qmd_files)
+  }
+  
+  # Process each file
+  file_stats <- list()
+  
+  for (file in qmd_files) {
+    lines <- readLines(file, warn = FALSE)
+    
+    # Remove YAML header
+    if (length(lines) > 0 && lines[1] == "---") {
+      yaml_end <- which(lines == "---")[2]
+      if (!is.na(yaml_end)) {
+        lines <- lines[(yaml_end + 1):length(lines)]
+      }
+    }
+    
+    # Remove code chunks
+    in_chunk <- FALSE
+    clean_lines <- character()
+    
+    for (line in lines) {
+      if (grepl("^```\\{", line)) {
+        in_chunk <- TRUE
+      } else if (grepl("^```$", line) && in_chunk) {
+        in_chunk <- FALSE
+      } else if (!in_chunk) {
+        # Remove inline code
+        line <- gsub("`r[^`]+`", "", line)
+        clean_lines <- c(clean_lines, line)
+      }
+    }
+    
+    # Combine text
+    text <- paste(clean_lines, collapse = " ")
+    
+    # Count characters WITH spaces (this is what matters)
+    chars <- nchar(text)
+    pages <- chars / CHARS_PER_PAGE
+    
+    file_stats[[basename(file)]] <- list(
+      chars = chars,
+      pages = pages
+    )
+  }
+  
+  # Calculate totals
+  total_chars <- sum(sapply(file_stats, function(x) x$chars))
+  total_pages <- total_chars / CHARS_PER_PAGE
+  
+  # Check requirements
+  within_limits <- total_pages >= MIN_PAGES && total_pages <= MAX_PAGES
+  pages_to_min <- max(0, MIN_PAGES - total_pages)
+  pages_to_max <- max(0, total_pages - MAX_PAGES)
+  
+  # Print if verbose
+  if (verbose) {
+    cat("\n=== THESIS LENGTH (Standard Pages) ===\n")
+    cat("1 standard page = 2,400 characters\n")
+    cat("Required: 60-80 pages\n")
+    cat("=====================================\n\n")
+    
+    # Chapter breakdown
+    cat("By chapter:\n")
+    cat("-------------------------------------\n")
+    
+    # Sort by chapter order
+    chapter_order <- c("intro.qmd", "context.qmd", "lit.qmd", "theory.qmd", 
+                       "methods.qmd", "findings.qmd", "discussion.qmd", "conclusion.qmd")
+    
+    for (chapter in chapter_order) {
+      if (chapter %in% names(file_stats)) {
+        cat(sprintf("%-15s %5.1f pages (%7s chars)\n", 
+                    gsub("\\.qmd", "", chapter), 
+                    file_stats[[chapter]]$pages,
+                    format(file_stats[[chapter]]$chars, big.mark = ",")))
+      }
+    }
+    
+    cat("=====================================\n")
+    cat(sprintf("TOTAL:          %5.1f pages (%7s chars)\n", 
+                total_pages, format(total_chars, big.mark = ",")))
+    cat("=====================================\n\n")
+    
+    # Status
+    if (within_limits) {
+      cat("✓ Within required limits (60-80 pages)\n")
+      cat(sprintf("  Room to minimum: %.1f pages\n", total_pages - MIN_PAGES))
+      cat(sprintf("  Room to maximum: %.1f pages\n", MAX_PAGES - total_pages))
+    } else if (total_pages < MIN_PAGES) {
+      cat("⚠ BELOW minimum requirement\n")
+      cat(sprintf("  Need %.1f more pages (%.0f more characters)\n", 
+                  pages_to_min, pages_to_min * CHARS_PER_PAGE))
+    } else {
+      cat("⚠ ABOVE maximum requirement\n")
+      cat(sprintf("  Need to cut %.1f pages (%.0f characters)\n", 
+                  pages_to_max, pages_to_max * CHARS_PER_PAGE))
+    }
+    
+    cat("\n")
+  }
+  
+  # Return stats
+  return(invisible(list(
+    total_pages = total_pages,
+    total_chars = total_chars,
+    within_limits = within_limits,
+    pages_to_min = pages_to_min,
+    pages_to_max = pages_to_max,
+    by_file = file_stats,
+    requirements = list(
+      min = MIN_PAGES,
+      max = MAX_PAGES,
+      chars_per_page = CHARS_PER_PAGE
+    )
+  )))
+}
+
+#' @title Quick page count
+thesis_pages <- function() {
+  stats <- count_thesis_pages(verbose = FALSE)
+  cat(sprintf("%.1f standard pages", stats$total_pages))
+  if (!stats$within_limits) {
+    if (stats$total_pages < stats$requirements$min) {
+      cat(sprintf(" (%.1f below minimum)", stats$pages_to_min))
+    } else {
+      cat(sprintf(" (%.1f above maximum)", stats$pages_to_max))
+    }
+  }
+  cat("\n")
+}
