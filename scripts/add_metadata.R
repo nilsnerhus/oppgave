@@ -1,413 +1,203 @@
-#' @title Add metadata to NAP country data
-#' @description Enhances NAP country data with standardized metadata from World Bank 
-#'   and custom country classifications. Standardizes country names, adds ISO codes, 
-#'   parses dates, and adds region, income level, and special status indicators.
+#' @title Add metadata to NAP country data 
+#' @description Takes scraped web data and UN classifications to create enhanced metadata
+#'   for the topic modeling pipeline. Simple, focused interface.
 #'   
-#' @param metadata_data A dataframe from scrape_web containing doc_id, country_name, and date_posted columns
-#' @param match_col Column name containing country names (default: "country_name")
-#' @param date_col Column name containing dates (default: "date_posted")
-#' @param geo_config List with geographic classification lists:
-#'   \itemize{
-#'     \item sids_list Character vector of ISO3C codes for small island developing states
-#'     \item lldc_list Character vector of ISO3C codes for landlocked developing countries
-#'   }
-#' @param category_map List mapping higher-level categories to dimensions (e.g.,
-#'   list(Income = "wb_income_level", Region = "region", Geography = c("is_sids", "is_lldc")))
+#' @param web_data Result from scrape_web() containing scraped NAP metadata
+#' @param un_classifications Result from get_un_classifications() containing SIDS/LLDC lists
+#' @param time Named vector of temporal breakpoints (optional, e.g., c("Early" = 2018, "Late" = Inf))
 #' 
-#' @return A list containing:
-#'   \item{data}{
-#'     \itemize{
-#'       \item metadata - Enhanced metadata dataframe with all classifications
-#'       \item config - List with category_map and other configuration details
-#'     }
-#'   }
-#'   \item{metadata}{Processing statistics and timestamps}
-#'   \item{diagnostics}{Validation results and issues encountered}
-#'
-#' @examples
-#' \dontrun{
-#' # Define category map
-#' category_map <- list(
-#'   Income = "wb_income_level", 
-#'   Region = "region", 
-#'   Geography = c("is_sids", "is_lldc"),
-#'   Time = "year"
-#' )
-#' 
-#' # Add metadata with geographic classifications and category map
-#' geo_config <- list(sids_list = sids, lldc_list = lldc)
-#' enriched_data <- add_metadata(web_data$data$metadata, 
-#'                              geo_config = geo_config,
-#'                              category_map = category_map)
-#' }
-add_metadata <- function(
-    metadata_data, 
-    match_col = "country_name",
-    date_col = "date_posted",
-    geo_config = list(
-      sids_list = NULL,          
-      lldc_list = NULL           
-    ),
-    category_map = NULL
-) {
+#' @return Enhanced metadata ready for the topic modeling pipeline
+add_metadata <- function(web_data, un_classifications, time = NULL) {
+  
   ## --- Setup & Initialization -------------------------------------------------
   start_time <- Sys.time()
   
-  # Import the pipe operator
-  `%>%` <- magrittr::`%>%`
-  
-  # Initialize diagnostics tracking
+  # Initialize diagnostics
   diagnostics <- list(
     unmatched_countries = character(),
     unparsed_dates = character(),
-    issues = character()
+    processing_issues = character()
   )
+  
+  log_message("Processing NAP metadata with UN classifications", "add_metadata")
   
   ## --- Input validation -------------------------------------------------------
-  log_message("Validating input data", "add_metadata")
-  
-  # Validate data is a data frame
-  if (!is.data.frame(metadata_data)) {
-    error_msg <- "Input must be a dataframe"
-    diagnostics$issues <- c(diagnostics$issues, error_msg)
-    log_message(error_msg, "add_metadata", "ERROR")
-    
-    return(create_result(
-      data = list(
-        metadata = NULL,
-        config = NULL
-      ),
-      metadata = list(
-        timestamp = Sys.time(),
-        success = FALSE
-      ),
-      diagnostics = diagnostics
-    ))
+  if (!is.list(web_data) || !"data" %in% names(web_data) || !"metadata" %in% names(web_data$data)) {
+    stop("web_data must be result from scrape_web() with metadata component")
   }
   
-  # Check for empty data frame
-  if (nrow(metadata_data) == 0) {
-    error_msg <- "Input dataframe has no rows"
-    diagnostics$issues <- c(diagnostics$issues, error_msg)
-    log_message(error_msg, "add_metadata", "ERROR")
-    
-    return(create_result(
-      data = list(
-        metadata = NULL,
-        config = NULL
-      ),
-      metadata = list(
-        timestamp = Sys.time(),
-        success = FALSE
-      ),
-      diagnostics = diagnostics
-    ))
+  if (!is.list(un_classifications) || !all(c("sids_countries", "lldc_countries") %in% names(un_classifications))) {
+    stop("un_classifications must contain sids_countries and lldc_countries")
   }
   
-  # Check required columns exist
-  required_cols <- c("doc_id", match_col, date_col)
-  missing_cols <- setdiff(required_cols, names(metadata_data))
-  if (length(missing_cols) > 0) {
-    error_msg <- paste("Input is missing required columns:", paste(missing_cols, collapse = ", "))
-    diagnostics$issues <- c(diagnostics$issues, error_msg)
-    log_message(error_msg, "add_metadata", "ERROR")
-    
-    return(create_result(
-      data = list(
-        metadata = NULL,
-        config = NULL
-      ),
-      metadata = list(
-        timestamp = Sys.time(),
-        success = FALSE
-      ),
-      diagnostics = diagnostics
-    ))
+  # Extract input data
+  result <- web_data$data$metadata
+  sids_countries <- un_classifications$sids_countries
+  lldc_countries <- un_classifications$lldc_countries
+  
+  if (nrow(result) == 0) {
+    stop("No metadata to process")
   }
   
-  # Validate geo_config ISO codes if provided
-  if (!is.null(geo_config$sids_list)) {
-    invalid_sids <- geo_config$sids_list[nchar(geo_config$sids_list) != 3]
-    if (length(invalid_sids) > 0) {
-      warning_msg <- paste("Invalid ISO3C codes in sids_list:", paste(invalid_sids, collapse=", "))
-      diagnostics$issues <- c(diagnostics$issues, warning_msg)
-      log_message(warning_msg, "add_metadata", "WARNING")
-    }
+  ## --- Country name to ISO code conversion ------------------------------------
+  log_message("Converting country names to ISO codes", "add_metadata")
+  
+  # Convert country names to ISO codes using countrycode
+  result$iso3c <- countrycode::countrycode(
+    sourcevar = result$country_name,
+    origin = "country.name",
+    destination = "iso3c",
+    warn = TRUE
+  )
+  
+  # Track matching success
+  unmatched <- which(is.na(result$iso3c))
+  match_count <- nrow(result) - length(unmatched)
+  
+  if (length(unmatched) > 0) {
+    diagnostics$unmatched_countries <- result$country_name[unmatched]
+    log_message(paste("Could not match", length(unmatched), "countries"), "add_metadata", "WARNING")
   }
   
-  if (!is.null(geo_config$lldc_list)) {
-    invalid_lldc <- geo_config$lldc_list[nchar(geo_config$lldc_list) != 3]
-    if (length(invalid_lldc) > 0) {
-      warning_msg <- paste("Invalid ISO3C codes in lldc_list:", paste(invalid_lldc, collapse=", "))
-      diagnostics$issues <- c(diagnostics$issues, warning_msg)
-      log_message(warning_msg, "add_metadata", "WARNING")
-    }
-  }
+  ## --- Add World Bank classifications -----------------------------------------
+  log_message("Adding World Bank income and region data", "add_metadata")
   
-  # Create a copy of the input data
-  result <- metadata_data
-  
-  ## --- World Bank country data and matching -----------------------------------
-  log_message("Fetching World Bank country data", "add_metadata")
-  
-  # Fetch World Bank data - stop with error if not available
   wb_countries <- tryCatch({
     wb_data <- wbstats::wb_countries()
-    wb_data <- dplyr::select(wb_data, iso3c, country, region, income_level)
-    wb_data
+    dplyr::select(wb_data, iso3c, country, region, income_level)
   }, error = function(e) {
-    error_msg <- paste("Failed to fetch World Bank data:", e$message)
-    diagnostics$issues <<- c(diagnostics$issues, error_msg)
-    log_message(error_msg, "add_metadata", "ERROR")
-    stop(error_msg)  # Stop with error as requested
+    stop(paste("Failed to fetch World Bank data:", e$message))
   })
   
-  log_message("Building country name lookup table", "add_metadata")
-  
-  # Build country lookup table with common variations
-  country_lookup <- tryCatch({
-    # Start with WB country names
-    lookup_wb <- dplyr::select(wb_countries, country, iso3c)
-    
-    # Create custom variations dataframe for common alternate names
-    variations <- tibble::tibble(
-      country = c(
-        "Czechia", "North Korea", "South Korea", "Russia", "Taiwan", 
-        "Bolivia", "Venezuela", "Tanzania", "Syria", "Vietnam",
-        "Democratic Republic of Congo", "United States", "UK", "Britain", "Saint Lucia", "St. Lucia",
-        "Saint Vincent and the Grenadines", "St. Vincent and the Grenadines",
-        "State of Palestine", "Palestine"
-      ),
-      iso3c = c(
-        "CZE", "PRK", "KOR", "RUS", "TWN", 
-        "BOL", "VEN", "TZA", "SYR", "VNM",
-        "COD", "USA", "GBR", "GBR", "LCA", "LCA", 
-        "VCT", "VCT",
-        "PSE", "PSE"
-      )
-    )
-    
-    # Combine the two sources
-    dplyr::bind_rows(lookup_wb, variations)
-  }, error = function(e) {
-    error_msg <- paste("Error building country lookup table:", e$message)
-    diagnostics$issues <<- c(diagnostics$issues, error_msg)
-    log_message(error_msg, "add_metadata", "WARNING")
-    lookup_wb  # Return just the WB data as fallback
-  })
-  
-  log_message("Matching countries to ISO codes", "add_metadata")
-  
-  # Match countries to ISO codes
-  result$iso3c <- NA_character_
-  match_count <- 0
-  
-  for (i in 1:nrow(result)) {
-    # Try exact match first
-    match_idx <- which(tolower(country_lookup$country) == tolower(result[[match_col]][i]))
-    
-    # If no exact match, try partial matching
-    if (length(match_idx) == 0) {
-      for (j in 1:nrow(country_lookup)) {
-        if (grepl(tolower(country_lookup$country[j]), tolower(result[[match_col]][i]), fixed = TRUE) ||
-            grepl(tolower(result[[match_col]][i]), tolower(country_lookup$country[j]), fixed = TRUE)) {
-          match_idx <- j
-          break
-        }
-      }
-    }
-    
-    # Assign ISO code if match found
-    if (length(match_idx) > 0) {
-      result$iso3c[i] <- country_lookup$iso3c[match_idx[1]]
-      match_count <- match_count + 1
-    }
-  }
-  
-  # Track unmatched countries
-  unmatched <- which(is.na(result$iso3c))
-  if (length(unmatched) > 0) {
-    diagnostics$unmatched_countries <- result[[match_col]][unmatched]
-    log_message(paste("Could not match", length(unmatched), "countries to ISO codes"), "add_metadata", "WARNING")
-  }
-  
-  log_message("Joining with World Bank country data", "add_metadata")
-  
-  # Join with World Bank country data
+  # Join with World Bank data
   result <- dplyr::left_join(result, wb_countries, by = "iso3c")
   
-  ## --- Date standardization ---------------------------------------------------
-  parsed_count <- 0
-  if (!is.null(date_col) && date_col %in% names(result)) {
-    log_message(paste("Standardizing dates from", date_col, "column"), "add_metadata")
+  # Update country names with WB standardized names where available
+  wb_names <- !is.na(result$country)
+  result$country_name[wb_names] <- result$country[wb_names]
+  result$country <- NULL
+  
+  ## --- Parse dates to extract year --------------------------------------------
+  log_message("Parsing dates to extract year", "add_metadata")
+  
+  # Try the most common format first: "Month Day, Year" (e.g., "October 27, 2021")
+  result$year <- as.integer(format(as.Date(result$date_posted, format = "%B %d, %Y"), "%Y"))
+  
+  # For any that failed, try alternative format: "Day Month Year" (e.g., "27 October 2021")
+  failed_dates <- is.na(result$year)
+  if (any(failed_dates)) {
+    result$year[failed_dates] <- as.integer(format(as.Date(result$date_posted[failed_dates], format = "%d %B %Y"), "%Y"))
+  }
+  
+  # Track parsing success
+  parsed_count <- sum(!is.na(result$year))
+  unparsed <- which(is.na(result$year) & !is.na(result$date_posted))
+  if (length(unparsed) > 0) {
+    diagnostics$unparsed_dates <- result$date_posted[unparsed]
+    log_message(paste("Could not parse", length(unparsed), "dates"), "add_metadata", "WARNING")
+  }
+  
+  log_message(paste("Successfully parsed", parsed_count, "years"), "add_metadata")
+  
+  ## --- Apply temporal grouping (if provided) ----------------------------------
+  if (!is.null(time)) {
+    log_message("Applying temporal grouping", "add_metadata")
     
-    # Initialize date column
-    result$date_standardized <- NA
-    result$year <- NA_integer_
-    result$quarter <- NA_character_
-    
-    log_message(paste("Attempting to parse", nrow(result), "dates"), "add_metadata")
-    for (i in 1:nrow(result)) {
-      if (!is.na(result[[date_col]][i])) {
-        # Try different date formats
-        # 1. Try "Month Day, Year" format (e.g., "October 27, 2021")
-        parsed_date <- try(as.Date(result[[date_col]][i], format = "%B %d, %Y"), silent = TRUE)
-        
-        # 2. If that fails, try "Day Month Year" format without comma (e.g., "29 September 2021")
-        if (inherits(parsed_date, "try-error") || is.na(parsed_date)) {
-          parsed_date <- try(as.Date(result[[date_col]][i], format = "%d %B %Y"), silent = TRUE)
-        }
-        
-        # Store the result if successful
-        if (!inherits(parsed_date, "try-error") && !is.na(parsed_date)) {
-          # Format as human-readable string "YYYY-MM-DD"
-          result$date_standardized[i] <- format(parsed_date, format = "%Y-%m-%d")
-          
-          # Add year and quarter for temporal analysis
-          result$year[i] <- as.integer(format(parsed_date, format = "%Y"))
-          month_num <- as.integer(format(parsed_date, format = "%m"))
-          result$quarter[i] <- paste0(format(parsed_date, format = "%Y"), "-Q", ceiling(month_num / 3))
-          
-          parsed_count <- parsed_count + 1
-        } else {
-          diagnostics$unparsed_dates <- c(diagnostics$unparsed_dates, result[[date_col]][i])
-        }
-      }
-    }
-    
-    log_message(paste("Successfully parsed", parsed_count, "dates"), "add_metadata")
-    
-    # Report date parsing issues
-    date_issues <- which(is.na(result$date_standardized) & !is.na(result[[date_col]]))
-    if (length(date_issues) > 0) {
-      log_message(paste("Could not parse", length(date_issues), "dates"), "add_metadata", "WARNING")
-    }
-    
-    # Rename standardized date column
-    if ("date_standardized" %in% names(result)) {
-      result <- dplyr::rename(result, date = date_standardized)
+    if (is.null(names(time)) || any(names(time) == "")) {
+      warning_msg <- "time parameter must be named vector (e.g., c('Early' = 2019, 'Late' = Inf))"
+      diagnostics$processing_issues <- c(diagnostics$processing_issues, warning_msg)
+      log_message(warning_msg, "add_metadata", "WARNING")
+    } else {
+      result$time_period <- NA_character_
       
-      # Remove original date column
-      if (date_col %in% names(result) && date_col != "date") {
-        result <- result[, !names(result) %in% date_col]
-        log_message(paste("Removed original date column:", date_col), "add_metadata")
+      for (i in 1:nrow(result)) {
+        if (!is.na(result$year[i])) {
+          doc_year <- result$year[i]
+          
+          # Find appropriate time group
+          for (j in 1:length(time)) {
+            if (doc_year <= time[j]) {
+              result$time_period[i] <- names(time)[j]
+              break
+            }
+          }
+          
+          # If no group found, assign to last group
+          if (is.na(result$time_period[i])) {
+            result$time_period[i] <- names(time)[length(time)]
+          }
+        }
       }
+      
+      log_message(paste("Created", length(unique(result$time_period)), "temporal groups"), "add_metadata")
     }
   }
   
-  ## --- Geographic classification ---------------------------------------------
-  log_message("Adding geographic classifications", "add_metadata")
+  ## --- Add geographic classifications -----------------------------------------
+  log_message("Adding UN geographic classifications", "add_metadata")
   
-  # Add SIDS indicator if provided
-  if (!is.null(geo_config$sids_list)) {
-    log_message("Adding SIDS classifications", "add_metadata")
-    result$is_sids <- result$iso3c %in% geo_config$sids_list
-  }
+  # Convert UN country names to ISO codes
+  sids_iso <- countrycode::countrycode(sids_countries, "country.name", "iso3c", warn = FALSE)
+  lldc_iso <- countrycode::countrycode(lldc_countries, "country.name", "iso3c", warn = FALSE)
   
-  # Add LLDC indicator if provided
-  if (!is.null(geo_config$lldc_list)) {
-    log_message("Adding LLDC classifications", "add_metadata")
-    result$is_lldc <- result$iso3c %in% geo_config$lldc_list
-  }
+  # Remove any NAs from conversion
+  sids_iso <- sids_iso[!is.na(sids_iso)]
+  lldc_iso <- lldc_iso[!is.na(lldc_iso)]
   
-  ## --- Standardize column names and format ------------------------------------
-  log_message("Standardizing column names and format", "add_metadata")
+  # Create binary indicators
+  result$is_sids <- result$iso3c %in% sids_iso
+  result$is_lldc <- result$iso3c %in% lldc_iso
   
-  # Rename columns for clarity and consistency
+  log_message(paste("Classified", sum(result$is_sids, na.rm = TRUE), "SIDS and", 
+                    sum(result$is_lldc, na.rm = TRUE), "LLDC countries"), "add_metadata")
+  
+  ## --- Standardize column names -----------------------------------------------
   result <- dplyr::rename(result,
                           country_iso3c = iso3c,
-                          wb_income_level = income_level
+                          wb_income_level = income_level)
+  
+  # Remove original date column
+  result$date_posted <- NULL
+  
+  ## --- Create category map ----------------------------------------------------
+  category_map <- list(
+    Global = "global_category",
+    Income = "wb_income_level", 
+    Region = "region", 
+    Geography = c("is_sids", "is_lldc")
   )
   
-  # Handle country name standardization
-  # If 'country' exists from World Bank join, use it to update country_name
-  if ("country" %in% names(result)) {
-    # Update country_name with the standardized World Bank name where available
-    for (i in 1:nrow(result)) {
-      if (!is.na(result$country[i])) {
-        result[[match_col]][i] <- result$country[i]
-      }
-    }
-    # Remove duplicate country column
-    result$country <- NULL
+  # Add temporal category if grouping was applied
+  if (!is.null(time) && "time_period" %in% names(result)) {
+    category_map[["Time"]] <- "time_period"
   }
   
-  # Ensure logical columns are actually logical
-  if ("is_sids" %in% names(result) && !is.logical(result$is_sids)) {
-    result$is_sids <- as.logical(result$is_sids)
-  }
+  # Add global category column
+  result$global_category <- "Global"
   
-  if ("is_lldc" %in% names(result) && !is.logical(result$is_lldc)) {
-    result$is_lldc <- as.logical(result$is_lldc)
-  }
-  
-  ## --- Create config ----------------------------------------------------------
-  log_message("Creating configuration", "add_metadata")
-  
-  # Add category map if provided, or create default
-  if (!is.null(category_map)) {
-    config_category_map <- category_map
-  } else {
-    # Use a basic default category map if none provided
-    available_cols <- names(result)
-    config_category_map <- list()
-    
-    if ("wb_income_level" %in% available_cols) {
-      config_category_map$Income <- "wb_income_level"
-    }
-    
-    if ("region" %in% available_cols) {
-      config_category_map$Region <- "region"
-    }
-    
-    geo_cols <- c("is_sids", "is_lldc")[c("is_sids", "is_lldc") %in% available_cols]
-    if (length(geo_cols) > 0) {
-      config_category_map$Geography <- geo_cols
-    }
-    
-    # Add temporal dimension if available
-    if ("year" %in% available_cols) {
-      config_category_map$Time <- "year"  # Or could use "quarter" for finer granularity
-    }
-    
-    log_message("Created default category_map from available columns", "add_metadata")
-  }
-  
-  # Create complete config
-  config <- list(
-    metadata = result,
-    category_map = config_category_map,
-    date_parsed = "date" %in% names(result),
-    temporal_features = c("year", "quarter")[c("year", "quarter") %in% names(result)],
-    geo_features = c("is_sids", "is_lldc")[c("is_sids", "is_lldc") %in% names(result)],
-    columns = names(result)
-  )
-  
-  ## --- Create result ----------------------------------------------------------
+  ## --- Finalize results -------------------------------------------------------
   end_time <- Sys.time()
   processing_time <- as.numeric(difftime(end_time, start_time, units = "secs"))
   
-  # Create statistics metadata
   metadata <- list(
     timestamp = start_time,
     processing_time_sec = processing_time,
-    records_processed = nrow(metadata_data),
+    records_processed = nrow(web_data$data$metadata),
     countries_matched = match_count,
-    match_rate = round(match_count/nrow(metadata_data) * 100, 1),
+    match_rate = round(match_count/nrow(web_data$data$metadata) * 100, 1),
     dates_parsed = parsed_count,
-    date_parsing_success_rate = if(parsed_count > 0 && !is.null(date_col)) 
-      round(parsed_count/sum(!is.na(metadata_data[[date_col]]))*100, 1) else NA,
+    sids_classified = sum(result$is_sids, na.rm = TRUE),
+    lldc_classified = sum(result$is_lldc, na.rm = TRUE),
+    temporal_grouping = !is.null(time),
     success = TRUE
   )
   
-  # Log completion message
   log_message(paste("Successfully processed", nrow(result), "records"), "add_metadata")
   
-  # Return standardized result with nested data structure
   return(create_result(
     data = list(
       metadata = result,
-      config = config
+      config = list(category_map = category_map)
     ),
     metadata = metadata,
     diagnostics = diagnostics
