@@ -10,7 +10,7 @@
 #' @param min_group_size Minimum group size to include in analysis (default: 8)
 #'
 #' @return A list containing dominance metrics with bootstrap confidence intervals
-calculate_dominance <- function(model, topics, n = 3, bootstrap = TRUE, n_bootstrap = 1000) {
+calculate_dominance <- function(model, topics, n = 3, bootstrap = TRUE, n_bootstrap = 1000, min_group_size = 8) {
   ## --- Setup & Initialization -------------------------------------------------
   log_message("Starting dominance calculation with bootstrap CIs", "calculate_dominance")
   start_time <- Sys.time()

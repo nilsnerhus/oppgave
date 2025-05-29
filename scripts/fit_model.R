@@ -1,6 +1,5 @@
 #' @title Fit Structural Topic Model
-#' @description Fits an STM model with customizable parameters, generating prevalence formula from category map.
-#'   
+#' @description Fits an STM model with customizable parameters
 #' @param dfm Result from process_dfm containing documents, vocabulary, and metadata
 #' @param k Number of topics (default: 15)
 #' @param category_map List mapping categories to dimension names (default: NULL)
@@ -25,8 +24,7 @@ fit_model <- function(dfm, k = 15, category_map = NULL, iterations = 200, seed =
   # Initialize diagnostics tracking
   diagnostics <- list(
     processing_issues = character(),
-    model_stats = list(),
-    prevalence_info = list()
+    model_stats = list()
   )
   
   # Set seed for reproducibility
@@ -65,49 +63,15 @@ fit_model <- function(dfm, k = 15, category_map = NULL, iterations = 200, seed =
   vocab <- dfm$data$vocab
   meta <- dfm$data$meta
   
-  log_message(paste("Fitting STM model with k =", k), "fit_model")
-  
-  ## --- Generate prevalence formula --------------------------------------------
-  if (is.null(category_map)) {
-    # Use intercept-only model
-    prev_formula <- ~1
-    log_message("No category map provided, using intercept-only model", "fit_model")
-  } else {
-    # Extract all dimensions from category map
-    all_dimensions <- unlist(category_map)
-    log_message(paste("Found", length(all_dimensions), "dimensions in category map"), "fit_model")
-    
-    # Check which dimensions exist in metadata
-    valid_dimensions <- character(0)
-    for (dim in all_dimensions) {
-      if (dim %in% names(meta)) {
-        valid_dimensions <- c(valid_dimensions, dim)
-      } else {
-        log_message(paste("Dimension", dim, "not found in metadata, skipping"), "fit_model")
-      }
-    }
-    
-    # Build formula
-    if (length(valid_dimensions) > 0) {
-      formula_str <- paste("~", paste(valid_dimensions, collapse = " + "))
-      prev_formula <- stats::as.formula(formula_str)
-      log_message(paste("Generated prevalence formula:", formula_str), "fit_model")
-    } else {
-      prev_formula <- ~1
-      log_message("No valid dimensions found, using intercept-only model", "fit_model")
-    }
-  }
-  
-  # Store formula in diagnostics
-  diagnostics$prevalence_info$formula <- deparse(prev_formula)
   
   ## --- Fit STM model ----------------------------------------------------------
-  model_result <- tryCatch({
+  log_message(paste("Fitting STM model with k =", k), "fit_model")
+  
+    model_result <- tryCatch({
     stm::stm(
       documents = docs,
       vocab = vocab,
       K = k,
-      prevalence = prev_formula,
       data = meta,
       max.em.its = iterations,
       verbose = FALSE
@@ -207,8 +171,7 @@ fit_model <- function(dfm, k = 15, category_map = NULL, iterations = 200, seed =
     document_count = length(docs),
     vocabulary_size = length(vocab),
     iterations_run = model_result$convergence$its,
-    converged = model_result$convergence$converged,
-    prevalence_formula = deparse(prev_formula)
+    converged = model_result$convergence$converged
   )
   
   # Store model quality metrics in diagnostics
@@ -233,7 +196,6 @@ fit_model <- function(dfm, k = 15, category_map = NULL, iterations = 200, seed =
       processing_time_sec = processing_time,
       k = k,
       max_iterations = iterations,
-      prevalence_formula = deparse(prev_formula),
       seed = seed,
       success = TRUE
     ),
