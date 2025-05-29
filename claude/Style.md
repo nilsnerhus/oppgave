@@ -23,6 +23,12 @@ This also means some thinks I do not like
 - Repeating text, or just word-fluff. This is a common part of AI-generated code
 - Hallucinated references. This creates much more work when its done wrong. Ask questions about what texts should be references to what arguments. Tell me when you don't know. 
 
+## Key phrases
+
+**Control**: This is my chosen word to describe the domination/colonialism etc. that I am discussing. It is more direct and easier to understand. This is introduced to explain the Partagaz-quote. 
+
+**Freedom**: This is my chosen word to describe the opposite of colonialism. Decolonialism, land-back, autonomy, all as freedom. Easier to understand. This is introduced with the Nemik quote. 
+
 ## Code
 
 All code is written in R, and in two ways:
@@ -64,3 +70,7 @@ sids_dom <- geo_corpus$normalized_dominance[geo_corpus$subcategory == "SIDS"]
 
 - Prefer as few values as possible.
 - Each table  should have a name, a reference and a caption
+
+## Front page
+
+This thesis needs a profesional-looking front page. It should include my name and university affiliation, as well as my supervisor and the university logo. 
