@@ -29,249 +29,157 @@ Throughout this chapter, technical concepts are explained as they arise, with th
 
 > The structural topic model identified topics that capture how climate adaptation is conceptualized across National Adaptation Plans, providing the foundation for understanding patterns of discourse concentration and variation.
 
-```{r k_stats}
-# Load analysis results
+```{r}
 topics <- readRDS("data/name_topics.rds")
-k_result <- readRDS("data/find_k.rds")
-model <- readRDS("data/fit_model.rds")
+k_val <- nrow(topics$data$topics_table)
 
-# Topic reference function
-topic_ref <- function(id) {
-  name <- topics$data$topics_table$topic_name[topics$data$topics_table$topic_id == id]
-  paste0(name, " (Topic ", id, ")")
-}
+# Extract topic names and proportions from topics data
+topic_2 <- topics$data$topics_table$topic_name[topics$data$topics_table$topic_id == 2]
+topic_1 <- topics$data$topics_table$topic_name[topics$data$topics_table$topic_id == 1]
+topic_10 <- topics$data$topics_table$topic_name[topics$data$topics_table$topic_id == 10]
+topic_4 <- topics$data$topics_table$topic_name[topics$data$topics_table$topic_id == 4]
+topic_3 <- topics$data$topics_table$topic_name[topics$data$topics_table$topic_id == 3]
+topic_6 <- topics$data$topics_table$topic_name[topics$data$topics_table$topic_id == 6]
+topic_9 <- topics$data$topics_table$topic_name[topics$data$topics_table$topic_id == 9]
+topic_5 <- topics$data$topics_table$topic_name[topics$data$topics_table$topic_id == 5]
+topic_8 <- topics$data$topics_table$topic_name[topics$data$topics_table$topic_id == 8]
+topic_7 <- topics$data$topics_table$topic_name[topics$data$topics_table$topic_id == 7]
 
-# Extract key model info
-topics_table <- topics$data$topics_table
-k_metrics <- k_result$data$metrics
-k_val <- k_result$data$best_k
+# Extract proportions
+prop_2 <- topics$data$topics_table$topic_proportion[topics$data$topics_table$topic_id == 2]
+prop_1 <- topics$data$topics_table$topic_proportion[topics$data$topics_table$topic_id == 1]
+prop_10 <- topics$data$topics_table$topic_proportion[topics$data$topics_table$topic_id == 10]
+prop_4 <- topics$data$topics_table$topic_proportion[topics$data$topics_table$topic_id == 4]
+prop_3 <- topics$data$topics_table$topic_proportion[topics$data$topics_table$topic_id == 3]
+prop_6 <- topics$data$topics_table$topic_proportion[topics$data$topics_table$topic_id == 6]
+prop_9 <- topics$data$topics_table$topic_proportion[topics$data$topics_table$topic_id == 9]
+prop_5 <- topics$data$topics_table$topic_proportion[topics$data$topics_table$topic_id == 5]
+prop_8 <- topics$data$topics_table$topic_proportion[topics$data$topics_table$topic_id == 8]
+prop_7 <- topics$data$topics_table$topic_proportion[topics$data$topics_table$topic_id == 7]
 
-# Calculate topic prevalence and coverage
-topic_props <- colMeans(model$data$topic_proportions)
-docs_per_topic <- apply(model$data$topic_proportions > 0.05, 2, sum)
-
-# Create topic prevalence table
-topic_prevalence <- data.frame(
-  topic_id = 1:k_val,
-  topic_name = topics_table$topic_name,
-  prevalence_pct = round(topic_props * 100, 1),
-  doc_coverage = docs_per_topic,
-  coverage_pct = round((docs_per_topic / nrow(model$data$topic_proportions)) * 100, 1)
-) |>
-  dplyr::arrange(desc(prevalence_pct))
-
-# Key statistics for inline reference (store as decimals)
-sem_coh <- k_metrics$Coherence[k_metrics$K == k_val]
-exclus <- k_metrics$Exclusivity[k_metrics$K == k_val]
-opt_score <- k_metrics$Score[k_metrics$K == k_val]
-
-# Topic rankings
-top_5_topics <- paste(topic_prevalence$topic_name[1:5], collapse = ", ")
-bottom_3_topics <- paste(topic_prevalence$topic_name[(k_val-2):k_val], collapse = ", ")
-top_5_prev <- sum(topic_props[order(topic_props, decreasing = TRUE)[1:5]])
-bottom_3_prev <- sum(topic_props[order(topic_props, decreasing = FALSE)[1:3]])
-
-# Document engagement stats
-avg_topics_10pct <- mean(apply(model$data$topic_proportions > 0.10, 1, sum))
-avg_topics_1pct <- mean(apply(model$data$topic_proportions > 0.01, 1, sum))
-universal_topics <- sum(docs_per_topic/nrow(model$data$topic_proportions) > 0.90)
-specialized_topics <- sum(docs_per_topic/nrow(model$data$topic_proportions) < 0.50)
+# Calculate category totals
+proc_total <- prop_2 + prop_1
+sectoral_total <- prop_10 + prop_4 + prop_3 + prop_6 + prop_9 + prop_5
+crisis_total <- prop_8 + prop_7
 ```
 
-The process of identifying an optimal number of topics involved systematic testing across a range of model specifications, each offering different granularity in capturing adaptation discourse. Models were evaluated with k ranging from 10 to 40 topics in increments of 5, with each specification estimated until convergence. The evaluation process considered multiple metrics simultaneously: semantic coherence, which measures how frequently the high-probability words for each topic co-occur within documents; exclusivity, which captures how distinctive each topic's words are from other topics; and held-out likelihood, which assesses the model's ability to predict word usage in documents not used for estimation. Lower values of k (10-15 topics) produced broad thematic categories that, while coherent, obscured important distinctions—for instance, conflating all water-related adaptation into a single topic regardless of whether the focus was irrigation, flooding, or water quality. Higher values of k (30-40 topics) resulted in excessive fragmentation, splitting coherent themes like agricultural adaptation into narrow subtopics that appeared sporadically across documents.
+The structural topic model identified `r num(k_val)` topics organizing adaptation discourse across National Adaptation Plans. Through systematic semantic analysis of term patterns, country clustering, and representative examples, these statistical constructs can be interpreted as three distinct thematic categories: procedural topics emphasizing planning processes, sectoral topics addressing specific adaptation domains, and crisis topics focusing on humanitarian concerns.
 
-The selected model with k=`r num(k_val)` achieved a semantic coherence score of `r num(sem_coh)` and an exclusivity score of `r num(exclus)`, representing the best balance among tested specifications. This model's coherence score indicates that the most probable words within each topic genuinely appear together in documents rather than being statistical artifacts. The exclusivity score confirms that topics capture distinct aspects of adaptation discourse rather than variations on the same theme. The combined optimization score of `r num(opt_score)` exceeded all other specifications, providing quantitative support for this selection. Beyond these metrics, the `r num(k_val)`-topic model produced themes that aligned with established categories in adaptation planning while revealing nuanced distinctions that might inform policy analysis.
+Two topics representing `r pct(proc_total)` of discourse cluster around administrative and institutional processes rather than substantive adaptation content.
 
-```{r topic_table}
-# Display topic prevalence table
-knitr::kable(
-  topic_prevalence,
-  col.names = c("ID", "Topic Name", "Prevalence (%)", "Documents", "Coverage (%)"),
-  caption = "Topic Prevalence Across All National Adaptation Plans"
-)
-```
+**`r topic_2`.** The most prevalent topic (`r pct(prop_2)` of discourse) emerged from FREX terms "readi, mandat, chapter, annex, entri" combined with high-probability terms emphasizing "nap, ministri, programm, chapter." This semantic pattern points clearly to document structure and planning procedures. The country clustering reinforces this interpretation: Albania, Armenia, and Ethiopia represent diverse regional and economic contexts united by their emphasis on systematic planning frameworks. The semantic coherence around procedural vocabulary justifies labeling this topic as planning processes.
 
-```{r frex_table}
-# Display topic table with key information
-knitr::kable(
-  topics_table[, c("topic_id", "topic_name", "top_frex_terms")],
-  col.names = c("Topic", "Label", "FREX Terms (Frequent & Exclusive)"),
-  caption = "Topics Identified in National Adaptation Plans",
-  align = c("c", "l", "l")
-)
-```
+**`r topic_1`** Accounting for `r pct(prop_1)` of discourse, this topic presents FREX terms "transit, actor, spanish, habit, del" that initially appear disconnected. However, examination of high-probability terms reveals "ministri, forest, nap, actor, citi, instrument" alongside country patterns dominated by Argentina and Mozambique. The presence of Spanish-language artifacts ("del," "spanish") combined with institutional vocabulary ("actor," "ministri") suggests this topic captures institutional coordination across different linguistic and administrative contexts. Despite the challenging semantic pattern, the consistent emphasis on governmental actors supports the label of institutional arrangements.
 
-The `r num(k_val)` topics identified through this process reveal both expected patterns and surprising emphases in global adaptation discourse. Sectoral topics constitute the largest category, with distinct topics emerging for water resources, agriculture, coastal zones, health systems, and infrastructure. The separation of these sectors into distinct topics rather than a general "sectoral adaptation" theme indicates that each sector has developed specialized vocabulary and concerns within adaptation planning. For instance, the water resources topic emphasizes basin-level management and irrigation infrastructure, while the coastal topic focuses on sea-level rise and storm protection. This sectoral differentiation suggests that adaptation planning often proceeds through established ministerial boundaries rather than integrated approaches.
+Six topics representing `r pct(sectoral_total)` of discourse address specific environmental and economic domains of climate adaptation.
 
-Institutional and procedural topics emerge as a substantial component of adaptation discourse, occupying several of the `r num(k_val)` topics. These topics reveal the mechanisms through which adaptation moves from planning to implementation. The financial mechanisms topic encompasses not only funding amounts but the complex architecture of climate finance, including donor coordination, budget integration, and financial tracking systems. The governance topic focusing on subnational implementation highlights the multi-level nature of adaptation, with terms indicating vertical coordination from national to municipal levels. A separate topic on planning processes captures the procedural aspects of developing NAPs themselves, suggesting that the process of planning has become as important as the content of plans.
+**`r topic_10`** The second most prevalent topic overall (`r pct(prop_10)` of discourse) shows FREX terms "rangeland, hill, nationwid" paired with high-probability terms "livestock, programm, crop, conserv." The country pattern of Bangladesh and Nepal, both heavily dependent on pastoral systems, confirms this interpretation. Representative text emphasizes rural livelihoods and agricultural systems, supporting the label of livestock and pastoral adaptation.
 
-```{r topic_plot}
-# Combine small topics into "Other topics"
-topic_display <- topic_prevalence
-small_topics <- topic_display$prevalence_pct < 4  # Topics under 4%
-if(sum(small_topics) > 1) {
-  other_row <- data.frame(
-    topic_id = 99,
-    topic_name = "Other topics",
-    prevalence_pct = sum(topic_display$prevalence_pct[small_topics]),
-    doc_coverage = NA,
-    coverage_pct = NA
-  )
-  topic_display <- rbind(topic_display[!small_topics,], other_row)
-}
+**`r topic_4`.** Representing `r pct(prop_4)` of discourse, FREX terms "hurrican, gulf, beach, name, marin" clearly indicate coastal and marine themes. High-probability terms include "coastal, fisheri, sea, marin, tourism." The country clustering of St. Lucia and Kuwait represents diverse coastal contexts—Caribbean island and Middle Eastern gulf state—suggesting this topic captures coastal adaptation broadly rather than region-specific approaches. The semantic coherence around marine terminology justifies the coastal adaptation label.
 
-topic_tree_plot <- ggplot2::ggplot(topic_display, 
-                         ggplot2::aes(area = prevalence_pct,
-                             label = paste0(topic_name, "\n(", prevalence_pct, "%)"))) +
-  treemapify::geom_treemap(fill = "#f8f9fa", color = "#dee2e6", size = 1.5) +
-  treemapify::geom_treemap_text(colour = "#212529", 
-                    place = "centre", 
-                    size = 8,
-                    lineheight = 0.9) +
-  ggplot2::labs(title = "Topic prevalence across National Adaptation Plans") +
-  ggplot2::theme_void() +
-  ggplot2::theme(
-    plot.title = ggplot2::element_text(size = 13, hjust = 0.5, color = "#212529"),
-    plot.background = ggplot2::element_rect(fill = "white", color = NA),
-    panel.background = ggplot2::element_rect(fill = "white", color = NA)
-  )
+**`r topic_3`.** Accounting for `r pct(prop_3)` of discourse, this topic displays FREX terms "pacif, outer, secretariat" with high-probability terms "coastal, secretariat, pacif, sea." The country pattern of Kiribati and Sri Lanka represents classic small island developing states across different oceans. The specific reference to "pacif" and "outer" (likely referring to outer islands) combined with secretariat-focused vocabulary suggests this topic captures island-specific institutional arrangements. This semantic pattern supports labeling it as island adaptation.
 
-print(topic_tree_plot)
-```
+**`r topic_6`.** Representing `r pct(prop_6)` of discourse, FREX terms "defens, task, mountain, norm, basin" combine with high-probability terms emphasizing "river, irrig, mountain, basin, sea." The country clustering of Israel and Azerbaijan suggests technical infrastructure approaches across different regional contexts. The semantic emphasis on water systems ("basin," "river," "irrig") and defensive measures ("defens") supports interpreting this as infrastructure-focused adaptation.
 
+**`r topic_9`.** At `r pct(prop_9)` of discourse, this topic presents challenging FREX terms "strip, appendix, ensembl, centuri" that appear disconnected from agricultural themes. However, high-probability terms include "feder, heat, irrig, distribut" alongside country clustering of Serbia and West Bank and Gaza. The presence of agricultural vocabulary ("irrig," federal systems, heat stress) combined with diverse agricultural contexts suggests this topic addresses agricultural adaptation despite the unclear FREX pattern. The interpretive challenge here illustrates the difficulty of rendering statistical constructs meaningful, but the agricultural vocabulary justifies this label.
 
-Geographic and hazard-specific topics reveal how physical geography shapes adaptation discourse, though perhaps not in expected ways. Rather than broad topics on "mountain adaptation" or "island adaptation," the model identifies specific geographic contexts tied to particular challenges. The mountain and river basin topic links topography to water management, while the island topic specifically emphasizes atolls and outer islands, suggesting attention to the most vulnerable island contexts. The presence of a distinct topic on tropical cyclones and typhoons indicates that countries experiencing these hazards frame adaptation significantly differently from those focused on gradual changes like temperature increases or shifting precipitation patterns.
+**`r topic_5`.** The least prevalent sectoral topic (`r pct(prop_5)` of discourse) shows FREX terms "biom, view, ana, municip" with high-probability terms "conserv, feder, nutrit." The country pattern of Brazil and Burkina Faso represents large-scale ecosystem management contexts. The semantic emphasis on conservation and biomes supports labeling this as ecosystem-focused adaptation, though the municipal emphasis suggests local-level ecosystem management rather than broad conservation.
 
-Examining which topics appear most and least frequently across the corpus provides insight into the priorities and gaps in global adaptation planning. The five most prevalent topics—`r top_5_topics`—collectively account for `r pct(top_5_prev)` of the total discourse. The dominance of financial and implementation topics among the most prevalent themes suggests that "how to adapt" receives as much or more attention than "what adaptation looks like." This emphasis on process and mechanisms over substantive actions may reflect the influence of international guidelines and donor requirements in shaping NAP development.
+Two topics representing `r pct(crisis_total)` of discourse emphasize humanitarian challenges and emergency responses rather than proactive adaptation measures.
 
-Conversely, the least prevalent topics—`r bottom_3_topics`—collectively represent only `r pct(bottom_3_prev)` of discourse. The marginal presence of topics related to indigenous knowledge, transformational change, or justice-oriented approaches suggests that alternative framings of adaptation remain peripheral to mainstream planning despite their prominence in academic and civil society discussions. This absence is particularly notable given the theoretical literature on adaptation that emphasizes the importance of local knowledge and transformative approaches.
+**Displacement.** Accounting for `r pct(prop_8)` of discourse, FREX terms "des, les, counti, refuge" clearly indicate displacement and refugee contexts. The country clustering of Chad and Kenya represents African contexts facing environmental and conflict-driven displacement pressures. The semantic coherence around humanitarian vocabulary makes this the most straightforward topic to interpret, justifying the displacement label.
 
-The distribution of topics across documents reveals additional patterns in how adaptation discourse is structured. On average, each NAP substantially engages with `r num(avg_topics_10pct)` topics (using a 10% threshold for substantial engagement), while touching on `r num(avg_topics_1pct)` topics to some degree. This concentration suggests that most countries focus their adaptation planning on a core set of concerns while giving cursory attention to others. The most "universal" topics—those appearing in over 90% of documents—are `r num(universal_topics)` in number, primarily covering financial mechanisms and general planning processes. In contrast, `r num(specialized_topics)` topics appear in fewer than half of all documents, indicating specialized concerns relevant only to specific contexts.
+**Disasters.** Representing `r pct(prop_7)` of discourse, FREX terms "typhoon, atol, pluvial, nanc, immedi" emphasize extreme weather events and immediate responses. High-probability terms include "cyclon, program, provinci, million" with country clustering of Philippines and Pakistan representing disaster-prone regions. The semantic emphasis on specific weather events ("typhoon," "cyclon") and emergency response ("immedi") supports labeling this as disaster management rather than long-term adaptation planning.
 
-The statistical quality of individual topics varies in revealing ways. Topics with the highest semantic coherence scores tend to be those with technical vocabulary, such as climate modeling or vulnerability assessment, where specialized terms consistently co-occur. Topics with lower coherence often address cross-cutting issues like gender or participation, where vocabulary is more diffuse. Exclusivity scores are highest for geographically specific topics (atolls, mountains) and hazard-specific topics (cyclones), while lower for general planning and implementation topics that share vocabulary across themes. This pattern suggests that the model most clearly identifies discourse when it is technically specialized or geographically specific, while more integrated or holistic approaches to adaptation may be harder to capture as distinct topics.
+## Dominance
 
-## Patterns of Discourse Centralization
+> Analysis of discourse centralization reveals remarkably high concentration across all National Adaptation Plans, with corpus-level patterns showing significant variation across income groups and regions while geographic vulnerability shows minimal influence on discourse structure.
 
-> Analysis of discourse centralization reveals remarkably high concentration across all National Adaptation Plans, with both document-level and corpus-level patterns suggesting limited epistemological diversity in how climate adaptation is conceptualized globally.
+```{r}
+# Extract corpus-level dominance data
+dominance <- readRDS("data/calculate_dominance.rds")
+dom_data <- dominance$data[dominance$data$level_type == "corpus", ]
 
-```{r dominance_stats}
-dominance <- readRDS("data/calculate_dominance.rds") 
-dom_results <- dominance$data
+# Overall patterns
+overall_dom <- dom_data$normalized_dominance[dom_data$category == "Overall"]
+overall_ci_lower <- dom_data$ci_lower[dom_data$category == "Overall"]
+overall_ci_upper <- dom_data$ci_upper[dom_data$category == "Overall"]
+overall_dom_topics <- paste(topics$data$topics_table$topic_name[topics$data$topics_table$topic_id %in% 
+  as.numeric(unlist(strsplit(dom_data$top_topic_ids[dom_data$category == "Overall"], ",")))], collapse = ", ")
 
-# Separate levels
-doc_level <- dom_results[dom_results$level_type == "document", ]
-corpus_level <- dom_results[dom_results$level_type == "corpus", ]
+# Income patterns
+low_income_dom <- dom_data$normalized_dominance[dom_data$subcategory == "Low income"]
+low_income_ci_lower <- dom_data$ci_lower[dom_data$subcategory == "Low income"]
+low_income_ci_upper <- dom_data$ci_upper[dom_data$subcategory == "Low income"]
+low_income_dom_topics <- paste(topics$data$topics_table$topic_name[topics$data$topics_table$topic_id %in%
+  as.numeric(unlist(strsplit(dom_data$top_topic_ids[dom_data$subcategory == "Low income"], ",")))], collapse = ", ")
 
-# Overall dominance (already 0-1 scale)
-overall_doc_dom <- doc_level[doc_level$category == "Overall", "normalized_dominance"]
-overall_corpus_dom <- corpus_level[corpus_level$category == "Overall", "normalized_dominance"]
+lower_middle_dom <- dom_data$normalized_dominance[dom_data$subcategory == "Lower middle income"] 
+lower_middle_ci_lower <- dom_data$ci_lower[dom_data$subcategory == "Lower middle income"]
+lower_middle_ci_upper <- dom_data$ci_upper[dom_data$subcategory == "Lower middle income"]
+lower_middle_dom_topics <- paste(topics$data$topics_table$topic_name[topics$data$topics_table$topic_id %in%
+  as.numeric(unlist(strsplit(dom_data$top_topic_ids[dom_data$subcategory == "Lower middle income"], ",")))], collapse = ", ")
 
-# Income-based dominance (document level)
-income_doc <- doc_level[doc_level$category == "Income", ]
-low_inc_doc_dom <- income_doc$normalized_dominance[income_doc$subcategory == "Low income"]
-high_inc_doc_dom <- income_doc$normalized_dominance[income_doc$subcategory == "High income"]
-doc_inc_diff <- abs(high_inc_doc_dom - low_inc_doc_dom)
-
-# Income-based dominance (corpus level)
-income_corpus <- corpus_level[corpus_level$category == "Income", ]
-high_inc_corpus_dom <- income_corpus$normalized_dominance[income_corpus$subcategory == "High income"]
-low_inc_corpus_dom <- income_corpus$normalized_dominance[income_corpus$subcategory == "Low income"]
-lower_mid_corpus_dom <- income_corpus$normalized_dominance[income_corpus$subcategory == "Lower middle income"]
-upper_mid_corpus_dom <- income_corpus$normalized_dominance[income_corpus$subcategory == "Upper middle income"]
-
-# Income topic focuses
-high_inc_topics <- income_corpus$top_topics[income_corpus$subcategory == "High income"]
-low_inc_topics <- income_corpus$top_topics[income_corpus$subcategory == "Low income"]
-lower_mid_topics <- income_corpus$top_topics[income_corpus$subcategory == "Lower middle income"]
-upper_mid_topics <- income_corpus$top_topics[income_corpus$subcategory == "Upper middle income"]
+upper_middle_dom <- dom_data$normalized_dominance[dom_data$subcategory == "Upper middle income"]
+upper_middle_ci_lower <- dom_data$ci_lower[dom_data$subcategory == "Upper middle income"]
+upper_middle_ci_upper <- dom_data$ci_upper[dom_data$subcategory == "Upper middle income"]
+upper_middle_dom_topics <- paste(topics$data$topics_table$topic_name[topics$data$topics_table$topic_id %in% 
+  as.numeric(unlist(strsplit(dom_data$top_topic_ids[dom_data$subcategory == "Upper middle income"], ",")))], collapse = ", ")
 
 # Regional patterns
-region_corpus <- corpus_level[corpus_level$category == "Region", ]
-region_doc <- doc_level[doc_level$category == "Region", ]
-max_region_dom <- max(region_corpus$normalized_dominance)
-min_region_dom <- min(region_corpus$normalized_dominance)
-region_dom_range <- max_region_dom - min_region_dom
-max_region_name <- region_corpus$subcategory[which.max(region_corpus$normalized_dominance)]
-min_region_name <- region_corpus$subcategory[which.min(region_corpus$normalized_dominance)]
-max_region_topics <- region_corpus$top_topics[which.max(region_corpus$normalized_dominance)]
-min_region_topics <- region_corpus$top_topics[which.min(region_corpus$normalized_dominance)]
+lac_dom <- dom_data$normalized_dominance[dom_data$subcategory == "Latin America & Caribbean"]
+lac_ci_lower <- dom_data$ci_lower[dom_data$subcategory == "Latin America & Caribbean"]
+lac_ci_upper <- dom_data$ci_upper[dom_data$subcategory == "Latin America & Caribbean"]
+lac_dom_topics <- paste(topics$data$topics_table$topic_name[topics$data$topics_table$topic_id %in%
+  as.numeric(unlist(strsplit(dom_data$top_topic_ids[dom_data$subcategory == "Latin America & Caribbean"], ",")))], collapse = ", ")
 
-# Geographic patterns  
-geo_corpus <- corpus_level[corpus_level$category == "Geography", ]
-sids_corpus_dom <- geo_corpus$normalized_dominance[geo_corpus$subcategory == "SIDS"]
-lldc_corpus_dom <- geo_corpus$normalized_dominance[geo_corpus$subcategory == "LLDC"]
-sids_topics <- geo_corpus$top_topics[geo_corpus$subcategory == "SIDS"]
-lldc_topics <- geo_corpus$top_topics[geo_corpus$subcategory == "LLDC"]
+ssa_dom <- dom_data$normalized_dominance[dom_data$subcategory == "Sub-Saharan Africa"]
+ssa_ci_lower <- dom_data$ci_lower[dom_data$subcategory == "Sub-Saharan Africa"]
+ssa_ci_upper <- dom_data$ci_upper[dom_data$subcategory == "Sub-Saharan Africa"]
+ssa_dom_topics <- paste(topics$data$topics_table$topic_name[topics$data$topics_table$topic_id %in%
+  as.numeric(unlist(strsplit(dom_data$top_topic_ids[dom_data$subcategory == "Sub-Saharan Africa"], ",")))], collapse = ", ")
 
-# Variance patterns (already raw values)
-high_inc_var <- income_corpus$variance[income_corpus$subcategory == "High income"]
-low_inc_var <- income_corpus$variance[income_corpus$subcategory == "Low income"]
+eap_dom <- dom_data$normalized_dominance[dom_data$subcategory == "East Asia & Pacific"]  
+eap_ci_lower <- dom_data$ci_lower[dom_data$subcategory == "East Asia & Pacific"]
+eap_ci_upper <- dom_data$ci_upper[dom_data$subcategory == "East Asia & Pacific"]
+eap_dom_topics <- paste(topics$data$topics_table$topic_name[topics$data$topics_table$topic_id %in%
+  as.numeric(unlist(strsplit(dom_data$top_topic_ids[dom_data$subcategory == "East Asia & Pacific"], ",")))], collapse = ", ")
+
+# Geographic patterns
+sids_dom <- dom_data$normalized_dominance[dom_data$subcategory == "SIDS"]
+sids_ci_lower <- dom_data$ci_lower[dom_data$subcategory == "SIDS"]
+sids_ci_upper <- dom_data$ci_upper[dom_data$subcategory == "SIDS"]
+sids_dom_topics <- paste(topics$data$topics_table$topic_name[topics$data$topics_table$topic_id %in%
+  as.numeric(unlist(strsplit(dom_data$top_topic_ids[dom_data$subcategory == "SIDS"], ",")))], collapse = ", ")
+
+lldc_dom <- dom_data$normalized_dominance[dom_data$subcategory == "LLDC"] 
+lldc_ci_lower <- dom_data$ci_lower[dom_data$subcategory == "LLDC"]
+lldc_ci_upper <- dom_data$ci_upper[dom_data$subcategory == "LLDC"]
+lldc_dom_topics <- paste(topics$data$topics_table$topic_name[topics$data$topics_table$topic_id %in%
+  as.numeric(unlist(strsplit(dom_data$top_topic_ids[dom_data$subcategory == "LLDC"], ",")))], collapse = ", ")
+
+# Document-level summary for context
+doc_data <- dominance$data[dominance$data$level_type == "document", ]
+overall_doc_dom <- doc_data$normalized_dominance[doc_data$category == "Overall"]
 ```
 
-The Dominance Index captures discourse centralization at two complementary levels, each revealing different aspects of how adaptation is conceptualized. Document-level dominance measures how concentrated each individual NAP is on its top three topics—a high value indicates that a country's adaptation plan focuses heavily on a narrow set of themes rather than addressing adaptation comprehensively. Corpus-level dominance examines the collective discourse of a group of countries, measuring whether they converge on the same dominant topics or emphasize different aspects of adaptation. Together, these measures reveal both the internal coherence of individual plans and the degree of convergence across countries. Values approaching 1.0 indicate extreme concentration, while values closer to 0 would suggest more balanced attention across multiple topics—though such low values are not observed in our corpus.
+The Dominance Index captures discourse centralization at two complementary levels, each revealing different aspects of how adaptation is conceptualized. Document-level dominance measures how concentrated each individual NAP is on its top three topics, while corpus-level dominance examines whether groups of countries converge on the same dominant topics or emphasize different aspects of adaptation. The corpus-level analysis is particularly revealing as it shows whether countries with similar characteristics develop similar approaches to framing adaptation challenges and responses.
 
-The document-level findings present a striking picture of universal concentration. Across all 45 NAPs, the normalized dominance value is `r pct(overall_doc_dom)`, indicating that the typical adaptation plan devotes the vast majority of its content to just three topics out of the `r num(k_val)` identified. This pattern holds with remarkable consistency across different country groupings. Low-income countries show a document-level dominance of `r pct(low_inc_doc_dom)`, while high-income countries register `r pct(high_inc_doc_dom)`—a difference of less than `r num(doc_inc_diff)` despite vastly different resources and institutional capacities. The uniformity extends across regional groupings, with values ranging only from `r pct(min_region_dom)` to `r pct(max_region_dom)`, and geographic categories showing similarly minimal variation.
+At the document level, the pattern is strikingly uniform. Individual National Adaptation Plans show an overall dominance of `r pct(overall_doc_dom)`, indicating that the typical adaptation plan devotes the vast majority of its content to just three topics out of the `r k_val` identified. This universal concentration suggests that the structure of adaptation planning itself—shaped by international guidelines, funding requirements, and technical assistance—produces focused rather than comprehensive plans regardless of national context.
 
-This universal pattern of document-level concentration suggests that the structure of adaptation planning itself—shaped by international guidelines, funding requirements, and technical assistance—produces focused rather than comprehensive plans regardless of national context. The practical implication is that any given NAP reads as a deep dive into a small number of adaptation priorities rather than a broad survey of climate vulnerabilities and responses. Whether this focus reflects strategic prioritization or constraints on what can be included in adaptation planning remains an open question, but the pattern is unmistakable: adaptation plans are exercises in selective attention rather than comprehensive vulnerability assessment.
+The corpus-level patterns reveal more nuanced differences in how countries converge or diverge in their adaptation priorities. Across all countries, the overall corpus-level dominance reaches `r pct(overall_dom)` (95% CI: `r pct(overall_ci_lower)`-`r pct(overall_ci_upper)`), with collective discourse concentrated on `r overall_dom_topics`. This high centralization indicates that despite diverse climate vulnerabilities and national contexts, adaptation discourse converges around a narrow set of themes globally.
 
-The corpus-level patterns reveal more nuanced differences in how countries converge or diverge in their adaptation priorities. Among income groups, a surprising U-shaped pattern emerges that challenges linear assumptions about development and discourse diversity. High-income countries show the highest corpus-level dominance at `r pct(high_inc_corpus_dom)`, indicating strong convergence on similar topics—specifically `r high_inc_topics`. However, with only four high-income countries in the sample (Israel, Kuwait, Trinidad and Tobago, and Uruguay), this finding must be interpreted cautiously. These countries span different regions and face different climate challenges, yet their adaptation discourse converges remarkably, potentially reflecting shared access to international expertise or similar institutional models.
+Among income groups, discourse centralization varies meaningfully across economic categories. Low-income countries show the highest corpus-level dominance at `r pct(low_income_dom)` (95% CI: `r pct(low_income_ci_lower)`-`r pct(low_income_ci_upper)`), with discourse concentrated on `r low_income_dom_topics`. The relatively narrow confidence interval indicates a consistent pattern across the nine low-income countries in the sample. Lower-middle income countries display dominance of `r pct(lower_middle_dom)` (95% CI: `r pct(lower_middle_ci_lower)`-`r pct(lower_middle_ci_upper)`), emphasizing `r lower_middle_dom_topics`. The wider confidence interval here reflects greater variation among the 15 countries in this category. Upper-middle income countries show dominance of `r pct(upper_middle_dom)` (95% CI: `r pct(upper_middle_ci_lower)`-`r pct(upper_middle_ci_upper)`), focusing on `r upper_middle_dom_topics`. This group shows the widest confidence interval, indicating considerable diversity among the 17 upper-middle income countries.
 
-```{r dominance_plot}
-# Prepare clean data
-dom_plot_data <- rbind(
-  income_corpus[income_corpus$subcategory != "High income", 
-                c("category", "subcategory", "normalized_dominance")],
-  region_corpus[, c("category", "subcategory", "normalized_dominance")],
-  geo_corpus[, c("category", "subcategory", "normalized_dominance")]
-)
-dom_plot_data$dominance_pct <- dom_plot_data$normalized_dominance * 100
+Comparing across income levels, a clear descending gradient emerges from low-income to upper-middle income countries. The non-overlapping confidence intervals between low-income and upper-middle income groups confirm this pattern is statistically meaningful, while the overlapping intervals between adjacent categories suggest more modest differences between neighboring income levels. This gradient indicates that economic positioning shapes discourse diversity in adaptation planning, with greater resources and autonomy associated with less centralized discourse.
 
-dominance_plot <- ggplot2::ggplot(dom_plot_data, 
-                        ggplot2::aes(x = dominance_pct, 
-                            y = reorder(subcategory, dominance_pct),
-                            fill = category)) +
-  ggplot2::geom_col(width = 0.7) +
-  ggplot2::scale_fill_manual(values = c("Income" = "#0d6efd", 
-                              "Region" = "#6f42c1", 
-                              "Geography" = "#198754"),
-                   name = "Category") +
-  ggplot2::scale_x_continuous(labels = function(x) paste0(x, "%"),
-                     expand = c(0, 0), limits = c(0, 100)) +
-  ggplot2::labs(title = "Discourse centralization by country groupings",
-       x = "Dominance index (%)",
-       y = NULL) +
-  ggplot2::theme_minimal() +
-  ggplot2::theme(
-    plot.title = ggplot2::element_text(size = 13, color = "#212529"),
-    axis.text = ggplot2::element_text(size = 10, color = "#495057"),
-    axis.title = ggplot2::element_text(size = 11, color = "#495057"),
-    legend.title = ggplot2::element_text(size = 10, color = "#495057"),
-    legend.text = ggplot2::element_text(size = 9, color = "#495057"),
-    panel.grid.major = ggplot2::element_line(color = "#dee2e6", size = 0.5),
-    panel.grid.minor = ggplot2::element_blank(),
-    plot.background = ggplot2::element_rect(fill = "white", color = NA),
-    panel.background = ggplot2::element_rect(fill = "white", color = NA)
-  )
+Regional patterns show consistently high discourse centralization across all three regions analyzed. East Asia & Pacific displays dominance of `r pct(eap_dom)` (95% CI: `r pct(eap_ci_lower)`-`r pct(eap_ci_upper)`), focusing on `r eap_dom_topics`. The moderate confidence interval width reflects variation among the nine countries in this region. Sub-Saharan Africa shows dominance of `r pct(ssa_dom)` (95% CI: `r pct(ssa_ci_lower)`-`r pct(ssa_ci_upper)`), emphasizing `r ssa_dom_topics`. This region displays the widest confidence interval, indicating considerable diversity among the 13 Sub-Saharan African countries. Latin America & Caribbean exhibits dominance of `r pct(lac_dom)` (95% CI: `r pct(lac_ci_lower)`-`r pct(lac_ci_upper)`), with countries converging on `r lac_dom_topics`. The absence of confidence interval variation reflects the small sample size of eight countries in this region.
 
-print(dominance_plot)
-```
+When comparing across regions, the overlapping confidence intervals suggest that the apparent differences in centralization levels may not be statistically meaningful. All three regions cluster around similar high levels of discourse centralization, despite each emphasizing distinct combinations of topics. This pattern indicates that regional institutional networks create convergence within regions while maintaining differentiated thematic emphases between regions.
 
+The geographic vulnerability categories both demonstrate high discourse centralization. Landlocked Developing Countries show dominance of `r pct(lldc_dom)` (95% CI: `r pct(lldc_ci_lower)`-`r pct(lldc_ci_upper)`), emphasizing `r lldc_dom_topics`. The wide confidence interval reflects variation among the 10 LLDC countries in the sample. Small Island Developing States display dominance of `r pct(sids_dom)` (95% CI: `r pct(sids_ci_lower)`-`r pct(sids_ci_upper)`), with convergence around `r sids_dom_topics`. This group shows a moderately wide confidence interval across the 11 SIDS countries.
 
-Low-income countries display the second-highest corpus-level dominance at `r pct(low_inc_corpus_dom)`, with discourse concentrated on `r low_inc_topics`. This high centralization among low-income countries aligns with theoretical expectations about the constraining effects of international development frameworks on adaptation planning. The dominant topics emphasize process-oriented and finance-related themes, suggesting that low-income countries' adaptation discourse is significantly shaped by donor requirements and international guidelines. The limited epistemological space reflected in this high dominance value indicates that despite facing diverse climate challenges—from drought in African nations to sea-level rise in Pacific islands—low-income countries articulate adaptation through remarkably similar framings.
-
-The middle-income countries present a markedly different pattern, with lower-middle income countries showing the lowest corpus-level dominance at `r pct(lower_mid_corpus_dom)` and upper-middle income countries at `r pct(upper_mid_corpus_dom)`. This greater diversity in middle-income countries' adaptation discourse suggests more epistemological space for varied approaches. Lower-middle income countries emphasize `r lower_mid_topics`, while upper-middle income countries focus on `r upper_mid_topics`. The different dominant topics and lower overall concentration indicate that middle-income countries may have greater autonomy in framing adaptation according to national priorities rather than international templates. This could reflect their intermediate position—less dependent on climate finance than low-income countries but not yet fully integrated into high-income knowledge networks.
-
-Regional patterns in corpus-level dominance provide additional insight into the factors shaping adaptation discourse. The highest regional concentration appears in `r max_region_name` at `r pct(max_region_dom)`, where countries converge strongly on topics related to `r max_region_topics`. This high concentration may reflect shared regional institutions, similar colonial histories, or common climate challenges. In contrast, `r min_region_name` shows the lowest regional dominance at `r pct(min_region_dom)`, with more diverse emphasis across topics including `r min_region_topics`. This regional variation suggests that epistemic communities operating at the regional scale—through bodies like regional development banks, economic communities, or technical cooperation networks—play a significant role in shaping how adaptation is conceptualized.
-
-The middle-range regional dominance values reveal interesting patterns of partial convergence. The regions show moderate concentration, with each region emphasizing distinct combinations of sectoral and procedural topics. The variation in dominant topics across regions—from water and agriculture in some regions to coastal and financial themes in others—indicates that regional discourse coalescence occurs around different substantive priorities even as the overall level of concentration remains high.
-
-Geographic vulnerability categories reveal yet another pattern in discourse centralization. Small Island Developing States show a corpus-level dominance of `r pct(sids_corpus_dom)`, with convergence around `r sids_topics`. The presence of Pacific-specific and ocean-related topics among SIDS' dominant themes appears logical given their shared vulnerabilities to sea-level rise and ocean changes. Landlocked Developing Countries display lower dominance at `r pct(lldc_corpus_dom)`, emphasizing `r lldc_topics`. The relatively low dominance values for both geographic categories—lower than most income and regional groupings—suggests that geographic vulnerability alone does not produce convergent adaptation discourse. Instead, countries facing similar physical challenges may still conceptualize adaptation differently based on other factors.
-
-The variance patterns within each grouping provide additional insight into discourse dynamics. Document-level variance is consistently low across all categories, reinforcing the finding of universal concentration in individual NAPs. However, corpus-level variance tells a different story. High-income countries show the highest variance (`r num(high_inc_var)`), suggesting that despite high average concentration, there is considerable variation among these four countries—possibly reflecting their different regional contexts and climate challenges. Low-income countries show much lower variance (`r num(low_inc_var)`), indicating more uniform convergence on similar topics, potentially due to common constraints and dependencies on international frameworks.
-
-Examining which specific topics dominate across different groupings reveals the substantive content of discourse convergence. Financial and procedural topics appear among the top three for multiple groupings, suggesting these themes form a common core of adaptation discourse globally. However, the specific combinations vary meaningfully. Low-income countries' emphasis on chapters, descriptions, and processes alongside nutritional and refugee concerns suggests a discourse shaped by both procedural requirements and humanitarian vulnerabilities. High-income countries' focus on marine and other themes indicates a different framing of adaptation. Middle-income countries show more varied patterns, with some emphasizing provincial and municipal implementation while others focus on sectoral themes like water and agriculture.
-
-The overall pattern emerging from these dominance analyses is one of constrained epistemological space in climate adaptation planning. The uniformly high document-level concentration indicates that structural factors in how NAPs are conceived and developed lead to focused rather than comprehensive plans. The varying corpus-level patterns suggest that while all countries produce concentrated documents, they concentrate on different aspects based primarily on their economic positioning and regional contexts. The U-shaped relationship with income—highest dominance at both extremes—challenges simple narratives about development and discursive autonomy. Instead, it suggests that different types of constraints operate at different income levels: international dependency for low-income countries and perhaps technocratic convergence for high-income countries, with middle-income countries occupying a space of relatively greater discursive freedom. These patterns set the stage for examining which factors best explain the limited variation that does exist in global adaptation discourse.
+Comparing the two geographic categories, the overlapping confidence intervals indicate that the apparent difference in centralization levels between LLDCs and SIDS may not be statistically significant. Both groups show high discourse centralization despite facing fundamentally different climate vulnerabilities—water scarcity and desertification for landlocked countries versus sea-level rise and coastal erosion for island states. This similarity suggests that shared geographic vulnerability characteristics do not strongly determine adaptation discourse patterns.
 
 ## Factors Shaping Discourse Variation
 
