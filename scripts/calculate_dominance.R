@@ -1,18 +1,18 @@
-#' @title Calculate Topic Dominance Across Categories
+#' @title Calculate Topic Dominance with Bootstrap Confidence Intervals
 #' @description Calculates dominance metrics for all category/subcategory combinations
-#'   defined in the category map. Uses rarefaction to standardize comparisons across
-#'   groups of different sizes.
+#'   using bootstrap resampling for confidence intervals
 #'
 #' @param model STM model result from fit_model()
 #' @param topics Named topics result from name_topics()
 #' @param n Number of top topics to consider (default: 3)
-#' @param normalize Whether to apply rarefaction normalization (default: TRUE)
+#' @param bootstrap Whether to calculate bootstrap confidence intervals (default: TRUE)
+#' @param n_bootstrap Number of bootstrap iterations (default: 1000)
 #' @param min_group_size Minimum group size to include in analysis (default: 8)
 #'
-#' @return A list containing dominance metrics for various categories
-calculate_dominance <- function(model, topics, n = 3, normalize = TRUE, min_group_size = 8) {
+#' @return A list containing dominance metrics with bootstrap confidence intervals
+calculate_dominance <- function(model, topics, n = 3, bootstrap = TRUE, n_bootstrap = 1000) {
   ## --- Setup & Initialization -------------------------------------------------
-  log_message("Starting dominance calculation", "calculate_dominance")
+  log_message("Starting dominance calculation with bootstrap CIs", "calculate_dominance")
   start_time <- Sys.time()
   
   # Initialize diagnostics tracking
@@ -27,50 +27,6 @@ calculate_dominance <- function(model, topics, n = 3, normalize = TRUE, min_grou
   meta <- model$data$aligned_meta
   category_map <- model$data$category_map
   topics_table <- topics$data$topics_table
-  
-  ## --- Determine minimum group size for rarefaction if normalizing ------------
-  if (normalize) {
-    log_message("Determining minimum group size for rarefaction", "calculate_dominance")
-    
-    # Get all group sizes (only those meeting minimum threshold)
-    group_sizes <- c()
-    
-    for (category_name in names(category_map)) {
-      category_columns <- category_map[[category_name]]
-      
-      for (col_name in category_columns) {
-        if (col_name %in% names(meta)) {
-          if (is.logical(meta[[col_name]])) {
-            size <- sum(meta[[col_name]] == TRUE, na.rm = TRUE)
-            if (size >= min_group_size) {
-              group_sizes <- c(group_sizes, size)
-            }
-          } else {
-            unique_values <- unique(meta[[col_name]])
-            unique_values <- unique_values[!is.na(unique_values)]
-            for (value in unique_values) {
-              size <- sum(meta[[col_name]] == value, na.rm = TRUE)
-              if (size >= min_group_size) {
-                group_sizes <- c(group_sizes, size)
-              }
-            }
-          }
-        }
-      }
-    }
-    
-    # Set minimum as rarefaction target
-    if (length(group_sizes) > 0) {
-      rarefaction_target <- min(group_sizes)
-      log_message(paste("Using rarefaction target of", rarefaction_target, "documents"), "calculate_dominance")
-      
-      # Set as environment variable for find_dominance
-      Sys.setenv(RAREFACTION_TARGET = rarefaction_target)
-    } else {
-      log_message("No groups meet minimum size requirement", "calculate_dominance", "WARNING")
-      normalize <- FALSE
-    }
-  }
   
   # Initialize results dataframe with confidence interval columns
   results <- data.frame(
@@ -91,7 +47,7 @@ calculate_dominance <- function(model, topics, n = 3, normalize = TRUE, min_grou
   ## --- Global metrics ---------------------------------------------------------
   log_message("Calculating global dominance metrics", "calculate_dominance")
   all_docs <- 1:nrow(theta)
-  global_result <- find_dominance(theta, all_docs, n, normalize)
+  global_result <- find_dominance(theta, all_docs, n, bootstrap, n_bootstrap)
   
   # Check global result
   if (is.null(global_result)) {
@@ -189,7 +145,7 @@ calculate_dominance <- function(model, topics, n = 3, normalize = TRUE, min_grou
           }
           
           # Calculate dominance
-          result <- find_dominance(theta, doc_indices, n, normalize)
+          result <- find_dominance(theta, doc_indices, n, bootstrap, n_bootstrap)
           
           if (is.null(result)) {
             warning_msg <- paste("Dominance calculation failed for", subcategory)
@@ -261,7 +217,7 @@ calculate_dominance <- function(model, topics, n = 3, normalize = TRUE, min_grou
             }
             
             # Calculate dominance
-            result <- find_dominance(theta, doc_indices, n, normalize)
+            result <- find_dominance(theta, doc_indices, n, bootstrap, n_bootstrap)
             
             if (is.null(result)) {
               warning_msg <- paste("Dominance calculation failed for", value)
@@ -323,7 +279,7 @@ calculate_dominance <- function(model, topics, n = 3, normalize = TRUE, min_grou
       categories_processed = categories_processed,
       subcategories_processed = subcategories_processed,
       min_group_size = min_group_size,
-      rarefaction_target = if(exists("rarefaction_target")) rarefaction_target else NA
+      bootstrap_iterations = n_bootstrap
     )
   }
   
@@ -350,7 +306,8 @@ calculate_dominance <- function(model, topics, n = 3, normalize = TRUE, min_grou
       timestamp = start_time,
       processing_time_sec = processing_time,
       n_value = n,
-      normalize = normalize,
+      bootstrap = bootstrap,
+      n_bootstrap = n_bootstrap,
       min_group_size = min_group_size,
       success = TRUE
     ),
