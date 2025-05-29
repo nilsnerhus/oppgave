@@ -116,22 +116,53 @@ name_topics <- function(
   if ("thoughts_by_topic" %in% names(model_result$data) && !is.null(model_result$data$thoughts_by_topic)) {
     thoughts_by_topic <- model_result$data$thoughts_by_topic
     
+    # SAFE PROCESSING with bounds checking
     for (i in 1:k) {
-      if (!is.null(thoughts_by_topic[[i]])) {
-        topic_texts[[i]] <- thoughts_by_topic[[i]]$docs[[1]]
+      # Check if this topic index exists in thoughts_by_topic
+      if (i <= length(thoughts_by_topic) && !is.null(thoughts_by_topic[[i]])) {
         
-        # Extract country info if available
-        doc_indices <- thoughts_by_topic[[i]]$index[[1]]
-        if (length(doc_indices) > 0 && "country_name" %in% names(meta)) {
-          topic_docs[[i]] <- data.frame(
-            country_name = meta$country_name[doc_indices],
-            stringsAsFactors = FALSE
-          )
+        # Safely extract document text
+        if (!is.null(thoughts_by_topic[[i]]$docs) && 
+            length(thoughts_by_topic[[i]]$docs) > 0 && 
+            length(thoughts_by_topic[[i]]$docs[[1]]) > 0) {
+          
+          topic_texts[[i]] <- thoughts_by_topic[[i]]$docs[[1]]
+          
+          # Extract country info if available
+          if (!is.null(thoughts_by_topic[[i]]$index) && 
+              length(thoughts_by_topic[[i]]$index) > 0 && 
+              length(thoughts_by_topic[[i]]$index[[1]]) > 0) {
+            
+            doc_indices <- thoughts_by_topic[[i]]$index[[1]]
+            
+            if ("country_name" %in% names(meta)) {
+              # Make sure indices are within bounds of meta data
+              valid_indices <- doc_indices[doc_indices <= nrow(meta)]
+              
+              if (length(valid_indices) > 0) {
+                topic_docs[[i]] <- data.frame(
+                  country_name = meta$country_name[valid_indices],
+                  stringsAsFactors = FALSE
+                )
+              }
+            }
+          }
+        } else {
+          log_message(paste("No document text found for topic", i), "name_topics", "WARNING")
         }
+      } else {
+        log_message(paste("No thoughts data for topic", i), "name_topics", "WARNING")
       }
     }
-    doc_success <- TRUE
-    log_message("Using pre-calculated document examples", "name_topics")
+    
+    # Check if we got any successful extractions
+    if (length(topic_texts) > 0 && any(sapply(topic_texts, function(x) !is.null(x)))) {
+      doc_success <- TRUE
+      log_message("Successfully processed pre-calculated document examples", "name_topics")
+    } else {
+      log_message("Failed to extract any document examples from thoughts", "name_topics", "WARNING")
+    }
+    
   } else {
     log_message("No pre-calculated thoughts available", "name_topics")
   }
@@ -301,24 +332,85 @@ name_topics <- function(
     }
   }
   
-  ## --- Prepare result ---------------------------------------------------------
-  log_message("Preparing result", "name_topics")
+  ## --- Prepare enhanced result with integrated thoughts --------------------
+  log_message("Preparing enhanced result with integrated thoughts", "name_topics")
   
-  # Create topics table for easy reference
-  topics_table <- data.frame(
+  # Get thoughts data if available
+  thoughts_available <- doc_success && !is.null(topic_texts) && length(topic_texts) > 0
+  
+  # Calculate topic proportions from the model
+  topic_proportions <- colMeans(stm_model$theta)
+  
+  # Create enhanced topics table with proportions integrated
+  topics_table_columns <- list(
     topic_id = topic_names$topic_id,
     topic_name = topic_names$topic_name,
     topic_explanation = topic_names$topic_explanation,
+    topic_proportion = topic_proportions,  # ADD THIS LINE
     top_frex_terms = sapply(1:k, function(i) paste(topic_labels$frex[i,], collapse = ", ")),
     top_prob_terms = sapply(1:k, function(i) paste(topic_labels$prob[i,], collapse = ", ")),
-    top_countries = unlist(top_countries_per_topic),  # ADD THIS LINE
-    auto_generated = topic_names$auto_generated,
-    stringsAsFactors = FALSE
+    top_lift_terms = sapply(1:k, function(i) paste(topic_labels$lift[i,], collapse = ", ")),
+    top_countries = unlist(top_countries_per_topic),
+    auto_generated = topic_names$auto_generated
   )
   
-  # Create examples table if document extraction was successful
+  # Add thought columns if available
+  if (thoughts_available) {
+    log_message("Adding thought examples to topics table", "name_topics")
+    
+    # Determine maximum number of thoughts available
+    max_thoughts <- max(sapply(1:k, function(i) {
+      if (i <= length(topic_texts) && length(topic_texts[[i]]) > 0) {
+        length(topic_texts[[i]])
+      } else {
+        0
+      }
+    }))
+    
+    # Add thought columns
+    for (thought_num in 1:max_thoughts) {
+      # Thought text column
+      thought_col_name <- paste0("thought_", thought_num, "_text")
+      topics_table_columns[[thought_col_name]] <- sapply(1:k, function(i) {
+        if (i <= length(topic_texts) && 
+            length(topic_texts[[i]]) >= thought_num && 
+            !is.null(topic_texts[[i]][thought_num])) {
+          
+          # Truncate if too long
+          text <- topic_texts[[i]][thought_num]
+          if (nchar(text) > doc_length) {
+            text <- paste0(substr(text, 1, doc_length), "...")
+          }
+          return(text)
+        } else {
+          return(NA_character_)
+        }
+      })
+      
+      # Thought country column
+      country_col_name <- paste0("thought_", thought_num, "_country")
+      topics_table_columns[[country_col_name]] <- sapply(1:k, function(i) {
+        if (i <= length(topic_docs) && 
+            !is.null(topic_docs[[i]]) && 
+            nrow(topic_docs[[i]]) >= thought_num) {
+          return(topic_docs[[i]]$country_name[thought_num])
+        } else {
+          return(NA_character_)
+        }
+      })
+    }
+    
+    log_message(paste("Added", max_thoughts, "thought examples per topic"), "name_topics")
+  } else {
+    log_message("No thoughts available, skipping thought integration", "name_topics")
+  }
+  
+  # Create the enhanced topics table
+  topics_table <- data.frame(topics_table_columns, stringsAsFactors = FALSE)
+  
+  # Create a separate detailed examples table (keep this for backwards compatibility)
   topic_examples <- NULL
-  if (doc_success) {
+  if (thoughts_available) {
     example_rows <- list()
     
     for (i in 1:k) {

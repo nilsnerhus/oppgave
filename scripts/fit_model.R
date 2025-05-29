@@ -16,7 +16,9 @@
 #'   }
 #'   \item{metadata}{Processing information and model parameters}
 #'   \item{diagnostics}{Model quality metrics and processing details}
-fit_model <- function(dfm, k = 15, category_map = NULL, iterations = 200, seed = 12345) {
+fit_model <- function(dfm, k = 15, category_map = NULL, iterations = 200, seed = 12345, 
+                      original_docs = NULL) {  
+  
   ## --- Setup & Initialization -------------------------------------------------
   start_time <- Sys.time()
   
@@ -131,6 +133,74 @@ fit_model <- function(dfm, k = 15, category_map = NULL, iterations = 200, seed =
   
   log_message("STM model fitting complete", "fit_model")
   
+  ## --- Calculate findThoughts for topic examples ---------------------------
+  log_message("Calculating representative documents with findThoughts", "fit_model")
+  
+  thoughts_by_topic <- list()
+  
+  if (!is.null(original_docs)) {
+    tryCatch({
+      # Get the doc_ids that survived STM processing
+      processed_doc_ids <- meta$doc_id  # These are the documents in the final model
+      
+      # Extract original text data
+      if ("text" %in% names(original_docs)) {
+        original_texts_df <- original_docs
+      } else {
+        log_message("Original docs structure not recognized", "fit_model", "WARNING")
+        original_texts_df <- NULL
+      }
+      
+      if (!is.null(original_texts_df) && "doc_id" %in% names(original_texts_df)) {
+        # Match original texts to processed documents by doc_id
+        matched_indices <- match(processed_doc_ids, original_texts_df$doc_id)
+        
+        # Check for any unmatched documents
+        if (any(is.na(matched_indices))) {
+          warning_msg <- paste("Some processed documents not found in original texts")
+          diagnostics$processing_issues <<- c(diagnostics$processing_issues, warning_msg)
+          log_message(warning_msg, "fit_model", "WARNING")
+          
+          # Remove unmatched entries
+          valid_matches <- !is.na(matched_indices)
+          matched_indices <- matched_indices[valid_matches]
+          processed_doc_ids <- processed_doc_ids[valid_matches]
+        }
+        
+        # Extract aligned original texts
+        aligned_original_texts <- original_texts_df$text[matched_indices]
+        
+        log_message(paste("Aligned", length(aligned_original_texts), "texts with STM model"), "fit_model")
+        
+        # Now run findThoughts with properly aligned texts
+        for (i in 1:k) {
+          thoughts_result <- stm::findThoughts(
+            model_result, 
+            texts = aligned_original_texts,
+            topics = i,
+            n = 3  # Get top 3 documents per topic
+          )
+          thoughts_by_topic[[i]] <- thoughts_result
+        }
+        
+        log_message("Successfully calculated thoughts for all topics", "fit_model")
+        
+      } else {
+        log_message("Cannot align original texts - missing doc_id column", "fit_model", "WARNING") 
+        thoughts_by_topic <- NULL
+      }
+      
+    }, error = function(e) {
+      warning_msg <- paste("Error calculating findThoughts:", e$message)
+      diagnostics$processing_issues <<- c(diagnostics$processing_issues, warning_msg)
+      log_message(warning_msg, "fit_model", "WARNING")
+      thoughts_by_topic <- NULL
+    })
+  } else {
+    log_message("No original documents provided for findThoughts", "fit_model", "WARNING")
+    thoughts_by_topic <- NULL
+  }
+  
   ## --- Create model summary ---------------------------------------------------
   model_summary <- list(
     k = k,
@@ -154,8 +224,9 @@ fit_model <- function(dfm, k = 15, category_map = NULL, iterations = 200, seed =
       model = model_result,
       summary = model_summary,
       topic_proportions = model_result$theta,
-      aligned_meta = meta,  # This is already the properly aligned metadata
-      category_map = category_map  # Store the category map
+      aligned_meta = meta,
+      category_map = category_map,
+      thoughts_by_topic = thoughts_by_topic
     ),
     metadata = list(
       timestamp = start_time,
