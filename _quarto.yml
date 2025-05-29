@@ -6,7 +6,7 @@ book:
   subtitle: "A critical analysis of the illusions and realities of climate adaptation"
   author: "Nils Nerhus Rørstad"
   date: today
-  downloads: [pdf,docx]
+  downloads: [pdf]
   chapters:
     - index.qmd
     - text/intro.qmd
@@ -31,24 +31,14 @@ bibliography:
   - references/references.bib
   - references/grateful-refs.bib
 
-csl: references/apa.csl
-code-overflow: wrap
-highlight-style: tango
-code-fold: true
-
-comments: 
-  hypothesis: TRUE
-
 execute: 
   echo: false
   warning: false
-  freeze: auto
 
 format:
   html:
     theme: cosmo
     code-fold: true
-    include-before-body: _includes/page_metrics.html
   pdf:
     documentclass: scrreprt
     classoption:
@@ -58,8 +48,5 @@ format:
     toc: true
     number-sections: true
     number-depth: 2
-  docx: 
-    toc: true
-    reference-doc: references/custom-reference-doc.docx
 
 editor: source
