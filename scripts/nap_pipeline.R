@@ -65,5 +65,5 @@ be completely unique - no two topics can have the same name. Earlier analysis ha
 found the themes to be either security related (disasters or risks etc.), geographical
 (rangeland or coastal etc.) or sectoral (agriculture, fisheries, tourism)."
 
-topics <- auto_cache(name_topics, model, context = context, overwrite = TRUE)
+topics <- auto_cache(name_topics, model, context = context)
 metrics <- auto_cache(calculate_metrics, model, topics)

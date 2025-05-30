@@ -134,6 +134,6 @@ Future section:
 - Add a section discussing post-development [@demaria2023;@dunlap2025;@escobar1995]
 - Governmentality should get its own couple of paragraphs. Could even be interesting to explain the criminality stuff.
 - Add a discussion on *Seeing as a state* [@scott1998] and *The will to improve* [@li2007 ] should get a spot. 
-- I should also bring back the idea of the stadium tour, as my way of explaining the literature on this kind of work in peace, development and adaptation [@craze2021;@autesserre2014;@mosse2011;@paprocki2018]
+- I should also bring back the idea of the stadium tour, as my way of explaining the literature on this kind of work in peace, development and adaptation [@craze2021;@autesserre2014;@mosse2011;@paprocki2018], being a very large and specific system. One can reference the recent layoffs in the US, with exactly how many that were employed by the US. 
 
 In essence, I want to argue that the adaptation regime sees the south as *oppressed by the North*, and thus that the best way of helping is no help at all, since this will re-politize. I really like this argument, because it captures the absurdity of development work when you have tried it, but it really doesn't sound convincing the further away from it one gets. 

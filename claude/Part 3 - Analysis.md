@@ -90,6 +90,8 @@ The empirical backing for this is the variance numbers showing how important reg
 
 ## Adaptation empire
 
+- Through the international lens (that we established in the unfccc-subchapter), the state is the only legible level, and together with securitization, all fingers are pointing to the state as the saviour and redeemer, when in fact, it is neither
+
 Revisists the Star Wars quote from earlier. Attempting to explain that this system does not work by explisit coordination (no emperor), but rather by the politics of being reasonable. This leads to *control*. 
 
 Walk through the adaptation nexus approach, with its discourse of focusing more on certain topics, being more culturally sensitive and otherwise attempting to save reasonableness, or hoping the attention will pass. The nexus naturalizes and explains away the *control*, in a way that often is convincing. The Human Security student Partagaz. Maybe break the fourth wall again, and say that Human Security students might find work in the Intergalatic Security Burau (ISB)
