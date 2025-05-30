@@ -7,66 +7,70 @@ The structure is quite simple, and should be predictable. For each measurement:
 2. Then the subcategories
 3. Then possible methodological weaknesses we haven't controlled for
 
-## Topics (must be named asap)
+Each subsection should also have a simple ggplot2 minimal-theme graph highlighting the findings.
 
+## Topics 
+
+| topic_id | topic_name              | frex_terms                                                                       | top_countries                                 | topic_proportion |
+| -------: | :---------------------- | :------------------------------------------------------------------------------- | :-------------------------------------------- | ---------------: |
+|        1 | Territorial Instruments | territori, transit, famili, nativ, para, spanish, citi, instrument, biom, view   | Brazil (0.999), Argentina (0.917)             |        0.0971370 |
+|        2 | Policy Arrangements     | pro, counti, chapter, mandat, mate, readi, entri, guidanc, mainstream, arrang    | Albania (0.954), Armenia (0.927)              |        0.2720010 |
+|        3 | Rangeland Management    | rangeland, unoffici, moham, secretariat, box, money, gulf, director, dust, ahm   | Sri Lanka (0.998), Sudan (0.913)              |        0.0732592 |
+|        4 | WASH Disability         | wash, hill, disabl, wildlif, nationwid, youth, percent, smart, coverag, tier     | Nepal (0.988), Bangladesh (0.824)             |        0.1115922 |
+|        5 | Frost Risk              | strip, ensembl, appendix, centuri, frost, confid, calcul, paramet, day, yes      | Serbia (0.999), West Bank and Gaza (0.997)    |        0.0822447 |
+|        6 | Mountain Security       | defens, task, mountain, norm, basin, river, advocaci, herder, background, welfar | Israel (0.999), Azerbaijan (0.798)            |        0.0948995 |
+|        7 | Tropical Cyclones       | atol, typhoon, cyclon, pathway, pluvial, immedi, nanc, tropic, super, yet        | Philippines (0.981), Marshall Islands (0.845) |        0.1266059 |
+|        8 | Hurricane Aid           | des, les, hurrican, outer, divis, refuge, cent, pour, aid, offic                 | St. Lucia (0.992), Kiribati (0.927)           |        0.1422605 |
 
 ## Dominance
 
-| level_type | category  | subcategory               | documents | raw_dominance | normalized_dominance |  variance |  ci_lower |  ci_upper | top_topics                                                                                        | top_topic_ids |
-| :--------- | :-------- | :------------------------ | --------: | ------------: | -------------------: | --------: | --------: | --------: | :------------------------------------------------------------------------------------------------ | :------------ |
-| document   | Overall   | Overall                   |        45 |     0.9699236 |            0.9700666 | 0.0003723 | 0.9264797 | 0.9969644 | Mate: entri, prohibit, pro, Counti: linkag, ongo, wildlif, Unoffici: translat, output, pillar     | 2,6,3         |
-| corpus     | Overall   | Overall                   |        45 |     0.3228994 |            0.5294005 | 0.0073019 | 0.3843309 | 0.7120259 | Mate: entri, prohibit, pro, Counti: linkag, ongo, wildlif, Unoffici: translat, output, pillar     | 2,6,3         |
-| document   | Income    | Upper middle income       |        17 |     0.9693483 |            0.9689806 | 0.0001421 | 0.9461802 | 0.9901076 | Frost: deficit, hail, yes, Mountain: bangkok, meter, norm, Mate: entri, prohibit, pro             | 7,4,2         |
-| corpus     | Income    | Upper middle income       |        17 |     0.4259110 |            0.5409669 | 0.0052564 | 0.4085564 | 0.6918899 | Frost: deficit, hail, yes, Mountain: bangkok, meter, norm, Mate: entri, prohibit, pro             | 7,4,2         |
-| document   | Income    | Lower middle income       |        15 |     0.9610106 |            0.9622521 | 0.0004562 | 0.9292190 | 0.9939956 | Counti: linkag, ongo, wildlif, Atol: typhoon, pluvial, immedi, Unoffici: translat, output, pillar | 6,9,3         |
-| corpus     | Income    | Lower middle income       |        15 |     0.4195776 |            0.5439935 | 0.0047357 | 0.4215601 | 0.6804861 | Counti: linkag, ongo, wildlif, Atol: typhoon, pluvial, immedi, Unoffici: translat, output, pillar | 6,9,3         |
-| document   | Income    | Low income                |         9 |     0.9761690 |            0.9762617 | 0.0000132 | 0.9732227 | 0.9850052 | Les: des, refuge, pour, Counti: linkag, ongo, wildlif, Yahoo: timber, royal, page                 | 8,6,12        |
-| corpus     | Income    | Low income                |         9 |     0.6241638 |            0.6484031 | 0.0009228 | 0.5773113 | 0.6947812 | Les: des, refuge, pour, Counti: linkag, ongo, wildlif, Yahoo: timber, royal, page                 | 8,6,12        |
-| document   | Region    | Latin America & Caribbean |         8 |     0.9659966 |            0.9659966 | 0.0026168 | 0.9659966 | 0.9659966 | Unoffici: translat, output, pillar, Outer: cent, director, money, Biom: ana, deploy, northeast    | 3,14,1        |
-| corpus     | Region    | Latin America & Caribbean |         8 |     0.5953091 |            0.5953091 | 0.0083910 | 0.5953091 | 0.5953091 | Unoffici: translat, output, pillar, Outer: cent, director, money, Biom: ana, deploy, northeast    | 3,14,1        |
-| document   | Region    | Sub-Saharan Africa        |        13 |     0.9694166 |            0.9691383 | 0.0000674 | 0.9547963 | 0.9859379 | Counti: linkag, ongo, wildlif, Les: des, refuge, pour, Unoffici: translat, output, pillar         | 6,8,3         |
-| corpus     | Region    | Sub-Saharan Africa        |        13 |     0.5947996 |            0.6639720 | 0.0043616 | 0.5499697 | 0.7966865 | Counti: linkag, ongo, wildlif, Les: des, refuge, pour, Unoffici: translat, output, pillar         | 6,8,3         |
-| document   | Region    | East Asia & Pacific       |         9 |     0.9852339 |            0.9852919 | 0.0000068 | 0.9836499 | 0.9912976 | Atol: typhoon, pluvial, immedi, Mountain: bangkok, meter, norm, Counti: linkag, ongo, wildlif     | 9,4,6         |
-| corpus     | Region    | East Asia & Pacific       |         9 |     0.5595184 |            0.5848216 | 0.0017789 | 0.5058123 | 0.6294370 | Atol: typhoon, pluvial, immedi, Mountain: bangkok, meter, norm, Counti: linkag, ongo, wildlif     | 9,4,6         |
-| document   | Geography | SIDS                      |        11 |     0.9627029 |            0.9629341 | 0.0000895 | 0.9494529 | 0.9815567 | Outer: cent, director, money, Unoffici: translat, output, pillar, Commenc: yet, ref, regret       | 14,3,10       |
-| corpus     | Geography | SIDS                      |        11 |     0.5911894 |            0.6486521 | 0.0036464 | 0.5430868 | 0.7920666 | Outer: cent, director, money, Unoffici: translat, output, pillar, Commenc: yet, ref, regret       | 14,3,10       |
-| document   | Geography | LLDC                      |        10 |     0.9747076 |            0.9748023 | 0.0000408 | 0.9686257 | 0.9890699 | Mate: entri, prohibit, pro, Yahoo: timber, royal, page, Mountain: bangkok, meter, norm            | 2,12,4        |
-| corpus     | Geography | LLDC                      |        10 |     0.4810221 |            0.5378583 | 0.0016802 | 0.4452690 | 0.5996884 | Mate: entri, prohibit, pro, Yahoo: timber, royal, page, Mountain: bangkok, meter, norm            | 2,12,4        |
+| category  | subcategory               | documents | raw_dominance | normalized_dominance |  variance |  ci_lower |  ci_upper | top_topics                                                   | top_topic_ids |
+| :-------- | :------------------------ | --------: | ------------: | -------------------: | --------: | --------: | --------: | :----------------------------------------------------------- | :------------ |
+| Global    | Global                    |        45 |     0.5408674 |            0.5408674 | 0.0018755 | 0.4971752 | 0.6613511 | Policy Arrangements, Hurricane Aid, Tropical Cyclones        | 2,8,7         |
+| Income    | Upper middle income       |        17 |     0.5808008 |            0.5808008 | 0.0036301 | 0.5487293 | 0.7802584 | Policy Arrangements, Mountain Security, Hurricane Aid        | 2,6,8         |
+| Income    | Lower middle income       |        15 |     0.6746967 |            0.6746967 | 0.0046779 | 0.5867098 | 0.8502363 | Policy Arrangements, WASH Disability, Tropical Cyclones      | 2,4,7         |
+| Income    | Low income                |         9 |     0.7419699 |            0.7419699 | 0.0028863 | 0.6864042 | 0.8870398 | Policy Arrangements, Hurricane Aid, Rangeland Management     | 2,8,3         |
+| Income    | Overall                   |        45 |     0.6658225 |            0.6658225 | 0.0000000 | 0.6658225 | 0.6658225 | Average of subcategories                                     |               |
+| Region    | Latin America & Caribbean |         8 |     0.8638138 |            0.8638138 | 0.0028900 | 0.7798435 | 0.9733186 | Territorial Instruments, Hurricane Aid, Policy Arrangements  | 1,8,2         |
+| Region    | Sub-Saharan Africa        |        13 |     0.7181141 |            0.7181141 | 0.0030702 | 0.6584482 | 0.8784470 | Policy Arrangements, Hurricane Aid, Territorial Instruments  | 2,8,1         |
+| Region    | East Asia & Pacific       |         9 |     0.7800914 |            0.7800914 | 0.0055730 | 0.6733727 | 0.9710995 | Tropical Cyclones, Policy Arrangements, Hurricane Aid        | 7,2,8         |
+| Region    | Overall                   |        45 |     0.7873398 |            0.7873398 | 0.0000000 | 0.7873398 | 0.7873398 | Average of subcategories                                     |               |
+| Geography | SIDS                      |        11 |     0.9232473 |            0.9232473 | 0.0013677 | 0.8408107 | 0.9767986 | Hurricane Aid, Policy Arrangements, Tropical Cyclones        | 8,2,7         |
+| Geography | LLDC                      |        11 |     0.7661754 |            0.7661754 | 0.0035871 | 0.7243193 | 0.9502598 | WASH Disability, Policy Arrangements, Mountain Security      | 4,2,6         |
+| Geography | Overall                   |        45 |     0.8447114 |            0.8447114 | 0.0000000 | 0.8447114 | 0.8447114 | Average of subcategories                                     |               |
+| Time      | Middle                    |        15 |     0.7477841 |            0.7477841 | 0.0033470 | 0.6722211 | 0.8946319 | Policy Arrangements, Hurricane Aid, WASH Disability          | 2,8,4         |
+| Time      | Late                      |        22 |     0.5314728 |            0.5314728 | 0.0026549 | 0.5114015 | 0.7082729 | Tropical Cyclones, Mountain Security, WASH Disability        | 7,6,4         |
+| Time      | Early                     |         8 |     0.6600920 |            0.6600920 | 0.0081219 | 0.6253330 | 0.9644196 | Hurricane Aid, Rangeland Management, Territorial Instruments | 8,3,1         |
+| Time      | Overall                   |        45 |     0.6464497 |            0.6464497 | 0.0000000 | 0.6464497 | 0.6464497 | Average of subcategories                                     |               |
 
 ## Variance:
 
-|   |level_type  |category       |subcategory                | variance_explained|
-|:--|:-----------|:--------------|:--------------------------|------------------:|
-|20 |overall     |ALL_CATEGORIES |AVERAGE                    |          0.0877733|
-|16 |subcategory |Geography      |SIDS                       |          0.0310075|
-|18 |subcategory |Geography      |LLDC                       |          0.0244102|
-|15 |dimension   |Geography      |is_sids                    |          0.0310075|
-|17 |dimension   |Geography      |is_lldc                    |          0.0244102|
-|19 |category    |Geography      |Overall                    |          0.0277089|
-|2  |subcategory |Income         |High income                |          0.0495815|
-|3  |subcategory |Income         |Low income                 |          0.0391070|
-|5  |subcategory |Income         |Upper middle income        |          0.0255569|
-|4  |subcategory |Income         |Lower middle income        |          0.0249294|
-|1  |dimension   |Income         |wb_income_level            |          0.1089815|
-|6  |category    |Income         |Overall                    |          0.1089815|
-|9  |subcategory |Region         |Europe & Central Asia      |          0.0499998|
-|13 |subcategory |Region         |Sub-Saharan Africa         |          0.0408209|
-|10 |subcategory |Region         |Latin America & Caribbean  |          0.0392876|
-|11 |subcategory |Region         |Middle East & North Africa |          0.0335147|
-|12 |subcategory |Region         |South Asia                 |          0.0321487|
-|8  |subcategory |Region         |East Asia & Pacific        |          0.0286467|
-|7  |dimension   |Region         |region                     |          0.1866942|
-|14 |category    |Region         |Overall                    |          0.1866942|
-
+| category  | subcategory               | documents | variance_explained |  ci_lower |  ci_upper |
+| :-------- | :------------------------ | --------: | -----------------: | --------: | --------: |
+| Income    | Upper middle income       |        17 |          0.0021985 | 0.0018660 | 0.0724664 |
+| Income    | Lower middle income       |        15 |          0.0126890 | 0.0021588 | 0.1000620 |
+| Income    | Low income                |         9 |          0.0306587 | 0.0077854 | 0.1204674 |
+| Income    | Overall                   |        45 |          0.0151821 | 0.0151821 | 0.0151821 |
+| Region    | Latin America & Caribbean |         8 |          0.0386113 | 0.0060296 | 0.1486862 |
+| Region    | Sub-Saharan Africa        |        13 |          0.0512812 | 0.0145108 | 0.1515714 |
+| Region    | East Asia & Pacific       |         9 |          0.0814157 | 0.0185943 | 0.2130853 |
+| Region    | Overall                   |        45 |          0.0571027 | 0.0571027 | 0.0571027 |
+| Geography | SIDS                      |        11 |          0.1109196 | 0.0540747 | 0.2439472 |
+| Geography | LLDC                      |        11 |          0.0306106 | 0.0203485 | 0.1025350 |
+| Geography | Overall                   |        45 |          0.0707651 | 0.0707651 | 0.0707651 |
+| Time      | Middle                    |        15 |          0.1082696 | 0.0374081 | 0.2160699 |
+| Time      | Late                      |        22 |          0.0701569 | 0.0222626 | 0.1631145 |
+| Time      | Early                     |         8 |          0.0395444 | 0.0066538 | 0.1513828 |
+| Time      | Overall                   |        45 |          0.0726570 | 0.0726570 | 0.0726570 |
 
 
 # Discussion
 
 The introduction walks through (and references) the main findings:
 
-1. **Topics**: The most popular topics are connected to finance and planning 
-2. **Dominance**: The lowest income countries are the most centralized
-3. **Variance**: Geography is a non-factor and region is much more important
+1. **Topics**: The most popular topic is planning, and the next two are disasters 
+2. **Dominance**: Grows as incomes fall. Very time-based also
+3. **Variance**: Almost nothing of the variance, despite the overall high centralization within categories, is because of the categories a country is in. 
 
 Then, it presents the other parts. How epistemolical and ontological assumptions shape what we think is reasonable (or possible, preferable). Straying too far from reasonable, in your group, makes you dimissed.
 

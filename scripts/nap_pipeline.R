@@ -22,7 +22,7 @@ category_map <- list(
   Income = "wb_income_level", 
   Region = "region", 
   Geography = c("is_sids", "is_lldc"),
-  Time = "year"
+  Time = "time_period"
 )
 
 un_classifications <- auto_cache(get_un_classifications)
@@ -40,9 +40,9 @@ k_result <- auto_cache(find_k,
                        dfm, 
                        range = c(5, 8, 10, 12, 15, 18, 20),
                        iterations = 100,
-                       coherence = 0.35,    # Interpretability
+                       coherence = 0.60,    # Interpretability
                        exclusivity = 0.40,  # Distinctiveness  
-                       residual = 0.25,     # Model fit
+                       residual = 0.20,     # Model fit
                        penalty = 0          # Penalty for complexity
                        )      
 k_value <- k_result$data$best_k
@@ -50,8 +50,7 @@ model <- auto_cache(fit_model,
                     dfm, 
                     k = k_value, 
                     category_map = category_map, 
-                    original_docs = tokens$data$documents,
-                    overwrite = TRUE)
+                    original_docs = tokens$data$documents)
 
 # Step 3: Analysis
 source("scripts/name_topics.R")
@@ -59,5 +58,12 @@ source("scripts/find_dominance.R")
 source("scripts/find_variance.R")
 source("scripts/calculate_metrics.R")
 
-topics <- auto_cache(name_topics, model, mode = "auto")
-metrics <- auto_cache(calculate_metrics, model, topics, overwrite = TRUE)
+context <- "These are National Adaptation Plan documents from the UNFCCC covering 
+climate adaptation strategies. Generate exactly ONE WORD topic labels with 
+capitalized first letter that capture the core theme. CRITICAL: Each label must 
+be completely unique - no two topics can have the same name. Earlier analysis has
+found the themes to be either security related (disasters or risks etc.), geographical
+(rangeland or coastal etc.) or sectoral (agriculture, fisheries, tourism)."
+
+topics <- auto_cache(name_topics, model, context = context, overwrite = TRUE)
+metrics <- auto_cache(calculate_metrics, model, topics)

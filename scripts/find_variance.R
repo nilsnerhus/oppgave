@@ -1,4 +1,17 @@
-#' @title Calculate Variance Explained with Bootstrap Confidence Intervals
+#' @title Calculate Variance Explained with Bootstrap Confidence Intervals - FIXED VERSION
+#' @description Calculates variance explained by categorical variables across the ENTIRE corpus,
+#'   not just within subsets. This matches the original methodology and should restore
+#'   the ~20% regional vs ~2% geographic variance pattern.
+#'   
+#' @param theta Full topic-document matrix (theta)
+#' @param doc_indices Document indices (NOT USED in variance calculation - kept for compatibility)
+#' @param category_var Full categorical variable across all documents
+#' @param topics_to_analyze Vector of topic IDs to analyze
+#' @param bootstrap Whether to calculate bootstrap confidence intervals
+#' @param n_bootstrap Number of bootstrap iterations
+#' @param conf_level Confidence level for intervals
+#'
+#' @return List with variance statistics
 find_variance <- function(theta, doc_indices, category_var, topics_to_analyze, 
                           bootstrap = TRUE, n_bootstrap = 1000, conf_level = 0.95) {
   
@@ -7,22 +20,21 @@ find_variance <- function(theta, doc_indices, category_var, topics_to_analyze,
     return(NULL)
   }
   
-  # Work on document subset
-  theta_subset <- theta[doc_indices, , drop = FALSE]
-  category_subset <- category_var[doc_indices]
+  theta_full <- theta  # Use FULL matrix
+  category_full <- category_var  # Use FULL category variable
   
   # Calculate variance for each topic
   topic_variances <- numeric()
   for (topic_id in topics_to_analyze) {
-    topic_props <- theta_subset[, topic_id]
+    topic_props <- theta_full[, topic_id]
     
-    # Total variance
+    # Total variance across ALL documents
     total_mean <- mean(topic_props, na.rm = TRUE)
     ss_total <- sum((topic_props - total_mean)^2, na.rm = TRUE)
     
     if (ss_total > 0) {
-      # Between-group variance
-      group_stats <- aggregate(topic_props, by = list(category_subset), 
+      # Between-group variance across ALL documents
+      group_stats <- aggregate(topic_props, by = list(category_full), 
                                FUN = function(x) c(mean = mean(x, na.rm = TRUE), n = sum(!is.na(x))))
       ss_between <- sum(group_stats$x[,"n"] * (group_stats$x[,"mean"] - total_mean)^2, na.rm = TRUE)
       
@@ -35,15 +47,15 @@ find_variance <- function(theta, doc_indices, category_var, topics_to_analyze,
   
   # Bootstrap confidence intervals
   if (bootstrap && n_bootstrap > 0) {
-    set.seed(12345 + length(doc_indices))
+    set.seed(12345 + nrow(theta_full))  # Use full matrix size for seed
     
     bootstrap_estimates <- numeric(n_bootstrap)
     
     for (iter in 1:n_bootstrap) {
-      # Resample documents with replacement from the subset
-      boot_indices <- sample(doc_indices, length(doc_indices), replace = TRUE)
-      boot_theta <- theta[boot_indices, , drop = FALSE]
-      boot_category_var <- category_var[boot_indices]
+      # CRITICAL FIX: Resample from ALL documents, not just subset
+      boot_indices <- sample(1:nrow(theta_full), nrow(theta_full), replace = TRUE)
+      boot_theta <- theta_full[boot_indices, , drop = FALSE]
+      boot_category_var <- category_full[boot_indices]
       
       boot_topic_variances <- numeric()
       for (topic_id in topics_to_analyze) {
@@ -86,6 +98,6 @@ find_variance <- function(theta, doc_indices, category_var, topics_to_analyze,
     ci_lower = ci_lower,
     ci_upper = ci_upper,
     n_topics_analyzed = length(topics_to_analyze),
-    n_docs = length(doc_indices)
+    n_docs = nrow(theta_full)  # Report full corpus size
   ))
 }

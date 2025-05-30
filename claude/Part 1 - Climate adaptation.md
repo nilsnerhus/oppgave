@@ -38,6 +38,17 @@ Each dollar spent is spent on something.
 
 This is an ~~easy~~ solvable political question. 
 
+Insert the fact that climate action and climate spending are not the same thing. In most markets, climate action is free, and would actually raise revenues, as it is smart to shift spender [@foller2024]. 
+
+In essence, I want to argue that climate mitigation spending is not inherently something that is needed to do.
+
+It is also important to talk about the talk about raising private fund [@asiandevelopmentbank2008] [@flento2024]. It has a special name, I can't remember right now. And in CONCITO they were all for it. 
+
+Innovation and such are, by nature, financed by private stuff. This is the thesis of @mazzucato2021 
+
+The innovation case for mitigation is acutally quite good, but the role of government as innvoator is not what is done through climate mitigation. if anything, the innovation is in how to sell as much carbon credits as possible. 
+
+
 ## Adaptation
 
 
