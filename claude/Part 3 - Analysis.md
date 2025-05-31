@@ -24,45 +24,25 @@ Each subsection should also have a simple ggplot2 minimal-theme graph highlighti
 
 ## Dominance
 
-| category  | subcategory               | documents | raw_dominance | normalized_dominance |  variance |  ci_lower |  ci_upper | top_topics                                                   | top_topic_ids |
-| :-------- | :------------------------ | --------: | ------------: | -------------------: | --------: | --------: | --------: | :----------------------------------------------------------- | :------------ |
-| Global    | Global                    |        45 |     0.5408674 |            0.5408674 | 0.0018755 | 0.4971752 | 0.6613511 | Policy Arrangements, Hurricane Aid, Tropical Cyclones        | 2,8,7         |
-| Income    | Upper middle income       |        17 |     0.5808008 |            0.5808008 | 0.0036301 | 0.5487293 | 0.7802584 | Policy Arrangements, Mountain Security, Hurricane Aid        | 2,6,8         |
-| Income    | Lower middle income       |        15 |     0.6746967 |            0.6746967 | 0.0046779 | 0.5867098 | 0.8502363 | Policy Arrangements, WASH Disability, Tropical Cyclones      | 2,4,7         |
-| Income    | Low income                |         9 |     0.7419699 |            0.7419699 | 0.0028863 | 0.6864042 | 0.8870398 | Policy Arrangements, Hurricane Aid, Rangeland Management     | 2,8,3         |
-| Income    | Overall                   |        45 |     0.6658225 |            0.6658225 | 0.0000000 | 0.6658225 | 0.6658225 | Average of subcategories                                     |               |
-| Region    | Latin America & Caribbean |         8 |     0.8638138 |            0.8638138 | 0.0028900 | 0.7798435 | 0.9733186 | Territorial Instruments, Hurricane Aid, Policy Arrangements  | 1,8,2         |
-| Region    | Sub-Saharan Africa        |        13 |     0.7181141 |            0.7181141 | 0.0030702 | 0.6584482 | 0.8784470 | Policy Arrangements, Hurricane Aid, Territorial Instruments  | 2,8,1         |
-| Region    | East Asia & Pacific       |         9 |     0.7800914 |            0.7800914 | 0.0055730 | 0.6733727 | 0.9710995 | Tropical Cyclones, Policy Arrangements, Hurricane Aid        | 7,2,8         |
-| Region    | Overall                   |        45 |     0.7873398 |            0.7873398 | 0.0000000 | 0.7873398 | 0.7873398 | Average of subcategories                                     |               |
-| Geography | SIDS                      |        11 |     0.9232473 |            0.9232473 | 0.0013677 | 0.8408107 | 0.9767986 | Hurricane Aid, Policy Arrangements, Tropical Cyclones        | 8,2,7         |
-| Geography | LLDC                      |        11 |     0.7661754 |            0.7661754 | 0.0035871 | 0.7243193 | 0.9502598 | WASH Disability, Policy Arrangements, Mountain Security      | 4,2,6         |
-| Geography | Overall                   |        45 |     0.8447114 |            0.8447114 | 0.0000000 | 0.8447114 | 0.8447114 | Average of subcategories                                     |               |
-| Time      | Middle                    |        15 |     0.7477841 |            0.7477841 | 0.0033470 | 0.6722211 | 0.8946319 | Policy Arrangements, Hurricane Aid, WASH Disability          | 2,8,4         |
-| Time      | Late                      |        22 |     0.5314728 |            0.5314728 | 0.0026549 | 0.5114015 | 0.7082729 | Tropical Cyclones, Mountain Security, WASH Disability        | 7,6,4         |
-| Time      | Early                     |         8 |     0.6600920 |            0.6600920 | 0.0081219 | 0.6253330 | 0.9644196 | Hurricane Aid, Rangeland Management, Territorial Instruments | 8,3,1         |
-| Time      | Overall                   |        45 |     0.6464497 |            0.6464497 | 0.0000000 | 0.6464497 | 0.6464497 | Average of subcategories                                     |               |
-
-## Variance:
-
-| category  | subcategory               | documents | variance_explained |  ci_lower |  ci_upper |
-| :-------- | :------------------------ | --------: | -----------------: | --------: | --------: |
-| Income    | Upper middle income       |        17 |          0.0021985 | 0.0018660 | 0.0724664 |
-| Income    | Lower middle income       |        15 |          0.0126890 | 0.0021588 | 0.1000620 |
-| Income    | Low income                |         9 |          0.0306587 | 0.0077854 | 0.1204674 |
-| Income    | Overall                   |        45 |          0.0151821 | 0.0151821 | 0.0151821 |
-| Region    | Latin America & Caribbean |         8 |          0.0386113 | 0.0060296 | 0.1486862 |
-| Region    | Sub-Saharan Africa        |        13 |          0.0512812 | 0.0145108 | 0.1515714 |
-| Region    | East Asia & Pacific       |         9 |          0.0814157 | 0.0185943 | 0.2130853 |
-| Region    | Overall                   |        45 |          0.0571027 | 0.0571027 | 0.0571027 |
-| Geography | SIDS                      |        11 |          0.1109196 | 0.0540747 | 0.2439472 |
-| Geography | LLDC                      |        11 |          0.0306106 | 0.0203485 | 0.1025350 |
-| Geography | Overall                   |        45 |          0.0707651 | 0.0707651 | 0.0707651 |
-| Time      | Middle                    |        15 |          0.1082696 | 0.0374081 | 0.2160699 |
-| Time      | Late                      |        22 |          0.0701569 | 0.0222626 | 0.1631145 |
-| Time      | Early                     |         8 |          0.0395444 | 0.0066538 | 0.1513828 |
-| Time      | Overall                   |        45 |          0.0726570 | 0.0726570 | 0.0726570 |
-
+| category  | subcategory               | documents | dominance | top_topics                                      | top_topic_ids |   p_value | significant |
+| :-------- | :------------------------ | --------: | --------: | :---------------------------------------------- | :------------ | --------: | :---------- |
+| Global    | Global                    |        46 | 0.5068198 | UNFCCC_NAPA_document, budget, agriculture       | 7,3,4         |        NA | FALSE       |
+| Global    | Overall                   |        46 | 0.5068198 | Average of subcategories                        |               |        NA | NA          |
+| Income    | Upper middle income       |        18 | 0.5150289 | UNFCCC_NAPA_document, budget, climate-modeling  | 7,3,6         | 0.0231411 | TRUE        |
+| Income    | Lower middle income       |        15 | 0.6035719 | budget, agriculture, UNFCCC_NAPA_document       | 3,4,7         | 0.0000015 | TRUE        |
+| Income    | Low income                |         9 | 0.6121351 | UNFCCC_NAPA_document, poverty, budget           | 7,1,3         | 0.0000000 | TRUE        |
+| Income    | Overall                   |        46 | 0.5769120 | Average of subcategories                        |               |        NA | NA          |
+| Region    | Latin America & Caribbean |         8 | 0.6736050 | UNFCCC_NAPA_document, municipal, budget         | 7,5,3         | 0.0000000 | TRUE        |
+| Region    | Sub-Saharan Africa        |        13 | 0.6270248 | UNFCCC_NAPA_document, poverty, budget           | 7,1,3         | 0.0000000 | TRUE        |
+| Region    | East Asia & Pacific       |        10 | 0.5686706 | budget, UNFCCC_NAPA_document, tropical cyclones | 3,7,2         | 0.0000000 | TRUE        |
+| Region    | Overall                   |        46 | 0.6231001 | Average of subcategories                        |               |        NA | NA          |
+| Geography | SIDS                      |        12 | 0.6981987 | UNFCCC_NAPA_document, budget, coastal           | 7,3,8         | 0.0000000 | TRUE        |
+| Geography | LLDC                      |        11 | 0.6026048 | UNFCCC_NAPA_document, agriculture, poverty      | 7,4,1         | 0.0000019 | TRUE        |
+| Geography | Overall                   |        46 | 0.6504017 | Average of subcategories                        |               |        NA | NA          |
+| Time      | Middle                    |        16 | 0.6388820 | UNFCCC_NAPA_document, budget, coastal           | 7,3,8         | 0.0000532 | TRUE        |
+| Time      | Late                      |        22 | 0.4603500 | budget, UNFCCC_NAPA_document, climate-modeling  | 3,7,6         | 0.0006223 | TRUE        |
+| Time      | Early                     |         8 | 0.5199502 | UNFCCC_NAPA_document, agriculture, coastal      | 7,4,8         | 0.0138874 | TRUE        |
+| Time      | Overall                   |        46 | 0.5397274 | Average of subcategories                        |               |        NA | NA          |
 
 # Discussion
 

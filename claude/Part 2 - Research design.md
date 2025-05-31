@@ -1,6 +1,6 @@
 This part builds my research design as a novel combination of future studies and post-colonial theory, with computuional text mining methods
 
-## Theory 15,6/10 pages
+# Theory 15,6/10 pages
 
 ## Critical future studies
 
@@ -54,14 +54,43 @@ Future version
 
 The goal of this section is to very clearly and transparently write out *why* I have spent the last four months learning to code. 
 
-## Methods
+# Methods
+
+The intro should somehow explain that I have developed this pipeline from the ground up. Considerable effort spent on learning the tools, and refining the process. Using known methods as much as possible, with improvized adaptations to deal with the specific stuff in the corpus.
+
+One of the key changes have been as I have discovered more about the package, and reduced the size of the computations. The full complite used to take 3-4 hours, but it is done in less that 30 minutes now. 
+
+## Corpus collection and Preparation
+
+Current section:
+
+- A lot of the same stuff going on
+- No mention of the development process
+- Unclear structure, and no mention of the actual work behind it. It sound very simple
+- Highlight that it is not normal to have a dictinary validation approach, but it is needed because of the pdf-format creating artifacts.
+
+Future section:
+
+- Walk through each of the functions, not by name, but by what they are contributing to the setup, and why I have done as I have. 
+- Here it will be: The goal is to make a comparable corpus that can say something about climate adaptation planning, with enough metadata to say something about how it relates to country categories. 
+- For the text data: I automatically gather the pdfs from the website, so the data is always up to data, I then extract the texts that are tagged with english. Thus, remove document specific artifacts, remove non-english words, Then we do the normal stuff with cleaning. Lastly, I went trough and removed words that appeared only in one document (national specific) and in all documents (general beyond interest). This made the corpus considerably smaller, and better suited for analysis.
+- I kept the country name and date posted from the UNFCCC website, and used the world bank package to add the wb-region and wb income data. I then scraped the UN websites for the countries listed as sids/lldc, and added that as a new category. I used a category map for the metadata to get the same categories calculated throughout the analysis, with a global, income, region, geography and year posted -category. These categories where chosen because they feature on the UNFCCC website, hinting at a link between the categories and the texts
+
+
+## Structural topic modeling
 
 
 
+## Text analysis
+
+Current section:
+
+- Also disorganized and hard to follow
+- Random citations
 
 Add the following as new paragraphs in the analysis section:
 
-- The topic naming approach. To make sure the topics get human-readable names, they have been qualitativly named using frex, lift and prob words, as well as what the STM-model deems as relevant text chunks, and the top 2 countries for that topic. 
-- The rarefaction approach to make the values comparable across sample size. Has a high minimum group size (8). Calculates all groups with a random sample of 8 from the group 1000 times, and averages it at the end. Also produces a confidence interval that will be visible 
-- The variance partitioning approach. For one topic: Calculates the mean and overall variation across all categories. Then calculates the group mean, and the distance to the overall mean weighted per country. Then divide the between group variance by the total variance. It is then averaged per group, across all topics. Also produces a confidence interval that will be visible
-
+- The topic naming approach. To make sure the topics get human-readable names, I use the topic label approach, and utilize a limited large language model to name them based on the frequent and exlusive words that the stm-model outputs. This is to make rapid iteration more possible, as each change in the data processing and preperation, creates a need for renaming into a human-readable name. This is a comprimize to make the pipeline more usable. In the section, we are going through to validate the names, in the name of transparancy, not trying to analyze them as our main finding. 
+- Both statistical methods are validated using bootstrapping [@roberts2019]. This method resamples the corpus with replacement (some documents may appear multiple times in a sample, others not at all) 1,000 times to estimate the uncertainty in our findings. This generates confidence intervals (set to 95%) that indicate the range of values we would expect if the study were repeated with different document samples. This does not explicitly control for group sizes, that would need other methods like rarefication, but they do shown clearly when group sizes influence the confidence in the point estimate. When those were tried the confidence intervals were too large to be able to be interpreted. 
+- We calculated dominance by identifying the top 3 most prevalent topics for each group, then averaging those topics' proportions within that group using the STM topic proportions. We bootstrap this calculation across 1,000 resamples to generate confidence intervals, quantifying uncertainty in our dominance estimates. The choice of 3 topics is robust because the document-centric nature of the themes means dominance values remain stable whether using different concentration thresholds or different specific topics.
+- We calculated variance explained using analysis of variance (ANOVA) logic: measuring how much of the total variation in dominance values can be attributed to differences between groups (income, region, etc.) versus differences within groups. This reveals whether structural factors systematically shape discourse patterns. The calculation partitions total variance into between-group and within-group components, with the ratio indicating explanatory power. Confidence intervals are generated through bootstrap resampling.
