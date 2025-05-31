@@ -34,6 +34,7 @@ bibliography:
 execute: 
   echo: false
   warning: false
+  freeze: auto
 
 format:
   html:

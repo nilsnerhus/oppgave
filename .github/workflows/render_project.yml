@@ -10,6 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+    
+    env:
+      GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
+      HUGGINGFACE_TOKEN: ${{ secrets.HUGGINGFACE_TOKEN }}
+      RENV_PATHS_ROOT: ~/.local/share/renv
 
     steps:
       - name: Check out repository
@@ -20,28 +25,10 @@ jobs:
         with:
           use-public-rspm: true
 
-      - name: Set up system dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends \
-            libcurl4-openssl-dev \
-            libssl-dev \
-            libxml2-dev \
-            libfontconfig1-dev \
-            libfreetype6-dev \
-            libharfbuzz-dev \
-            libfribidi-dev \
-            libpng-dev \
-            libtiff5-dev \
-            libjpeg-dev \
-            libpoppler-cpp-dev \
-            libgdal-dev \
-            libproj-dev \
-            libgeos-dev \
-            libudunits2-dev
- 
-      - name: Set up renv
+      - name: Set up renv and dependencies
         uses: r-lib/actions/setup-renv@v2
+        with:
+          cache-version: 2
 
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
