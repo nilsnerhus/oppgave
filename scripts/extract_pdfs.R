@@ -27,7 +27,7 @@
 #' }
 
 extract_pdfs <- function(
-    tokens_data, 
+    web_data,  # Changed: now takes full web object
     pdf_dir = "data",
     output_path = "data/pdfs.rds",
     respect_robots_txt = TRUE
@@ -40,6 +40,9 @@ extract_pdfs <- function(
   
   # Create output directory if needed
   ensure_directory(output_path)
+  
+  # Extract tokens data from web object
+  tokens_data <- web_data$data$tokens  # Added: extract tokens internally
   
   # Initialize diagnostics tracking
   diagnostics <- list(

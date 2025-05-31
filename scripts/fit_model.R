@@ -1,204 +1,150 @@
-#' @title Fit Structural Topic Model
-#' @description Fits an STM model with customizable parameters
-#' @param dfm Result from process_dfm containing documents, vocabulary, and metadata
-#' @param k Number of topics (default: 15)
-#' @param category_map List mapping categories to dimension names (default: NULL)
-#' @param iterations Maximum number of EM iterations (default: 200)
-#' @param seed Random seed for reproducibility (default: 12345)
-#'
-#' @return A list containing:
-#'   \item{data}{
-#'     \itemize{
-#'       \item model - Fitted STM model object
-#'       \item summary - Basic model summary statistics
-#'     }
-#'   }
-#'   \item{metadata}{Processing information and model parameters}
-#'   \item{diagnostics}{Model quality metrics and processing details}
-fit_model <- function(dfm, k = 15, category_map = NULL, iterations = 200, seed = 12345, 
-                      original_docs = NULL) {  
+
+fit_model <- function(dfm, k_result, category_map = NULL, iterations = 200, seed = 12345) {  # Changed: k_result instead of k
   
-  ## --- Setup & Initialization -------------------------------------------------
   start_time <- Sys.time()
-  
-  # Initialize diagnostics tracking
-  diagnostics <- list(
-    processing_issues = character(),
-    model_stats = list()
-  )
-  
-  # Set seed for reproducibility
   set.seed(seed)
   
-  ## --- Input validation -------------------------------------------------------
-  # Validate k is a positive number
+  # Extract k from k_result
+  k <- k_result$data$best_k  # Added: extract k internally
+  
+  ## --- Validation & Setup -----------------------------------------------------
   if (!is.numeric(k) || k <= 0 || k != round(k)) {
-    warning_msg <- "k must be a positive integer, using default k = 15"
-    diagnostics$processing_issues <- c(diagnostics$processing_issues, warning_msg)
-    log_message(warning_msg, "fit_model", "WARNING")
+    warning("Invalid k value from k_result, using default k = 15")
     k <- 15
   }
   
-  # Validate dfm structure
-  if (!is.list(dfm) || 
-      !"data" %in% names(dfm) ||
-      !all(c("documents", "vocab", "meta") %in% names(dfm$data))) {
-    error_msg <- "dfm must be the output from process_dfm() with documents, vocab, and meta components"
-    diagnostics$processing_issues <- c(diagnostics$processing_issues, error_msg)
-    log_message(error_msg, "fit_model", "ERROR")
-    
-    return(create_result(
-      data = NULL,
-      metadata = list(
-        timestamp = Sys.time(),
-        success = FALSE
-      ),
-      diagnostics = diagnostics
-    ))
+  log_message(paste("Using k =", k, "from find_k result"), "fit_model")
+  if (!is.numeric(k) || k <= 0 || k != round(k)) k <- 15
+  if (!all(c("documents", "vocab", "meta") %in% names(dfm$data))) {
+    stop("dfm must be from process_dfm() with documents, vocab, and meta")
   }
   
-  ## --- Extract components -----------------------------------------------------
-  # Extract components from dfm
   docs <- dfm$data$documents
   vocab <- dfm$data$vocab
   meta <- dfm$data$meta
   
+  log_message(paste("Fitting STM: k =", k, ",", length(docs), "documents,", 
+                    length(vocab), "terms"), "fit_model")
+  
+  ## --- Build prevalence formula -----------------------------------------------
+  prevalence_formula <- build_prevalence_formula(category_map, meta)
   
   ## --- Fit STM model ----------------------------------------------------------
-  log_message(paste("Fitting STM model with k =", k), "fit_model")
-  
-    model_result <- tryCatch({
+  model_result <- tryCatch({
     stm::stm(
       documents = docs,
-      vocab = vocab,
+      vocab = vocab, 
       K = k,
       data = meta,
+      prevalence = prevalence_formula,
       max.em.its = iterations,
       verbose = FALSE
     )
   }, error = function(e) {
-    error_msg <- paste("Error fitting STM model:", e$message)
-    diagnostics$processing_issues <<- c(diagnostics$processing_issues, error_msg)
-    log_message(error_msg, "fit_model", "ERROR")
-    NULL
+    stop("STM fitting failed: ", e$message)
   })
   
-  # Check if model fitting was successful
-  if (is.null(model_result)) {
-    return(create_result(
-      data = NULL,
-      metadata = list(
-        timestamp = Sys.time(),
-        success = FALSE
-      ),
-      diagnostics = diagnostics
-    ))
-  }
+  ## --- Handle segmentation (if used) ------------------------------------------
+  segmentation_info <- dfm$metadata$segmentation
+  used_segmentation <- !is.null(segmentation_info) && segmentation_info$used_segmentation
   
-  log_message("STM model fitting complete", "fit_model")
-  
-  ## --- Calculate findThoughts for topic examples ---------------------------
-  log_message("Calculating representative documents with findThoughts", "fit_model")
-  
-  thoughts_by_topic <- list()
-  
-  if (!is.null(original_docs)) {
-    tryCatch({
-      # Get the doc_ids that survived STM processing
-      processed_doc_ids <- meta$doc_id  # These are the documents in the final model
-      
-      # Extract original text data
-      if ("text" %in% names(original_docs)) {
-        original_texts_df <- original_docs
-      } else {
-        log_message("Original docs structure not recognized", "fit_model", "WARNING")
-        original_texts_df <- NULL
-      }
-      
-      if (!is.null(original_texts_df) && "doc_id" %in% names(original_texts_df)) {
-        # Match original texts to processed documents by doc_id
-        matched_indices <- match(processed_doc_ids, original_texts_df$doc_id)
-        
-        # Check for any unmatched documents
-        if (any(is.na(matched_indices))) {
-          warning_msg <- paste("Some processed documents not found in original texts")
-          diagnostics$processing_issues <<- c(diagnostics$processing_issues, warning_msg)
-          log_message(warning_msg, "fit_model", "WARNING")
-          
-          # Remove unmatched entries
-          valid_matches <- !is.na(matched_indices)
-          matched_indices <- matched_indices[valid_matches]
-          processed_doc_ids <- processed_doc_ids[valid_matches]
-        }
-        
-        # Extract aligned original texts
-        aligned_original_texts <- original_texts_df$text[matched_indices]
-        
-        log_message(paste("Aligned", length(aligned_original_texts), "texts with STM model"), "fit_model")
-        
-        # Now run findThoughts with properly aligned texts
-        for (i in 1:k) {
-          thoughts_result <- stm::findThoughts(
-            model_result, 
-            texts = aligned_original_texts,
-            topics = i,
-            n = 3  # Get top 3 documents per topic
-          )
-          thoughts_by_topic[[i]] <- thoughts_result
-        }
-        
-        log_message("Successfully calculated thoughts for all topics", "fit_model")
-        
-      } else {
-        log_message("Cannot align original texts - missing doc_id column", "fit_model", "WARNING") 
-        thoughts_by_topic <- NULL
-      }
-      
-    }, error = function(e) {
-      warning_msg <- paste("Error calculating findThoughts:", e$message)
-      diagnostics$processing_issues <<- c(diagnostics$processing_issues, warning_msg)
-      log_message(warning_msg, "fit_model", "WARNING")
-      thoughts_by_topic <- NULL
-    })
+  if (used_segmentation) {
+    log_message("Aggregating segments to documents", "fit_model")
+    
+    final_theta <- aggregate_by_document(
+      theta = model_result$theta,
+      doc_ids = meta$doc_id,
+      segment_map = segmentation_info$segment_to_doc_map
+    )
+    
+    # Create document-level metadata
+    final_meta <- get_document_metadata(meta, segmentation_info$segment_to_doc_map)
+    
+    log_message(paste("Aggregated", nrow(model_result$theta), "segments to", 
+                      nrow(final_theta), "documents"), "fit_model")
   } else {
-    log_message("No original documents provided for findThoughts", "fit_model", "WARNING")
-    thoughts_by_topic <- NULL
+    final_theta <- model_result$theta
+    final_meta <- meta
   }
   
-  ## --- Create model summary ---------------------------------------------------
-  model_summary <- list(
-    k = k,
-    document_count = length(docs),
-    vocabulary_size = length(vocab),
-    iterations_run = model_result$convergence$its,
-    converged = model_result$convergence$converged
-  )
+  ## --- Return result ----------------------------------------------------------
+  log_message(paste("Model complete:", k, "topics,", 
+                    ifelse(model_result$convergence$converged, "converged", "not converged")), 
+              "fit_model")
   
-  # Store model quality metrics in diagnostics
-  diagnostics$model_stats <- model_summary
-  
-  ## --- Calculate processing time and create result ---------------------------
-  end_time <- Sys.time()
-  processing_time <- as.numeric(difftime(end_time, start_time, units = "secs"))
-  
-  # Return standardized result
   return(create_result(
     data = list(
       model = model_result,
-      summary = model_summary,
-      topic_proportions = model_result$theta,
-      aligned_meta = meta,
-      category_map = category_map,
-      thoughts_by_topic = thoughts_by_topic
+      topic_proportions = final_theta,
+      aligned_meta = final_meta,
+      category_map = category_map
     ),
     metadata = list(
       timestamp = start_time,
-      processing_time_sec = processing_time,
+      processing_time_sec = as.numeric(difftime(Sys.time(), start_time, units = "secs")),
       k = k,
-      max_iterations = iterations,
-      seed = seed,
+      iterations_run = model_result$convergence$its,
+      converged = model_result$convergence$converged,
+      segmentation_used = used_segmentation,
       success = TRUE
     ),
-    diagnostics = diagnostics
+    diagnostics = list()
   ))
+}
+
+## --- Helper functions -------------------------------------------------------
+
+#' Build prevalence formula from category map
+build_prevalence_formula <- function(category_map, meta) {
+  if (is.null(category_map)) return(NULL)
+  
+  # Get all variables and filter to those with variation
+  all_vars <- unlist(category_map, use.names = FALSE)
+  varying_vars <- all_vars[sapply(all_vars, function(var) {
+    var %in% names(meta) && length(unique(meta[[var]])) > 1
+  })]
+  
+  if (length(varying_vars) == 0) return(NULL)
+  
+  formula_string <- paste("~", paste(varying_vars, collapse = " + "))
+  log_message(paste("Prevalence formula:", formula_string), "fit_model")
+  as.formula(formula_string)
+}
+
+#' Aggregate segment-level theta to document level  
+aggregate_by_document <- function(theta, doc_ids, segment_map) {
+  
+  # Get unique documents in order they appear
+  unique_docs <- unique(doc_ids)
+  k <- ncol(theta)
+  
+  # Pre-allocate result matrix
+  doc_theta <- matrix(0, nrow = length(unique_docs), ncol = k,
+                      dimnames = list(unique_docs, colnames(theta)))
+  
+  # Vectorized aggregation using split-apply-combine
+  theta_by_doc <- split.data.frame(theta, doc_ids)
+  
+  for (i in seq_along(unique_docs)) {
+    doc_id <- unique_docs[i]
+    doc_segments <- theta_by_doc[[doc_id]]
+    
+    if (nrow(doc_segments) == 1) {
+      doc_theta[i, ] <- as.numeric(doc_segments)
+    } else {
+      doc_theta[i, ] <- colMeans(doc_segments)
+    }
+  }
+  
+  return(doc_theta)
+}
+
+#' Extract document-level metadata from segments
+get_document_metadata <- function(segment_meta, segment_map) {
+  
+  # Get first occurrence of each document
+  unique_docs <- unique(segment_meta$doc_id)
+  first_occurrences <- match(unique_docs, segment_meta$doc_id)
+  
+  segment_meta[first_occurrences, ]
 }
