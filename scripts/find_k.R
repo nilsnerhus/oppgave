@@ -9,8 +9,6 @@
 #' @param iterations Maximum number of EM iterations for each model (default: 75)
 #' @param coherence Weight for semantic coherence in selection (default: 0.4)
 #' @param exclusivity Weight for exclusivity in selection (default: 0.4)
-#' @param residual Weight for residuals in score (default: 0.2)
-#' @param penalty Penalty factor for higher k values (default: 0.05)
 #'
 #' @return A list containing:
 #'   \item{data}{
@@ -37,15 +35,22 @@
 #' }
 find_k <- function(
     dfm,
-    range = c(10, 15, 20, 25, 30, 35, 40),
-    iterations = 100,
-    coherence = 0.20,
-    exclusivity = 0.15,
-    residual = 0.15,
-    penalty = 0
+    range = c(5, 20, 5),  # Changed: now min, max, step
+    iterations = 50,
+    coherence = 0.50,
+    exclusivity = 0.50
 ) {
   ## --- Setup & Initialization -------------------------------------------------
   start_time <- Sys.time()
+  
+  # Process range parameter
+  if (length(range) == 3) {
+    k_values <- seq(from = range[1], to = range[2], by = range[3])
+  } else {
+    k_values <- range  # Fallback to old behavior if not 3 elements
+  }
+  
+  log_message(paste("Testing k values:", paste(k_values, collapse = ", ")), "find_k")
   
   # Initialize diagnostics tracking
   diagnostics <- list(
@@ -168,14 +173,12 @@ find_k <- function(
         # Calculate metrics manually
         coherence_val <- mean(stm::semanticCoherence(model, docs))
         exclusivity_val <- mean(stm::exclusivity(model))
-        residual_val <- mean(model$convergence$bound) # Approximation
         
         # Return as list
         list(
           k = k,
           coherence = coherence_val,
-          exclusivity = exclusivity_val,
-          residual = residual_val
+          exclusivity = exclusivity_val
         )
       }, error = function(e) {
         warning_msg <- paste("Error fitting model with k =", k, ":", e$message)
@@ -214,8 +217,7 @@ find_k <- function(
       data.frame(
         k = x$k,
         coherence = x$coherence,
-        exclusivity = x$exclusivity,
-        residual = x$residual
+        exclusivity = x$exclusivity
       )
     }))
     
@@ -247,7 +249,6 @@ find_k <- function(
     k_values <- unlist(search_result$results$K)
     exclusivity_vals <- unlist(search_result$results$exclus)
     coherence_vals <- unlist(search_result$results$semcoh)
-    residual_vals <- unlist(search_result$results$residual)
     
     # Ensure we have valid metrics
     valid_metrics <- TRUE
@@ -273,19 +274,8 @@ find_k <- function(
       norm_coherence <- (coherence_vals - min(coherence_vals)) / (max(coherence_vals) - min(coherence_vals))
       norm_exclusivity <- (exclusivity_vals - min(exclusivity_vals)) / (max(exclusivity_vals) - min(exclusivity_vals))
       
-      # For residuals, invert so higher is better
-      if (!is.null(residual_vals) && length(residual_vals) > 0) {
-        norm_residual <- 1 - (residual_vals - min(residual_vals)) / (max(residual_vals) - min(residual_vals))
-      } else {
-        # Set to neutral value if missing
-        norm_residual <- rep(0.5, length(k_values))
-      }
-      
       # Calculate scores using the FUNCTION PARAMETERS (not renamed variables)
-      scores <- (coherence * norm_coherence) + 
-        (exclusivity * norm_exclusivity) + 
-        (residual * norm_residual) - 
-        (penalty * k_values)
+      scores <- (coherence * norm_coherence) + (exclusivity * norm_exclusivity)
       
       # Find best k
       best_idx <- which.max(scores)
@@ -315,9 +305,7 @@ find_k <- function(
     best_k = best_k,
     weights = list(
       coherence = coherence,
-      exclusivity = exclusivity,
-      residual = residual,
-      penalty = penalty
+      exclusivity = exclusivity
     )
   )
   
@@ -345,9 +333,7 @@ find_k <- function(
       max_iterations = iterations,
       weights = list(
         coherence = coherence,
-        exclusivity = exclusivity,
-        residual = residual,
-        penalty = penalty
+        exclusivity = exclusivity
       ),
       success = TRUE
     ),

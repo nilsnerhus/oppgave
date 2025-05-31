@@ -40,7 +40,7 @@ name_topics <- function(
     max_retries = 3,
     context = "climate adaptation policy",
     top_countries = 2,
-    max_length_label = 2
+    max_length_label = 1
 ) {
   ## --- Setup & Initialization -------------------------------------------------
   start_time <- Sys.time()
