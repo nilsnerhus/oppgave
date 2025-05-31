@@ -158,14 +158,14 @@ auto_cache <- function(func, ..., cache_path = NULL, overwrite = FALSE) {
   }
   
   if (cache_valid) {
-    log_message(paste("Using cached result from", basename(cache_path)))
+    log_message(paste("Using cached result from", basename(cache_path)), "auto_cache")  # FIXED: Added closing parenthesis and func parameter
     return(readRDS(cache_path))
   } else {
     # Log appropriate message based on whether we're forcing overwrite
     if (overwrite && file.exists(cache_path)) {
-      log_message(paste("Overwriting cache for", basename(cache_path), func = "auto_cache"))
+      log_message(paste("Overwriting cache for", basename(cache_path)), "auto_cache")  # FIXED: Added closing parenthesis and func parameter
     } else {
-      log_message(paste("Computing new result for", basename(cache_path)))
+      log_message(paste("Computing new result for", basename(cache_path)), "auto_cache")  # FIXED: Added closing parenthesis and func parameter
     }
     
     result <- do.call(func, args)
