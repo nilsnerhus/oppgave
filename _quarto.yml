@@ -9,17 +9,14 @@ book:
   downloads: [pdf]
   chapters:
     - index.qmd
-    - text/frontpage.qmd  # Add this line
+    - text/frontpage.qmd
     - text/intro.qmd
-    - part: "Climate adaptation"
       chapters:
         - text/context.qmd
         - text/lit.qmd
-    - part: "Research design"
       chapters:
         - text/theory.qmd
         - text/methods.qmd
-    - part: "Analysis"
       chapters:
         - text/findings.qmd
         - text/discussion.qmd
@@ -31,10 +28,10 @@ bibliography:
   - references/references.bib
   - references/grateful-refs.bib
   
-degree: "Master of Arts in Human Security"
-department: "Department of Political Science"  
+degree: "MSc in Human Security"
+department: "Department of Culture and Society"  
 university: "Aarhus University"
-supervisor: "Dr. [Your Supervisor's Name]"
+supervisor: "Assoc. Prof Michael Eilenberg"
 logo: "images/au_logo.png"
 
 execute: 

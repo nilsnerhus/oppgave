@@ -432,3 +432,196 @@ thesis_pages <- function() {
   }
   cat("\n")
 }
+
+#' @title Update Dependencies for CI/CD from renv.lock and Quarto YAML
+#' @description Snapshots renv state and generates DESCRIPTION file using metadata
+#'   from _quarto.yml and packages from renv.lock for GitHub Actions.
+#'   
+#' @param exclude_packages Packages to exclude from DESCRIPTION (e.g., renv itself)
+#' @param quarto_file Path to Quarto project file (default: "_quarto.yml")
+#' 
+#' @return Invisible TRUE if successful
+#' 
+#' @examples
+#' \dontrun{
+#' # Use Quarto metadata and renv lockfile
+#' update_dependencies()
+#' 
+#' # Custom Quarto file location
+#' update_dependencies(quarto_file = "custom-quarto.yml")
+#' }
+update_dependencies <- function(
+    exclude_packages = c("renv"),
+    quarto_file = "_quarto.yml"
+) {
+  
+  log_message("Starting dependency update process", "update_dependencies")
+  
+  ## --- Step 1: Read Quarto YAML metadata -------------------------------------
+  log_message("Reading Quarto project metadata", "update_dependencies")
+  
+  if (!file.exists(quarto_file)) {
+    stop(paste("Quarto file not found:", quarto_file))
+  }
+  
+  tryCatch({
+    # Read YAML file
+    quarto_config <- yaml::yaml.load_file(quarto_file)
+    
+    # Extract book metadata
+    book_info <- quarto_config$book
+    if (is.null(book_info)) {
+      stop("No 'book' section found in Quarto config")
+    }
+    
+    # Get metadata with fallbacks
+    title <- book_info$title %||% "Research Project"
+    subtitle <- book_info$subtitle %||% ""
+    author <- book_info$author %||% "Unknown Author"
+    
+    # Create description
+    description <- if (!is.null(subtitle) && subtitle != "") {
+      paste0(title, ": ", subtitle)
+    } else {
+      title
+    }
+    
+    # Extract email if available, otherwise use a default pattern
+    email <- if (grepl("@", author)) {
+      # If author contains @, it might be "Name <email>" format
+      gsub(".*<(.+@.+)>.*", "\\1", author)
+    } else {
+      # Generate a reasonable default
+      paste0(tolower(gsub("[^A-Za-z]", "", author)), "@example.com")
+    }
+    
+    log_message(paste("✓ Project:", title), "update_dependencies")
+    log_message(paste("✓ Author:", author), "update_dependencies")
+    
+  }, error = function(e) {
+    log_message(paste("Error reading Quarto config:", e$message), "update_dependencies", "ERROR")
+    stop("Failed to read Quarto configuration")
+  })
+  
+  ## --- Step 2: Snapshot renv and get packages --------------------------------
+  log_message("Taking renv snapshot", "update_dependencies")
+  
+  tryCatch({
+    renv::snapshot()
+    log_message("✓ renv snapshot completed", "update_dependencies")
+  }, error = function(e) {
+    log_message(paste("Error in renv snapshot:", e$message), "update_dependencies", "ERROR")
+    stop("Failed to create renv snapshot")
+  })
+  
+  ## --- Step 3: Read lockfile and extract packages ----------------------------
+  log_message("Reading renv.lock file", "update_dependencies")
+  
+  lockfile_path <- "renv.lock"
+  if (!file.exists(lockfile_path)) {
+    stop("renv.lock file not found. Make sure you're in an renv project.")
+  }
+  
+  tryCatch({
+    lockfile <- renv::lockfile_read(lockfile_path)
+    all_packages <- names(lockfile$Packages)
+    
+    # Remove excluded packages
+    packages <- setdiff(all_packages, exclude_packages)
+    
+    log_message(paste("Found", length(all_packages), "packages in lockfile"), "update_dependencies")
+    log_message(paste("Using", length(packages), "packages after exclusions"), "update_dependencies")
+    
+  }, error = function(e) {
+    log_message(paste("Error reading lockfile:", e$message), "update_dependencies", "ERROR")
+    stop("Failed to read renv.lock file")
+  })
+  
+  ## --- Step 4: Install required packages if needed (temporarily) -------------
+  required_packages <- c("usethis", "desc", "yaml")
+  temp_packages <- character()
+  
+  for (pkg in required_packages) {
+    if (!requireNamespace(pkg, quietly = TRUE)) {
+      temp_packages <- c(temp_packages, pkg)
+    }
+  }
+  
+  if (length(temp_packages) > 0) {
+    log_message(paste("Installing required packages temporarily:", paste(temp_packages, collapse = ", ")), "update_dependencies")
+    install.packages(temp_packages, quiet = TRUE)
+  }
+  
+  ## --- Step 5: Create DESCRIPTION file ----------------------------------------
+  log_message("Creating DESCRIPTION file", "update_dependencies")
+  
+  tryCatch({
+    # Create package name from title (clean it up)
+    package_name <- gsub("[^A-Za-z0-9]", "", gsub("\\s+", "", title))
+    if (nchar(package_name) == 0) package_name <- "ResearchProject"
+    
+    # Create basic DESCRIPTION structure
+    usethis::use_description(fields = list(
+      Package = package_name,
+      Title = title,
+      Description = description,
+      `Authors@R` = paste0('person("', author, '", email = "', email, '", role = c("aut", "cre"))'),
+      License = "MIT",
+      Version = "0.1.0"
+    ), check_name = FALSE)
+    
+    log_message(paste("✓ DESCRIPTION created for package:", package_name), "update_dependencies")
+    
+  }, error = function(e) {
+    log_message(paste("Error creating DESCRIPTION:", e$message), "update_dependencies", "ERROR")
+    stop("Failed to create DESCRIPTION file")
+  })
+  
+  ## --- Step 6: Add packages to DESCRIPTION ------------------------------------
+  log_message("Adding packages to DESCRIPTION", "update_dependencies")
+  
+  tryCatch({
+    # Read current DESCRIPTION
+    desc_file <- desc::desc(file = "DESCRIPTION")
+    
+    # Add packages as Imports (standard practice)
+    desc_file$set_deps(data.frame(
+      type = "Imports",
+      package = packages,
+      version = "*"
+    ))
+    
+    # Write updated DESCRIPTION
+    desc_file$write()
+    
+    log_message(paste("✓ Added", length(packages), "packages to DESCRIPTION"), "update_dependencies")
+    
+  }, error = function(e) {
+    log_message(paste("Error adding packages to DESCRIPTION:", e$message), "update_dependencies", "ERROR")
+    stop("Failed to update DESCRIPTION with packages")
+  })
+  
+  ## --- Step 7: Clean up temporary packages if we installed them ---------------
+  if (length(temp_packages) > 0) {
+    log_message(paste("Removing temporary packages:", paste(temp_packages, collapse = ", ")), "update_dependencies")
+    try(remove.packages(temp_packages), silent = TRUE)
+  }
+  
+  ## --- Step 8: Show summary ---------------------------------------------------
+  log_message("Dependency update completed successfully!", "update_dependencies")
+  log_message("Summary:", "update_dependencies")
+  log_message(paste("  • Project:", title), "update_dependencies")
+  log_message(paste("  • renv.lock updated with", length(all_packages), "packages"), "update_dependencies")
+  log_message(paste("  • DESCRIPTION created with", length(packages), "imports"), "update_dependencies")
+  log_message("  • Ready to commit and push to trigger CI", "update_dependencies")
+  
+  # Show the DESCRIPTION content
+  cat("\nGenerated DESCRIPTION:\n")
+  cat(paste(readLines("DESCRIPTION"), collapse = "\n"))
+  cat("\n")
+  
+  return(invisible(TRUE))
+}
+
+# Helper for null-coalescing operator
+`%||%` <- function(a, b) if (is.null(a)) b else a
