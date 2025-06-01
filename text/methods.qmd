@@ -85,7 +85,7 @@ The data then took different paths. The documents downloaded automatically, befo
 
 The NAPs presented two issues, first, as the documents are published as Portiable Document Files (PDFs), a format while preserving formatting and making it possible to print, also introduces a lot of different artifacts when extracting the text. Second, the texts included national specific content like country-names and often a summary in the national language. Both cluttered the corpus and made the topics very low quality.
 
- To combat this, I filtered the corpus quite aggresivly, removing words that occured in Here I removed common stop words (words with little semantic meaning) and removed words that only occured in less than `r pct(lower_thresh)` of documents, and words that occured in more than  `r pct(upper_tresh)` documents [@roberts2019].
+ To combat this, I filtered the corpus quite aggresivly, removing words that occured in Here I removed common stop words (words with little semantic meaning) and removed words that only occured in less than `r pct(lower_thresh)` of documents, and words that occured in more than  `r pct(upper_thresh)` documents [@roberts2019].
 
 The other issue was solved by making a list of stopwords based on country names in the `countrycode` packages. The whole process left us with `r num(final_tokens)` of the `r num(init_tokens)` words we started with, and `r num(final_terms)` of `r num(init_terms)` unique terms. 
 
