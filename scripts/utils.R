@@ -432,3 +432,21 @@ thesis_pages <- function() {
   }
   cat("\n")
 }
+
+# Function to format topic lists consistently
+format_topic_string <- function(topic_string) {
+  # Split by comma and trim whitespace
+  topics <- trimws(strsplit(topic_string, ",")[[1]])
+  
+  # Apply formatting using lookup table
+  formatted_topics <- sapply(topics, function(x) {
+    if (x %in% names(topic_lookup)) {
+      return(topic_lookup[x])
+    } else {
+      return(paste0("*", tools::toTitleCase(tolower(x)), "*"))
+    }
+  })
+  
+  # Rejoin with commas
+  return(paste(formatted_topics, collapse = ", "))
+}

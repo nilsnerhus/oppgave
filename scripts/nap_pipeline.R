@@ -61,4 +61,4 @@ geographical (rangeland or coastal etc.) or sectoral (agriculture, fisheries, to
 
 # Run functions
 topics <- auto_cache(name_topics, model, context = context)
-metrics <- auto_cache(calculate_metrics, model, topics, dfm, overwrite = TRUE)
+metrics <- auto_cache(calculate_metrics, model, topics, dfm, min_group_size = 1)

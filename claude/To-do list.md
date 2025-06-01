@@ -5,10 +5,11 @@
 	- [ ] Politics of Reasonable
 	- [ ] Adaptation empire
 	- [ ] Beyond control
-- [ ] Findings
+- [x] Findings
 	- [x] Topics
 	- [x] Dominance
-- [ ] Methods
+	- [x] Main findings
+- [x] Methods
 	- [x] Corpus collection and preparation
 	- [x] Structural topic modelling
 	- [x] Text analysis

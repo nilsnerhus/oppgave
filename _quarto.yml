@@ -9,7 +9,6 @@ book:
   downloads: [pdf]
   chapters:
     - index.qmd
-    - text/frontpage.qmd
     - text/intro.qmd
     - text/context.qmd
     - text/lit.qmd
@@ -41,10 +40,6 @@ format:
     code-fold: true
   pdf:
     documentclass: scrreprt
-    classoption:
-      - a4paper
-      - openright
-      - cleardoublepage
     toc: true
     number-sections: true
     number-depth: 2
