@@ -11,15 +11,12 @@ book:
     - index.qmd
     - text/frontpage.qmd
     - text/intro.qmd
-      chapters:
-        - text/context.qmd
-        - text/lit.qmd
-      chapters:
-        - text/theory.qmd
-        - text/methods.qmd
-      chapters:
-        - text/findings.qmd
-        - text/discussion.qmd
+    - text/context.qmd
+    - text/lit.qmd
+    - text/theory.qmd
+    - text/methods.qmd
+    - text/findings.qmd
+    - text/discussion.qmd
     - text/conclusion.qmd
 cap-location: bottom
 column: page-inset-shaded

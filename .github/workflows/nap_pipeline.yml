@@ -16,7 +16,6 @@ jobs:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       HUGGINGFACE_TOKEN: ${{ secrets.HUGGINGFACE_TOKEN }}
 
-
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
