@@ -28,28 +28,18 @@ jobs:
         with:
           cache-version: 2
 
-      - name: Set up Quarto
-        uses: quarto-dev/quarto-actions/setup@v2
-        with: 
-          tinytex: true
-
-      - name: Run NAP pipeline
-        run: |
-          Rscript scripts/nap_pipeline.R
-        shell: bash
-        
-      - name: Commit freeze cache
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add _freeze/
-          git diff --staged --quiet || git commit -m "Update analysis cache [skip ci]"
-          git push
-        continue-on-error: true
-
       - name: Render and publish to GitHub pages
         uses: quarto-dev/quarto-actions/publish@v2
         with:
           target: gh-pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Commit and push results
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add _freeze/
+          git diff --staged --quiet || git commit -m "Update analysis cache"
+          git push
+        continue-on-error: true
