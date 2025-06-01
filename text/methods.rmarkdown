@@ -1,0 +1,219 @@
+# Methods {#sec-methods}
+
+
+
+
+
+
+```{r setup, include=FALSE}
+# Set root directory for all subsequent chunks
+knitr::opts_knit$set(root.dir = "..")
+
+`%>%` <- magrittr::`%>%`
+```
+
+
+
+
+
+
+> To empirically examine whether adaptation discourse reflects epistemological diversity or monoculture, I develop a methodological approach centered around the "Dominance Index"—a measurement tool for quantifying the degree to which adaptation discourse is concentrated around particular topics or perspectives.
+
+The theoretical tensions between epistemological diversity and monoculture in climate adaptation, while conceptually rich, require empirical grounding to move beyond assertion and critique. This chapter presents a methodological approach that translates these theoretical concerns into measurable patterns, examining National Adaptation Plans as windows into how different countries conceptualize climate adaptation within the constraints and possibilities of international climate governance.
+
+National Adaptation Plans offer a unique opportunity for this analysis because they represent how countries formally articulate their understanding of climate vulnerability and appropriate responses within a standardized international framework. While these documents are shaped by UNFCCC guidelines, technical assistance, and funding requirements, they also reflect national contexts, priorities, and potentially diverse knowledge systems. By analyzing patterns across a comprehensive corpus of NAPs, we can identify whether this institutional framework produces convergence toward particular ways of understanding adaptation or preserves space for alternative conceptualizations that might draw on different epistemological foundations.
+
+The analytical pipeline developed for this research proceeds through three integrated stages, each designed to build toward a systematic assessment of discourse patterns. First, the document preparation creates comparability across diverse national contexts through careful preprocessing that removes superficial differences while preserving meaningful variation in how adaptation is conceptualized. Second, the structural topic modeling identifies the latent thematic patterns that structure adaptation discourse, revealing what aspects of adaptation receive attention and how different topics cluster together. Third, the analysis stage introduces the Dominance Index to measure how concentrated discourse is around a small number of dominant topics, providing a quantifiable metric for discourse centralization that can be compared across different country groupings.
+
+The patterns we seek through this analysis directly address the research questions about power, knowledge, and development paradigms in climate adaptation. If adaptation discourse shows high centralization—with most countries emphasizing the same narrow set of topics—this would support arguments that adaptation functions as an epistemological monoculture that forecloses alternative understandings. The specific topics that dominate would reveal what kinds of knowledge and approaches are privileged within this regime. Conversely, lower centralization would indicate space for diverse conceptualizations, though the degree and nature of this diversity would require careful interpretation. Most critically, examining how centralization patterns vary across income levels, regions, and geographic vulnerabilities can reveal whether discourse is shaped more by economic positioning within global systems or by the specific nature of climate challenges faced.
+
+This chapter presents each methodological stage with sufficient detail to ensure transparency and reproducibility while remaining accessible to readers without extensive technical background in computational text analysis. The following sections on document preparation, structural topic modeling, and analysis each begin with a brief overview of purpose and approach before explaining the specific procedures and their justification. Throughout, the emphasis remains on how these methodological choices serve the broader research objective of empirically examining the epistemological politics of climate adaptation.
+
+## Corpus Collection and Preparation
+
+> To level the playing field and make the NAPs comparable across documents, I have developed a systematic approach to extract, clean, and prepare the text, as well as finding and adding the necesarry metadata for analysis.
+
+
+
+
+
+
+```{r}
+#| label: Corpus cleaning
+#| include: FALSE
+
+# Load scripts
+source("scripts/utils.R")
+source("scripts/scrape_web.R")
+source("scripts/extract_pdfs.R")
+source("scripts/get_un_classifications.R")
+source("scripts/add_metadata.R")
+source("scripts/process_dfm.R")
+
+# Set parameters
+category_map <- list(
+  Global = "global_category",    
+  Income = "wb_income_level", 
+  Region = "region", 
+  Geography = c("is_sids", "is_lldc"),
+  Time = "time_period"
+)
+
+time_groups <- c("Early" = 2018, "Middle" = 2021, "Late" = Inf)
+
+# Run functions
+web <- scrape_web()
+docs <- extract_pdfs(web)
+
+un_classifications <- get_un_classifications()
+metadata <- add_metadata(web, un_classifications, time = time_groups)
+
+dfm <- process_dfm(docs, metadata, min_docs = 0.1, max_docs = 0.8)
+
+# Extract values
+## Genral values
+all_language_naps <- web[["metadata"]][["row_count"]]
+english_docs <- web[["metadata"]][["document_count"]]
+
+## Text cleaning values
+init_tokens <- dfm[["metadata"]][["input_tokens"]]
+final_tokens <- dfm[["metadata"]][["final_tokens"]]
+init_terms <- dfm[["metadata"]][["input_vocabulary"]]
+final_terms <- dfm[["metadata"]][["final_vocabulary"]]
+
+lower_thresh <- dfm[["metadata"]][["thresholds"]][["min_docs_prop"]]
+upper_thresh <- dfm[["metadata"]][["thresholds"]][["max_docs_prop"]]
+
+## Metadata values
+start_year <- min(metadata$data$metadata$year, na.rm=TRUE)
+end_year <- max(metadata$data$metadata$year, na.rm=TRUE)
+
+num_sids <- sum(metadata$data$metadata$is_sids, na.rm=TRUE)
+num_lldc <- sum(metadata$data$metadata$is_lldc, na.rm=TRUE)
+```
+
+
+
+
+
+
+The analysis begins with the systematic collection of National Adaptation Plans from the UNFCCC's NAP Central website [reference]. To do this, I set up a web scraper that automatically scans the website and extracts the country name, the date posted and the link to the download for English language NAPs. This process found `r num(english_docs)` English plans, of `r num(all_language_naps)` countries in total. 
+
+While focusing on English-language documents introduces a potential bias toward Anglophone countries or those with stronger ties to international institutions, this constraint was necessary to ensure meaningful textual comparison using consistent analytical methods. It is also valueable, as the working language of the World Bank and other international institutions is English [@defrancesco2020]. 
+
+The data then took different paths. The documents downloaded automatically, before the text was extracted and read into R. The text was then cleaned to make the comparable across the whole corpus. I used the default pipeline for text processing with the `stm`-package. This included removing common words with little semantic value known as stopwords, numbers, punctuation, and reducing all words to their stem removing their ending so the same word with different endings is counted as one. 
+
+The NAPs presented two issues, first, as the documents are published as Portiable Document Files (PDFs), a format while preserving formatting and making it possible to print, also introduces a lot of different artifacts when extracting the text. Second, the texts included national specific content like country-names and often a summary in the national language. Both cluttered the corpus and made the topics very low quality.
+
+ To combat this, I filtered the corpus quite aggresivly, removing words that occured in Here I removed common stop words (words with little semantic meaning) and removed words that only occured in less than `r pct(lower_thresh)` of documents, and words that occured in more than  `r pct(upper_tresh)` documents [@roberts2019].
+
+The other issue was solved by making a list of stopwords based on country names in the `countrycode` packages. The whole process left us with `r num(final_tokens)` of the `r num(init_tokens)` words we started with, and `r num(final_terms)` of `r num(init_terms)` unique terms. 
+
+The metadata was extracted and processed independently from the documents. The country name was extracted and standardized with the help of the `countrycode`-package. These standardized names were then compared with the `wb`-package, and added in the World Banks  data on income, classifying the countries as low income, lower middle income, upper middle income and high income countries.
+
+The same process was used to assign the countries to their World Bank region. These seven regions are East Asia and Pacific, Europe and Central Asia, Latin America and Caribbean, Middle East and North Africa, North America, South Asia, and Sub-Saharan Africa. Assigning these categories serves two functions, first it makes the country groups large enough for robust calculations, and we are using the largest development actors own definitions.
+
+In addition to these cateogries, I scraped the website for the Office of the High Commisioner for Least Developed Countries, Landlocked Developing Countries and Small Islands Developing States [reference]. Here, I extracted a list of all countries classified as landlocked (LLDC) or as small islands (SIDS). These are proxies for countries facing the same geographic issues, across regions and income levels. This identified `r num(num_sids)` SIDS and `r num(num_lldc)`. 
+
+The last category I extract is the date the plans were posted. The plans have been drafted since `r num(start_year)`, and the latest in `r num(end_year)`. To make it possible to see if the timing of the plans influence them, I split them into three groups, early (-2018), middle (until 2022) and late (2023-). Together, these categories allow us to examine whether discourse patterns align more strongly with economic positioning, regional institutions, or shared geographic vulnerabilities.
+
+## Structural Topic Modeling
+
+> Structural topic modeling allows us to discover latent themes in the corpus, reducing the corpus to word clusters we can analyze later. 
+
+
+
+
+
+
+```{r}
+#| label: Topic modeling
+#| include: FALSE
+
+# Load scripts
+source("scripts/find_k.R")
+source("scripts/fit_model.R")
+
+# Run functions
+k <- find_k(dfm, range = c(5, 20, 5))
+model <- fit_model(dfm, k, category_map = category_map)
+
+# Extract values
+coh_weight <- k[["metadata"]][["weights"]][["coherence"]]
+exc_weight <- k[["metadata"]][["weights"]][["exclusivity"]]
+```
+
+
+
+
+
+
+Topic modelling is an approach that discovers latent thematic patterns in large text corpora. For our purposes, this makes it possible to interact with the whole corpus that spans  `r num(init_tokens)` words, in an analytical way. 
+
+Unlike simple word frequency analysis or manual coding, topic models identify clusters of words that tend to co-occur across documents, revealing underlying themes that structure the discourse. The fundamental assumption is that each document contains a mixture of topics, where topics are probability distributions over words [@roberts2016]. For instance, a topic related to agricultural adaptation might have high probabilities for words like "crop," "drought," "irrigation," and "yield," while a topic about coastal adaptation might emphasize "sea-level," "erosion," "storm," and "infrastructure." The model treats documents as "bags of words," meaning word order is not considered. This simplification allows for computationally efficient discovery of thematic patterns across our documents.
+
+One important note to this approach is the document-centric nature of it. It treats the document as the organizing principle, making corpuses with a few long documents like the NAPs centralized into a pattern of one topic per document. To avoid this, I split the NAPs into different segments, making the model run them as if they are separate documents, before I aggregate them again. This leads to considerably less concentration in each topic, making the dominance values much clearer, but also introduces the risk of losing some content, since the documents are split after a certain amount of tokens. 
+
+Structural topic modeling (STM) expands on this topic modeling while simultaneously accounting for document-level metadata [@roberts2019].  It is well-suited to our research because it allows our document metadata, the income level, region, and geographic characteristics, to influence the distribution of topics. To do this in practice, we pass the categories we created to the model. This is crucial for understanding whether low-income countries emphasize different aspects of adaptation compared to high-income countries, or whether SIDS frame adaptation differently than landlocked nations. 
+
+The appropriate number of topics represents a methodological decision that balances granularity with interpretability. Too few topics may obscure important distinctions in how adaptation is conceptualized, while too many topics can result in redundant or overly specific themes that fragment coherent concepts. I used the `stm` package to run a smaller model on a wide range of values, and them evaluating them based on their semantic coherance, how interpretable the topics are, and the exclusivity, how distinct the topics are.
+
+Semantic coherence measures the likelihood for the topic's top words to occur in the same document. It takes the highest-probability words assigned to a topic and calculates how often they actually appear together in individual NAP documents. High semantic coherence means that when you see one of the topic's key words in a document, you're likely to see the other key words too. Low semantic coherence means the model has grouped together words that rarely appear in the same documents - suggesting the topic might be a statistical artifact rather than a genuine thematic cluster.
+
+Exclusivity measures how distinctive the highest-probability words are to each topic. Technically, it calculates the proportion of each word's total probability mass that is allocated to the specific topic, weighted by that word's rank within the topic. A word that appears prominently in only one topic gets high exclusivity, while a word that appears prominently across many topics gets low exclusivity.
+
+I weigh the coherence and exclusicity `r pct(coh_weight)` against `r pct(exc_weight)`, giving us a `r k_value` as the optimal number of topics. The model was then run using spectral decomposition, which provides more stable and reproducible results compared to random [@roberts2019]. After `r num(iterations_run)` iterations, the model converged successfully, indicating that the algorithm had identified stable topic distributions. 
+
+## Dominance analysis
+
+> To analyse the distribution of topics I use three different methods, first I name the topics, and analyse their prominance in the discourse, then I measure the concentration within the three top topics in the category, before I calculate how much explanatory power each category has for the topic prominance. 
+
+
+
+
+
+
+```{r}
+#| label: Dominance analysis
+#| include: FALSE
+
+# Load scripts
+source("scripts/name_topics.R")
+source("scripts/find_dominance.R")
+source("scripts/find_variance.R")
+source("scripts/calculate_metrics.R")
+
+# Set parameters
+context <- " Follow these rules: Each label must be completely unique and do not 
+name a topic after a country or city. These are National Adaptation Plan documents 
+from the UNFCCC covering climate adaptation strategies. 
+
+Earlier analysis has found the themes to be either security related (disasters or risks etc.), 
+geographical (rangeland or coastal etc.) or sectoral (agriculture, fisheries, tourism)."
+
+# Run functions
+topics <- name_topics(model, context = context)
+metrics <- calculate_metrics(model, topics, dfm)
+
+# Extract values
+n_topics <- metrics[["metadata"]][["n_value"]]
+```
+
+
+
+
+
+
+For each category (income level, region, geographic vulnerability), I calculate dominance as follows. First, I identify all countries belonging to a specific group (for example, all low-income countries or all SIDS) and extract their topic proportion vectors from the fitted STM model. These proportions represent how much each of the `r k_value` topics contributes to each country's adaptation discourse. I then calculate the mean topic proportions across all countries in the group, creating an average discourse profile for that category.
+
+Next, I identify the top `r num(n_topics)` most prominent topics for the group by ranking topics according to their average proportions. The Dominance Index is calculated as the sum of proportions for these top `r num(n_topics)` topics. This approach captures the degree to which a group's adaptation discourse concentrates around a small number of dominant themes rather than being distributed evenly across all possible topics.
+
+A high dominance score (approaching 1.0) indicates that most of the group's adaptation discourse focuses on just `r num(n_topics)` topics, suggesting a concentrated or potentially constrained understanding of adaptation challenges and responses. A lower dominance score indicates more distributed attention across the full range of adaptation topics, potentially reflecting greater diversity in how adaptation is conceptualized. Importantly, the dominance measure is scale-independent, making it comparable across groups of different sizes and allowing systematic comparison between, for example, small island developing states and large regional groupings.
+
+While the Dominance Index reveals patterns of discourse concentration, establishing whether these patterns are statistically meaningful requires formal hypothesis testing. I employ structural topic modeling's `estimateEffect` function to test whether categorical group membership significantly influences topic distributions [@roberts2019].
+
+For each group showing high dominance, I test the null hypothesis that group membership has no effect on the prominence of the dominant topics. The alternative hypothesis is that group membership significantly influences these topic distributions, suggesting that shared characteristics (income level, regional context, or geographic vulnerability) systematically shape how countries frame adaptation challenges.
+
+The statistical test works by fitting regression models for each dominant topic, with group membership as the predictor variable and topic proportions as the outcome. I use binary indicators for each group (for example, SIDS vs. non-SIDS, or low-income vs. other income levels) to test specific hypotheses about discourse patterns. The STM framework accounts for the compositional nature of topic proportions and provides appropriate standard errors for hypothesis testing.
+
+I report p-values from two-tailed significance tests, with results considered statistically significant at α = 0.05. This conservative approach ensures that claims about systematic discourse patterns are supported by robust statistical evidence rather than random patterns in a small corpus.

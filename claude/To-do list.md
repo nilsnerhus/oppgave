@@ -9,7 +9,7 @@
 	- [ ] Topics
 	- [ ] Dominance
 	- [ ] Variance
-- [x] Methods
+- [ ] Methods
 	- [x] Corpus collection and preparation
 	- [x] Structural topic modelling
 	- [x] Text analysis
