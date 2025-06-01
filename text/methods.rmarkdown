@@ -1,9 +1,23 @@
 # Methods {#sec-methods}
 
+
+
+
+
+
+
+
 ```{r setup, include=FALSE}
 knitr::opts_knit$set(root.dir = "..")
 `%>%` <- magrittr::`%>%`
 ```
+
+
+
+
+
+
+
 
 > To empirically examine whether adaptation discourse reflects epistemological diversity or monoculture, I develop a methodological approach centered around the "Dominance Index"—a measurement tool for quantifying the degree to which adaptation discourse is concentrated around particular topics or perspectives.
 
@@ -20,6 +34,13 @@ This chapter presents each methodological stage with sufficient detail to ensure
 ## Corpus Collection and Preparation
 
 > To level the playing field and make the NAPs comparable across documents, I have developed a systematic approach to extract, clean, and prepare the text, as well as finding and adding the necesarry metadata for analysis.
+
+
+
+
+
+
+
 
 ```{r}
 #| label: Corpus cleaning
@@ -75,6 +96,13 @@ num_sids <- sum(metadata$data$metadata$is_sids, na.rm=TRUE)
 num_lldc <- sum(metadata$data$metadata$is_lldc, na.rm=TRUE)
 ```
 
+
+
+
+
+
+
+
 The analysis begins with the systematic collection of National Adaptation Plans from the UNFCCC's NAP Central website [reference]. To do this, I set up a web scraper that automatically scans the website and extracts the country name, the date posted and the link to the download for English language NAPs. This process found `r num(english_docs)` English plans, of `r num(all_language_naps)` countries in total. 
 
 While focusing on English-language documents introduces a potential bias toward Anglophone countries or those with stronger ties to international institutions, this constraint was necessary to ensure meaningful textual comparison using consistent analytical methods. It is also valueable, as the working language of the World Bank and other international institutions is English [@defrancesco2020]. 
@@ -99,6 +127,13 @@ The last category I extract is the date the plans were posted. The plans have be
 
 > Structural topic modeling allows us to discover latent themes in the corpus, reducing the corpus to word clusters we can analyze later. 
 
+
+
+
+
+
+
+
 ```{r}
 #| label: Topic modeling
 #| include: FALSE
@@ -116,6 +151,13 @@ k_value <- k[["data"]][["best_k"]]
 coh_weight <- k[["metadata"]][["weights"]][["coherence"]]
 exc_weight <- k[["metadata"]][["weights"]][["exclusivity"]]
 ```
+
+
+
+
+
+
+
 
 Topic modelling is an approach that discovers latent thematic patterns in large text corpora. For our purposes, this makes it possible to interact with the whole corpus that spans  `r num(init_tokens)` words, in an analytical way. 
 
@@ -136,6 +178,13 @@ I weigh the coherence and exclusicity `r pct(coh_weight)` against `r pct(exc_wei
 ## Dominance analysis
 
 > To analyse the distribution of topics I use three different methods, first I name the topics, and analyse their prominance in the discourse, then I measure the concentration within the three top topics in the category, before I calculate how much explanatory power each category has for the topic prominance. 
+
+
+
+
+
+
+
 
 ```{r}
 #| label: Dominance analysis
@@ -162,6 +211,13 @@ metrics <- calculate_metrics(model, topics, dfm)
 # Extract values
 n_topics <- metrics[["metadata"]][["n_value"]]
 ```
+
+
+
+
+
+
+
 
 For each category (income level, region, geographic vulnerability), I calculate dominance as follows. First, I identify all countries belonging to a specific group (for example, all low-income countries or all SIDS) and extract their topic proportion vectors from the fitted STM model. These proportions represent how much each of the `r k_value` topics contributes to each country's adaptation discourse. I then calculate the mean topic proportions across all countries in the group, creating an average discourse profile for that category.
 

@@ -34,7 +34,9 @@ dfm <- auto_cache(process_dfm, docs, metadata, min_docs = 0.1, max_docs = 0.8)
 source("scripts/find_k.R")
 source("scripts/fit_model.R")
 
-k <- auto_cache(find_k, dfm, range = c(5, 20, 5))
+k <- auto_cache(find_k, dfm, 
+                coherence_weight = 0.45,
+                exclusivity_weight = 0.55)
 model <- auto_cache(fit_model, dfm, k, category_map = category_map)
 
 # Step 3: Analysis
@@ -51,4 +53,4 @@ Earlier analysis has found the themes to be either security related (disasters o
 geographical (rangeland or coastal etc.) or sectoral (agriculture, fisheries, tourism)."
 
 topics <- auto_cache(name_topics, model, context = context)
-metrics <- auto_cache(calculate_metrics, model, topics, dfm)
+metrics <- auto_cache(calculate_metrics, model, topics, dfm, overwrite = TRUE)

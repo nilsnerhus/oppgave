@@ -8,7 +8,6 @@
 - [ ] Findings
 	- [ ] Topics
 	- [ ] Dominance
-	- [ ] Variance
 - [ ] Methods
 	- [x] Corpus collection and preparation
 	- [x] Structural topic modelling

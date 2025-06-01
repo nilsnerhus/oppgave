@@ -38,7 +38,7 @@ name_topics <- function(
     n_terms = 10,
     hf_model = "mistralai/Mixtral-8x7B-Instruct-v0.1", 
     max_retries = 3,
-    context = "climate adaptation policy",
+    context = NULL,
     top_countries = 2,
     max_length_label = 1
 ) {
@@ -238,9 +238,7 @@ name_topics <- function(
   
   # Return standardized result
   return(create_result(
-    data = list(
-      topics_table = topics_table
-    ),
+    data = topics_table,
     metadata = result_metadata,
     diagnostics = diagnostics
   ))

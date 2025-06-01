@@ -33,9 +33,19 @@ calculate_metrics <- function(model, topics, dfm, n = 3, min_group_size = 8) {
     stop(error_msg)
   }
   
-  # Validate topics structure
-  if (!is.list(topics) || !"data" %in% names(topics) || !"topics_table" %in% names(topics$data)) {
-    error_msg <- "Topics must contain 'data$topics_table'"
+  # Validate topics structure (now expecting direct table in data)
+  if (!is.list(topics) || !"data" %in% names(topics) || !is.data.frame(topics$data)) {
+    error_msg <- "Topics must contain 'data' as a data frame (topics table)"
+    diagnostics$processing_issues <- c(diagnostics$processing_issues, error_msg)
+    log_message(error_msg, "calculate_metrics", "ERROR")
+    stop(error_msg)
+  }
+  
+  # Validate topics table has required columns
+  required_topic_cols <- c("topic_id", "topic_name")
+  missing_topic_cols <- setdiff(required_topic_cols, names(topics$data))
+  if (length(missing_topic_cols) > 0) {
+    error_msg <- paste("Topics table missing required columns:", paste(missing_topic_cols, collapse = ", "))
     diagnostics$processing_issues <- c(diagnostics$processing_issues, error_msg)
     log_message(error_msg, "calculate_metrics", "ERROR")
     stop(error_msg)
@@ -55,8 +65,16 @@ calculate_metrics <- function(model, topics, dfm, n = 3, min_group_size = 8) {
   stm_meta <- dfm$data$meta       # For significance testing (original structure)
   stm_model <- model$data$model   # For estimateEffect
   category_map <- model$data$category_map
-  topics_table <- topics$data$topics_table
+  topics_table <- topics$data     # Now directly the table, not nested
   k <- ncol(theta)
+  
+  # Validate dimensions match
+  if (nrow(topics_table) != k) {
+    error_msg <- paste("Topics table has", nrow(topics_table), "rows but model has", k, "topics")
+    diagnostics$processing_issues <- c(diagnostics$processing_issues, error_msg)
+    log_message(error_msg, "calculate_metrics", "ERROR")
+    stop(error_msg)
+  }
   
   log_message(paste("Extracted components:", nrow(theta), "documents,", k, "topics,", 
                     length(category_map), "categories"), "calculate_metrics")
@@ -122,8 +140,8 @@ calculate_metrics <- function(model, topics, dfm, n = 3, min_group_size = 8) {
             next
           }
           
-          # Calculate dominance for this subcategory (no bootstrap)
-          dominance_result <- find_dominance(theta, doc_indices, n, bootstrap = FALSE)
+          # Calculate dominance for this subcategory
+          dominance_result <- find_dominance(theta, doc_indices, n)
           
           if (!is.null(dominance_result)) {
             # Get top topic names and IDs
@@ -189,8 +207,8 @@ calculate_metrics <- function(model, topics, dfm, n = 3, min_group_size = 8) {
           next
         }
         
-        # Calculate subcategory dominance (no bootstrap)
-        subcategory_dominance_result <- find_dominance(theta, doc_indices, n, bootstrap = FALSE)
+        # Calculate subcategory dominance
+        subcategory_dominance_result <- find_dominance(theta, doc_indices, n)
         
         if (!is.null(subcategory_dominance_result)) {
           # Get subcategory top topics

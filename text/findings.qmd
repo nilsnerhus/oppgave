@@ -1,13 +1,8 @@
 # Findings {#sec-findings}
 
 ```{r setup, include=FALSE}
-# Set root directory for all chunks
 knitr::opts_knit$set(root.dir = "..")
-```
-
-```{r load_functions}
-# Load required functions
-source("scripts/utils.R")
+`%>%` <- magrittr::`%>%`
 ```
 
 > The analysis of National Adaptation Plans through structural topic modeling and discourse centralization metrics reveals patterns that speak directly to questions of epistemological diversity, institutional influence, and the relationship between climate vulnerability and adaptation planning.
@@ -33,71 +28,23 @@ Throughout this chapter, technical concepts are explained as they arise, with th
 > The structural topic model identified topics that capture how climate adaptation is conceptualized across National Adaptation Plans, providing the foundation for understanding patterns of discourse concentration and variation.
 
 ```{r load_topics_data}
-# Load the topics and metrics data
+# Load data
+source("scripts/utils.R")
+
 topics <- readRDS("data/name_topics.rds")
-metrics <- readRDS("data/calculate_metrics.rds")
 
-k_val <- nrow(topics$data$topics_table)
+k_val <- nrow(topics[["data"]])
 
-# Extract topic names and proportions from topics data
-topic_1 <- topics$data$topics_table$topic_name[topics$data$topics_table$topic_id == 1]
-topic_2 <- topics$data$topics_table$topic_name[topics$data$topics_table$topic_id == 2]
-topic_3 <- topics$data$topics_table$topic_name[topics$data$topics_table$topic_id == 3]
-topic_4 <- topics$data$topics_table$topic_name[topics$data$topics_table$topic_id == 4]
-topic_5 <- topics$data$topics_table$topic_name[topics$data$topics_table$topic_id == 5]
-topic_6 <- topics$data$topics_table$topic_name[topics$data$topics_table$topic_id == 6]
-topic_7 <- topics$data$topics_table$topic_name[topics$data$topics_table$topic_id == 7]
-topic_8 <- topics$data$topics_table$topic_name[topics$data$topics_table$topic_id == 8]
-topic_9 <- topics$data$topics_table$topic_name[topics$data$topics_table$topic_id == 9]
-topic_10 <- topics$data$topics_table$topic_name[topics$data$topics_table$topic_id == 10]
+# Get the table once
+topic_table <- topics[["data"]]
 
-# Extract proportions
-prop_1 <- topics$data$topics_table$topic_proportion[topics$data$topics_table$topic_id == 1]
-prop_2 <- topics$data$topics_table$topic_proportion[topics$data$topics_table$topic_id == 2]
-prop_3 <- topics$data$topics_table$topic_proportion[topics$data$topics_table$topic_id == 3]
-prop_4 <- topics$data$topics_table$topic_proportion[topics$data$topics_table$topic_id == 4]
-prop_5 <- topics$data$topics_table$topic_proportion[topics$data$topics_table$topic_id == 5]
-prop_6 <- topics$data$topics_table$topic_proportion[topics$data$topics_table$topic_id == 6]
-prop_7 <- topics$data$topics_table$topic_proportion[topics$data$topics_table$topic_id == 7]
-prop_8 <- topics$data$topics_table$topic_proportion[topics$data$topics_table$topic_id == 8]
-prop_9 <- topics$data$topics_table$topic_proportion[topics$data$topics_table$topic_id == 9]
-prop_10 <- topics$data$topics_table$topic_proportion[topics$data$topics_table$topic_id == 10]
-
-# Extract FREX terms for each topic (first 5 terms for readability)
-frex_1 <- paste(strsplit(topics$data$topics_table$top_frex_terms[1], ", ")[[1]][1:5], collapse = ", ")
-frex_2 <- paste(strsplit(topics$data$topics_table$top_frex_terms[2], ", ")[[1]][1:5], collapse = ", ")
-frex_3 <- paste(strsplit(topics$data$topics_table$top_frex_terms[3], ", ")[[1]][1:5], collapse = ", ")
-frex_4 <- paste(strsplit(topics$data$topics_table$top_frex_terms[4], ", ")[[1]][1:5], collapse = ", ")
-frex_5 <- paste(strsplit(topics$data$topics_table$top_frex_terms[5], ", ")[[1]][1:5], collapse = ", ")
-frex_6 <- paste(strsplit(topics$data$topics_table$top_frex_terms[6], ", ")[[1]][1:5], collapse = ", ")
-frex_7 <- paste(strsplit(topics$data$topics_table$top_frex_terms[7], ", ")[[1]][1:5], collapse = ", ")
-frex_8 <- paste(strsplit(topics$data$topics_table$top_frex_terms[8], ", ")[[1]][1:5], collapse = ", ")
-frex_9 <- paste(strsplit(topics$data$topics_table$top_frex_terms[9], ", ")[[1]][1:5], collapse = ", ")
-frex_10 <- paste(strsplit(topics$data$topics_table$top_frex_terms[10], ", ")[[1]][1:5], collapse = ", ")
-
-# Extract high-probability terms (first 5 terms)
-prob_1 <- paste(strsplit(topics$data$topics_table$top_prob_terms[1], ", ")[[1]][1:5], collapse = ", ")
-prob_2 <- paste(strsplit(topics$data$topics_table$top_prob_terms[2], ", ")[[1]][1:5], collapse = ", ")
-prob_3 <- paste(strsplit(topics$data$topics_table$top_prob_terms[3], ", ")[[1]][1:5], collapse = ", ")
-prob_4 <- paste(strsplit(topics$data$topics_table$top_prob_terms[4], ", ")[[1]][1:5], collapse = ", ")
-prob_5 <- paste(strsplit(topics$data$topics_table$top_prob_terms[5], ", ")[[1]][1:5], collapse = ", ")
-prob_6 <- paste(strsplit(topics$data$topics_table$top_prob_terms[6], ", ")[[1]][1:5], collapse = ", ")
-prob_7 <- paste(strsplit(topics$data$topics_table$top_prob_terms[7], ", ")[[1]][1:5], collapse = ", ")
-prob_8 <- paste(strsplit(topics$data$topics_table$top_prob_terms[8], ", ")[[1]][1:5], collapse = ", ")
-prob_9 <- paste(strsplit(topics$data$topics_table$top_prob_terms[9], ", ")[[1]][1:5], collapse = ", ")
-prob_10 <- paste(strsplit(topics$data$topics_table$top_prob_terms[10], ", ")[[1]][1:5], collapse = ", ")
-
-# Extract top countries for each topic
-countries_1 <- topics$data$topics_table$top_countries[1]
-countries_2 <- topics$data$topics_table$top_countries[2]
-countries_3 <- topics$data$topics_table$top_countries[3]
-countries_4 <- topics$data$topics_table$top_countries[4]
-countries_5 <- topics$data$topics_table$top_countries[5]
-countries_6 <- topics$data$topics_table$top_countries[6]
-countries_7 <- topics$data$topics_table$top_countries[7]
-countries_8 <- topics$data$topics_table$top_countries[8]
-countries_9 <- topics$data$topics_table$top_countries[9]
-countries_10 <- topics$data$topics_table$top_countries[10]
+# Create all variables at once
+for(i in 1:nrow(topic_table)) {
+  assign(paste0("topic_", i), topic_table$topic_name[i])
+  assign(paste0("frex_", i), topic_table$frex_terms[i])
+  assign(paste0("countries_", i), topic_table$top_countries[i])
+  assign(paste0("prop_", i), topic_table$topic_proportion[i])
+}
 ```
 
 The structural topic model identified `r num(k_val)` topics organizing adaptation discourse across National Adaptation Plans through an iterative process that optimizes semantic coherence and topic exclusivity. The semantic interpretation relies on FREX (frequency-exclusivity) terms that identify distinctive vocabulary, high-probability terms that reveal common usage patterns, and country clustering patterns that provide validation for topic meanings.
@@ -106,25 +53,25 @@ The identified topics organize into three substantive categories that capture di
 
 Two topics representing `r pct(prop_2 + prop_1)` of discourse cluster around administrative and institutional processes rather than substantive adaptation content.
 
-**`r topic_2`.** This most prevalent topic (`r pct(prop_2)` of corpus) exhibits FREX terms "`r frex_2`" and high-probability terms "`r prob_2`." The semantic field demonstrates procedural orientation: "pro" (procedures), "counti" (accounting), "chapter" (document organization), and "mandat" (mandates). The cross-national pattern `r countries_2` indicates that procedural concerns transcend regional boundaries, with administrative elements constituting the largest single thematic component of adaptation planning.
+**`r topic_2`.** This most prevalent topic (`r pct(prop_2)` of corpus) exhibits FREX terms "`r frex_2`" and high-probability terms. The semantic field demonstrates procedural orientation: "pro" (procedures), "counti" (accounting), "chapter" (document organization), and "mandat" (mandates). The cross-national pattern `r countries_2` indicates that procedural concerns transcend regional boundaries, with administrative elements constituting the largest single thematic component of adaptation planning.
 
-**`r topic_1`.** This topic (`r pct(prop_1)` of corpus) shows FREX terms "`r frex_1`" and high-probability terms "`r prob_1`." The semantic pattern centers on territorial and social organization: "territori" (territorial), "transit" (transitions), "famili" (family), and "nativ" (native/indigenous). The clustering around `r countries_1` reflects Spanish- and Portuguese-speaking contexts where territorial sovereignty and indigenous rights represent significant policy considerations.
+**`r topic_1`.** This topic (`r pct(prop_1)` of corpus) shows FREX terms "`r frex_1`" and high-probability terms. The semantic pattern centers on territorial and social organization: "territori" (territorial), "transit" (transitions), "famili" (family), and "nativ" (native/indigenous). The clustering around `r countries_1` reflects Spanish- and Portuguese-speaking contexts where territorial sovereignty and indigenous rights represent significant policy considerations.
 
 Four topics representing `r pct(prop_4 + prop_6 + prop_7 + prop_5)` of discourse address specific environmental domains and technical approaches to adaptation challenges.
 
-**`r topic_4`.** This topic (`r pct(prop_4)` of corpus) shows FREX terms "`r frex_4`" and high-probability terms "`r prob_4`." The semantic field encompasses rural development: "wash" (water/sanitation systems), "hill" (mountainous terrain), "wildlif" (wildlife conservation), and "nationwid" (national programs). The country pattern `r countries_4` represents nations with significant rural populations and forest-dependent communities.
+**`r topic_4`.** This topic (`r pct(prop_4)` of corpus) shows FREX terms "`r frex_4`" and high-probability terms. The semantic field encompasses rural development: "wash" (water/sanitation systems), "hill" (mountainous terrain), "wildlif" (wildlife conservation), and "nationwid" (national programs). The country pattern `r countries_4` represents nations with significant rural populations and forest-dependent communities.
 
-**`r topic_6`.** This topic (`r pct(prop_6)` of corpus) exhibits FREX terms "`r frex_6`" and high-probability terms "`r prob_6`." The semantic analysis indicates water infrastructure focus: "defens" (defensive structures), "mountain" (mountain environments), "basin" (watershed management), and "norm" (technical standards). The pattern `r countries_6` represents contexts requiring sophisticated water management infrastructure.
+**`r topic_6`.** This topic (`r pct(prop_6)` of corpus) exhibits FREX terms "`r frex_6`" and high-probability terms. The semantic analysis indicates water infrastructure focus: "defens" (defensive structures), "mountain" (mountain environments), "basin" (watershed management), and "norm" (technical standards). The pattern `r countries_6` represents contexts requiring sophisticated water management infrastructure.
 
-**`r topic_7`.** This topic (`r pct(prop_7)` of corpus) shows FREX terms "`r frex_7`" and high-probability terms "`r prob_7`." The semantic field centers on tropical cyclones: "atol" (atoll environments), "typhoon" and "cyclon" (storm systems), and "pathway" (storm tracks). The clustering `r countries_7` represents classic cyclone-prone regions across Pacific and Atlantic basins.
+**`r topic_7`.** This topic (`r pct(prop_7)` of corpus) shows FREX terms "`r frex_7`" and high-probability terms. The semantic field centers on tropical cyclones: "atol" (atoll environments), "typhoon" and "cyclon" (storm systems), and "pathway" (storm tracks). The clustering `r countries_7` represents classic cyclone-prone regions across Pacific and Atlantic basins.
 
-**`r topic_5`.** This topic (`r pct(prop_5)` of corpus) exhibits FREX terms "`r frex_5`" and high-probability terms "`r prob_5`." The semantic analysis presents technical vocabulary: "ensembl" (ensemble modeling), "centuri" (century timeframes), and "frost" (frost events). The pattern `r countries_5` suggests technical assessment approaches across different developmental contexts.
+**`r topic_5`.** This topic (`r pct(prop_5)` of corpus) exhibits FREX terms "`r frex_5`" and high-probability terms. The semantic analysis presents technical vocabulary: "ensembl" (ensemble modeling), "centuri" (century timeframes), and "frost" (frost events). The pattern `r countries_5` suggests technical assessment approaches across different developmental contexts.
 
 Four topics representing `r pct(prop_3 + prop_8)` of discourse emphasize specific regional contexts and humanitarian challenges.
 
-**`r topic_3`.** Accounting for `r pct(prop_3)` of discourse, FREX terms "`r frex_3`" with high-probability terms "`r prob_3`." The country clustering of Sri Lanka and Sudan represents diverse contexts with strong institutional coordination needs. The semantic emphasis on rangeland and secretariat functions supports labeling this as institutional coordination, though the regional specificity suggests particular institutional arrangements.
+**`r topic_3`.** Accounting for `r pct(prop_3)` of discourse, FREX terms "`r frex_3`" with high-probability terms. The country clustering of Sri Lanka and Sudan represents diverse contexts with strong institutional coordination needs. The semantic emphasis on rangeland and secretariat functions supports labeling this as institutional coordination, though the regional specificity suggests particular institutional arrangements.
 
-**`r topic_8`.** The second most prevalent topic overall (`r pct(prop_8)` of discourse) shows FREX terms "`r frex_8`" paired with high-probability terms "`r prob_8`." The country pattern of St. Lucia and Kiribati represents small island developing states facing multiple hazards. Representative text emphasizes coastal and marine systems under threat, supporting the label of coastal vulnerability and small island concerns.
+**`r topic_8`.** The second most prevalent topic overall (`r pct(prop_8)` of discourse) shows FREX terms "`r frex_8`" paired with high-probability terms. The country pattern of St. Lucia and Kiribati represents small island developing states facing multiple hazards. Representative text emphasizes coastal and marine systems under threat, supporting the label of coastal vulnerability and small island concerns.
 
 ## Dominance
 
@@ -132,67 +79,51 @@ Four topics representing `r pct(prop_3 + prop_8)` of discourse emphasize specifi
 
 ```{r load_dominance_data}
 # Extract dominance data from metrics
-dominance_data <- metrics$data$dominance
+metrics <- readRDS("data/calculate_metrics.rds")
 
-# Overall patterns - note: checking if "Global" or "Overall" is used in data
-overall_dom <- dominance_data$normalized_dominance[dominance_data$category == "Global" & dominance_data$subcategory == "Global"]
-if(length(overall_dom) == 0) {
-  overall_dom <- dominance_data$normalized_dominance[dominance_data$category == "Overall" & dominance_data$subcategory == "Overall"]
-  overall_ci_lower <- dominance_data$ci_lower[dominance_data$category == "Overall" & dominance_data$subcategory == "Overall"]
-  overall_ci_upper <- dominance_data$ci_upper[dominance_data$category == "Overall" & dominance_data$subcategory == "Overall"]
-} else {
-  overall_ci_lower <- dominance_data$ci_lower[dominance_data$category == "Global" & dominance_data$subcategory == "Global"]
-  overall_ci_upper <- dominance_data$ci_upper[dominance_data$category == "Global" & dominance_data$subcategory == "Global"]
+dominance_data <- metrics[["data"]]
+
+# Create a mapping for cleaner variable names
+name_map <- c(
+  "Global" = "overall",
+  "Upper middle income" = "upper_middle",
+  "Lower middle income" = "lower_middle", 
+  "Low income" = "low_income",
+  "High income" = "high_income",
+  "Latin America & Caribbean" = "lac",
+  "Sub-Saharan Africa" = "ssa",
+  "East Asia & Pacific" = "eap",
+  "SIDS" = "sids",
+  "LLDC" = "lldc",
+  "Early" = "early",
+  "Middle" = "middle",
+  "Late" = "late"
+)
+
+# Extract values with clean names
+for (i in 1:nrow(dominance_data)) {
+  row <- dominance_data[i, ]
+  
+  # Skip "Overall" rows
+  if (row$subcategory == "Overall") next
+  
+  # Get clean variable name
+  var_name <- name_map[row$subcategory]
+  if (is.na(var_name)) var_name <- clean_name(row$subcategory)
+  
+  # Create variables
+  assign(paste0(var_name, "_dom"), row$dominance)
+  assign(paste0(var_name, "_topics"), row$top_topics)
 }
-
-# Income patterns
-low_income_dom <- dominance_data$normalized_dominance[dominance_data$category == "Income" & dominance_data$subcategory == "Low income"]
-lower_middle_dom <- dominance_data$normalized_dominance[dominance_data$category == "Income" & dominance_data$subcategory == "Lower middle income"]
-upper_middle_dom <- dominance_data$normalized_dominance[dominance_data$category == "Income" & dominance_data$subcategory == "Upper middle income"]
-high_income_dom <- dominance_data$normalized_dominance[dominance_data$category == "Income" & dominance_data$subcategory == "High income"]
-
-# Regional patterns (selecting major regions for narrative)
-lac_dom <- dominance_data$normalized_dominance[dominance_data$category == "Region" & dominance_data$subcategory == "Latin America & Caribbean"]
-ssa_dom <- dominance_data$normalized_dominance[dominance_data$category == "Region" & dominance_data$subcategory == "Sub-Saharan Africa"]
-eap_dom <- dominance_data$normalized_dominance[dominance_data$category == "Region" & dominance_data$subcategory == "East Asia & Pacific"]
-
-# Geographic patterns
-sids_dom <- dominance_data$normalized_dominance[dominance_data$category == "Geography" & dominance_data$subcategory == "SIDS"]
-lldc_dom <- dominance_data$normalized_dominance[dominance_data$category == "Geography" & dominance_data$subcategory == "LLDC"]
-
-# Temporal patterns
-early_dom <- dominance_data$normalized_dominance[dominance_data$category == "Time" & dominance_data$subcategory == "Early"]
-middle_dom <- dominance_data$normalized_dominance[dominance_data$category == "Time" & dominance_data$subcategory == "Middle"]
-late_dom <- dominance_data$normalized_dominance[dominance_data$category == "Time" & dominance_data$subcategory == "Late"]
-
-# Extract top topics for key groups
-sids_topics <- dominance_data$top_topics[dominance_data$category == "Geography" & dominance_data$subcategory == "SIDS"]
-lldc_topics <- dominance_data$top_topics[dominance_data$category == "Geography" & dominance_data$subcategory == "LLDC"]
-early_topics <- dominance_data$top_topics[dominance_data$category == "Time" & dominance_data$subcategory == "Early"]
-middle_topics <- dominance_data$top_topics[dominance_data$category == "Time" & dominance_data$subcategory == "Middle"]
-late_topics <- dominance_data$top_topics[dominance_data$category == "Time" & dominance_data$subcategory == "Late"]
-
-# Extract confidence intervals for key comparisons
-low_income_ci_lower <- dominance_data$ci_lower[dominance_data$category == "Income" & dominance_data$subcategory == "Low income"]
-low_income_ci_upper <- dominance_data$ci_upper[dominance_data$category == "Income" & dominance_data$subcategory == "Low income"]
-
-upper_middle_ci_lower <- dominance_data$ci_lower[dominance_data$category == "Income" & dominance_data$subcategory == "Upper middle income"]
-upper_middle_ci_upper <- dominance_data$ci_upper[dominance_data$category == "Income" & dominance_data$subcategory == "Upper middle income"]
 ```
 
 The Dominance Index quantifies discourse centralization by measuring the proportion of discourse concentrated in the top three most prevalent topics. The corpus-level analysis calculates average topic proportions across countries within each category, then identifies the three most prevalent topics and their combined share of discourse. Normalized scores range from 0 (theoretical minimum) to 1 (complete concentration), enabling comparison across categories.
 
-Across all countries, the overall corpus-level dominance reaches `r pct(overall_dom)` (95% CI: `r pct(overall_ci_lower)`-`r pct(overall_ci_upper)`). To contextualize this concentration level: if adaptation discourse distributed evenly across all `r k_val` topics, each would account for 10% of total content. Instead, the top three topics alone account for `r pct(overall_dom)` of all discourse, while the remaining seven topics share the remaining `r pct(1 - overall_dom)`. This represents substantial concentration where a small number of themes dominate adaptation planning discourse globally.
+Across all countries, the overall corpus-level dominance reaches `r pct(overall_dom)`. To contextualize this concentration level: if adaptation discourse distributed evenly across all `r k_val` topics, each would account for 10% of total content. Instead, the top three topics alone account for `r pct(overall_dom)` of all discourse, while the remaining seven topics share the remaining `r pct(1 - overall_dom)`. This represents substantial concentration where a small number of themes dominate adaptation planning discourse globally.
 
-The bootstrap confidence interval (`r pct(overall_ci_lower)`-`r pct(overall_ci_upper)`) reflects sampling variability in the 45-country corpus. The relatively narrow interval indicates stable measurement despite the limited sample size, though the interval width acknowledges uncertainty in the precise dominance level. The confidence interval construction employed 1,000 bootstrap replications, resampling countries with replacement to generate the distribution of possible dominance values under different sampling scenarios.
+Among income groups, discourse centralization varies meaningfully across economic categories, revealing a clear gradient in discourse diversity. Low-income countries show the highest corpus-level dominance at `r pct(low_income_dom)`. In practical terms, this means that in a typical low-income country NAP, nearly three-quarters of all topic-related content relates to just three themes, leaving only one-quarter distributed among the remaining seven topics.
 
-Among income groups, discourse centralization varies meaningfully across economic categories, revealing a clear gradient in discourse diversity. Low-income countries show the highest corpus-level dominance at `r pct(low_income_dom)` (95% CI: `r pct(low_income_ci_lower)`-`r pct(low_income_ci_upper)`). In practical terms, this means that in a typical low-income country NAP, nearly three-quarters of all topic-related content relates to just three themes, leaving only one-quarter distributed among the remaining seven topics.
-
-Lower-middle income countries display dominance of `r pct(lower_middle_dom)`, while upper-middle income countries show dominance of `r pct(upper_middle_dom)` (95% CI: `r pct(upper_middle_ci_lower)`-`r pct(upper_middle_ci_upper)`). The progression creates a stepwise pattern across income categories. Examining representative NAPs from each group: low-income country plans concentrate nearly three-quarters of topic-related content within their top three themes, leaving only one-quarter distributed among the remaining seven topics. Upper-middle income countries, by contrast, concentrate roughly 58% in their top three topics—a 16-percentage point difference in discourse structure that indicates systematically different approaches to thematic breadth versus focus.
-
-The confidence intervals provide insight into measurement precision. The narrow interval for low-income countries (`r pct(low_income_ci_lower)`-`r pct(low_income_ci_upper)`) indicates consistent patterns across the nine countries in this category, while the wider interval for upper-middle income countries reflects greater variation among the 17 countries in this group.
-
-High-income countries show dominance of `r pct(high_income_dom)`, though the small sample size limits confidence in this pattern.
+Lower-middle income countries display dominance of `r pct(lower_middle_dom)`, while upper-middle income countries show dominance of `r pct(upper_middle_dom)`. The progression creates a stepwise pattern across income categories. Examining representative NAPs from each group: low-income country plans concentrate nearly three-quarters of topic-related content within their top three themes, leaving only one-quarter distributed among the remaining seven topics. Upper-middle income countries, by contrast, concentrate roughly 58% in their top three topics—a 16-percentage point difference in discourse structure that indicates systematically different approaches to thematic breadth versus focus.
 
 Regional patterns show consistently high discourse centralization across all regions, though with distinct thematic emphases. East Asia & Pacific displays dominance of `r pct(eap_dom)`, Sub-Saharan Africa shows dominance of `r pct(ssa_dom)`, and Latin America & Caribbean exhibits dominance of `r pct(lac_dom)`. While all regions maintain high centralization levels, each emphasizes distinct combinations of topics, indicating that regional institutional networks create convergence within regions while maintaining differentiated approaches between regions.
 
@@ -205,58 +136,3 @@ The temporal analysis reveals how adaptation discourse has evolved as countries 
 Early submissions (2015-2018) display dominance of `r pct(early_dom)`, representing a moderate level of concentration where roughly two-thirds of content relates to the top three topics. Late submissions (2022-2025) exhibit the lowest dominance at `r pct(late_dom)`, with just over half of discourse concentrated in the top three topics. 
 
 This temporal progression creates a notable inverted U-shape pattern: starting from 66% concentration in early NAPs, rising to 75% in middle-period NAPs, then declining to 53% in recent submissions. The 22-percentage point difference between peak and current concentration levels represents a substantial shift in discourse structure over the decade-long period.
-
-## Variation
-
-> While adaptation discourse shows high centralization overall, examining which factors explain the variation that does exist reveals the relative importance of different forces in shaping adaptation planning approaches.
-
-```{r load_variance_data}
-# Extract variance data from metrics
-variance_data <- metrics$data$variance
-
-# Category-level variance explained
-region_var_exp <- variance_data$variance_explained[variance_data$category == "Region" & variance_data$subcategory == "Overall"]
-income_var_exp <- variance_data$variance_explained[variance_data$category == "Income" & variance_data$subcategory == "Overall"]
-time_var_exp <- variance_data$variance_explained[variance_data$category == "Time" & variance_data$subcategory == "Overall"]
-geo_var_exp <- variance_data$variance_explained[variance_data$category == "Geography" & variance_data$subcategory == "Overall"]
-
-# Subcategory contributions
-sids_var_contrib <- variance_data$variance_explained[variance_data$category == "Geography" & variance_data$subcategory == "SIDS"]
-lldc_var_contrib <- variance_data$variance_explained[variance_data$category == "Geography" & variance_data$subcategory == "LLDC"]
-
-# Total variance explained
-total_var_exp <- region_var_exp + income_var_exp + time_var_exp + geo_var_exp
-unexplained_var <- 1 - total_var_exp
-```
-
-Understanding which factors drive the variation in adaptation discourse requires decomposing the differences we observe into their constituent sources. Variance decomposition reveals the relative importance of different factors in shaping how countries conceptualize adaptation. The percentage of variance explained by each factor indicates its influence in creating discourse patterns, while the hierarchy of effects reveals what matters most in determining adaptation planning approaches.
-
-The analysis reveals a hierarchy among factors shaping adaptation discourse: geography explains `r pct(geo_var_exp)` of variance, followed by time at `r pct(time_var_exp)`, region at `r pct(region_var_exp)`, and income at `r pct(income_var_exp)`. Together, these four factors explain approximately `r pct(total_var_exp)` of the variation in discourse centralization, leaving `r pct(unexplained_var)` attributable to country-specific factors or unmeasured variables. This hierarchy reveals that geographic vulnerability characteristics have emerged as the strongest influence on discourse patterns, followed by temporal evolution, regional institutional effects, and economic positioning.
-
-The geographic effect emerges as the strongest factor, explaining `r pct(geo_var_exp)` of variance in discourse patterns—a finding that merits detailed examination given theoretical debates about whether physical vulnerability or institutional factors primarily shape adaptation planning. Small Island Developing States exhibit dominance of `r pct(sids_dom)`, while Landlocked Developing Countries display `r pct(lldc_dom)`, creating a 16-percentage point differential that represents the largest systematic difference between any analytical categories.
-
-The magnitude of this geographic differentiation becomes clear when compared to other factors. The SIDS-LLDC difference (`r pct(sids_dom - lldc_dom)`) substantially exceeds the income gradient between low-income and upper-middle income countries (`r pct(low_income_dom - upper_middle_dom)`), indicating that physical vulnerability characteristics generate stronger discourse differentiation than economic positioning within the global system.
-
-Beyond concentration levels, geographic categories exhibit distinct thematic emphases that align with physical vulnerability profiles. SIDS countries converge on `r sids_topics`, reflecting the prominence of coastal hazards, hurricane systems, and small island governance challenges. Conversely, LLDC countries focus on `r lldc_topics`, emphasizing rural livelihoods, water infrastructure, and territorial management concerns. These differentiated topic combinations create the systematic variance that drives geographic effects.
-
-Individual country contributions to geographic variance components reveal heterogeneity within categories. SIDS variance includes countries ranging from highly centralized discourse (approaching 95% dominance) to more distributed approaches (around 85% dominance), while LLDC variance encompasses even greater diversity (70-85% range). This within-category variation indicates that while geographic factors create systematic differences, substantial room remains for country-specific approaches within geographic constraints.
-
-The temporal effect explains `r pct(time_var_exp)` of variance, capturing systematic evolution in adaptation discourse as the NAP process has matured from initial experimentation (2015-2018) through institutional consolidation (2019-2021) to current diversification (2022-2025). This temporal variance stems from the pronounced inverted U-pattern in discourse concentration: Early submissions show `r pct(early_dom)` dominance, Middle period submissions peak at `r pct(middle_dom)`, and Late submissions decline to `r pct(late_dom)`.
-
-The 22-percentage point range between peak and current concentration levels represents substantial temporal differentiation that exceeds measurement uncertainty. The pattern suggests systematic changes in adaptation planning approaches rather than random variation across submission periods. Early NAPs exhibit moderate concentration, possibly reflecting countries' initial uncertainty about appropriate frameworks combined with limited institutional templates. Middle-period NAPs show maximum concentration, potentially indicating the influence of standardized guidance, training programs, and best practice dissemination during the NAP process's institutionalization phase.
-
-Late submissions demonstrate markedly lower concentration, with the `r pct(late_dom)` dominance level approaching the theoretical minimum for meaningful concentration given the 10-topic structure. This recent diversification may reflect countries' growing confidence in developing nationally appropriate approaches as they gain experience with the NAP process, or potentially changing international guidance that encourages more comprehensive and context-specific planning approaches.
-
-Thematic evolution across temporal periods reveals shifting emphases that contribute to variance components. Early submissions concentrate on `r early_topics`, Middle period submissions emphasize `r middle_topics`, while Late submissions focus on `r late_topics`. These rotating thematic emphases suggest that adaptation planning priorities have evolved systematically rather than merely becoming more diverse. The temporal trajectory indicates dynamic rather than static planning processes, with different aspects of adaptation receiving prominence during different phases of institutional development.
-
-Cross-temporal analysis within countries (for those submitting multiple NAPs) could provide additional insight into temporal effects, though the current corpus contains insufficient repeated observations for robust within-country analysis. The temporal patterns identified therefore reflect cross-sectional differences between submission cohorts rather than longitudinal development within specific countries.
-
-Regional networks explain `r pct(region_var_exp)` of variance, indicating moderate but meaningful influence of regional institutional contexts in shaping adaptation planning approaches. Regional effects operate through multiple potential mechanisms: shared development bank influence, common technical assistance providers, regional knowledge networks, and parallel institutional templates that circulate within geographic regions.
-
-The regional variance components reflect differences in both concentration levels and thematic emphases across major regions. East Asia & Pacific demonstrates `r pct(eap_dom)` dominance, Sub-Saharan Africa shows `r pct(ssa_dom)`, and Latin America & Caribbean exhibits `r pct(lac_dom)`. The `r pct(max(eap_dom, ssa_dom, lac_dom) - min(eap_dom, ssa_dom, lac_dom))` percentage point range between highest and lowest regional concentration levels indicates systematic regional differentiation, though less pronounced than geographic vulnerability effects.
-
-Regional thematic differentiation provides additional insight into how institutional contexts shape discourse. Different regions emphasize distinct topic combinations that may reflect regional development priorities, institutional histories, or shared environmental challenges. However, the moderate explanatory power of regional effects suggests that while regional institutions create systematic influences, they compete with other factors—particularly geographic vulnerability and temporal evolution—in determining discourse patterns.
-
-The income effect explains `r pct(income_var_exp)` of variance, the lowest among the four systematic factors examined. This relatively weak explanatory power occurs despite the clear income gradient in concentration levels: low-income countries (`r pct(low_income_dom)`) through upper-middle income countries (`r pct(upper_middle_dom)`) create a `r pct(low_income_dom - upper_middle_dom)` percentage point differential that exceeds measurement uncertainty.
-
-The apparent paradox—clear income gradient but low variance explanation—reflects income effects operating primarily through concentration levels rather than distinctive thematic emphases. Countries at different income levels show similar topic combinations but different degrees of concentration around those topics. This pattern suggests that economic positioning influences discourse focus more than discourse content, creating income-based differences in planning approaches without generating income-specific adaptation themes.
