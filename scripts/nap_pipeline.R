@@ -35,8 +35,8 @@ source("scripts/find_k.R")
 source("scripts/fit_model.R")
 
 k <- auto_cache(find_k, dfm, 
-                coherence_weight = 0.45,
-                exclusivity_weight = 0.55)
+                coherence_weight = 0.50,
+                exclusivity_weight = 0.50)
 model <- auto_cache(fit_model, dfm, k, category_map = category_map)
 
 # Step 3: Analysis

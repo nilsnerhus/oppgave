@@ -108,8 +108,10 @@ source("scripts/find_k.R")
 source("scripts/fit_model.R")
 
 # Run functions
-k <- find_k(dfm, range = c(4, 20, 2))
-model <- fit_model(dfm, k, category_map = category_map)
+k <- auto_cache(find_k, dfm, 
+                coherence_weight = 0.50,
+                exclusivity_weight = 0.50)
+model <- auto_cache(fit_model, dfm, k, category_map = category_map)
 
 # Extract values
 k_value <- k[["data"]][["best_k"]]
@@ -156,8 +158,8 @@ Earlier analysis has found the themes to be either security related (disasters o
 geographical (rangeland or coastal etc.) or sectoral (agriculture, fisheries, tourism)."
 
 # Run functions
-topics <- name_topics(model, context = context)
-metrics <- calculate_metrics(model, topics, dfm)
+topics <- auto_cache(name_topics, model, context = context)
+metrics <- auto_cache(calculate_metrics, model, topics, dfm)
 
 # Extract values
 n_topics <- metrics[["metadata"]][["n_value"]]
