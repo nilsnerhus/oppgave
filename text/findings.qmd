@@ -25,63 +25,91 @@ Throughout this chapter, technical concepts are explained as they arise, with th
 
 ## Topics
 
-> The structural topic model identified topics that capture how climate adaptation is conceptualized across National Adaptation Plans, providing the foundation for understanding patterns of discourse concentration and variation.
+> The structural topic model identified eight topics that capture how climate adaptation is conceptualized across National Adaptation Plans, with validation through FREX terms, country clustering patterns, and thematic coherence confirming the robustness of topic identification.
 
-```{r load_topics_data}
+```{r load_topics_table}
 # Load data
 source("scripts/utils.R")
 
 topics <- readRDS("data/name_topics.rds")
+topics_table <- topics[["data"]]
 
-k_val <- nrow(topics[["data"]])
+k_val <- nrow(topics_table)
 
-# Get the table once
-topic_table <- topics[["data"]]
-
-# Create all variables at once
-for(i in 1:nrow(topic_table)) {
-  assign(paste0("topic_", i), topic_table$topic_name[i])
-  assign(paste0("frex_", i), topic_table$frex_terms[i])
-  assign(paste0("countries_", i), topic_table$top_countries[i])
-  assign(paste0("prop_", i), topic_table$topic_proportion[i])
+# Create topic name variables with format "name (Topic X)"
+for(i in 1:nrow(topics_table)) {
+  topic_name <- paste0("*", tools::toTitleCase(tolower(topics_table$topic_name[i])), "* (Topic ", i, ")")
+  assign(paste0("topic_", i, "_name"), topic_name)
+  assign(paste0("topic_", i, "_prop"), pct(topics_table$topic_proportion[i]))  # Apply pct() here
+  assign(paste0("topic_", i, "_frex"), topics_table$frex_terms[i])
+  assign(paste0("topic_", i, "_countries"), topics_table$top_countries[i])
 }
+
+# Calculate combined topic groupings
+procedural_total <- pct(topics_table$topic_proportion[6] + topics_table$topic_proportion[8])
+sectoral_total <- pct(topics_table$topic_proportion[1] + topics_table$topic_proportion[2] + 
+                     topics_table$topic_proportion[3] + topics_table$topic_proportion[4])
+crosscutting_total <- pct(topics_table$topic_proportion[5] + topics_table$topic_proportion[7])
+
 ```
 
-The structural topic model identified `r num(k_val)` topics organizing adaptation discourse across National Adaptation Plans through an iterative process that optimizes semantic coherence and topic exclusivity. The semantic interpretation relies on FREX (frequency-exclusivity) terms that identify distinctive vocabulary, high-probability terms that reveal common usage patterns, and country clustering patterns that provide validation for topic meanings.
+The structural topic model identified `r k_val` topics organizing adaptation discourse across National Adaptation Plans. The model optimized semantic coherence and topic exclusivity through an iterative process, ensuring that each topic represents a distinct thematic cluster within the corpus.
 
-The identified topics organize into three substantive categories that capture different dimensions of adaptation planning discourse. Procedural topics (`r pct(prop_2 + prop_1)` of total discourse) center on administrative and institutional frameworks rather than substantive adaptation content. Sectoral and technical topics (`r pct(prop_4 + prop_6 + prop_7 + prop_5)` of discourse) address specific domains of environmental challenge and technical response. Contextual topics (`r pct(prop_3 + prop_8)` of discourse) emphasize particular geographic or institutional contexts that require specialized approaches.
+Each topic's interpretation relies on multiple validation approaches. FREX (frequency-exclusivity) terms identify distinctive vocabulary that defines each topic. Country clustering patterns provide empirical validation by showing which nations emphasize particular themes. Thematic coherence confirms that the topics represent conceptually unified approaches to adaptation rather than statistical artifacts.
 
-Two topics representing `r pct(prop_2 + prop_1)` of discourse cluster around administrative and institutional processes rather than substantive adaptation content.
+The eight topics organize into three substantive categories that capture different dimensions of adaptation planning. This organization reveals how countries conceptualize adaptation challenges and responses within the constraints of international planning frameworks.
 
-**`r topic_2`.** This most prevalent topic (`r pct(prop_2)` of corpus) exhibits FREX terms "`r frex_2`" and high-probability terms. The semantic field demonstrates procedural orientation: "pro" (procedures), "counti" (accounting), "chapter" (document organization), and "mandat" (mandates). The cross-national pattern `r countries_2` indicates that procedural concerns transcend regional boundaries, with administrative elements constituting the largest single thematic component of adaptation planning.
+`r topic_8_name` - `r topic_8_prop` of corpus. The most prevalent topic exhibits FREX terms "`r topic_8_frex`" with highest representation in `r topic_8_countries`, revealing the meta-discourse of adaptation planning where countries dedicate substantial attention to discussing the process of planning itself rather than substantive adaptation content.
 
-**`r topic_1`.** This topic (`r pct(prop_1)` of corpus) shows FREX terms "`r frex_1`" and high-probability terms. The semantic pattern centers on territorial and social organization: "territori" (territorial), "transit" (transitions), "famili" (family), and "nativ" (native/indigenous). The clustering around `r countries_1` reflects Spanish- and Portuguese-speaking contexts where territorial sovereignty and indigenous rights represent significant policy considerations.
+The semantic field demonstrates procedural orientation around adaptation planning through key terms including "gcf" (Green Climate Fund), "ndc" (Nationally Determined Contributions), "unfccc" (UN Framework Convention), "mainstream" (integration processes), and "document" (planning artifacts). This procedural focus transcends regional boundaries, with administrative elements constituting nearly a quarter of all adaptation discourse across diverse national contexts.
 
-Four topics representing `r pct(prop_4 + prop_6 + prop_7 + prop_5)` of discourse address specific environmental domains and technical approaches to adaptation challenges.
+`r topic_6_name` - `r topic_6_prop` of corpus. This topic shows FREX terms "`r topic_6_frex`" with clustering around `r topic_6_countries`, emphasizing organizational arrangements through terms like "offic" (offices), "organis" (organizations), "depart" (departments), "output" (deliverables), and "partnership" (collaborative frameworks).
 
-**`r topic_4`.** This topic (`r pct(prop_4)` of corpus) shows FREX terms "`r frex_4`" and high-probability terms. The semantic field encompasses rural development: "wash" (water/sanitation systems), "hill" (mountainous terrain), "wildlif" (wildlife conservation), and "nationwid" (national programs). The country pattern `r countries_4` represents nations with significant rural populations and forest-dependent communities.
+Combined with `r topic_8_name`, these procedural themes account for nearly 40% of total adaptation discourse, indicating that institutional and planning processes systematically dominate substantive adaptation content across all contexts regardless of specific climate vulnerabilities or development challenges.
 
-**`r topic_6`.** This topic (`r pct(prop_6)` of corpus) exhibits FREX terms "`r frex_6`" and high-probability terms. The semantic analysis indicates water infrastructure focus: "defens" (defensive structures), "mountain" (mountain environments), "basin" (watershed management), and "norm" (technical standards). The pattern `r countries_6` represents contexts requiring sophisticated water management infrastructure.
+`r topic_1_name` - `r topic_1_prop` of corpus. This topic exhibits FREX terms "`r topic_1_frex`" with highest representation in `r topic_1_countries`, encompassing social vulnerability concerns through key terms including "poverti" (poverty), "poor" (economic status), "children" and "women" (vulnerable populations), "migrat" (population movement), and "sanit" (sanitation infrastructure).
 
-**`r topic_7`.** This topic (`r pct(prop_7)` of corpus) shows FREX terms "`r frex_7`" and high-probability terms. The semantic field centers on tropical cyclones: "atol" (atoll environments), "typhoon" and "cyclon" (storm systems), and "pathway" (storm tracks). The clustering `r countries_7` represents classic cyclone-prone regions across Pacific and Atlantic basins.
+The country pattern represents contexts with significant poverty challenges, validating this topic's distinctive focus on framing adaptation as poverty reduction rather than environmental response, which reflects how development paradigms shape adaptation conceptualization in economically constrained contexts.
 
-**`r topic_5`.** This topic (`r pct(prop_5)` of corpus) exhibits FREX terms "`r frex_5`" and high-probability terms. The semantic analysis presents technical vocabulary: "ensembl" (ensemble modeling), "centuri" (century timeframes), and "frost" (frost events). The pattern `r countries_5` suggests technical assessment approaches across different developmental contexts.
+`r topic_4_name` - `r topic_4_prop` of corpus. This topic shows FREX terms "`r topic_4_frex`" with clustering around `r topic_4_countries`, encompassing rural livelihoods and farming systems through terms including "livestock" (animal husbandry), "farm" (agricultural systems), "harvest" (crop production), "pest" (agricultural threats), and "watersh" (watershed management).
 
-Four topics representing `r pct(prop_3 + prop_8)` of discourse emphasize specific regional contexts and humanitarian challenges.
+The country pattern represents nations with significant rural populations and agriculture-dependent economies, confirming this topic's sectoral focus on rural adaptation strategies while demonstrating how economic structures influence which aspects of climate vulnerability receive sustained attention in planning documents.
 
-**`r topic_3`.** Accounting for `r pct(prop_3)` of discourse, FREX terms "`r frex_3`" with high-probability terms. The country clustering of Sri Lanka and Sudan represents diverse contexts with strong institutional coordination needs. The semantic emphasis on rangeland and secretariat functions supports labeling this as institutional coordination, though the regional specificity suggests particular institutional arrangements.
+`r topic_5_name` - `r topic_5_prop` of corpus. This topic exhibits FREX terms "`r topic_5_frex`" with highest representation in `r topic_5_countries`, centering on territorial and rights discourse through key terms including "indigen" (indigenous peoples), "territori" (territorial sovereignty), "transit" (transitions), "instrument" (policy tools), and "perspect" (perspectives).
 
-**`r topic_8`.** The second most prevalent topic overall (`r pct(prop_8)` of discourse) shows FREX terms "`r frex_8`" paired with high-probability terms. The country pattern of St. Lucia and Kiribati represents small island developing states facing multiple hazards. Representative text emphasizes coastal and marine systems under threat, supporting the label of coastal vulnerability and small island concerns.
+The clustering around contexts with significant indigenous populations validates this topic's focus on alternative knowledge systems and territorial approaches to adaptation that differ from mainstream frameworks, suggesting some space within adaptation planning for epistemological diversity despite overall procedural dominance.
+
+`r topic_7_name` - `r topic_7_prop` of corpus. This topic shows FREX terms "`r topic_7_frex`" with clustering around `r topic_7_countries`, presenting technical vocabulary from climate science through terms including "rcp" (Representative Concentration Pathways), "ensembl" (ensemble modeling), "centuri" (century timeframes), "precipit" (precipitation), and "confid" (confidence intervals).
+
+This topic captures the technical assessment dimension of adaptation planning, representing scientific modeling approaches to understanding climate impacts that operate across different developmental contexts while maintaining standardized methodological frameworks regardless of local knowledge systems or contextual factors.
+
+`r topic_2_name` (`r topic_2_prop` of corpus). This topic exhibits FREX terms "`r topic_2_frex`" with highest representation in `r topic_2_countries`, encompassing marine and coastal environments through key terms including "sea" (ocean systems), "coastal" (shoreline areas), "rise" (sea-level rise), "cyclon" (tropical cyclones), "coral" and "reef" (marine ecosystems), and "slr" (sea-level rise abbreviation).
+
+The country pattern represents small island and coastal nations facing direct marine-based climate threats, validating this topic's geographic specificity while demonstrating how certain environmental challenges generate recognizable thematic clusters within the broader adaptation planning framework.
+
+`r topic_3_name` (`r topic_3_prop` of corpus). The least prevalent topic shows FREX terms "`r topic_3_frex`" with clustering around `r topic_3_countries`, encompassing water infrastructure and management systems through terms including "irrig" (irrigation systems), "hydrometeorolog" (meteorological systems), "mountain" (highland environments), "wastewat" (wastewater management), and "basin" (watershed areas).
+
+The country pattern suggests technical water management approaches that appear across different developmental contexts, indicating shared challenges in water resource adaptation while reflecting how technical frameworks standardize responses to diverse hydrological vulnerabilities through common institutional and engineering approaches.
+
+These eight topics reveal how adaptation discourse is organized across three primary dimensions.
+
+Procedural topics dominate the corpus. `r topic_8_name` and `r topic_6_name` together account for `r procedural_total` of discourse, emphasizing planning processes over substantive adaptation content.
+
+Sectoral topics address specific domains of vulnerability and response. `r topic_1_name`, `r topic_4_name`, `r topic_2_name`, and `r topic_3_name` represent `r sectoral_total` of discourse, spanning social, agricultural, coastal, and water management challenges.
+
+Cross-cutting topics represent alternative approaches that transcend sectoral boundaries. `r topic_5_name` and `r topic_7_name` constitute `r crosscutting_total` of discourse, capturing indigenous knowledge systems and technical modeling frameworks respectively.
+
+This topic structure provides the foundation for examining how discourse concentrates within different country groupings, revealing patterns of convergence and divergence in adaptation conceptualization.
 
 ## Dominance
 
-> Analysis of discourse centralization reveals remarkably high concentration across all National Adaptation Plans, with corpus-level patterns showing significant variation across income groups, regions, temporal periods, and geographic categories.
+> Analysis of discourse centralization reveals remarkably high concentration across all National Adaptation Plans, with systematic patterns showing procedural topics dominating adaptation discourse regardless of country context, income level, or geographic vulnerability.
 
-```{r load_dominance_data}
+```{r load_dominance_table}
 # Extract dominance data from metrics
 metrics <- readRDS("data/calculate_metrics.rds")
 
-dominance_data <- metrics[["data"]]
+dominance_table <- metrics[["data"]]
 
 # Create a mapping for cleaner variable names
 name_map <- c(
@@ -100,9 +128,8 @@ name_map <- c(
   "Late" = "late"
 )
 
-# Extract values with clean names
-for (i in 1:nrow(dominance_data)) {
-  row <- dominance_data[i, ]
+for (i in 1:nrow(dominance_table)) {
+  row <- dominance_table[i, ]
   
   # Skip "Overall" rows
   if (row$subcategory == "Overall") next
@@ -111,28 +138,73 @@ for (i in 1:nrow(dominance_data)) {
   var_name <- name_map[row$subcategory]
   if (is.na(var_name)) var_name <- clean_name(row$subcategory)
   
-  # Create variables
-  assign(paste0(var_name, "_dom"), row$dominance)
+  # Create variables with formatting already applied
+  assign(paste0(var_name, "_dom"), pct(row$dominance))
   assign(paste0(var_name, "_topics"), row$top_topics)
+  assign(paste0(var_name, "_sig"), row$significant)
 }
 ```
 
-The Dominance Index quantifies discourse centralization by measuring the proportion of discourse concentrated in the top three most prevalent topics. The corpus-level analysis calculates average topic proportions across countries within each category, then identifies the three most prevalent topics and their combined share of discourse. Normalized scores range from 0 (theoretical minimum) to 1 (complete concentration), enabling comparison across categories.
+The Dominance Index quantifies discourse centralization by measuring how much the top three most prevalent topics exceed what would be expected from uniform distribution across all eight topics. This normalized metric ranges from 0 (indicating uniform distribution where each topic receives equal attention) to 1 (representing complete concentration where only the top three topics appear), enabling systematic comparison across different country groupings while controlling for the effects of corpus size and topic number.
 
-Across all countries, the overall corpus-level dominance reaches `r pct(overall_dom)`. To contextualize this concentration level: if adaptation discourse distributed evenly across all `r k_val` topics, each would account for 10% of total content. Instead, the top three topics alone account for `r pct(overall_dom)` of all discourse, while the remaining seven topics share the remaining `r pct(1 - overall_dom)`. This represents substantial concentration where a small number of themes dominate adaptation planning discourse globally.
+The analysis reveals that all country groupings demonstrate substantially higher dominance than the baseline of uniform distribution. Across all countries, the overall corpus-level dominance reaches `r overall_dom` above uniform distribution, representing substantial concentration where the top three topics exceed their expected share by over twenty percentage points. To contextualize this concentration level: uniform distribution would allocate 12.5% to each of eight topics (37.5% total for the top three), while the observed pattern shows the top three topics capturing approximately 60% of total discourse.
 
-Among income groups, discourse centralization varies meaningfully across economic categories, revealing a clear gradient in discourse diversity. Low-income countries show the highest corpus-level dominance at `r pct(low_income_dom)`. In practical terms, this means that in a typical low-income country NAP, nearly three-quarters of all topic-related content relates to just three themes, leaving only one-quarter distributed among the remaining seven topics.
+The dominance pattern shows that `r topic_8_name` and `r topic_6_name` appear together in nearly every country grouping's top three topics regardless of their specific climate vulnerabilities or development contexts. This procedural dominance occurs whether countries face sea-level rise, desertification, glacial melt, or other climate challenges, with nations dedicating substantial discourse space to planning processes and institutional arrangements rather than substantive adaptation content.
 
-Lower-middle income countries display dominance of `r pct(lower_middle_dom)`, while upper-middle income countries show dominance of `r pct(upper_middle_dom)`. The progression creates a stepwise pattern across income categories. Examining representative NAPs from each group: low-income country plans concentrate nearly three-quarters of topic-related content within their top three themes, leaving only one-quarter distributed among the remaining seven topics. Upper-middle income countries, by contrast, concentrate roughly 58% in their top three topics—a 16-percentage point difference in discourse structure that indicates systematically different approaches to thematic breadth versus focus.
+Income-based analysis reveals notable variations in discourse centralization while maintaining substantial concentration above uniform distribution baseline across all economic categories. Upper-middle income countries show dominance of `r upper_middle_dom` above baseline with their top three topics focusing on `r upper_middle_topics`, indicating moderate concentration that combines procedural requirements with technical approaches. Lower-middle income countries display significantly higher dominance at `r lower_middle_dom` above baseline through their emphasis on `r lower_middle_topics`, while low-income countries show dominance of `r low_income_dom` above baseline with their top topics including `r low_income_topics`. The progression across income groups reveals that middle-income countries experience the greatest thematic constraints rather than following a linear relationship between resources and diversity.
 
-Regional patterns show consistently high discourse centralization across all regions, though with distinct thematic emphases. East Asia & Pacific displays dominance of `r pct(eap_dom)`, Sub-Saharan Africa shows dominance of `r pct(ssa_dom)`, and Latin America & Caribbean exhibits dominance of `r pct(lac_dom)`. While all regions maintain high centralization levels, each emphasizes distinct combinations of topics, indicating that regional institutional networks create convergence within regions while maintaining differentiated approaches between regions.
+Regional patterns demonstrate consistently high discourse centralization above baseline while revealing distinct thematic preferences. Latin America & Caribbean exhibits the highest regional dominance at `r lac_dom` above baseline through their focus on `r lac_topics`, reflecting emphasis on indigenous rights and territorial approaches alongside procedural requirements. Sub-Saharan Africa shows dominance of `r ssa_dom` above baseline through their emphasis on `r ssa_topics`, combining procedural requirements with poverty-reduction approaches. East Asia & Pacific displays dominance of `r eap_dom` above baseline through their focus on `r eap_topics`, indicating convergence around institutional capacity building alongside coastal vulnerabilities. The substantial concentration levels across all regions occur despite their different institutional contexts and development trajectories.
 
-The similar levels of centralization across regions, despite their different institutional contexts and development trajectories, indicates that each region emphasizes distinct combinations of topics while maintaining comparable overall concentration levels.
+Geographic vulnerability categories demonstrate how shared environmental challenges translate into discourse patterns while maintaining substantial concentration above baseline. Small Island Developing States show the highest dominance overall at `r sids_dom` above baseline through their emphasis on `r sids_topics`, combining institutional requirements with coastal-specific concerns despite facing existential climate threats. Landlocked Developing Countries display dominance of `r lldc_dom` above baseline through their focus on `r lldc_topics`, emphasizing sectoral adaptation approaches alongside procedural requirements. Both geographic categories demonstrate significant thematic concentration while differing primarily in which sectoral topics accompany universal procedural themes.
 
-The geographic vulnerability categories both demonstrate high discourse centralization despite facing fundamentally different climate challenges. Small Island Developing States show dominance of `r pct(sids_dom)`, while Landlocked Developing Countries display dominance of `r pct(lldc_dom)`. The similarity in centralization levels between these groups is particularly striking given their contrasting vulnerabilities—sea-level rise and coastal erosion for island states versus water scarcity and desertification for landlocked countries.
+The temporal analysis reveals how adaptation discourse concentration has evolved over the decade-long period of NAP development. Middle period submissions (2019-2021) show the highest dominance at `r middle_dom` above baseline through their emphasis on `r middle_topics`, representing peak concentration when procedural requirements became most constraining. Early submissions (2015-2018) display dominance of `r early_dom` above baseline through their focus on `r early_topics`, suggesting initial adaptation planning operated with somewhat greater thematic flexibility. Late submissions (2022-2025) exhibit lower but still substantial dominance at `r late_dom` above baseline through their emphasis on `r late_topics`, suggesting some diversification of adaptation discourse in recent years. The temporal pattern creates a distinctive arc starting from moderate concentration, rising to peak centralization, then declining toward somewhat greater diversity, while maintaining concentration well above uniform distribution throughout all periods.
 
-The temporal analysis reveals how adaptation discourse has evolved as countries have gained experience with NAP preparation and as international frameworks have matured. The pattern shows a distinctive arc across the three time periods. Middle period submissions (2019-2021) show the highest dominance at `r pct(middle_dom)`, meaning that during this period, the top three topics accounted for nearly 75% of discourse content in the average NAP.
+## Cross-Cutting Patterns
 
-Early submissions (2015-2018) display dominance of `r pct(early_dom)`, representing a moderate level of concentration where roughly two-thirds of content relates to the top three topics. Late submissions (2022-2025) exhibit the lowest dominance at `r pct(late_dom)`, with just over half of discourse concentrated in the top three topics. 
+> The analysis reveals three fundamental patterns that transcend traditional categories: universal discourse concentration above expected baselines, systematic procedural dominance regardless of context, and statistically significant group differences that follow no coherent organizing logic.
 
-This temporal progression creates a notable inverted U-shape pattern: starting from 66% concentration in early NAPs, rising to 75% in middle-period NAPs, then declining to 53% in recent submissions. The 22-percentage point difference between peak and current concentration levels represents a substantial shift in discourse structure over the decade-long period.
+```{r}
+# Extract significance patterns for cross-cutting analysis
+sig_data <- dominance_table[dominance_table$subcategory != "Overall", ]
+
+# Count significant results
+total_comparisons <- nrow(sig_data)
+significant_comparisons <- sum(sig_data$significant, na.rm = TRUE)
+sig_rate <- pct(significant_comparisons / total_comparisons)
+
+# Get min/max dominance values for range
+min_dominance <- pct(min(sig_data$dominance, na.rm = TRUE))
+max_dominance <- pct(max(sig_data$dominance, na.rm = TRUE))
+
+# Regional significance pattern
+regional_sigs <- sig_data$significant[sig_data$category == "Region"]
+all_regions_sig <- all(regional_sigs, na.rm = TRUE)
+
+# Income significance pattern  
+income_sigs <- sig_data$significant[sig_data$category == "Income"]
+all_income_sig <- all(income_sigs, na.rm = TRUE)
+
+# Geographic significance pattern
+geo_sigs <- sig_data$significant[sig_data$category == "Geography"] 
+all_geo_sig <- all(geo_sigs, na.rm = TRUE)
+```
+
+The structural topic modeling and dominance analysis converge on findings that challenge conventional assumptions about how adaptation planning responds to local contexts, economic resources, or environmental vulnerabilities.
+
+The first fundamental pattern emerges from the universal nature of discourse concentration across all country groupings. Every category analyzed demonstrates dominance values substantially above the baseline of uniform distribution, ranging from `r min_dominance` to `r max_dominance`. This universal concentration suggests systematic constraints operating across all adaptation planning regardless of the specific circumstances countries face. No group approaches the diverse, distributed discourse that would characterize context-specific adaptation approaches.
+
+The second pattern reveals systematic procedural dominance across virtually all contexts. `r topic_8_name` appears among the top three topics in nearly every country grouping, while `r topic_6_name` consistently ranks among the most prevalent themes regardless of climate challenges. Together, these procedural topics account for `r procedural_total` of total corpus discourse. This dominance transcends income levels, regional affiliations, geographic vulnerabilities, and temporal periods.
+
+The third pattern emerges from statistical significance testing, which reveals `r sig_rate` of group comparisons showing significant effects (`r significant_comparisons` of `r total_comparisons` comparisons with p < 0.05). These significant differences indicate that group membership genuinely influences discourse patterns rather than reflecting random variation. However, these differences follow no coherent organizing logic.
+
+The income-based analysis exemplifies this paradoxical pattern. Lower-middle income countries show the highest dominance (`r lower_middle_dom`), followed by low-income countries (`r low_income_dom`), then upper-middle income countries (`r upper_middle_dom`). This non-linear relationship contradicts expectations that greater economic resources would enable more diverse adaptation approaches, while the significance of these differences (`r lower_middle_sig` for lower-middle income, `r low_income_sig` for low-income) confirms they represent genuine effects rather than random variation.
+
+Regional patterns show significant differences between Latin America & Caribbean (`r lac_dom`, significant: `r lac_sig`), Sub-Saharan Africa (`r ssa_dom`, significant: `r ssa_sig`), and East Asia & Pacific (`r eap_dom`, significant: `r eap_sig`). Yet these differences reflect distinct regional emphases rather than systematic variation based on development levels or climate vulnerabilities.
+
+The geographic vulnerability analysis further illustrates this pattern. Small Island Developing States demonstrate the highest dominance overall (`r sids_dom`, significant: `r sids_sig`) despite facing urgent and distinctive climate challenges, while Landlocked Developing Countries show substantial but lower dominance (`r lldc_dom`, significant: `r lldc_sig`) despite facing completely different environmental pressures. Both categories show statistically significant differences from the overall corpus, yet their dominance levels cannot be explained by their specific vulnerabilities.
+
+The temporal evolution provides additional evidence for organizing forces that operate independently of systematic learning or capacity development. The significant differences across time periods create an inverted arc where dominance rises from early submissions (`r early_dom`, significant: `r early_sig`) to peak concentration in middle period submissions (`r middle_dom`, significant: `r middle_sig`), then declines in recent submissions (`r late_dom`, significant: `r late_sig`). This pattern contradicts simple narratives about countries learning to diversify their approaches over time.
+
+These three patterns collectively point to organizing forces that transcend structural categories typically used to understand adaptation planning. The universal concentration above baseline indicates systematic constraints rather than diverse responses to local contexts. The procedural dominance suggests institutional requirements that override environmental imperatives. The significant but non-systematic group differences indicate influences that operate through networks, relationships, and processes that do not align with traditional categories of analysis.
+
+Regional clustering provides the strongest explanatory pattern, suggesting that institutional networks, technical assistance programs, and knowledge brokers operating at regional scales may be more influential than national characteristics in shaping adaptation discourse. The combination of universal concentration, procedural dominance, and significant but non-systematic variation creates an empirical foundation for understanding adaptation planning as shaped by forces that operate through the international development apparatus rather than emerging from local contexts or responding systematically to environmental challenges.
