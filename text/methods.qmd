@@ -25,7 +25,7 @@ This chapter presents each methodological stage with sufficient detail to ensure
 #| label: Corpus cleaning
 #| include: FALSE
 
-# Load scripts
+## Load scripts
 source("scripts/utils.R")
 source("scripts/scrape_web.R")
 source("scripts/extract_pdfs.R")
@@ -33,7 +33,7 @@ source("scripts/get_un_classifications.R")
 source("scripts/add_metadata.R")
 source("scripts/process_dfm.R")
 
-# Set parameters
+## Set parameters
 category_map <- list(
   Global = "global_category",    
   Income = "wb_income_level", 
@@ -41,17 +41,20 @@ category_map <- list(
   Geography = c("is_sids", "is_lldc"),
   Time = "time_period"
 )
-
 time_groups <- c("Early" = 2018, "Middle" = 2021, "Late" = Inf)
 
-# Run functions
-web <- scrape_web()
-docs <- extract_pdfs(web)
+## Run functions
+web <- web_cache(scrape_web)
+docs <- auto_cache(extract_pdfs, web)
 
-un_classifications <- get_un_classifications()
-metadata <- add_metadata(web, un_classifications, time = time_groups)
+un_classifications <- auto_cache(get_un_classifications)
+metadata <- auto_cache(add_metadata, web, un_classifications, time = time_groups)
 
-dfm <- process_dfm(docs, metadata, min_docs = 0.1, max_docs = 0.8)
+dfm <- auto_cache(process_dfm, docs, metadata, min_docs = 0.1, max_docs = 0.8)
+```
+```{r}
+#| label: Extract values for corpus cleaning
+#| include: FALSE
 
 # Extract values
 ## Genral values
@@ -103,20 +106,23 @@ The last category I extract is the date the plans were posted. The plans have be
 #| label: Topic modeling
 #| include: FALSE
 
-# Load scripts
+## Load scripts
 source("scripts/find_k.R")
 source("scripts/fit_model.R")
 
 # Run functions
-k <- auto_cache(find_k, dfm, 
-                coherence_weight = 0.50,
-                exclusivity_weight = 0.50)
+k <- auto_cache(find_k, dfm)
 model <- auto_cache(fit_model, dfm, k, category_map = category_map)
 
+```
+```{r}
+#| label: Extract values from topic modeling
+#| include: FALSE
 # Extract values
 k_value <- k[["data"]][["best_k"]]
 coh_weight <- k[["metadata"]][["weights"]][["coherence"]]
 exc_weight <- k[["metadata"]][["weights"]][["exclusivity"]]
+iterations_run <- model[["metadata"]][["iterations_run"]]
 ```
 
 Topic modelling is an approach that discovers latent thematic patterns in large text corpora. For our purposes, this makes it possible to interact with the whole corpus that spans  `r num(init_tokens)` words, in an analytical way. 
@@ -143,7 +149,7 @@ I weigh the coherence and exclusicity `r pct(coh_weight)` against `r pct(exc_wei
 #| label: Dominance analysis
 #| include: FALSE
 
-# Load scripts
+## Load scripts
 source("scripts/name_topics.R")
 source("scripts/find_dominance.R")
 source("scripts/find_variance.R")
@@ -159,8 +165,11 @@ geographical (rangeland or coastal etc.) or sectoral (agriculture, fisheries, to
 
 # Run functions
 topics <- auto_cache(name_topics, model, context = context)
-metrics <- auto_cache(calculate_metrics, model, topics, dfm)
-
+metrics <- auto_cache(calculate_metrics, model, topics, dfm, overwrite = TRUE)
+```
+```{r}  
+#| label: Extract values from dominance analysis
+#| include: FALSE
 # Extract values
 n_topics <- metrics[["metadata"]][["n_value"]]
 ```

@@ -20,8 +20,8 @@ find_k <- function(
     dfm,
     k_range = c(4, 20, 2),
     iterations = 50,
-    coherence_weight = 0.55,
-    exclusivity_weight = 0.45
+    coherence_weight = 0.50,
+    exclusivity_weight = 0.50
 ) {
   start_time <- Sys.time()
   
