@@ -6,8 +6,8 @@
 	- [ ] Adaptation empire
 	- [ ] Beyond control
 - [ ] Findings
-	- [ ] Topics
-	- [ ] Dominance
+	- [x] Topics
+	- [x] Dominance
 - [ ] Methods
 	- [x] Corpus collection and preparation
 	- [x] Structural topic modelling

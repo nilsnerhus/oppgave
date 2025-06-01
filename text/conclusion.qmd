@@ -56,5 +56,3 @@ The 100 billion dollar question is not whether wealthy countries will provide ad
 
 ::: {#refs}
 :::
-
-# R-packages {.unnumbered}
