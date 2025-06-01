@@ -10,11 +10,9 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       HUGGINGFACE_TOKEN: ${{ secrets.HUGGINGFACE_TOKEN }}
-      RENV_PATHS_ROOT: ~/.local/share/renv
 
     steps:
       - name: Check out repository
@@ -25,8 +23,8 @@ jobs:
         with:
           use-public-rspm: true
 
-      - name: Set up renv and dependencies
-        uses: r-lib/actions/setup-renv@v2
+      - name: Install all dependencies from DESCRIPTION
+        uses: r-lib/actions/setup-r-dependencies@v2
         with:
           cache-version: 2
 
@@ -34,6 +32,11 @@ jobs:
         uses: quarto-dev/quarto-actions/setup@v2
         with: 
           tinytex: true
+
+      - name: Run NAP pipeline
+        run: |
+          Rscript scripts/nap_pipeline.R
+        shell: bash
 
       - name: Render and publish to GitHub pages
         uses: quarto-dev/quarto-actions/publish@v2
