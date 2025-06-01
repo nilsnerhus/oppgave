@@ -31,7 +31,7 @@ jobs:
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
         with:
-          tinytext: true
+          tinytex: true
 
       - name: Render and publish to GitHub pages
         uses: quarto-dev/quarto-actions/publish@v2
