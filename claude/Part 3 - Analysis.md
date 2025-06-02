@@ -74,15 +74,23 @@ Each subsection should also have a simple ggplot2 minimal-theme graph highlighti
 - Non-linear dominance values but linear p-value relationship
 - Statistical validation that financial dependence shapes discourse homogenization
 
-# Discussion
 
-The introduction walks through (and references) the main findings:
 
-1. **Topics**: The most popular topic is planning, and the next two are disasters 
-2. **Dominance**: Grows as incomes fall. Very time-based also
-3. **Variance**: Almost nothing of the variance, despite the overall high centralization within categories, is because of the categories a country is in. 
+## Section 1: The Sympathetic Take - "Maybe Experts Should Be Experts?"
 
-Then, it presents the other parts. How epistemolical and ontological assumptions shape what we think is reasonable (or possible, preferable). Straying too far from reasonable, in your group, makes you dimissed.
+**The reasonable case for standardization:**
+
+- Poor countries DO lack technical capacity
+- Climate science IS complex
+- **Maybe convergence reflects learning and best practice?**
+- World Bank templates might prevent reinventing the wheel
+- **"Perhaps my Norwegian privilege makes me dismiss expertise?"**
+
+**But then your data reveals problems:**
+
+- If this were expertise, wouldn't climate vulnerability matter more?
+- Why do regional networks trump environmental challenges?
+- **Your p-value pattern shows this isn't about competence but dependence**
 
 ## Politics of Reasonable
 

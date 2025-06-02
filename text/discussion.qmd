@@ -1,22 +1,60 @@
 ## Discussion {#sec-discussion}
 
-> The main findings indicate that climate adaptation's main organizing principles are fundamentally non-climate related. I argue that the vulnerability/adaptation relation should be understood as an updated form of the underdevelopment/development relation in North-South relations, paving the way for post-development critiques of adaptation.
+> The main findings indicate that climate adaptation's main organizing principles are not climate related. I argue that the best way to understand this is through the lens of what is reasonable. 
 
-The findings presented in the previous chapter reveal a striking centralization of adaptation discourse across National Adaptation Plans, with regional institutional networks emerging as the primary explanatory factor for what variation does exist. This brings us closer to understanding how climate adaptation actually functions in the real world, rather than as just a part of the UNFCCC negotiations. The patterns—high discourse homogeneity regardless of climate vulnerabilities, regional clustering that transcends physical geography, and the dominance of financial and procedural concerns—demand theoretical explanation. How can planning documents ostensibly designed to address diverse local climate impacts show such remarkable sameness? Why do countries facing fundamentally different climate futures articulate nearly identical responses? What does it mean that institutional proximity matters more than environmental exposure in shaping adaptation discourse?
+This thesis concludes my five years as an interdiciplinary student, and 19 years of continous education. In my time at the University, I have written exams in four countries, two continents and at eleven differnt institutes. Here, what is *good knowledge* and not, has been the central thing to realize before the exam. What flies at the Economics department does not really translate into the Anthropology department, and even where they agree, one might find that the department for Political Science has a completly different view of the world. 
 
-This discussion argues that these patterns reveal climate adaptation functioning not as a technical response to environmental change but as a contemporary mechanism of colonial knowledge and power. Through systematic analysis of how adaptation discourse operates, I demonstrate that the vulnerability/adaptation nexus represents an updated version of the underdevelopment/development nexus that has structured North-South relations for decades. Just as development discourse constructed the Third World as lacking and requiring intervention, adaptation discourse constructs the Global South as vulnerable and requiring assistance—maintaining colonial relations through new vocabularies and institutional arrangements.
+The central topic for my studies has been what I am doing now, international climate governance. The debates between the nexus and the regime presented here are rarely put this way, as they happen in completely different spheres. Combining them might also carry a certain risk, as knowledge systems, what we deem reasonable, is a very strong thing. My central feeling throughout my studies has been one of confusion.
 
-The analysis proceeds through four interconnected arguments, each building on the empirical patterns identified through structural topic modeling. First, I examine how the remarkable sameness across NAPs constitutes what has been termed epistemicide—the systematic elimination of alternative ways of knowing and responding to environmental change [@santos2016]. The dominance of financial mechanisms and technical procedures across all contexts reveals not diverse adaptation strategies but the violent imposition of a singular framework that renders other knowledge systems unspeakable. Second, I demonstrate how patterns of discourse convergence, particularly among low-income countries, reveal the active construction of climate vulnerability as a contemporary form of underdevelopment [@escobar1995]. Countries must perform their vulnerability in specific ways to access resources, reinforcing dependencies rather than enabling autonomous responses to environmental change.
+I think the confusion is clear in the data as well. We are clearly seeing 
 
-Third, I analyze how adaptation planning operates as an anti-politics machine, systematically transforming political questions about justice, responsibility, and structural transformation into technical problems of assessment and implementation [@ferguson1994]. The state-centric nature of adaptation planning combines with its technical character to evacuate political content, making it impossible to address the root causes of vulnerability within the adaptation framework. Finally, I explore what possibilities might exist beyond state-led adaptation, drawing on concepts of autonomy and pluriversal politics to imagine how communities might design their own transitions based on their own knowledge systems and values [@escobar2018]. The variance patterns in the data, particularly among middle-income countries, suggest that even partial autonomy from international climate finance enables more diverse and potentially more appropriate approaches.
+This confusion is not only reduced to the academic sphere. It is, in my experience, an important part of politics everywhere. The difference between a climate activist and a climate denier, is not that one is dumb, and the other smart (or the other way, depends on who you ask). The same goes for the nexus and the regime. Most likely, they understand the world fundamentally differently, and as politics is most often about the future, it becomes very clear when it becomes the topic of discussion. 
 
-Throughout this discussion, I work to connect the quantitative patterns revealed by topic modeling to their theoretical and political implications. The high dominance indices, the regional clustering, the absence of geographic differentiation—these are not merely statistical findings but windows into how power operates through climate governance. By rendering this Northern discourse legible through computational analysis, we can see how adaptation planning functions to maintain rather than transform the colonial relations that produce vulnerability in the first place. This is not a story of failed implementation or insufficient resources but of a system working precisely as designed—to manage Southern territories and populations according to Northern frameworks while foreclosing alternative futures.
+In this discussion chapter, I will try to explore my findings through this lense. I start by giving the adaptation nexus' reponse to my findings. Then I lay out how this relates to the politics of reasonable that I established earlier [@sec-theory]. Then, I engage with the adaptation regime, and discuss how this reasonable-politics shapes the lives of poor people, far away from the knowledge created about them, and how this could be understood as the adaptation empire, before I attempt to imagine what world(s) outside the politics of reasonable might look like. 
 
-The stakes of this analysis extend beyond academic critique. If adaptation planning operates as epistemicide, if it constructs rather than responds to vulnerability, if it depoliticizes fundamental questions of justice—then current approaches to climate governance are not merely inadequate but actively harmful. They eliminate the knowledge systems and political possibilities that might enable genuine transformation while maintaining the fiction that technical adjustments can address what are fundamentally political problems. Understanding these dynamics is essential for those seeking to support communities facing climate impacts without reproducing colonial relations. The following sections develop each of these arguments in detail, working from the empirical findings toward their theoretical and practical implications.
+## A defense of experts 
 
-## The Geography of Sameness: Mapping Epistemicide
+An adaptation nexus read of my findings will conclude that there is a need for more convergence and a higher degree of standardization of best practice. This best practice is also well founded, with a focus on the logframe as the organizing principle for interventions [@ortengren2004]. An important
 
-The most striking finding from the structural topic modeling is not the diversity of adaptation approaches but their fundamental sameness. Across 45 countries spanning radically different geographies, economies, and climate vulnerabilities, National Adaptation Plans converge on a remarkably narrow set of concerns: financial mechanisms, institutional procedures, monitoring frameworks, and technical assessments. This homogeneity becomes even more pronounced when examining regional clusters, where discourse centralization reaches levels that suggest not mere similarity but active reproduction of identical framings. What we observe is not adaptation to climate change but adaptation to the requirements of international climate finance—a profound narrowing of imaginative possibilities that demands theoretical explanation.
+- Climate science IS incredibly complex (RCPs, ensemble modeling, precipitation data)
+- Poor countries DO often lack technical capacity for sophisticated modeling
+- Institutional coordination IS needed for climate finance flows
+- Standardized procedures CAN prevent corruption and mismanagement
+
+## The Sympathetic Reading of My Findings
+
+**Topic 8 dominance (NAP procedures)**:
+
+- "Of course countries focus on procedures - that's how you access $100 billion in climate finance"
+- Without templates, we'd have chaos and corruption
+- Standardization enables comparison and learning
+
+**Topic 6 (institutional arrangements)**:
+
+- Climate adaptation DOES require inter-ministerial coordination
+- Capacity building IS essential for effective implementation
+- Partnership frameworks DO matter for sustainability
+
+**Regional clustering**:
+
+- "Regional networks are GOOD - they share best practices adapted to similar contexts"
+- East Asian countries learning from each other makes sense
+- Regional development banks have specialized knowledge
+
+## The Norwegian Privilege Problem
+
+**Self-reflection**:
+
+- "Am I just another privileged Northerner dismissing Southern expertise?"
+- My confusion between departments - maybe that's MY problem, not the system's?
+- Perhaps convergence reflects learning, not control?
+
+
+## Politics of reasonable
+
+The most striking finding from the structural topic modeling is not the diversity of adaptation approaches but their fundamental sameness. Across 45 countries spanning radically different geographies, economies, and climate vulnerabilities, National Adaptation Plans converge on a narrow set of concerns: planning and modelling. 
+
+W
 
 This pattern can be understood through the concept of epistemicide—the destruction of knowledge systems that do not conform to dominant Western scientific and bureaucratic paradigms [@santos2016]. In the context of climate adaptation, epistemicide operates not through direct suppression but through the more subtle violence of exclusion and non-recognition. The NAP process, with its standardized guidelines, technical requirements, and evaluation criteria, creates a discursive space where only certain forms of knowledge can be articulated. Traditional ecological knowledge, community-based practices, indigenous cosmologies, and local innovations—all of which have enabled human communities to navigate environmental variability for millennia—find no legitimate expression in documents dominated by vulnerability indices, cost-benefit analyses, and results-based management frameworks. This represents what critical scholars identify as the continuation of colonial violence through seemingly neutral technical processes [@dunlap2018; @escobar2018].
 
@@ -51,7 +89,6 @@ The construction of vulnerability through adaptation discourse has material cons
 This technical framing of vulnerability serves multiple functions in the contemporary world order. For donor countries, it justifies continued intervention in the South while avoiding questions about their own contribution to climate change or structural inequality. For recipient country governments, it provides access to resources and legitimacy as responsible managers of adaptation. For the constellation of consultants, development organizations, and financial institutions that mediate these relationships, it ensures continued relevance and funding. Only for the communities whose vulnerability is ostensibly being addressed does this framing offer little—their knowledge remains marginalized, their agency constrained, and their futures determined by distant institutions. This represents what scholars identify as development-induced displacement masquerading as climate adaptation [@dewan2021; @paprocki2019].
 
 The parallel between vulnerability construction in adaptation and underdevelopment in earlier paradigms extends to the solutions proposed. Just as development promised modernization through capital investment and technical assistance, adaptation promises resilience through climate finance and capacity building. Both paradigms assume that Southern countries lack something fundamental that Northern countries can provide. Both create dependencies rather than autonomy. Both transform diverse local realities into standardized problems amenable to standardized solutions. The persistence of these patterns across different issue areas and historical periods suggests deep structural continuities in North-South relations that surface-level policy changes cannot address. The shift from development to adaptation represents not a break with colonial relations but their continuation through new vocabularies and institutional arrangements [@escobar1995; @escobar2018].
-## The Anti-Politics Machine in Climate Governance
 
 The technical character of adaptation discourse exemplifies the operation of what has been termed the "anti-politics machine"—the process by which fundamentally political questions are transformed into technical problems requiring bureaucratic solutions [@ferguson1994]. Climate change adaptation involves profound political choices: whose knowledge counts, which communities receive protection, what futures are possible, how resources are distributed, and who bears responsibility for climate impacts. Yet the NAPs in our corpus systematically evacuate these political dimensions, replacing them with technical assessments, institutional procedures, and managerial frameworks. This depoliticization is not accidental but serves specific functions in maintaining existing power relations while appearing to address climate vulnerability.
 
