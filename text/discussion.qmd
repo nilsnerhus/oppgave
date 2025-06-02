@@ -1,60 +1,123 @@
 ## Discussion {#sec-discussion}
 
-> The main findings indicate that climate adaptation's main organizing principles are not climate related. I argue that the best way to understand this is through the lens of what is reasonable. 
+```{r setup, include=FALSE}
+knitr::opts_knit$set(root.dir = "..")
+`%>%` <- magrittr::`%>%`
+```
+```{r load_dominance_table}
+# Extract dominance data from metrics
+metrics <- readRDS("data/calculate_metrics.rds")
 
-This thesis concludes my five years as an interdiciplinary student, and 19 years of continous education. In my time at the University, I have written exams in four countries, two continents and at eleven differnt institutes. Here, what is *good knowledge* and not, has been the central thing to realize before the exam. What flies at the Economics department does not really translate into the Anthropology department, and even where they agree, one might find that the department for Political Science has a completly different view of the world. 
+dominance_table <- metrics[["data"]]
 
-The central topic for my studies has been what I am doing now, international climate governance. The debates between the nexus and the regime presented here are rarely put this way, as they happen in completely different spheres. Combining them might also carry a certain risk, as knowledge systems, what we deem reasonable, is a very strong thing. My central feeling throughout my studies has been one of confusion.
+# Create a mapping for cleaner variable names
+name_map <- c(
+  "Global" = "overall",
+  "Upper middle income" = "upper_middle",
+  "Lower middle income" = "lower_middle", 
+  "Low income" = "low_income",
+  "High income" = "high_income",
+  "Latin America & Caribbean" = "lac",
+  "Sub-Saharan Africa" = "ssa",
+  "East Asia & Pacific" = "eap",
+  "SIDS" = "sids",
+  "LLDC" = "lldc",
+  "Early" = "early",
+  "Middle" = "middle",
+  "Late" = "late"
+)
 
-I think the confusion is clear in the data as well. We are clearly seeing 
+for (i in 1:nrow(dominance_table)) {
+  row <- dominance_table[i, ]
+  
+  # Skip "Overall" rows
+  if (row$subcategory == "Overall") next
+  
+  # Get clean variable name
+  var_name <- name_map[row$subcategory]
+  if (is.na(var_name)) next
+  
+  # Create variables with formatting applied
+  assign(paste0(var_name, "_dom"), pct(row$dominance))
+  assign(paste0(var_name, "_topics"), format_topic_string(row$top_topics))  # Format here!
+  assign(paste0(var_name, "_sig"), round(row$p_value, 3))
+}
 
-This confusion is not only reduced to the academic sphere. It is, in my experience, an important part of politics everywhere. The difference between a climate activist and a climate denier, is not that one is dumb, and the other smart (or the other way, depends on who you ask). The same goes for the nexus and the regime. Most likely, they understand the world fundamentally differently, and as politics is most often about the future, it becomes very clear when it becomes the topic of discussion. 
+# Extract overall values for each category
+income_overall_dom <- pct(dominance_table$dominance[dominance_table$category == "Income" & dominance_table$subcategory == "Overall"])
+region_overall_dom <- pct(dominance_table$dominance[dominance_table$category == "Region" & dominance_table$subcategory == "Overall"])
+geography_overall_dom <- pct(dominance_table$dominance[dominance_table$category == "Geography" & dominance_table$subcategory == "Overall"])
+time_overall_dom <- pct(dominance_table$dominance[dominance_table$category == "Time" & dominance_table$subcategory == "Overall"])
+```
+```{r load_topics_table}
+# Load data
+source("scripts/utils.R")
 
-In this discussion chapter, I will try to explore my findings through this lense. I start by giving the adaptation nexus' reponse to my findings. Then I lay out how this relates to the politics of reasonable that I established earlier [@sec-theory]. Then, I engage with the adaptation regime, and discuss how this reasonable-politics shapes the lives of poor people, far away from the knowledge created about them, and how this could be understood as the adaptation empire, before I attempt to imagine what world(s) outside the politics of reasonable might look like. 
+topics <- readRDS("data/name_topics.rds")
+topics_table <- topics[["data"]]
 
-## A defense of experts 
+k_val <- nrow(topics_table)
 
-An adaptation nexus read of my findings will conclude that there is a need for more convergence and a higher degree of standardization of best practice. This best practice is also well founded, with a focus on the logframe as the organizing principle for interventions [@ortengren2004]. An important
+# Create topic name variables with format "name (Topic X)"
+for(i in 1:nrow(topics_table)) {
+  topic_name <- paste0("*", tools::toTitleCase(tolower(topics_table$topic_name[i])), "* (Topic ", i, ")")
+  assign(paste0("topic_", i, "_name"), topic_name)
+  assign(paste0("topic_", i, "_prop"), pct(topics_table$topic_proportion[i]))  # Apply pct() here
+  assign(paste0("topic_", i, "_frex"), topics_table$frex_terms[i])
+  assign(paste0("topic_", i, "_countries"), topics_table$top_countries[i])
+}
 
-- Climate science IS incredibly complex (RCPs, ensemble modeling, precipitation data)
-- Poor countries DO often lack technical capacity for sophisticated modeling
-- Institutional coordination IS needed for climate finance flows
-- Standardized procedures CAN prevent corruption and mismanagement
+# Create lookup table for topic name formatting
+topic_lookup <- setNames(
+  paste0("*", tools::toTitleCase(tolower(topics_table$topic_name)), "*"),
+  topics_table$topic_name
+)
 
-## The Sympathetic Reading of My Findings
+# Calculate combined topic groupings
+procedural_total <- pct(topics_table$topic_proportion[6] + topics_table$topic_proportion[8] + topics_table$topic_proportion[7])
+sectoral_total <- pct(topics_table$topic_proportion[1] + topics_table$topic_proportion[2] + 
+                     topics_table$topic_proportion[3] + topics_table$topic_proportion[4])
+sectoral_with_5 <- pct(topics_table$topic_proportion[1] + topics_table$topic_proportion[2] + 
+                     topics_table$topic_proportion[3] + topics_table$topic_proportion[4] + topics_table$topic_proportion[5])
 
-**Topic 8 dominance (NAP procedures)**:
+```
 
-- "Of course countries focus on procedures - that's how you access $100 billion in climate finance"
-- Without templates, we'd have chaos and corruption
-- Standardization enables comparison and learning
+The main findings reveal a puzzle: countries facing radically different climate challenges produce nearly identical adaptation plans. With dominance values of `r overall_dom` across all categories, NAPs show neither climate-responsive diversity nor locally-contextualized approaches. Instead, they represent a 'Frankenstein hybrid' that serves institutional rather than climate needs.
 
-**Topic 6 (institutional arrangements)**:
+This puzzle became clear through my own navigation of academic knowledge systems across eleven departments and three countries. What counts as 'reasonable' knowledge varies dramatically between contexts, yet within each context, certain approaches feel obviously correct. This suggests that adaptation planning may reflect not climate expertise but the 'politics of reasonable' operating within epistemic communities.
 
-- Climate adaptation DOES require inter-ministerial coordination
-- Capacity building IS essential for effective implementation
-- Partnership frameworks DO matter for sustainability
+To understand how this politics of reasonable operates, I examine three perspectives. First, I consider the adaptation nexus defense of expert convergence - perhaps standardization reflects legitimate learning? Then I reveal how this reasonable-seeming system operates as an adaptation empire that reproduces colonial relations. Finally, I explore what alternatives might exist beyond this framework.
+## A defence of experts
 
-**Regional clustering**:
+An adaptation nexus read of my findings will conclude that there is a need for more convergence and a higher degree of standardization of best practice. Climate adaptation policy is, in many ways, complex, with advanced modeling being used to predict weather events far into the future, and frameworks being developed to calculate and predict risk of extreme outcomes [@ribot2013;@utter2021]. 
 
-- "Regional networks are GOOD - they share best practices adapted to similar contexts"
-- East Asian countries learning from each other makes sense
-- Regional development banks have specialized knowledge
+International interventions are often justified by arguing that the fact that current governments are unable to deliver for their people [@banks2015;@macginty2013], creating a need for a  a focus on minimizing exposure to the often changing and difficult local context, and focusing squarly on the outcomes of the intervention. The widely used logframe is a clear example of that [@ortengren2004]. 
 
-## The Norwegian Privilege Problem
+It is also clear that some level or coordination is needed for countries to know where to spend their aid money. Without proper taxonomies, definitions of what is "climate finance" might become so washed out that they could mean anything. Work by institutions such the the Climate Policy Initiative (CPI) attemtpts to create this new taxonomy [@buchner2023]. 
 
-**Self-reflection**:
+With standardization and covergance, we also get the added benefit of being able to research and compare across countries, giving insights that can be read and used much like the Official Development Assistance-numbers reported by donor countries and published by the OECD [@wp-stat2019;@wp-stat2020a;@wp-stat2022a]. Within this framework, one would actually be relived that the NAPs are all about planning and reporting standardized framework.
 
-- "Am I just another privileged Northerner dismissing Southern expertise?"
-- My confusion between departments - maybe that's MY problem, not the system's?
-- Perhaps convergence reflects learning, not control?
+## The epistemological community
 
+The tension I try to highlight here, is that these practices also often get things very wrong. In peace work, a field with growing overlap with climate governance, the impact often absurdity:
 
-## Politics of reasonable
+>[...] tells a possibly apocryphal story about a UN report on its political program in Kosovo, in which entire sections are focused on Liberia. The poor official tasked with “writing” the report had used an older document as a template and forgotten to replace all mentions of the other country. Every nation in which there is a UN mission has a version of this story. In South Sudan, where I often work, the roadmap for constitutional design, drawn up by international peacebuilders, kept mysteriously referring to Fiji. It’s thus hardly a surprise that Peace Inc.’s efforts often don’t seem to work [...] Absurdity is the standard operating procedure for Peace Inc.[@craze2021, p. 1].
 
-The most striking finding from the structural topic modeling is not the diversity of adaptation approaches but their fundamental sameness. Across 45 countries spanning radically different geographies, economies, and climate vulnerabilities, National Adaptation Plans converge on a narrow set of concerns: planning and modelling. 
+This should not only be understood as a single case of someone doing a poor job, but rather as the system, what we have discussed as the adaptation regime [@paprocki2018] becomes it's own epistemological community [@defrancesco2020], with strong convictions about what to do. 
 
-W
+This absurdity is also clear in the NAP corpus. The NAP for the West Bank and Gaza spends most time discussing precipitation patterns and opportunities for agricultural development, avoiding the sensitive and central topic of the political situation as perhaps the largest contributer 
+
+The enthographic research referenced earlier show how the development organizations operating in most of Bangladesh, compile long lists of adaptation measures for donors to choose from. The local organizations do not see themselves as activly taking part in the creation of the discourse, rather they simple implement projects [@paprocki2018]. This creates a sort of feed-back loop, where local organizations work as 
+
+This could be understood as brokerage, where the long chain of donor delegation, from the donor, to the international NGO, to the local NGO to the community NGO, all add and remove, changing the project a little to make it better fit into the local context [@bierschenk2002]. This is also the case in climate change, where climate change is the "spice" that make projects work through the whole chain [@dewan2022].
+
+The epistemological community creating the knowledge is centralized, in many ways. Most of money (used to) flow from Washington DC and into the international NGOs such as the World Bank. These organizations, speaking English and staffed with people with university degrees form the Global North [@banks2015]. 
+
+I have personal experience working on this, as my internship connected to this degree was had an ongoing project where the British Foreign and Commonwealth Developent Office (FCDO) had outsourced a project to an international consultancy, that had then hired a subject matter expert, that then had reached out to the organization I was working for The knowledge produced is solid, the epistemological community is clear. We worked for Northern experts, as Northern experts.
+
+When working within (and around) these framework, and especially if the work is based on grants or projects, makes being a part of the epistemologial community important [@dewan2022]. This leads to the the travelling consultants and frameworks have been described vividly in the literature [@olivierdesardan2017;@mosse2011]. The largest risk these organizations run, is to be deemed outside of the epistemological communtity, and being unreasonable. 
+
+## Adaptation regime
 
 This pattern can be understood through the concept of epistemicide—the destruction of knowledge systems that do not conform to dominant Western scientific and bureaucratic paradigms [@santos2016]. In the context of climate adaptation, epistemicide operates not through direct suppression but through the more subtle violence of exclusion and non-recognition. The NAP process, with its standardized guidelines, technical requirements, and evaluation criteria, creates a discursive space where only certain forms of knowledge can be articulated. Traditional ecological knowledge, community-based practices, indigenous cosmologies, and local innovations—all of which have enabled human communities to navigate environmental variability for millennia—find no legitimate expression in documents dominated by vulnerability indices, cost-benefit analyses, and results-based management frameworks. This represents what critical scholars identify as the continuation of colonial violence through seemingly neutral technical processes [@dunlap2018; @escobar2018].
 
@@ -69,8 +132,6 @@ The dominance of multilateral development banks in shaping adaptation discourse 
 This process of epistemicide through adaptation planning is particularly insidious because it operates under the banner of helping vulnerable countries. Unlike earlier forms of colonial knowledge imposition, which at least could be recognized and resisted as foreign, the NAP process invites countries to participate in their own epistemological subordination. Countries must demonstrate they lack capacity (to secure technical assistance), adopt external frameworks (to access funding), and report in standardized formats (to maintain eligibility). This represents what scholars identify as a form of violence that operates through inclusion rather than exclusion—incorporating diverse contexts into a singular framework that eliminates their distinctiveness [@dunlap2018; @whyte2018].
 
 What makes this epistemicide through adaptation particularly effective is its technical character. By framing adaptation as a matter of proper assessment, planning, and implementation, the NAP process removes it from the realm of political contestation. This transformation—from the political to the technical—represents the operation of what critical development scholars have long identified as central to maintaining unequal power relations while appearing to address them [@ferguson1994; @escobar2018].
-
-## Vulnerability is the New Underdevelopment
 
 The patterns of discourse convergence among low-income countries reveal a disturbing parallel to earlier development paradigms. Where development discourse constructed the "Third World" as lacking—lacking capital, lacking technology, lacking institutions—adaptation discourse constructs these same countries as vulnerable—vulnerable to floods, vulnerable to droughts, vulnerable to climate change [@escobar1995]. This shift from "underdeveloped" to "vulnerable" maintains the same structural relationship: countries in need of external intervention, incapable of managing their own futures, requiring the technical expertise and financial resources of the developed world. The vulnerability/adaptation nexus thus emerges as the contemporary incarnation of the development/underdevelopment relationship that has structured North-South relations for decades.
 
@@ -110,7 +171,7 @@ The anti-politics machine of adaptation serves multiple constituencies even as i
 
 The operation of adaptation as an anti-politics machine connects directly to our earlier analysis of epistemicide and vulnerability construction. By rendering political questions technical, adaptation planning eliminates space for alternative knowledge systems that might frame problems differently. By constructing vulnerability as a technical condition requiring technical solutions, it forecloses political mobilization around structural causes. The three processes work together to maintain existing power relations while appearing to address climate impacts. This brings us to the crucial question: if state-led adaptation planning operates as an anti-politics machine that forecloses alternative futures, what possibilities exist beyond this framework?
 
-## Beyond State Adaptation: Pluriversal Possibilities
+## Beyond control
 
 If adaptation planning operates as a mechanism of epistemicide, vulnerability construction, and depoliticization, what alternatives might exist? The variance patterns in our data—particularly the greater discourse diversity among middle-income countries—suggest that partial autonomy from international climate finance enables more diverse approaches. This empirical finding aligns with theoretical work on pluriversal politics that imagines worlds beyond the singular world of modernity, development, and now adaptation [@escobar2018; @escobar2020]. Rather than seeking better adaptation within existing frameworks, these approaches ask: what if communities designed their own transitions based on their own ontologies, epistemologies, and aspirations?
 

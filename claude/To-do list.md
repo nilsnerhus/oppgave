@@ -1,10 +1,10 @@
 ## Prose
 
-- [ ] Discussion
-	- [ ] Expert rule 
-	- [ ] Politics of Reasonable
-	- [ ] Adaptation empire
-	- [ ] Beyond control
+- [x] Discussion
+	- [x] Expert rule 
+	- [x] Politics of Reasonable
+	- [x] Adaptation empire
+	- [x] Beyond control
 - [x] Findings
 	- [x] Topics
 	- [x] Dominance

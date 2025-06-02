@@ -78,20 +78,6 @@ Each subsection should also have a simple ggplot2 minimal-theme graph highlighti
 
 ## Section 1: The Sympathetic Take - "Maybe Experts Should Be Experts?"
 
-**The reasonable case for standardization:**
-
-- Poor countries DO lack technical capacity
-- Climate science IS complex
-- **Maybe convergence reflects learning and best practice?**
-- World Bank templates might prevent reinventing the wheel
-- **"Perhaps my Norwegian privilege makes me dismiss expertise?"**
-
-**But then your data reveals problems:**
-
-- If this were expertise, wouldn't climate vulnerability matter more?
-- Why do regional networks trump environmental challenges?
-- **Your p-value pattern shows this isn't about competence but dependence**
-
 ## Politics of Reasonable
 
 Goes through my experience of being educated since 2006, making the following points:
