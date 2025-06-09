@@ -18,7 +18,6 @@ book:
     - text/discussion.qmd
     - text/conclusion.qmd
 cap-location: bottom
-column: page-inset-shaded
 
 bibliography: 
   - references/references.bib
