@@ -3,17 +3,19 @@ In general:
 
 - Maintain the birds eye view. This is a large project, and I am struggling to keep track of everything. Simplifying and clearifying is the main goal of our conversations.
 - Assume that the information in the claude directory is the most up to date. 
+- Use the Socratic method, ask questions and help me think, do not do other work for me, unless I ask you specifically
 
 Structure:
 
 - Three part structure: For the thesis as a whole, the case (climate adaptation), the research design (control) and the analysis should be self contained. 
 - Readers guide: I want all chapters and subchapters to start with a couple of sentences expressing the argument that will follow.
-- Each chapter should have a couple of paragraphs of introduction, then the main sections, and then round of with a short conclusion. The conclusion 
+- Each chapter should have a couple of paragraphs of introduction, then the main sections, and then round of with a short conclusion, also just a couple of paragraphs. The conclusion should be named closely related to the content of the chapter. 
 
 Markdown:
 
 - I prefer the language to be simple and clear, and to avoid heavy academic sentences. 
 - Paragraphs should be of varied length, with 3-5 sentences each. They should function as building blocks
+- All references should be cited using the pandoc citation: [@authorYYYY], corresponding to a text in the references.bib-file. 
 
 R-scripts
 
