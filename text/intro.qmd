@@ -18,9 +18,9 @@ This represents what the concept of "vulnerability" now plays in global relation
 
 To investigate this adaptation apparatus, I pose three research questions that probe different dimensions of the adaptation regime:
 
-How does climate adaptation planning conceptualize justice, and what possibilities does this enable or foreclose?
-Through what mechanisms and whose knowledge do adaptation interventions become legitimate and necessary?
-Does the current adaptation regime advance climate justice or reproduce colonial relations under new vocabularies? 
+- How does climate adaptation planning conceptualize justice, and what possibilities does this enable or foreclose?
+- Through what mechanisms and whose knowledge do adaptation interventions become legitimate and necessary?
+- Does the current adaptation regime advance climate justice or reproduce colonial relations under new vocabularies? 
 
 To answer these questions, I employ an approach that makes patterns typically hidden in the sheer volume of policy documents visible. Using computational text analysis, specifically structural topic modeling [@stm], I identify thematic patterns that structure adaptation discourse across all National Adaptation Plans submitted to the UNFCCC. This approach accounts for both the specific national details, sorting out all words that occur in less that 10% of the corpus and the general boilerplate words that occur in more than 80%.
 

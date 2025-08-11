@@ -19,6 +19,10 @@ The packages used in the analysis will be cited, and their documentation has bee
 
 The framework for text analysis has three main stages. First, I download and prepare the texts, to clean them so that they become comparable. Then, I model the corpus into a set of topics we later can use for analysis, before I calculate the discourse centralization through the Dominance Index, and test it statistically. I use the STM package [@stm] for the calculation of everything except the Dominance Index, as that is my contribution.
 
+## Computational discourse analyis
+
+
+
 ## Corpus Collection and Preparation
 
 > To level the playing field and make the NAPs comparable across documents, I have developed a systematic approach to extract, clean, and prepare the text, as well as finding and adding the necesarry metadata for analysis.
@@ -141,7 +145,7 @@ Deciding on the right number of topics is done by one weighing the interpretabil
 
 The full model was then run using spectral decomposition, which provides more stable and reproducible results compared to random [@roberts2019]. After running  `r iterations_run` iterations, the model converged successfully, indicating that the algorithm had identified stable topic distributions. These `r k_value` topics are the basis for the rest of my analysis. 
 
-## Dominance analysis
+## Control index
 
 > To analyse the distribution of topics I create a new measure, the Dominance Index, to investigate how concentrated the discourse is in a few topic. 
 
@@ -193,3 +197,5 @@ For each group, I test the null hypothesis that group membership has no effect o
 The statistical test works by fitting regression models for each dominant topic, with group membership as the predictor variable and topic proportions as the outcome. I use binary indicators for each group (for example, SIDS vs. non-SIDS, or low-income vs. other income levels) to test specific hypotheses about discourse patterns. 
 
 I used the standard statistical significance of in the STM package [@stm] on 95%. I store the p-values as a way to analyse the relative power of the countries in each group. Lower p-values indicate stronger evidence that group membership systematically shapes discourse patterns
+
+

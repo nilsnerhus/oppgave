@@ -4,7 +4,7 @@ This chapter presents the two main strands of climate adaptation research. One i
 
 The literature in this field maps onto broader debates in development studies, where the study of interventions in other societies has a long theoretical history. These competing paradigms reveal fundamentally different understandings of what adaptation is, how vulnerability is produced, and consequently, what appropriate interventions look like.
 
-## Adaptation Nexus
+## Nexus
 
 The adaptation nexus fundamentally rests on what could be understood as an idea of modernization. Within this framework, climate vulnerability emerges primarily from the absence of particular capacities, technologies, or institutional arrangements that enable effective response to environmental challenges. This logic creates a seemingly natural division of labor: Northern countries and international institutions possess the technical expertise, financial resources, and institutional knowledge needed to address climate challenges, while Southern countries require assistance to build the capacity necessary for effective adaptation [@ireland2010]. 
 
@@ -40,7 +40,7 @@ This nexus understanding sees vulnerability as an individual's, community's or s
 
 The nexus approach maintains that standardization and convergence reflect genuine learning and the dissemination of best practices. Complex challenges like climate adaptation require sophisticated technical knowledge, and it makes sense that countries facing similar challenges would adopt similar solutions. International coordination prevents the wasteful duplication of effort while ensuring that limited resources are used effectively. Frameworks like those developed by the Climate Policy Initiative attempt to create taxonomies that prevent climate finance from becoming so broadly defined as to lose meaning [@buchner2023].
 
-## Adaptation Regime
+## Regime
 
 The adaptation regime critique fundamentally challenges the nexus assumption that the South lacks something the North can provide. Instead, this perspective argues that the South is systematically oppressed by Northern-dominated structures, and that the best way to help may be to provide no help at all, thereby enabling re-politicization of issues that development discourse has rendered technical [@escobar1995]. 
 
@@ -71,3 +71,8 @@ Camelia Dewan's analysis reveals how climate change serves as "spice" that makes
 The adaptation regime operates through three interrelated processes: imagination, experimentation, and dispossession [@paprocki2018]. Dystopian climate futures are imagined that justify present interventions. These imagined futures enable experimentation with new forms of social and economic organization in the name of climate adaptation. The result is often dispossession - the elimination of existing livelihoods and social arrangements in the name of building resilience to climate change.
 
 This process of anticipatory ruination creates what scholars identify as a "climate of fear" that enables particular forms of intervention while foreclosing alternatives [@hulme2008]. The future is foreclosed before it arrives, with adaptation pathways predetermined by institutional templates rather than community aspirations. Complex political-economic realities are reduced to technical problems of climate vulnerability, making it impossible to address the structural causes of environmental degradation.
+
+## Enter climate change
+
+## Nexus or the regime
+

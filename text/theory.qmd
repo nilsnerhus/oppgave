@@ -1,6 +1,6 @@
 # Theory {#sec-theory}
 
-This chapter develops a theoretical framework for understanding how adaptation discourse might reflect either epistemological diversity or monoculture - what I term the 'politics of reasonable.
+This chapter develops a theoretical framework for understanding who makes decitions about the future. It brings together different bodies of literature, mainly from critical future studies, critical development studies and decolonial theory. 
 
 The framework brings together three interconnected bodies of theory that illuminate different dimensions of this question. First, Boaventura de Sousa Santos's work on "Epistemologies of the South" provides tools for understanding how certain knowledge systems achieve dominance while others are systematically marginalized or rendered non-existent. This perspective reveals adaptation planning as a potential site of epistemicide—where alternative ways of knowing climate, vulnerability, and response are eliminated through frameworks that cannot recognize them as knowledge.
 
@@ -109,3 +109,6 @@ Understanding discourse centralization as an indicator of epistemological monocu
 The theoretical framework of discourse centralization thus serves multiple purposes. It provides a bridge between abstract concepts like epistemicide and empirical analysis. It offers a way to observe processes that typically remain hidden. It reveals the operation of power through knowledge frameworks that appear neutral. Most fundamentally, it makes visible the gap between the pluriversal possibilities that exist in the world and the singular framework that dominates formal planning processes. This visibility is a necessary first step toward creating conditions where many worlds might flourish rather than being reduced to one.
 
 This theoretical grounding establishes the foundation for empirical investigation. If discourse centralization indicates epistemological monoculture, then measuring centralization across different contexts can reveal how successfully dominant frameworks have eliminated alternatives. The patterns observed—whether high or low centralization, whether varying by region, income, or geography—become legible as indicators of epistemological power in operation. This sets the stage for developing methodological approaches that can capture these patterns while remaining attentive to what they reveal about knowledge, power, and the possibility of alternative futures in climate governance.
+
+## A theory of control
+

@@ -86,7 +86,7 @@ I argue this, because of the focus on "transit", "line", both urban infrastructu
 
 Thus, I argue it should be included with the other sectoral topics, making them `r sectoral_with_5` of the corpus. This also makes the topic prevalences an even split between institutional/planning and sectoral topics. 
 
-## Dominance
+## Control index
 
 > Analysis of discourse centralization reveals remarkably high concentration across all National Adaptation Plans, with systematic patterns showing procedural topics dominating adaptation discourse regardless of country context, income level, or geographic vulnerability.
 
