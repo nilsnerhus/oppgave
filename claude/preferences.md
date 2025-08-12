@@ -13,8 +13,8 @@ Structure:
 
 Markdown:
 
-- I prefer the language to be simple and clear, and to avoid heavy academic sentences. 
-- Paragraphs should be of varied length, with 3-5 sentences each. They should function as building blocks
+- I prefer the language to be simple and clear, and to avoid heavy academic sentences. Also, make sure that the text does not sound like it is written by a GPT
+- Paragraphs should be of varied length, with 3-5 sentences each. They should function as building blocks. The sentence length should also be varied
 - All references should be cited using the pandoc citation: [@authorYYYY], corresponding to a text in the references.bib-file. 
 
 R-scripts

@@ -1,5 +1,5 @@
 
-Part 1: Case - Climate adaptation
+**Part 1: Case - Climate adaptation**
 
 Context
 - [ ] Mitigation
@@ -13,7 +13,7 @@ Earlier research
 - [ ] Climate adaptation
 - [ ] Either nexus or regime
 
-Part 2: Research design
+**Part 2: Research design**
 
 Theory
 - [ ] Epistemologies of the South
@@ -26,12 +26,11 @@ Methods
 - [ ] Structural topic modeling
 - [ ] Control index
 
-Part 3: Analysis
+**Part 3: Analysis**
 
 Findings
 - [ ] Topics/clusters
 - [ ] Control index for different groups
-- [ ] P-values
 
 Dicussion
 - [ ] Control in climate adaptation plans

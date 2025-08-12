@@ -1,201 +1,81 @@
 # Methods {#sec-methods}
 
-```{r setup, include=FALSE}
-knitr::opts_knit$set(root.dir = "..")
-`%>%` <- magrittr::`%>%`
-```
+> To empirically examine whether adaptation discourse reflects epistemological control, I develop a mixed methods approach that combines computational text analysis with auto-ethnographic reflection, enabling analysis of both the structural patterns and cultural processes that shape expert knowledge production.
 
-> To empirically examine whether adaptation discourse reflects epistemological diversity or monoculture, I develop a methodological approach centered around the "Dominance Index"—a measurement tool for quantifying the degree to which adaptation discourse is concentrated around particular topics or perspectives.
+This research addresses questions about epistemological control and expert authority that require methodological innovation beyond traditional single-method approaches. Examining whether expert systems produce genuine knowledge diversity or systematic convergence demands both systematic analysis of expert discourse across contexts and critical understanding of how this discourse is produced within expert cultures. The methodology therefore integrates computational analysis of National Adaptation Plans with reflexive analysis of my own positioning within expert governance systems, using climate adaptation as the empirical case for testing broader theories of control.
 
-The entire analysis was conducted in R [@base], with reproducible research principles supported by `renv` [@renv] for package management and Quarto for dynamic document generation. Data manipulation and transformation relied on the tidyverse ecosystem [@tidyverse], while the analytical pipeline employed custom functions designed for transparency and reproducibility. All code and data processing steps are documented and available for replication.
+The mixed methods design reflects both practical and theoretical considerations. Practically, examining epistemological control requires analysis across multiple scales—from individual expert socialization to institutional discourse patterns to global knowledge convergence. Theoretically, understanding how control operates through expert systems requires insight into both the structural outcomes (discourse homogenization) and the cultural processes (expert reproduction) that produce these outcomes. Neither computational nor ethnographic analysis alone could adequately address questions about how expert authority operates as both knowledge system and cultural reproduction.
 
-This approach was chosen for two reasons, first, open source software is free to use and second, these tools are developed, maintained and used by academics the world over. Since the packages are publically available, and a part of a peer-review process through the central R repository, they are quite stable and made for rigours analysis. This makes it possible for anyone to access the files I have developed for the project on [GitHub](https://github.com/nilsnerhus/oppgave), and validate my findings if they so choose. My findings are not, as often is in computational analysis, "hidden" on my computer, but available to all. 
+My sustained engagement with climate governance provides unique analytical access to expert cultures while raising important methodological and ethical questions about studying systems from within. Rather than treating this insider positioning as limitation requiring control, I employ auto-ethnographic methods that use reflexive analysis as analytical resource. This approach enables examination of how expert systems shape both policy outputs and expert subjectivities, revealing connections between institutional patterns and individual experiences of expert socialization within systems of control.
 
-The framework I am using here has been under intense development for the last four months, as I started without any prior knowledge of R, beyond simple calculations I did in my undergrad. The framework has slowly been written out, tested and rewritten, with the last major changes happening just days before the deadline. This has improved its efficiency and its reliability.
+The chapter proceeds through three methodological discussions. First, I detail the computational text analysis approach, explaining how structural topic modeling and the Control Index enable systematic examination of discourse convergence patterns across expert-produced policy documents. Then I examine the auto-ethnographic component, discussing how my trajectory through expert systems provides analytical insight into how epistemological control operates through cultural reproduction. Finally, I address the integration of these approaches, explaining how mixed methods analysis enables examination of expert governance as both structural discourse and lived cultural practice.
 
-The framework is designed to be able to take any country-specific dataset, and run the same analysis with the same functions and assumptions, making it possible to in the future compare across policy areas. That kind of analysis is beyond the scope of this thesis, however.
+This methodological combination serves the broader theoretical project of understanding how expert systems operate as mechanisms of epistemological control. The computational analysis reveals the homogenization that characterizes expert knowledge production, while auto-ethnographic analysis illuminates how expert cultures reproduce the assumptions and practices that generate this homogenization. Together, these approaches enable analysis of climate adaptation not just as policy framework but as exemplar of how expert authority shapes whose knowledge counts and which futures are imaginable. Climate adaptation becomes the empirical window through which broader patterns of expert control can be examined and understood.
 
-The packages used in the analysis will be cited, and their documentation has been a central source of knowledge. An important note is that while this analysis is unsupervised machine learning, and thus is based on some of the principles that GAI-models are, they share no more similarity other than that they both use text to make inference. 
+## Auto-Ethnographic Analysis
 
-The framework for text analysis has three main stages. First, I download and prepare the texts, to clean them so that they become comparable. Then, I model the corpus into a set of topics we later can use for analysis, before I calculate the discourse centralization through the Dominance Index, and test it statistically. I use the STM package [@stm] for the calculation of everything except the Dominance Index, as that is my contribution.
+> This research draws on my sustained engagement with climate governance as both participant and analyst, using auto-ethnographic methods to examine the cultural logics of climate expertise from within.
 
-## Computational discourse analyis
+My analysis of climate adaptation discourse is informed by a decade of participation in Norwegian climate policy processes, environmental organizations, and international climate governance forums. This positioning provides unique analytical access to the cultural assumptions, institutional practices, and epistemological frameworks that shape climate expertise, but it also requires methodological transparency about how this insider knowledge informs my interpretation of the NAP corpus.
 
+Auto-ethnography offers established methods for analyzing cultural systems from within [@ellis2011]. Rather than claiming objective distance from my research subject, this approach recognizes that my socialization into climate expertise provides both analytical resources and potential blind spots. The method involves systematic reflection on personal experience within cultural contexts, using this reflection to illuminate broader social processes [@spry2001].
 
+My engagement with climate change began during secondary school and continued through roles in environmental organizations, policy advisory positions, and international climate forums. I have always seen myself as a climate activist, and I believe this trajectory reflects the typical path of climate expert formation - university education in environmental issues, participation in advocacy organizations, and eventual professional integration into structrued policy processes.
 
-## Corpus Collection and Preparation
+A methodological turning point for me came through exposure to decolonial theory during studies at The New School in New York city. This theoretical framework provided tools for analyzing the very knowledge systems I had been trained within, revealing how what appeared as neutral expertise embedded particular epistemological assumptions and power relations. Here, the problematization of knowledge as a form of control, and the realities of different ontoepistemological worlds became a central academic interest for me [@escobar1995;@whyte2018;@tuck2012]
 
-> To level the playing field and make the NAPs comparable across documents, I have developed a systematic approach to extract, clean, and prepare the text, as well as finding and adding the necesarry metadata for analysis.
+This enabled a form of "reflexive distance", where I got the tools to analyze my own (knowledge) systems from both insider and critical perspectives [@davies1999]. My continued participation in climate governance provides ongoing access to expert logics and institutional practices, while my anthropological training enables systematic analysis of these cultural patterns.
 
-```{r}
-#| label: Corpus cleaning
-#| include: FALSE
+The auto-ethnographic component illuminates several aspects of climate governance that pure discourse analysis might miss. The separation between knowledge production, communication, and policy implementation appears natural from within expert cultures but becomes visible as a constructed division when analyzed reflexively. Similarly, the dismissal of community knowledge as "not representative" - something I have experienced directly when serving as an elected representative - reveals how expert systems maintain authority by controlling definitions of legitimate knowledge.
 
-## Load scripts
-source("scripts/utils.R")
-source("scripts/scrape_web.R")
-source("scripts/extract_pdfs.R")
-source("scripts/get_un_classifications.R")
-source("scripts/add_metadata.R")
-source("scripts/process_dfm.R")
+This methodological approach follows established anthropological practices of "studying up" [@nader1972] and analyzing elite institutions from insider positions. It also connects to recent work on institutional ethnography that examines how professional cultures shape policy processes [@smith2005]. The combination of computational discourse analysis and reflexive ethnography enables analysis of both the textual products of climate governance (NAPs) and the cultural processes that produce these texts.
 
-## Set parameters
-category_map <- list(
-  Global = "global_category",    
-  Income = "wb_income_level", 
-  Region = "region", 
-  Geography = c("is_sids", "is_lldc"),
-  Time = "time_period"
-)
-time_groups <- c("Early" = 2018, "Middle" = 2021, "Late" = Inf)
+## Computational Text Analysis
 
-## Run functions
-web <- web_cache(scrape_web)
-docs <- auto_cache(extract_pdfs, web)
+> To empirically examine whether adaptation discourse reflects epistemological diversity or monoculture, I develop a computational approach centered around structural topic modeling and the "Control Index"—a measurement tool for quantifying discourse centralization in policy documents.
 
-un_classifications <- auto_cache(get_un_classifications)
-metadata <- auto_cache(add_metadata, web, un_classifications, time = time_groups)
+Computational text analysis offers powerful tools for examining large corpora of policy documents that would be impossible to analyze manually [@grimmer2013; @monroe2008]. Within climate governance research, computational approaches enable systematic comparison across countries and over time, revealing patterns in how climate challenges are understood and addressed [@wright2023; @schoenfeld2018].
 
-dfm <- auto_cache(process_dfm, docs, metadata, min_docs = 0.1, max_docs = 0.8)
-```
-```{r}
-#| label: Extract values for corpus cleaning
-#| include: FALSE
+The analysis employs established UN categorization systems to examine whether discourse patterns correspond to expected geographic and economic factors. Since climate change represents fundamentally geographical vulnerability—with impacts varying by location, elevation, coastline exposure, and ecosystem type—we might expect countries facing similar physical challenges to develop similar adaptation approaches. The analysis therefore examines discourse patterns across UN categories including income levels, geographic regions, and climate vulnerability classifications to test whether adaptation planning reflects climate-responsive diversity or institutional convergence.
 
-# Extract values
-## Genral values
-all_language_naps <- num(web[["metadata"]][["row_count"]])
-english_docs <- num(web[["metadata"]][["document_count"]])
+The analysis examines all English-language National Adaptation Plans submitted to the UNFCCC, representing official government statements about climate adaptation priorities and making them ideal for analyzing how states translate international climate frameworks into national contexts. Corpus preparation involved standardization steps to ensure comparability across documents with different formatting and organization, including conversion to plain text and standard preprocessing while preserving climate-specific technical terminology.
 
-## Text cleaning values
-init_tokens <- num(dfm[["metadata"]][["input_tokens"]])
-final_tokens <- num(dfm[["metadata"]][["final_tokens"]])
-init_terms <- num(dfm[["metadata"]][["input_vocabulary"]])
-final_terms <- num(dfm[["metadata"]][["final_vocabulary"]])
+Structural topic modeling provides a probabilistic approach to identifying latent themes within large text corpora while accounting for document-level covariates [@roberts2014; @roberts2019]. Unlike traditional topic modeling approaches that assume documents are exchangeable, STM allows investigation of how document metadata—such as country income level, geographic vulnerability, or regional affiliation—influences topic prevalence. This makes STM particularly appropriate for policy research where institutional context shapes discourse patterns. The modeling process involved determining the optimal number of topics through coherence and exclusivity metrics [@mimno2011]. Coherence measures how semantically related the words within each topic are, while exclusivity captures how distinctive topics are from each other.
 
-lower_thresh <- pct(dfm[["metadata"]][["thresholds"]][["min_docs_prop"]])
-upper_thresh <- pct(dfm[["metadata"]][["thresholds"]][["max_docs_prop"]])
+The entire analysis was conducted in R [@base], with reproducible research principles supported by `renv` [@renv] for package management and Quarto for document generation. Data manipulation and transformation relied on the tidyverse ecosystem [@tidyverse], while the analytical pipeline employed the STM package [@stm] for all topic modeling calculations except the Control Index, which represents my methodological contribution. All code and data processing steps are documented and available for replication on GitHub. Each topic is characterized by its most frequent and exclusive (FREX) terms, which identify words that appear both commonly within the topic and distinctively compared to other topics [@bischof2012]. This dual criterion helps ensure that topics capture meaningful thematic distinctions rather than general vocabulary, and each topic is named by the `topiclabels` package [@topiclabels].
 
-## Metadata values
-start_year <- num(min(metadata$data$metadata$year, na.rm=TRUE))
-end_year <- num(max(metadata$data$metadata$year, na.rm=TRUE))
+The Control Index is an attempt to quantify the degree to which discourse concentrates around a small number of dominant topics rather than distributing attention across the full thematic range. This measure addresses a crucial limitation in existing topic modeling applications to policy research, which typically examine topic prevalence but not discourse centralization patterns. The index calculation involves extracting the average topic distribution for each analytical category, identifying the most prominent topics within each category, and calculating what proportion of total discourse these dominant topics represent. This captures how much of each group's adaptation discourse focuses on key themes versus being distributed across many different topics.
 
-num_sids <- num(sum(metadata$data$metadata$is_sids, na.rm=TRUE))
-num_lldc <- num(sum(metadata$data$metadata$is_lldc, na.rm=TRUE))
-```
+To enable comparison across different categorization schemes, all Control Index values are normalized to a 0-1 scale, where 0 represents perfectly distributed discourse and 1 represents complete concentration on the dominant topics. Higher values indicate that most of the group's adaptation discourse focuses on a small number of topics, suggesting potentially constrained understanding of adaptation challenges. Lower values indicate more distributed attention across the full range of adaptation topics, potentially reflecting greater epistemological diversity.
 
-The analysis begins with the systematic collection of National Adaptation Plans from the UNFCCC's NAP Central website. To do this, I set up a web scraper using the `polite` package [@polite] that automatically scans the website and extracts the country name, the date posted and the link to the download for English language NAPs. I use `polite` to avoid overwhelming the website, and following their established rules for scraping. This process found `r english_docs` English plans, of `r all_language_naps` available countries. 
+Establishing whether Control Index patterns are statistically meaningful requires hypothesis testing using STM's regression capabilities [@roberts2014]. For each country grouping, I test whether categorical membership significantly influences the distribution of dominant topics, treating topic proportions as dependent variables and group membership as predictor variables. The statistical tests employ binary indicators for each category to examine specific hypotheses about discourse convergence, with standard significance testing providing evidence about whether observed patterns reflect systematic differences or random variation.
 
-While focusing on English-language documents introduces a potential bias toward English-speaking countries or those with stronger ties to international institutions, this constraint was necessary to ensure meaningful textual comparison using consistent analytical methods. It is also valuable, as the working language of the World Bank and other international institutions is English [@defrancesco2020]. 
+This computational approach builds on recent advances in political science and international relations that use large-scale text analysis to examine policy discourse [@grimmer2013; @lucas2015]. Within climate governance research, computational methods have revealed important patterns in how countries frame climate issues in international forums [@wright2023], how urban climate narratives converge over time [@westman2023], and how scientific uncertainty is communicated in climate assessments [@petersen2019]. However, computational text analysis faces several important limitations that shape how findings should be interpreted. Topic modeling assumes that texts can be meaningfully decomposed into discrete themes, which may not capture the complex intertextuality and contextual meanings that characterize policy discourse [@mohr2013]. 
 
-After scraping the web, I split the metadata from the documents. The documents were downloaded automatically, before the text was extracted using `pdftools` [@pdftools] and read into R. The text was then cleaned to make the comparable across the whole corpus using `quanteda` [@quanteda]. I used the default pipeline for text processing with the `stm` package [@stm]. This included removing common words with little semantic value known as stop words using `stopwords` [@stopwords], numbers, punctuation, and reducing all words to their stem using `SnowballC` [@SnowballC] removing their ending, so the same word with different endings is counted as one. 
+The method privileges frequently occurring terms and may miss subtle but theoretically important variations in how concepts are used. The Control Index, while providing useful quantification of discourse patterns, cannot capture qualitative differences in how similar topics are approached. Two countries might both emphasize agricultural adaptation but frame it through completely different epistemological lenses—one through market-based efficiency and another through food sovereignty. The quantitative measure would show convergence where critical analysis might reveal fundamental divergence.
 
-The NAPs presented two text quality issues, first, as the documents are published as Portable Document Files (PDFs), a good format for printing, also introduces a lot of different artifacts when extracting the text. Second, the texts included national specific content like country-names and often a summary in the national language. Both cluttered the corpus and made the topics very low quality.
+The temporal dimension presents another analytical challenge. While all NAPs in the corpus were submitted by 2023, they represent different stages in adaptation planning processes across countries. Some documents reflect initial adaptation assessments while others represent updates to existing strategies. This temporal variation may influence topic patterns in ways the analysis cannot fully account for.
 
- To combat this, I filtered the corpus quite aggressively, removing words that occurred less than `r lower_thresh` of documents, and words that occurred in more than  `r upper_thresh` documents [@roberts2019].
+Despite these limitations, computational text analysis provides the best capabilities for understanding climate governance at scale. The method enables systematic comparison across contexts that would be impossible through traditional qualitative approaches alone. When combined with critical theoretical frameworks and reflexive methodology, computational analysis can reveal patterns of convergence and exclusion that illuminate how climate governance operates as a global system of knowledge production and political control.
 
-The other issue was solved by making a list of stop words based on country names in the `countrycode` packages [@countrycode]. The whole process left us with `r final_tokens` of the `r init_tokens` words we started with, and `r final_terms` of `r init_terms` unique terms. 
+## Mixed Methods Analysis
 
-The metadata was extracted and processed independently of the documents. The country name was extracted and standardized with the help of the `countrycode` package [@countrycode], that matched the country names to a three letter standardized code. These standardized names were then compared with the `wbstats` package [@wbstats], and added in the World Banks data on income, classifying the countries as low income, lower middle income, upper middle income and high income countries.
+> The integration of computational discourse analysis and auto-ethnographic reflection enables examination of climate governance from both systemic and experiential perspectives, revealing how institutional patterns connect to lived realities of expert culture and practice.
 
-The same process was used to assign the countries to their World Bank region. These seven regions are East Asia and Pacific, Europe and Central Asia, Latin America and Caribbean, Middle East and North Africa, North America, South Asia, and Sub-Saharan Africa. Assigning these categories serves two functions, first it makes the country groups large enough for robust calculations, and we are using the largest development actors own definitions, to see if they have any impact on the content.
+Mixed methods research combines different methodological approaches to address research questions that cannot be adequately answered through single-method designs [@creswell2017; @tashakkori2010]. Within policy research, mixed methods approaches have proven particularly valuable for examining how macro-level institutional patterns connect to micro-level practices and experiences [@yanow2006]. The combination of quantitative and qualitative methods enables researchers to identify broad patterns while understanding the cultural processes that produce these patterns [@small2011].
 
-In addition to these categories, I scraped the website for the Office of the High Commissioner for Least Developed Countries, Landlocked Developing Countries and Small Islands Developing States using `polite` [@polite] and for web scraping. Here, I extracted a list of all countries classified as landlocked (LLDC) or as small islands (SIDS). These are proxies for countries facing the same geographic issues, across regions and income levels. This identified `r num_sids` SIDS and `r num_lldc`. 
+This research employs what mixed methods scholars term a "concurrent embedded" design, where qualitative insights inform the interpretation of quantitative findings rather than operating as separate analytical tracks [@creswell2017]. The computational analysis of NAP discourse provides systematic evidence about convergence patterns across climate governance, while auto-ethnographic reflection illuminates the cultural logics and institutional practices that produce this convergence. Neither method alone could adequately address the research questions about epistemological diversity and expert authority in climate adaptation.
 
-The last category I extract is the date the plans were posted. The plans have been drafted since `r start_year`, and the latest in `r end_year`. To make it possible to see if the timing of the plans influence them, I split them into three groups, early (-2018), middle (until 2022) and late (2023-). Together, these categories allow us to examine whether discourse patterns align more strongly with economic positioning, regional institutions, or shared geographic vulnerabilities.
+The computational approach reveals the "what" of climate governance—patterns of discourse centralization that span countries with vastly different climate challenges and vulnerabilities. However, quantitative analysis cannot explain why these patterns emerge or how they are sustained across different national contexts. Auto-ethnographic analysis provides insight into the "how" of expert culture reproduction—the socialization processes, institutional pressures, and cultural assumptions that shape how climate expertise operates in practice [@ellis2011; @anderson2006].
 
-## Structural Topic Modeling
+The integration strategy follows established principles for mixed methods policy research that emphasize complementarity rather than convergence [@greene2007]. The two approaches examine climate governance at different analytical scales and through different epistemological lenses, with computational analysis revealing structural patterns and ethnographic analysis illuminating cultural processes. This complementarity enables examination of how individual experiences of expert socialization connect to broader institutional patterns of knowledge production and political control.
 
-> Structural topic modeling allows us to discover latent themes in the corpus, reducing the corpus to word clusters we can analyze later. 
+The temporal dimension provides crucial integration between the methodological approaches. The computational analysis captures adaptation discourse at a specific moment when international climate frameworks have stabilized around particular approaches to planning and implementation. The auto-ethnographic analysis provides longitudinal perspective on how these frameworks emerged and became naturalized within expert communities during the same period. This temporal complementarity enables analysis of both the current state of climate governance and the historical processes that produced this state.
 
-```{r}
-#| label: Topic modeling
-#| include: FALSE
+Methodological tensions between the approaches require explicit acknowledgment and analytical strategy [@johnson2007]. Computational analysis assumes that meaningful patterns can be identified through statistical aggregation across contexts, while auto-ethnographic analysis emphasizes the situated, contextual, and non-generalizable aspects of cultural experience. Rather than resolving this tension, the research uses it productively by allowing each approach to illuminate the limitations of the other. Computational findings about discourse convergence gain depth through ethnographic insight into how expert cultures produce standardization, while ethnographic observations about institutional pressures gain empirical grounding through quantitative evidence of their effects.
 
-## Load scripts
-source("scripts/find_k.R")
-source("scripts/fit_model.R")
+The mixed methods approach also addresses what policy researchers identify as the "implementation gap" between formal policy frameworks and actual practices [@lipsky2010]. NAPs represent official adaptation discourse, but auto-ethnographic analysis provides insight into how this discourse operates within the organizational cultures that produce and implement adaptation policies. This combination enables examination of both the textual products of climate governance and the social processes that create these texts.
 
-# Run functions
-k <- auto_cache(find_k, dfm)
-model <- auto_cache(fit_model, dfm, k, category_map = category_map)
+The ethical considerations of combining computational and ethnographic approaches require careful attention to different standards of consent and representation [@tracy2010]. The computational analysis examines public documents where consent issues do not arise, while the auto-ethnographic component focuses on publicly observable processes and personal transformation rather than analysis of non-consenting individuals. This ethical boundary enables integration of different forms of knowledge while respecting the limitations of each approach.
 
-```
-```{r}
-#| label: Extract values from topic modeling
-#| include: FALSE
-# Extract values
-k_value <- num(k[["data"]][["best_k"]])
-coh_weight <- pct(k[["metadata"]][["weights"]][["coherence"]])
-exc_weight <- pct(k[["metadata"]][["weights"]][["exclusivity"]])
-iterations_run <- num(model[["metadata"]][["iterations_run"]])
-
-segments <- num(dfm[["metadata"]][["segmentation"]][["segment_count"]])
-```
-
-Topic modelling is an approach that discovers thematic patterns in large text corpora in an unsupervised way. For our purposes, this makes it possible to interact with the whole corpus that spans  `r init_tokens` words, in an analytical way. This method was chosen, because unlike simple word frequency analysis or manual coding, topic models identify clusters of words that tend to co-occur across documents, revealing underlying themes that structure the discourse. 
-
-The main assumption here is that each document contains a mix of topics, where topics are the likelihood for words to occur in the same document [@roberts2016]. For example, a topic related to agricultural adaptation might have high probabilities for words like "crop," "drought," "irrigation," and "yield," while a topic about coastal adaptation might emphasize "sea-level," "erosion," "storm," and "infrastructure." This means the model treats documents as "bags of words," meaning word order is not considered. This simplification allows for computationally efficient discovery of thematic patterns across our documents, but also loses sentence, paragraph or chapter-level semantics [@roberts2019]
-
-One important note to this approach is the document-centric nature of it. It treats the document as the organizing principle, making corpuses with a few long documents like the NAPs centralized into a pattern of one topic per document. To avoid this, I automatically split the NAPs into `r segments` different segments, making the model run them as if they are separate documents, before I aggregate them again. This leads to considerably less concentration in each topic, raising the quality of them, but also introduces the risk of losing some content, since the documents are split after a certain amount of words. 
-
-The innovation in structural topic modeling (STM) [@stm] is that it makes it possible for the model to investigate the relationship between the text corpus and the metadata for the documents [@roberts2019].  This is perfect for my research as we can pass the income level, region, and geographic characteristics, to the model.
-
-Deciding on the right number of topics is done by one weighing the interpretability of a few topics, their semantic coherence, against making sure that a certain word is in as few topics as possible, their exclusivity. I used the `stm` package [@stm] to run a smaller model on a wide range of values, and weighing the coherence and exclusivity `r coh_weight` against `r exc_weight`, giving us a `r k_value` as the optimal number of topics. 
-
-The full model was then run using spectral decomposition, which provides more stable and reproducible results compared to random [@roberts2019]. After running  `r iterations_run` iterations, the model converged successfully, indicating that the algorithm had identified stable topic distributions. These `r k_value` topics are the basis for the rest of my analysis. 
-
-## Control index
-
-> To analyse the distribution of topics I create a new measure, the Dominance Index, to investigate how concentrated the discourse is in a few topic. 
-
-```{r}
-#| label: Dominance analysis
-#| include: FALSE
-
-## Load scripts
-source("scripts/name_topics.R")
-source("scripts/find_dominance.R")
-source("scripts/find_variance.R")
-source("scripts/calculate_metrics.R")
-
-# Set parameters
-context <- " Follow these rules: Each label must be completely unique and do not 
-name a topic after a country or city. These are National Adaptation Plan documents 
-from the UNFCCC covering climate adaptation strategies. 
-
-Earlier analysis has found the themes to be either security related (disasters or risks etc.), 
-geographical (rangeland or coastal etc.) or sectoral (agriculture, fisheries, tourism)."
-
-# Run functions
-topics <- auto_cache(name_topics, model, context = context)
-metrics <- auto_cache(calculate_metrics, model, topics, dfm, min_group_size = 1)
-```
-```{r}  
-#| label: Extract values from dominance analysis
-#| include: FALSE
-# Extract values
-n_topics <- num(metrics[["metadata"]][["n_value"]])
-```
-
-For this analysis, I use two of the topic models outputs: The topic terms and the topic distributions. The topic terms are what the model deems to be the most frequent and exclusive terms for a topic. As these terms are stemmed, I used the `topiclabels` package [@topiclabels] to create readable labels. This made it possible to work more rapidly, as I did not have to re-analyze the topics manually every time I changed something earlier in the model, as well as removing my own biases. 
-
-The topic distributions all sum to one, and identifies the share of the overall corpus that one topic is responsible for. This topic share is also what I use to calculate the Dominance Index, where I for each category, as we established earlier, I identify all countries belonging to a specific group. 
-
-Then I use the topic shares to create an average topic distribution across all topics within that category, before I calculate the share of the top `r n_topics` topics within the category. This captures how much of each group's adaptation discourse that is within this smaller number of topics. 
-
-To make sure the number of topics, here  `r k_value` and the number of top topics `r n_topics` does not influence the values, I normalize all values, making the baseline 0, and the max score 1. A high dominance score (approaching 1.0) indicates that most of the group's adaptation discourse focuses on just `r n_topics` topics, suggesting a concentrated or potentially constrained understanding of adaptation challenges and responses. 
-
-For the high-level categories, that being income, region and geography, I calculate their values by simply averaging the values of their subcategories. That means that the income-level dominance value is the average of the dominance values of low income, lower middle income, higher middle income and high income countries. 
-
-A lower dominance score, however, indicates more distributed attention across the full range of adaptation topics, potentially reflecting greater diversity. Importantly, the dominance measure is scale-independent, making it comparable across groups like small island developing states and large regional groupings.
-
-While the Dominance Index reveals patterns of discourse concentration, establishing whether these patterns are statistically meaningful requires formal hypothesis testing. I employ structural topic modeling's `estimateEffect` function [@stm] to test whether categorical group membership significantly influences topic distributions.
-
-For each group, I test the null hypothesis that group membership has no effect on the prominence of the dominant topics. The alternative hypothesis is that group membership significantly influences these topic shares, suggesting that the categories (income level, regional context, or geographic vulnerability) systematically shape how countries write their national adaptation plans.
-
-The statistical test works by fitting regression models for each dominant topic, with group membership as the predictor variable and topic proportions as the outcome. I use binary indicators for each group (for example, SIDS vs. non-SIDS, or low-income vs. other income levels) to test specific hypotheses about discourse patterns. 
-
-I used the standard statistical significance of in the STM package [@stm] on 95%. I store the p-values as a way to analyse the relative power of the countries in each group. Lower p-values indicate stronger evidence that group membership systematically shapes discourse patterns
-
-
+This mixed methods design ultimately enables analysis of climate governance as both discourse and culture, revealing how patterns identified through computational analysis connect to the lived realities of expert practice and institutional reproduction. The combination provides analytical resources for understanding climate adaptation not just as policy output but as a cultural system that shapes how communities can respond to environmental change.
