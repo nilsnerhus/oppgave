@@ -11,29 +11,32 @@ Earlier research
 - [ ] Nexus
 - [ ] Regime
 - [ ] Climate adaptation
-- [ ] Either nexus or regime
+- [ ] Adaptation redux
 
 **Part 2: Research design**
 
 Theory
+
 - [ ] Epistemologies of the South
 - [ ] Critical future studies
 - [ ] A theory of control
 
 Methods
-- [ ] Computational discourse analysis
-- [ ] Corpus collection and preparation
-- [ ] Structural topic modeling
-- [ ] Control index
+
+- [ ] Auto-Ethnography
+- [ ] Computational Text Analysis
+- [ ] Mixed Methods
+
 
 **Part 3: Analysis**
 
 Findings
 - [ ] Topics/clusters
 - [ ] Control index for different groups
+- [ ] Patterns
 
 Dicussion
-- [ ] Control in climate adaptation plans
 - [ ] The ontology of climate adaptation
+- [ ] Climate control
 - [ ] Expert rule
-- [ ] A decolonial 
+- [ ] Decolonial adapation?

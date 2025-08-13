@@ -12,7 +12,7 @@ The chapter proceeds through three methodological discussions. First, I detail t
 
 This methodological combination serves the broader theoretical project of understanding how expert systems operate as mechanisms of epistemological control. The computational analysis reveals the homogenization that characterizes expert knowledge production, while auto-ethnographic analysis illuminates how expert cultures reproduce the assumptions and practices that generate this homogenization. Together, these approaches enable analysis of climate adaptation not just as policy framework but as exemplar of how expert authority shapes whose knowledge counts and which futures are imaginable. Climate adaptation becomes the empirical window through which broader patterns of expert control can be examined and understood.
 
-## Auto-Ethnographic Analysis
+## Auto-Ethnography
 
 > This research draws on my sustained engagement with climate governance as both participant and analyst, using auto-ethnographic methods to examine the cultural logics of climate expertise from within.
 
@@ -58,7 +58,7 @@ The temporal dimension presents another analytical challenge. While all NAPs in 
 
 Despite these limitations, computational text analysis provides the best capabilities for understanding climate governance at scale. The method enables systematic comparison across contexts that would be impossible through traditional qualitative approaches alone. When combined with critical theoretical frameworks and reflexive methodology, computational analysis can reveal patterns of convergence and exclusion that illuminate how climate governance operates as a global system of knowledge production and political control.
 
-## Mixed Methods Analysis
+## Mixed Methods
 
 > The integration of computational discourse analysis and auto-ethnographic reflection enables examination of climate governance from both systemic and experiential perspectives, revealing how institutional patterns connect to lived realities of expert culture and practice.
 
