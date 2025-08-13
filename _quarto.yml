@@ -2,10 +2,12 @@ project:
     type: book
 
 book:
-  title: "100 billion dollar COP-out"
-  subtitle: "A critical analysis of the illusions and realities of climate adaptation"
-  author: "Nils Nerhus Rørstad"
-  date: today
+  title: "Climate adaptation"
+  subtitle: "A billion dollar COP-out?"
+  author:
+    name: "Nils Nerhus Rørstad"
+    email: "202302046@post.au.dk"
+  date: "2025-09-16"
   downloads: [pdf]
   chapters:
     - index.qmd
@@ -27,7 +29,6 @@ degree: "MSc in Human Security"
 department: "Department of Culture and Society"  
 university: "Aarhus University"
 supervisor: "Assoc. Prof Michael Eilenberg"
-logo: "images/au_logo.png"
 
 execute: 
   echo: false

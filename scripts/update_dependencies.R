@@ -27,6 +27,7 @@ update_dependencies <- function(
   title <- fallback_title
   subtitle <- ""
   author <- fallback_author
+  email <- paste0(tolower(gsub("[^A-Za-z]", "", fallback_author)), "@example.com")
   
   if (file.exists(quarto_file)) {
     tryCatch({
@@ -43,7 +44,26 @@ update_dependencies <- function(
       if (!is.null(book_info)) {
         title <- book_info$title %||% fallback_title
         subtitle <- book_info$subtitle %||% ""
-        author <- book_info$author %||% fallback_author
+        
+        # Handle both author formats
+        author_info <- book_info$author %||% fallback_author
+        
+        if (is.list(author_info)) {
+          # New format: author is a list with name/email
+          author <- author_info$name %||% fallback_author
+          email <- author_info$email %||% paste0(tolower(gsub("[^A-Za-z]", "", author)), "@example.com")
+        } else {
+          # Old format: author is a string, possibly with embedded email
+          author <- author_info
+          if (grepl("@", author)) {
+            email <- gsub(".*<(.+@.+)>.*", "\\1", author)
+            # Clean author name by removing email part
+            author <- gsub("\\s*<.+@.+>\\s*", "", author)
+          } else {
+            email <- paste0(tolower(gsub("[^A-Za-z]", "", author)), "@example.com")
+          }
+        }
+        
         qlog("✓ Successfully read Quarto metadata")
       } else {
         qlog("No 'book' section found, using fallbacks")
@@ -66,13 +86,6 @@ update_dependencies <- function(
     paste0(title, ": ", subtitle)
   } else {
     title
-  }
-  
-  # Generate email
-  email <- if (grepl("@", author)) {
-    gsub(".*<(.+@.+)>.*", "\\1", author)
-  } else {
-    paste0(tolower(gsub("[^A-Za-z]", "", author)), "@example.com")
   }
   
   ## --- Snapshot and read lockfile ---------------------------------------------
