@@ -164,7 +164,7 @@ Early submissions (2015-2018) display dominance of `r early_dom` above baseline 
 
 Late submissions (2022-2025) exhibit lower but still substantial dominance at `r late_dom` above baseline through their emphasis on `r late_topics`, suggesting some diversification of adaptation discourse in recent years. The late submissions also have a much higher p-value `r late_sig`, indicating weaker group effects than the other submissions.
 
-## M
+## Main findings
 
 > The analysis reveals three patterns; `r procedural_total` of the NAPs are about planning, a universally high level of statistically significant dominance and that higher income countries might have more room for maneuvering than lower income.
 
