@@ -1,6 +1,5 @@
 project:
     type: book
-
 book:
   title: "Climate adaptation"
   subtitle: "A billion dollar COP-out?"
@@ -12,15 +11,20 @@ book:
   chapters:
     - index.qmd
     - text/intro.qmd
-    - text/context.qmd
-    - text/lit.qmd
-    - text/theory.qmd
-    - text/methods.qmd
-    - text/findings.qmd
-    - text/discussion.qmd
+    - part: Part 1 Climate adaptation
+      chapters:
+        - text/context.qmd
+        - text/lit.qmd
+    - part: Part 2 Research design
+      chapters:
+        - text/theory.qmd
+        - text/methods.qmd
+    - part: Part 3 Analysis
+      chapters:
+        - text/findings.qmd
+        - text/discussion.qmd
     - text/conclusion.qmd
 cap-location: bottom
-
 bibliography: 
   - references/references.bib
   - references/grateful-refs.bib
@@ -29,11 +33,9 @@ degree: "MSc in Human Security"
 department: "Department of Culture and Society"  
 university: "Aarhus University"
 supervisor: "Assoc. Prof Michael Eilenberg"
-
 execute: 
   echo: false
   warning: false
-
 format:
   html:
     theme: cosmo
@@ -43,5 +45,4 @@ format:
     toc: true
     number-sections: true
     number-depth: 2
-
 editor: source

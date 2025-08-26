@@ -2,24 +2,19 @@
 **Part 1: Case - Climate adaptation**
 
 Context
-- [ ] Mitigation
-- [ ] Adaptation
-- [ ] Loss and damage
-- [ ] Climate action
+- [ ] Climate change governance (three pillars and their relationships)
+- [ ] North-south relations (how the pillars impact north-south relations)
 
 Earlier research
-- [ ] Nexus
-- [ ] Regime
-- [ ] Climate adaptation
-- [ ] Adaptation redux
+- [ ] Development (institutional and critical)
+- [ ] Decolonialism (institutional, nationalization, and critical, pluriversal)
 
 **Part 2: Research design**
 
 Theory
 
-- [ ] Epistemologies of the South
+- [ ] Future studies (on anticipatory governance and critical futures)
 - [ ] Critical future studies
-- [ ] A theory of control
 
 Methods
 
@@ -34,9 +29,3 @@ Findings
 - [ ] Topics/clusters
 - [ ] Control index for different groups
 - [ ] Patterns
-
-Dicussion
-- [ ] The ontology of climate adaptation
-- [ ] Climate control
-- [ ] Expert rule
-- [ ] Decolonial adapation?
