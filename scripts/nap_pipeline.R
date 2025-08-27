@@ -52,13 +52,13 @@ source("scripts/find_variance.R")
 source("scripts/calculate_metrics.R")
 
 # Set parameters
-context <- " Follow these rules: Each label must be completely unique and do not 
-name a topic after a country or city. These are National Adaptation Plan documents 
-from the UNFCCC covering climate adaptation strategies. 
-
-Earlier analysis has found the themes to be either security related (disasters or risks etc.), 
-geographical (rangeland or coastal etc.) or sectoral (agriculture, fisheries, tourism)."
+context <- "These are National Adaptation Plan documents from the UNFCCC covering 
+climate adaptation strategies, that have been run through a topic model. Write 
+a singular word or short phrase to name the topic based on the top words and avoid
+city or country names. Make sure to give each topic a distinct name. Do not repeat yourself"
 
 # Run functions
-topics <- auto_cache(name_topics, model, context = context)
+topics <- auto_cache(name_topics, model, context = context, overwrite= TRUE)
 metrics <- auto_cache(calculate_metrics, model, topics, dfm, min_group_size = 1)
+
+knitr::kable(topics$data)

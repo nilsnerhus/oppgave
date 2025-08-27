@@ -1,67 +1,49 @@
-#' @title Topic Naming with HuggingFace Integration
-#' @description Uses the topiclabels package to generate 2-word topic names from FREX terms
-#'   via HuggingFace language models. Simple and effective approach for topic labeling.
+#' @title Topic Naming with OpenAI Integration
+#' @description Uses OpenAI GPT models to generate topic names from FREX terms
+#'   with automatic fallback to FREX-based labels.
 #'   
 #' @param model_result Result from fit_model() containing STM model and aligned metadata
 #' @param n_terms Number of FREX terms to send to LLM (default: 10)
-#' @param hf_model HuggingFace model identifier (default: "mistralai/Mixtral-8x7B-Instruct-v0.1")
+#' @param openai_model OpenAI model identifier (default: "gpt-3.5-turbo")
 #' @param max_retries Maximum number of retry attempts if model fails (default: 3)
-#' @param context Optional context string to guide topic naming (default: "climate adaptation policy")
+#' @param context Optional context string to guide topic naming
 #' @param top_countries Number of top countries to include per topic (default: 2)
 #'
 #' @return A list containing:
-#'   \item{data}{
-#'     \itemize{
-#'       \item topics_table - Data frame with topic_id, topic_name, frex_terms, 
-#'                           top_countries, topic_proportion
-#'     }
-#'   }
+#'   \item{data}{Data frame with topic_id, topic_name, frex_terms, top_countries, topic_proportion}
 #'   \item{metadata}{Processing information including model used and timing}
 #'   \item{diagnostics}{Model call details and any issues encountered}
 #'
-#' @examples
-#' \dontrun{
-#' # Standard usage (2-word labels from FREX terms)
-#' topics <- auto_cache(name_topics, model)
-#' 
-#' # With custom context
-#' topics <- name_topics(model, context = "development finance")
-#' 
-#' # Access results
-#' print(topics$data$topics_table$topic_name)
-#' }
-#'
-#' @note Requires HUGGINGFACE_TOKEN environment variable to be set.
-#'   Install topiclabels package: install.packages("topiclabels")
+#' @note Requires OPENAI_API_KEY environment variable to be set.
 name_topics <- function(
     model_result,
     n_terms = 10,
-    hf_model = "mistralai/Mixtral-8x7B-Instruct-v0.1", 
+    openai_model = "gpt-3.5-turbo", 
     max_retries = 3,
     context = NULL,
-    top_countries = 2,
-    max_length_label = 1
+    top_countries = 2
 ) {
   ## --- Setup & Initialization -------------------------------------------------
   start_time <- Sys.time()
   
   # Initialize diagnostics tracking
   diagnostics <- list(
-    model_calls = list(),
+    api_calls = list(),
     processing_issues = character(),
-    retry_attempts = 0
+    retry_attempts = 0,
+    fallback_used = FALSE
   )
   
   ## --- Input validation -------------------------------------------------------
   log_message("Validating input data and dependencies", "name_topics")
   
-  # Check for HuggingFace token
-  hf_token <- Sys.getenv("HUGGINGFACE_TOKEN")
-  if (hf_token == "") {
-    error_msg <- "HUGGINGFACE_TOKEN environment variable not set"
-    diagnostics$processing_issues <- c(diagnostics$processing_issues, error_msg)
-    log_message(error_msg, "name_topics", "ERROR")
-    stop(error_msg)
+  # Check for OpenAI API key
+  openai_key <- Sys.getenv("OPENAI_API_KEY")
+  if (openai_key == "") {
+    log_message("No OPENAI_API_KEY found - will use FREX fallback", "name_topics", "WARNING")
+    use_openai <- FALSE
+  } else {
+    use_openai <- TRUE
   }
   
   # Validate model structure
@@ -70,15 +52,7 @@ name_topics <- function(
     error_msg <- "model_result must be the output from fit_model() with model and aligned_meta components"
     diagnostics$processing_issues <- c(diagnostics$processing_issues, error_msg)
     log_message(error_msg, "name_topics", "ERROR")
-    
-    return(create_result(
-      data = list(topics_table = NULL),
-      metadata = list(
-        timestamp = Sys.time(),
-        success = FALSE
-      ),
-      diagnostics = diagnostics
-    ))
+    stop(error_msg)
   }
   
   ## --- Extract model components -----------------------------------------------
@@ -98,7 +72,7 @@ name_topics <- function(
   # Generate FREX terms using STM
   topic_labels <- stm::labelTopics(stm_model, n = n_terms)
   
-  # Extract FREX terms as list format for topiclabels
+  # Extract FREX terms as list format
   frex_terms_list <- list()
   frex_terms_strings <- character(k)
   
@@ -137,71 +111,111 @@ name_topics <- function(
   }
   
   ## --- Generate topic names ---------------------------------------------------
-  log_message("Naming topics", "name_topics")
+  log_message("Generating topic names", "name_topics")
   
-  naming_result <- NULL
-  retry_count <- 0
+  topic_names <- character(k)
   
-  while (is.null(naming_result) && retry_count < max_retries) {
-    retry_count <- retry_count + 1
-    if (retry_count > 1) {
-      log_message(paste("Retry attempt", retry_count, "of", max_retries), "name_topics")
-    }
+  if (use_openai) {
+    log_message("Using OpenAI for topic naming", "name_topics")
     
-    tryCatch({
-      naming_result <- topiclabels::label_topics(
-        terms = frex_terms_list,
-        token = hf_token,
-        model = hf_model,
-        context = context,
-        progress = FALSE,
-        max_length_label = max_length_label
-      )
+    for(i in 1:k) {
+      retry_count <- 0
+      success <- FALSE
       
-      # Store successful call information
-      diagnostics$model_calls[[retry_count]] <- list(
-        attempt = retry_count,
-        success = TRUE,
-        model = hf_model,
-        context = context,
-        topics_processed = k
-      )
-      
-      log_message("Model call successful", "name_topics")
-      
-    }, error = function(e) {
-      error_msg <- paste("Model call failed on attempt", retry_count, ":", e$message)
-      diagnostics$model_calls[[retry_count]] <- list(
-        attempt = retry_count,
-        success = FALSE,
-        error = e$message
-      )
-      log_message(error_msg, "name_topics", "WARNING")
-      
-      if (retry_count >= max_retries) {
-        stop(paste("All", max_retries, "naming attempts failed. Last error:", e$message))
+      while(!success && retry_count < max_retries) {
+        retry_count <- retry_count + 1
+        
+        # Prepare prompt
+        terms_text <- paste(head(frex_terms_list[[i]], 3), collapse = ", ")
+        prompt <- if(!is.null(context)) {
+          paste("Context:", context, "Generate exactly 1 unconcatenated word as a topic label for:", terms_text, "Response format: Word1, Word2")
+        } else {
+          paste("Generate exactly 1 unconcatenated word as a topic label for:", terms_text, "Response format: Word1 Word2")
+        }
+        
+        # Make API call
+        response <- tryCatch({
+          httr::POST(
+            url = "https://api.openai.com/v1/chat/completions",
+            httr::add_headers(
+              "Authorization" = paste("Bearer", openai_key),
+              "Content-Type" = "application/json"
+            ),
+            body = jsonlite::toJSON(list(
+              model = openai_model,
+              messages = list(list(role = "user", content = prompt)),
+              max_tokens = 10,
+              temperature = 0.1
+            ), auto_unbox = TRUE),
+            encode = "raw"
+          )
+        }, error = function(e) NULL)
+        
+        # Process response
+        if(!is.null(response) && httr::status_code(response) == 200) {
+          result <- jsonlite::fromJSON(httr::content(response, "text"))
+          
+          if("choices" %in% names(result) && nrow(result$choices) > 0) {
+            message_content <- result$choices$message$content[1]
+            # Clean the response (remove numbers, newlines, take first phrase)
+            clean_content <- gsub("^\\d+\\.\\s*", "", strsplit(message_content, "\n")[[1]][1])
+            label <- trimws(clean_content)
+            words <- strsplit(gsub("[^a-zA-Z\\s]", "", label), "\\s+")[[1]]
+            topic_names[i] <- paste(head(words[words != ""], 2), collapse = "_")
+            success <- TRUE
+            
+            # Log successful call
+            diagnostics$api_calls[[length(diagnostics$api_calls) + 1]] <- list(
+              topic = i,
+              attempt = retry_count,
+              success = TRUE,
+              label = topic_names[i]
+            )
+          }
+        }
+        
+        if(!success) {
+          Sys.sleep(2^retry_count)  # Exponential backoff
+        }
       }
       
-      # Wait before retry (exponential backoff)
-      Sys.sleep(2^retry_count)
-    })
+      # Fallback to FREX if all retries failed
+      if(!success) {
+        clean_terms <- gsub("[^a-zA-Z]", "", frex_terms_list[[i]][1:2])
+        topic_names[i] <- paste(stringr::str_to_title(clean_terms), collapse = "_")
+        diagnostics$fallback_used <- TRUE
+        
+        diagnostics$api_calls[[length(diagnostics$api_calls) + 1]] <- list(
+          topic = i,
+          success = FALSE,
+          fallback_label = topic_names[i]
+        )
+      }
+      
+      Sys.sleep(0.1)  # Rate limiting
+    }
+    
+    diagnostics$retry_attempts <- max(sapply(diagnostics$api_calls, function(x) x$attempt %||% 0))
+    
+  } else {
+    # FREX fallback for all topics
+    log_message("Using FREX terms for all topics (no OpenAI key)", "name_topics")
+    for(i in 1:k) {
+      clean_terms <- gsub("[^a-zA-Z]", "", frex_terms_list[[i]][1:2])
+      topic_names[i] <- paste(stringr::str_to_title(clean_terms), collapse = "_")
+    }
+    diagnostics$fallback_used <- TRUE
   }
   
-  diagnostics$retry_attempts <- retry_count
-  
-  ## --- Process results --------------------------------------------------------
-  log_message("Processing naming results", "name_topics")
-  
-  # Extract and clean labels
-  topic_names <- trimws(naming_result$labels)
-  
-  # Simple validation
+  ## --- Validate results -------------------------------------------------------
   invalid_labels <- which(is.na(topic_names) | topic_names == "" | nchar(topic_names) < 2)
   if (length(invalid_labels) > 0) {
-    error_msg <- paste("Generated invalid labels for topics:", paste(invalid_labels, collapse = ", "))
-    diagnostics$processing_issues <- c(diagnostics$processing_issues, error_msg)
-    log_message(error_msg, "name_topics", "ERROR")
-    stop(error_msg)
+    log_message(paste("Fixing", length(invalid_labels), "invalid labels"), "name_topics", "WARNING")
+    
+    for(idx in invalid_labels) {
+      clean_terms <- gsub("[^a-zA-Z]", "", frex_terms_list[[idx]][1:2])
+      topic_names[idx] <- paste(stringr::str_to_title(clean_terms), collapse = "_")
+    }
   }
   
   log_message(paste("Successfully generated", length(topic_names), "topic labels"), "name_topics")
@@ -227,10 +241,10 @@ name_topics <- function(
     timestamp = start_time,
     processing_time_sec = processing_time,
     k = k,
-    hf_model = hf_model,
+    openai_model = openai_model,
     n_terms = n_terms,
     context_used = context,
-    retry_attempts = retry_count,
+    openai_used = use_openai,
     success = TRUE
   )
   

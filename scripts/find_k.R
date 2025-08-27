@@ -18,7 +18,7 @@
 #' }
 find_k <- function(
     dfm,
-    k_range = c(4, 20, 2),
+    k_range = c(6, 12, 2),
     iterations = 50,
     coherence_weight = 0.50,
     exclusivity_weight = 0.50

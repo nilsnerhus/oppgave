@@ -1,19 +1,19 @@
-#' @title Test Statistical Significance of Group Effects on Topics
-#' @description Tests whether categorical groups have statistically significant effects
-#'   on specific topics using STM's estimateEffect. Clean, efficient implementation.
-#'   
-#' @param stm_model STM model object from fit_model()
-#' @param stm_meta Original metadata used for model fitting
-#' @param col_name Column name of the categorical variable to test
-#' @param col_value Specific value to test (for multi-level variables) or TRUE for binary
-#' @param top_topics Vector of topic indices to test
-#'
-#' @return List with p-value and significance indicator
+#' @title Enhanced Statistical Significance Testing with Effect Sizes
+#' @description Tests group effects on topics using STM's estimateEffect and extracts 
+#'   comprehensive statistical information including effect sizes and confidence intervals.
 find_variance <- function(stm_model, stm_meta, col_name, col_value = TRUE, top_topics) {
   
   # Quick validation and setup
   if (!col_name %in% names(stm_meta) || length(top_topics) == 0) {
-    return(list(p_value = NA_real_, significant = FALSE))
+    return(list(
+      effect_size = NA_real_,
+      std_error = NA_real_,
+      conf_lower = NA_real_,
+      conf_upper = NA_real_,
+      p_value = NA_real_, 
+      significant = FALSE,
+      r_squared = NA_real_
+    ))
   }
   
   # Create test variable efficiently
@@ -25,7 +25,15 @@ find_variance <- function(stm_model, stm_meta, col_name, col_value = TRUE, top_t
   
   # Check variation
   if (length(unique(test_var[!is.na(test_var)])) <= 1) {
-    return(list(p_value = NA_real_, significant = FALSE))
+    return(list(
+      effect_size = NA_real_,
+      std_error = NA_real_,
+      conf_lower = NA_real_,
+      conf_upper = NA_real_,
+      p_value = NA_real_, 
+      significant = FALSE,
+      r_squared = NA_real_
+    ))
   }
   
   # Run STM test with error handling
@@ -48,30 +56,75 @@ find_variance <- function(stm_model, stm_meta, col_name, col_value = TRUE, top_t
       uncertainty = "None"
     )
     
-    # Extract minimum p-value efficiently
-    p_values <- vapply(seq_along(top_topics), function(i) {
+    # Extract comprehensive statistics
+    results_list <- lapply(seq_along(top_topics), function(i) {
       if (length(stm_effects$parameters) >= i) {
         results <- stm_effects$parameters[[i]][[1]]
         coefs <- results$est
         vcov <- results$vcov
         
         if (length(coefs) >= 2 && nrow(vcov) >= 2) {
-          t_stat <- coefs[2] / sqrt(vcov[2, 2])
+          # Extract effect size and standard error
+          effect_size <- coefs[2]  # Coefficient for the group effect
+          std_error <- sqrt(vcov[2, 2])  # Standard error
+          
+          # Calculate confidence intervals (95%)
+          conf_lower <- effect_size - 1.96 * std_error
+          conf_upper <- effect_size + 1.96 * std_error
+          
+          # Calculate t-statistic and p-value
+          t_stat <- effect_size / std_error
           df <- nrow(temp_meta) - 2
-          return(2 * pt(abs(t_stat), df, lower.tail = FALSE))
+          p_value <- 2 * pt(abs(t_stat), df, lower.tail = FALSE)
+          
+          # Calculate R-squared (proportion of variance explained)
+          # This is approximate - you might want to extract this differently
+          r_squared <- if (length(results$rsquared) > 0) results$rsquared else NA_real_
+          
+          return(list(
+            effect_size = effect_size,
+            std_error = std_error,
+            conf_lower = conf_lower,
+            conf_upper = conf_upper,
+            p_value = p_value,
+            significant = p_value < 0.05,
+            r_squared = r_squared,
+            t_statistic = t_stat,
+            degrees_freedom = df
+          ))
         }
       }
-      return(NA_real_)
-    }, numeric(1))
+      return(NULL)
+    })
     
-    min_p <- min(p_values, na.rm = TRUE)
+    # Filter out NULL results and find the most significant effect
+    valid_results <- results_list[!sapply(results_list, is.null)]
     
-    return(list(
-      p_value = if(is.finite(min_p)) min_p else NA_real_,
-      significant = is.finite(min_p) && min_p < 0.05
-    ))
+    if (length(valid_results) > 0) {
+      # Return the result with the smallest p-value
+      best_result <- valid_results[[which.min(sapply(valid_results, function(x) x$p_value))]]
+      return(best_result)
+    } else {
+      return(list(
+        effect_size = NA_real_,
+        std_error = NA_real_,
+        conf_lower = NA_real_,
+        conf_upper = NA_real_,
+        p_value = NA_real_, 
+        significant = FALSE,
+        r_squared = NA_real_
+      ))
+    }
     
   }, error = function(e) {
-    return(list(p_value = NA_real_, significant = FALSE))
+    return(list(
+      effect_size = NA_real_,
+      std_error = NA_real_,
+      conf_lower = NA_real_,
+      conf_upper = NA_real_,
+      p_value = NA_real_, 
+      significant = FALSE,
+      r_squared = NA_real_
+    ))
   })
 }
