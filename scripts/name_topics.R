@@ -128,9 +128,9 @@ name_topics <- function(
         # Prepare prompt
         terms_text <- paste(head(frex_terms_list[[i]], 3), collapse = ", ")
         prompt <- if(!is.null(context)) {
-          paste("Context:", context, "Generate exactly 1 unconcatenated word as a topic label for:", terms_text, "Response format: Word1, Word2")
+          paste("Context:", context, "Pick exactly word as a topic label for:", terms_text, "Response format: Word")
         } else {
-          paste("Generate exactly 1 unconcatenated word as a topic label for:", terms_text, "Response format: Word1 Word2")
+          paste("Pick exactly 1 word as a topic label for:", terms_text, "Response format: Word1")
         }
         
         # Make API call

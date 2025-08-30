@@ -53,12 +53,12 @@ source("scripts/calculate_metrics.R")
 
 # Set parameters
 context <- "These are National Adaptation Plan documents from the UNFCCC covering 
-climate adaptation strategies, that have been run through a topic model. Write 
-a singular word or short phrase to name the topic based on the top words and avoid
-city or country names. Make sure to give each topic a distinct name. Do not repeat yourself"
+climate adaptation strategies, that have been run through a topic model. Pick the 
+most representative word as a topic name, make sure each topic is distinct"
 
 # Run functions
-topics <- auto_cache(name_topics, model, context = context, overwrite= TRUE)
+topics <- auto_cache(name_topics, model, context = context)
 metrics <- auto_cache(calculate_metrics, model, topics, dfm, min_group_size = 1)
 
 knitr::kable(topics$data)
+knitr::kable(metrics$data)
