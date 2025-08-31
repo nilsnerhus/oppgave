@@ -1,308 +1,124 @@
-#' @title Calculate Dominance Metrics with Enhanced Statistical Analysis
-#' @description Calculates dominance patterns for category groupings and tests statistical 
-#'   significance using STM's estimateEffect with full effect size extraction.
-#'   
-#' @param model Result from fit_model() containing STM model, metadata, and category_map
-#' @param topics Result from name_topics() containing topic names and metadata
-#' @param dfm Original dfm object used for fitting (contains correct metadata for significance testing)
-#' @param n Number of top topics to consider for each group (default: 3)
-#' @param min_group_size Minimum group size to include in analysis (default: 8)
-#'
-#' @return A list containing dominance metrics with comprehensive statistical analysis
-calculate_metrics <- function(model, topics, dfm, n = 3, min_group_size = 8) {
+# Calculate dominance metrics for country categories
+calculate_metrics <- function(model, topics, dfm, n = 3) {
   
-  ## --- Setup & Initialization -------------------------------------------------
   start_time <- Sys.time()
   
-  # Initialize diagnostics tracking
-  diagnostics <- list(
-    processing_issues = character(),
-    excluded_groups = list(),
-    significance_tests = list()
-  )
-  
-  ## --- Input validation & component extraction --------------------------------
-  log_message("Validating input data and extracting components", "calculate_metrics")
-  
-  # Validate model structure
-  if (!is.list(model) || !"data" %in% names(model) || 
-      !all(c("model", "topic_proportions", "aligned_meta", "category_map") %in% names(model$data))) {
-    error_msg <- "Model must contain 'data$model', 'data$topic_proportions', 'data$aligned_meta', and 'data$category_map'"
-    diagnostics$processing_issues <- c(diagnostics$processing_issues, error_msg)
-    log_message(error_msg, "calculate_metrics", "ERROR")
-    stop(error_msg)
-  }
-  
-  # Validate topics structure (now expecting direct table in data)
-  if (!is.list(topics) || !"data" %in% names(topics) || !is.data.frame(topics$data)) {
-    error_msg <- "Topics must contain 'data' as a data frame (topics table)"
-    diagnostics$processing_issues <- c(diagnostics$processing_issues, error_msg)
-    log_message(error_msg, "calculate_metrics", "ERROR")
-    stop(error_msg)
-  }
-  
-  # Validate topics table has required columns
-  required_topic_cols <- c("topic_id", "topic_name")
-  missing_topic_cols <- setdiff(required_topic_cols, names(topics$data))
-  if (length(missing_topic_cols) > 0) {
-    error_msg <- paste("Topics table missing required columns:", paste(missing_topic_cols, collapse = ", "))
-    diagnostics$processing_issues <- c(diagnostics$processing_issues, error_msg)
-    log_message(error_msg, "calculate_metrics", "ERROR")
-    stop(error_msg)
-  }
-  
-  # Validate dfm structure for significance testing
-  if (!is.list(dfm) || !"data" %in% names(dfm) || !"meta" %in% names(dfm$data)) {
-    error_msg <- "DFM must contain 'data$meta' for significance testing"
-    diagnostics$processing_issues <- c(diagnostics$processing_issues, error_msg)
-    log_message(error_msg, "calculate_metrics", "ERROR")
-    stop(error_msg)
-  }
-  
-  # Extract components
+  ## --- Extract components -----------------------------------------------------
   theta <- model$data$topic_proportions
-  meta <- model$data$aligned_meta  # For dominance calculation
-  stm_meta <- dfm$data$meta       # For significance testing (original structure)
-  stm_model <- model$data$model   # For estimateEffect
+  meta <- model$data$aligned_meta
+  stm_meta <- dfm$data$meta
+  stm_model <- model$data$model
   category_map <- model$data$category_map
-  topics_table <- topics$data     # Now directly the table, not nested
-  k <- ncol(theta)
+  topics_table <- topics$data
   
-  # Validate dimensions match
-  if (nrow(topics_table) != k) {
-    error_msg <- paste("Topics table has", nrow(topics_table), "rows but model has", k, "topics")
-    diagnostics$processing_issues <- c(diagnostics$processing_issues, error_msg)
-    log_message(error_msg, "calculate_metrics", "ERROR")
-    stop(error_msg)
-  }
+  log_message("Processing category groupings for dominance analysis", "calculate_metrics")
   
-  log_message(paste("Extracted components:", nrow(theta), "documents,", k, "topics,", 
-                    length(category_map), "categories"), "calculate_metrics")
-  
-  ## --- Initialize Enhanced Results Data Frame ---------------------------------
-  log_message("Initializing enhanced results structures", "calculate_metrics")
-  
-  # Create enhanced results data frame with new statistical columns
+  ## --- Initialize results -----------------------------------------------------
   results <- data.frame(
     category = character(), 
     subcategory = character(),
+    test_type = character(),
     documents = integer(),
     dominance = numeric(),
     top_topics = character(),
-    top_topic_ids = character(),
     effect_size = numeric(),
     std_error = numeric(),
-    conf_lower = numeric(),
-    conf_upper = numeric(),
-    p_value = numeric(),
     significant = logical(),
-    r_squared = numeric(),
     stringsAsFactors = FALSE
   )
   
-  ## --- Process Each Category --------------------------------------------------
-  log_message("Processing category groupings from category_map", "calculate_metrics")
-  
-  # Loop through each category in category_map
+  ## --- Process each category --------------------------------------------------
   for (category_name in names(category_map)) {
-    log_message(paste("Processing category:", category_name), "calculate_metrics")
+    col_name <- category_map[[category_name]]
     
-    category_columns <- category_map[[category_name]]
-    subcategory_dominance_values <- numeric()
+    if (!col_name %in% names(meta)) {
+      log_message(paste("Column", col_name, "not found in metadata"), "calculate_metrics", "WARNING")
+      next
+    }
     
-    ## --- Handle Multi-column Categories -------------------------------------
-    if (length(category_columns) > 1) {
-      log_message(paste("Multi-column category detected:", category_name), "calculate_metrics")
+    # Get unique values 
+    unique_values <- unique(meta[[col_name]])
+    unique_values <- unique_values[!is.na(unique_values)]
+    
+    # Track values for category averages
+    category_dominance <- c()
+    category_effects <- c()
+    category_docs <- c()
+    
+    ## --- Process individual subcategories -----------------------------------
+    for (value in unique_values) {
+      doc_indices <- which(meta[[col_name]] == value)
       
-      # Process each column as a separate subcategory
-      for (col_name in category_columns) {
-        if (!col_name %in% names(meta)) {
-          warning_msg <- paste("Column", col_name, "not found in metadata")
-          diagnostics$processing_issues <- c(diagnostics$processing_issues, warning_msg)
-          log_message(warning_msg, "calculate_metrics", "WARNING")
-          next
-        }
-        
-        # Find documents where this column is TRUE
-        doc_indices <- which(meta[[col_name]] == TRUE)
-        subcategory_name <- paste(tools::toTitleCase(gsub("^is_", "", col_name)))
-        
-        if (length(doc_indices) < min_group_size) {
-          excluded_msg <- paste(subcategory_name, "(n=", length(doc_indices), ")")
-          diagnostics$excluded_groups[[category_name]] <- c(diagnostics$excluded_groups[[category_name]], excluded_msg)
-          log_message(paste("Excluding", excluded_msg, "- below minimum group size"), "calculate_metrics")
-          next
-        }
-        
-        # Calculate subcategory dominance
+      if (length(doc_indices) > 0) {
+        # Calculate dominance
         dominance_result <- find_dominance(theta, doc_indices, n)
+        top_indices <- dominance_result$corpus_level$top_indices
+        top_topics <- get_topic_names(top_indices, topics_table)
         
-        if (!is.null(dominance_result)) {
-          # Get subcategory top topics
-          top_indices <- dominance_result$corpus_level$top_indices
-          top_topics <- get_topic_names(top_indices, topics_table)
-          
-          # Test statistical significance using enhanced find_variance
-          significance_result <- find_variance(
-            stm_model = stm_model,
-            stm_meta = stm_meta,
-            col_name = col_name,
-            col_value = TRUE,
-            top_topics = top_indices
-          )
-          
-          # Add subcategory results with enhanced statistics
-          results <- rbind(results, data.frame(
-            category = category_name,
-            subcategory = subcategory_name,
-            documents = length(doc_indices),
-            dominance = dominance_result$corpus_level$normalized,
-            top_topics = paste(top_topics, collapse = ", "),
-            top_topic_ids = paste(top_indices, collapse = ","),
-            effect_size = significance_result$effect_size,
-            std_error = significance_result$std_error,
-            conf_lower = significance_result$conf_lower,
-            conf_upper = significance_result$conf_upper,
-            p_value = significance_result$p_value,
-            significant = significance_result$significant,
-            r_squared = significance_result$r_squared,
-            stringsAsFactors = FALSE
-          ))
-          
-          # Store values for category average
-          subcategory_dominance_values <- c(subcategory_dominance_values, dominance_result$corpus_level$normalized)
-        }
-      }
-      
-      ## --- Handle Single-column Categories ------------------------------------
-    } else {
-      log_message(paste("Single-column category detected:", category_name), "calculate_metrics")
-      
-      col_name <- category_columns[1]
-      
-      if (!col_name %in% names(meta)) {
-        warning_msg <- paste("Column", col_name, "not found in metadata")
-        diagnostics$processing_issues <- c(diagnostics$processing_issues, warning_msg)
-        log_message(warning_msg, "calculate_metrics", "WARNING")
-        next
-      }
-      
-      # Process subcategories
-      unique_values <- unique(meta[[col_name]])
-      unique_values <- unique_values[!is.na(unique_values)]
-      
-      log_message(paste("Found", length(unique_values), "unique values for", category_name, ":", 
-                        paste(unique_values, collapse = ", ")), "calculate_metrics")
-      
-      # Process each subcategory
-      for (value in unique_values) {
-        doc_indices <- which(meta[[col_name]] == value)
+        # Test statistical significance
+        significance_result <- find_variance(
+          stm_model = stm_model,
+          stm_meta = stm_meta,
+          col_name = col_name,
+          col_value = value,
+          top_topics = top_indices
+        )
         
-        # Skip if too few documents
-        if (length(doc_indices) < min_group_size) {
-          excluded_msg <- paste(value, "(n=", length(doc_indices), ")")
-          diagnostics$excluded_groups[[category_name]] <- c(diagnostics$excluded_groups[[category_name]], excluded_msg)
-          log_message(paste("Excluding", excluded_msg, "- below minimum group size"), "calculate_metrics")
-          next
-        }
+        # Add individual result
+        results <- rbind(results, data.frame(
+          category = category_name,
+          subcategory = as.character(value),
+          test_type = "Individual",
+          documents = length(doc_indices),
+          dominance = dominance_result$corpus_level$normalized,
+          top_topics = paste(top_topics, collapse = ", "),
+          effect_size = significance_result$effect_size,
+          std_error = significance_result$std_error,
+          significant = significance_result$significant,
+          stringsAsFactors = FALSE
+        ))
         
-        # Calculate subcategory dominance
-        subcategory_dominance_result <- find_dominance(theta, doc_indices, n)
-        
-        if (!is.null(subcategory_dominance_result)) {
-          # Get subcategory top topics
-          subcategory_top_indices <- subcategory_dominance_result$corpus_level$top_indices
-          subcategory_top_topics <- get_topic_names(subcategory_top_indices, topics_table)
-          
-          # Test statistical significance using enhanced find_variance
-          significance_result <- find_variance(
-            stm_model = stm_model,
-            stm_meta = stm_meta,
-            col_name = col_name,
-            col_value = value,
-            top_topics = subcategory_top_indices
-          )
-          
-          # Add subcategory results with enhanced statistics
-          results <- rbind(results, data.frame(
-            category = category_name,
-            subcategory = as.character(value),
-            documents = length(doc_indices),
-            dominance = subcategory_dominance_result$corpus_level$normalized,
-            top_topics = paste(subcategory_top_topics, collapse = ", "),
-            top_topic_ids = paste(subcategory_top_indices, collapse = ","),
-            effect_size = significance_result$effect_size,
-            std_error = significance_result$std_error,
-            conf_lower = significance_result$conf_lower,
-            conf_upper = significance_result$conf_upper,
-            p_value = significance_result$p_value,
-            significant = significance_result$significant,
-            r_squared = significance_result$r_squared,
-            stringsAsFactors = FALSE
-          ))
-          
-          # Store values for category average
-          subcategory_dominance_values <- c(subcategory_dominance_values, subcategory_dominance_result$corpus_level$normalized)
-        }
+        # Store values for category averaging
+        category_dominance <- c(category_dominance, dominance_result$corpus_level$normalized)
+        category_effects <- c(category_effects, significance_result$effect_size)
+        category_docs <- c(category_docs, length(doc_indices))
       }
     }
     
-    ## --- Calculate Category-Level Averages ----------------------------------
-    if (length(subcategory_dominance_values) > 0) {
-      category_dominance_avg <- mean(subcategory_dominance_values)
-      
-      # Add category-level results (using averages, with NA for statistical measures)
+    ## --- Add category summary -----------------------------------------------
+    if (length(category_dominance) > 0) {
       results <- rbind(results, data.frame(
         category = category_name,
         subcategory = "Overall",
-        documents = nrow(theta),
-        dominance = category_dominance_avg,
-        top_topics = "Average of subcategories",
-        top_topic_ids = "",
-        effect_size = NA_real_,
+        test_type = "Average",
+        documents = sum(category_docs),
+        dominance = mean(category_dominance),
+        top_topics = "Average across subcategories",
+        effect_size = mean(category_effects, na.rm = TRUE),
         std_error = NA_real_,
-        conf_lower = NA_real_,
-        conf_upper = NA_real_,
-        p_value = NA_real_,
         significant = NA,
-        r_squared = NA_real_,
         stringsAsFactors = FALSE
       ))
     }
   }
   
-  ## --- Finalize Enhanced Results ----------------------------------------------
-  log_message("Finalizing enhanced results", "calculate_metrics")
+  ## --- Return result ----------------------------------------------------------
+  if (nrow(results) == 0) {
+    log_message("No results generated - check category_map", "calculate_metrics", "WARNING")
+  }
   
-  # Calculate processing time
-  end_time <- Sys.time()
-  processing_time <- as.numeric(difftime(end_time, start_time, units = "secs"))
+  log_message(paste("Completed metrics calculation:", nrow(results), "results"), "calculate_metrics")
   
-  # Create enhanced metadata
-  metadata <- list(
-    timestamp = start_time,
-    processing_time_sec = processing_time,
-    n_value = n,
-    min_group_size = min_group_size,
-    significance_tests_run = sum(!is.na(results$p_value)),
-    significant_results = sum(results$significant, na.rm = TRUE),
-    effect_sizes_calculated = sum(!is.na(results$effect_size)),
-    confidence_intervals_calculated = sum(!is.na(results$conf_lower)),
-    method = "Enhanced dominance calculation with full STM effect size analysis",
-    success = TRUE
-  )
-  
-  # Return standardized result
   return(create_result(
     data = results,
-    metadata = metadata,
-    diagnostics = diagnostics
+    metadata = list(
+      processing_time_sec = as.numeric(difftime(Sys.time(), start_time, units = "secs")),
+      n_value = n
+    )
   ))
 }
 
-## --- Helper Functions (unchanged) -------------------------------------------
-
-#' Get topic names from topic IDs
+## --- Helper function --------------------------------------------------------
 get_topic_names <- function(topic_ids, topics_table) {
   sapply(topic_ids, function(idx) {
     topic_row <- which(topics_table$topic_id == idx)

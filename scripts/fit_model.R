@@ -1,33 +1,31 @@
-
-fit_model <- function(dfm, k_result, category_map = NULL, iterations = 200, seed = 12345) {  # Changed: k_result instead of k
+# Fit STM model with proper segmentation handling
+fit_model <- function(dfm, k_result, category_map = NULL, iterations = 200, seed = 12345) {
   
-  start_time <- Sys.time()
   set.seed(seed)
+  start_time <- Sys.time()
   
   # Extract k from k_result
-  k <- k_result$data$best_k  # Added: extract k internally
+  k <- k_result$data$best_k
   
-  ## --- Validation & Setup -----------------------------------------------------
-  if (!is.numeric(k) || k <= 0 || k != round(k)) {
-    warning("Invalid k value from k_result, using default k = 15")
-    k <- 15
-  }
-  
-  log_message(paste("Using k =", k, "from find_k result"), "fit_model")
-  if (!is.numeric(k) || k <= 0 || k != round(k)) k <- 15
-  if (!all(c("documents", "vocab", "meta") %in% names(dfm$data))) {
-    stop("dfm must be from process_dfm() with documents, vocab, and meta")
-  }
-  
+  ## --- Extract data -----------------------------------------------------------
   docs <- dfm$data$documents
   vocab <- dfm$data$vocab
-  meta <- dfm$data$meta
+  meta <- dfm$data$meta  # This is the segmented metadata (222 rows)
   
-  log_message(paste("Fitting STM: k =", k, ",", length(docs), "documents,", 
-                    length(vocab), "terms"), "fit_model")
+  log_message(paste("Fitting STM: k =", k, ",", length(docs), "documents"), "fit_model")
   
-  ## --- Build prevalence formula -----------------------------------------------
-  prevalence_formula <- build_prevalence_formula(category_map, meta)
+  ## --- Build prevalence formula (using segmented metadata) -------------------
+  prevalence_formula <- NULL
+  if (!is.null(category_map)) {
+    vars <- unlist(category_map)
+    # Only keep variables that exist AND have variation in the segmented metadata
+    vars <- vars[sapply(vars, function(v) v %in% names(meta) && length(unique(meta[[v]])) > 1)]
+    
+    if (length(vars) > 0) {
+      prevalence_formula <- as.formula(paste("~", paste(vars, collapse = " + ")))
+      log_message(paste("Prevalence formula:", deparse(prevalence_formula)), "fit_model")
+    }
+  }
   
   ## --- Fit STM model ----------------------------------------------------------
   model_result <- tryCatch({
@@ -35,7 +33,7 @@ fit_model <- function(dfm, k_result, category_map = NULL, iterations = 200, seed
       documents = docs,
       vocab = vocab, 
       K = k,
-      data = meta,
+      data = meta,  # Same metadata as used for prevalence formula
       prevalence = prevalence_formula,
       max.em.its = iterations,
       verbose = FALSE
@@ -44,107 +42,70 @@ fit_model <- function(dfm, k_result, category_map = NULL, iterations = 200, seed
     stop("STM fitting failed: ", e$message)
   })
   
-  ## --- Handle segmentation (if used) ------------------------------------------
-  segmentation_info <- dfm$metadata$segmentation
-  used_segmentation <- !is.null(segmentation_info) && segmentation_info$used_segmentation
+  ## --- Handle segmentation aggregation ----------------------------------------
+  final_theta <- model_result$theta
+  final_meta <- meta
   
-  if (used_segmentation) {
-    log_message("Aggregating segments to documents", "fit_model")
+  # If segmentation was used, aggregate back to documents
+  if (!is.null(dfm$metadata$segmentation) && dfm$metadata$segmentation$used_segmentation) {
+    log_message("Aggregating segments back to documents", "fit_model")
     
-    final_theta <- aggregate_by_document(
-      theta = model_result$theta,
-      doc_ids = meta$doc_id,
-      segment_map = segmentation_info$segment_to_doc_map
-    )
+    # Group segments by doc_id and average topic proportions
+    unique_doc_ids <- unique(meta$doc_id)
+    k_topics <- ncol(final_theta)
     
-    # Create document-level metadata
-    final_meta <- get_document_metadata(meta, segmentation_info$segment_to_doc_map)
+    # Create document-level theta matrix
+    doc_theta <- matrix(0, nrow = length(unique_doc_ids), ncol = k_topics)
+    for (i in seq_along(unique_doc_ids)) {
+      doc_segments <- which(meta$doc_id == unique_doc_ids[i])
+      if (length(doc_segments) == 1) {
+        doc_theta[i, ] <- final_theta[doc_segments, ]
+      } else {
+        doc_theta[i, ] <- colMeans(final_theta[doc_segments, , drop = FALSE])
+      }
+    }
     
-    log_message(paste("Aggregated", nrow(model_result$theta), "segments to", 
-                      nrow(final_theta), "documents"), "fit_model")
-  } else {
-    final_theta <- model_result$theta
-    final_meta <- meta
+    # Create document-level metadata (first occurrence of each doc_id)
+    doc_meta <- meta[match(unique_doc_ids, meta$doc_id), ]
+    
+    final_theta <- doc_theta
+    final_meta <- doc_meta
+    
+    log_message(paste("Aggregated", nrow(model_result$theta), "segments to", nrow(final_theta), "documents"), "fit_model")
   }
+  
+  ## --- Display FREX terms -----------------------------------------------------
+  log_message("Extracting FREX terms for manual naming", "fit_model")
+  
+  topic_labels <- stm::labelTopics(model_result, n = 10)
+  frex_terms <- list()
+  
+  cat("\n=== FREX TERMS FOR MANUAL NAMING ===\n")
+  for (i in 1:k) {
+    terms <- topic_labels$frex[i, 1:5]
+    cat("Topic", i, ":", paste(terms, collapse = ", "), "\n")
+    frex_terms[[i]] <- topic_labels$frex[i, ]
+  }
+  cat("=========================================\n")
+  cat("Create: topics_table <- c(\"name1\", \"name2\", ...)\n\n")
   
   ## --- Return result ----------------------------------------------------------
   log_message(paste("Model complete:", k, "topics,", 
-                    ifelse(model_result$convergence$converged, "converged", "not converged")), 
-              "fit_model")
+                    ifelse(model_result$convergence$converged, "converged", "not converged")), "fit_model")
   
   return(create_result(
     data = list(
       model = model_result,
       topic_proportions = final_theta,
       aligned_meta = final_meta,
-      category_map = category_map
+      category_map = category_map,
+      frex_terms = frex_terms
     ),
     metadata = list(
-      timestamp = start_time,
-      processing_time_sec = as.numeric(difftime(Sys.time(), start_time, units = "secs")),
       k = k,
-      iterations_run = model_result$convergence$its,
       converged = model_result$convergence$converged,
-      segmentation_used = used_segmentation,
-      success = TRUE
-    ),
-    diagnostics = list()
+      processing_time_sec = as.numeric(difftime(Sys.time(), start_time, units = "secs")),
+      segmentation_used = !is.null(dfm$metadata$segmentation) && dfm$metadata$segmentation$used_segmentation
+    )
   ))
-}
-
-## --- Helper functions -------------------------------------------------------
-
-#' Build prevalence formula from category map
-build_prevalence_formula <- function(category_map, meta) {
-  if (is.null(category_map)) return(NULL)
-  
-  # Get all variables and filter to those with variation
-  all_vars <- unlist(category_map, use.names = FALSE)
-  varying_vars <- all_vars[sapply(all_vars, function(var) {
-    var %in% names(meta) && length(unique(meta[[var]])) > 1
-  })]
-  
-  if (length(varying_vars) == 0) return(NULL)
-  
-  formula_string <- paste("~", paste(varying_vars, collapse = " + "))
-  log_message(paste("Prevalence formula:", formula_string), "fit_model")
-  as.formula(formula_string)
-}
-
-#' Aggregate segment-level theta to document level  
-aggregate_by_document <- function(theta, doc_ids, segment_map) {
-  
-  # Get unique documents in order they appear
-  unique_docs <- unique(doc_ids)
-  k <- ncol(theta)
-  
-  # Pre-allocate result matrix
-  doc_theta <- matrix(0, nrow = length(unique_docs), ncol = k,
-                      dimnames = list(unique_docs, colnames(theta)))
-  
-  # Vectorized aggregation using split-apply-combine
-  theta_by_doc <- split.data.frame(theta, doc_ids)
-  
-  for (i in seq_along(unique_docs)) {
-    doc_id <- unique_docs[i]
-    doc_segments <- theta_by_doc[[doc_id]]
-    
-    if (nrow(doc_segments) == 1) {
-      doc_theta[i, ] <- as.numeric(doc_segments)
-    } else {
-      doc_theta[i, ] <- colMeans(doc_segments)
-    }
-  }
-  
-  return(doc_theta)
-}
-
-#' Extract document-level metadata from segments
-get_document_metadata <- function(segment_meta, segment_map) {
-  
-  # Get first occurrence of each document
-  unique_docs <- unique(segment_meta$doc_id)
-  first_occurrences <- match(unique_docs, segment_meta$doc_id)
-  
-  segment_meta[first_occurrences, ]
 }

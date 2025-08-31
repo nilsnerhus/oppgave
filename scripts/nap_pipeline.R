@@ -19,21 +19,21 @@ source("scripts/process_dfm.R")
 ## Set parameters
 category_map <- list(
   Global = "global_category",    
-  Income = "wb_income_level", 
+  Income = "income_level", 
   Region = "region", 
-  Geography = c("is_sids", "is_lldc"),
+  Geography = "geography",
   Time = "time_period"
 )
-time_groups <- c("Early" = 2018, "Middle" = 2021, "Late" = Inf)
+time_groups <- c("Early" = 2016, "Middle" = 2021, "Late" = Inf)
 
 ## Run functions
 web <- web_cache(scrape_web)
 docs <- auto_cache(extract_pdfs, web)
 
 un_classifications <- auto_cache(get_un_classifications)
-metadata <- auto_cache(add_metadata, web, un_classifications, time = time_groups)
+metadata <- auto_cache(add_metadata, web, un_classifications, time_groups, overwrite = TRUE)
 
-dfm <- auto_cache(process_dfm, docs, metadata, min_docs = 0.1, max_docs = 0.8)
+dfm <- auto_cache(process_dfm, docs, metadata)
 
 # Step 2: Structural topic modeling
 ## Load scripts
@@ -41,8 +41,8 @@ source("scripts/find_k.R")
 source("scripts/fit_model.R")
 
 # Run functions
-k <- auto_cache(find_k, dfm)
-model <- auto_cache(fit_model, dfm, k, category_map = category_map)
+k <- auto_cache(find_k, dfm, overwrite = TRUE)
+model <- auto_cache(fit_model, dfm, k, category_map)
 
 # Step 3: Analysis
 ## Load scripts
@@ -51,14 +51,19 @@ source("scripts/find_dominance.R")
 source("scripts/find_variance.R")
 source("scripts/calculate_metrics.R")
 
-# Set parameters
-context <- "These are National Adaptation Plan documents from the UNFCCC covering 
-climate adaptation strategies, that have been run through a topic model. Pick the 
-most representative word as a topic name, make sure each topic is distinct"
-
 # Run functions
-topics <- auto_cache(name_topics, model, context = context)
-metrics <- auto_cache(calculate_metrics, model, topics, dfm, min_group_size = 1)
+topic_names <- c("poverty", 
+                 "sea_rise", 
+                 "mountain", 
+                 "costal", 
+                 "office", 
+                 "transit", 
+                 "rainfall", 
+                 "mainstream"
+                 )
+metrics <- auto_cache(calculate_metrics, model, topics, dfm, overwrite = TRUE)
+topics <- auto_cache(name_topics, model, topic_names, overwrite = TRUE)
 
 knitr::kable(topics$data)
 knitr::kable(metrics$data)
+
