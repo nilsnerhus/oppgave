@@ -18,7 +18,7 @@ name_topics <- function(model, topic_names_vector) {
   topic_proportions <- colMeans(theta)
   
   # Calculate effective document count (meaningful presence threshold)
-  meaningful_threshold <- 0.05  # 5% threshold
+  meaningful_threshold <- 0.07  # 5% threshold
   effective_doc_counts <- numeric(k)
   
   for (i in 1:k) {
@@ -53,10 +53,10 @@ name_topics <- function(model, topic_names_vector) {
   topics_table <- data.frame(
     topic_id = 1:k,
     topic_name = topic_names_vector,
-    topic_proportion = topic_proportions,
     frex_terms = frex_terms_strings,
     top_countries = top_countries_per_topic,
-    effective_documents = effective_doc_counts,  # NEW: Document spread
+    topic_proportion = topic_proportions,
+    effective_documents = effective_doc_counts,
     stringsAsFactors = FALSE
   )
   

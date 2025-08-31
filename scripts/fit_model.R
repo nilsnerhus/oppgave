@@ -1,31 +1,29 @@
-# Fit STM model with proper segmentation handling
-fit_model <- function(dfm, k_result, category_map = NULL, iterations = 200, seed = 12345) {
+fit_model <- function(dfm, k, category_map = NULL, iterations = 200, seed = 12345) {  
   
-  set.seed(seed)
   start_time <- Sys.time()
+  set.seed(seed)
   
-  # Extract k from k_result
-  k <- k_result$data$best_k
+  ## --- Validation & Setup -----------------------------------------------------
+  if (!is.numeric(k) || k <= 0 || k != round(k)) {
+    warning("Invalid k value, using default k = 8")
+    k <- 8
+  }
   
-  ## --- Extract data -----------------------------------------------------------
+  log_message(paste("Fitting STM with k =", k), "fit_model")
+  
+  if (!all(c("documents", "vocab", "meta") %in% names(dfm$data))) {
+    stop("dfm must be from process_dfm() with documents, vocab, and meta")
+  }
+  
   docs <- dfm$data$documents
   vocab <- dfm$data$vocab
-  meta <- dfm$data$meta  # This is the segmented metadata (222 rows)
+  meta <- dfm$data$meta
   
-  log_message(paste("Fitting STM: k =", k, ",", length(docs), "documents"), "fit_model")
+  log_message(paste("Fitting STM: k =", k, ",", length(docs), "documents,", 
+                    length(vocab), "terms"), "fit_model")
   
-  ## --- Build prevalence formula (using segmented metadata) -------------------
-  prevalence_formula <- NULL
-  if (!is.null(category_map)) {
-    vars <- unlist(category_map)
-    # Only keep variables that exist AND have variation in the segmented metadata
-    vars <- vars[sapply(vars, function(v) v %in% names(meta) && length(unique(meta[[v]])) > 1)]
-    
-    if (length(vars) > 0) {
-      prevalence_formula <- as.formula(paste("~", paste(vars, collapse = " + ")))
-      log_message(paste("Prevalence formula:", deparse(prevalence_formula)), "fit_model")
-    }
-  }
+  ## --- Build prevalence formula -----------------------------------------------
+  prevalence_formula <- build_prevalence_formula(category_map, meta)
   
   ## --- Fit STM model ----------------------------------------------------------
   model_result <- tryCatch({
@@ -33,7 +31,7 @@ fit_model <- function(dfm, k_result, category_map = NULL, iterations = 200, seed
       documents = docs,
       vocab = vocab, 
       K = k,
-      data = meta,  # Same metadata as used for prevalence formula
+      data = meta,
       prevalence = prevalence_formula,
       max.em.its = iterations,
       verbose = FALSE
@@ -42,36 +40,27 @@ fit_model <- function(dfm, k_result, category_map = NULL, iterations = 200, seed
     stop("STM fitting failed: ", e$message)
   })
   
-  ## --- Handle segmentation aggregation ----------------------------------------
-  final_theta <- model_result$theta
-  final_meta <- meta
+  ## --- Handle segmentation (if used) ------------------------------------------
+  segmentation_info <- dfm$metadata$segmentation
+  used_segmentation <- !is.null(segmentation_info) && segmentation_info$used_segmentation
   
-  # If segmentation was used, aggregate back to documents
-  if (!is.null(dfm$metadata$segmentation) && dfm$metadata$segmentation$used_segmentation) {
-    log_message("Aggregating segments back to documents", "fit_model")
+  if (used_segmentation) {
+    log_message("Aggregating segments to documents", "fit_model")
     
-    # Group segments by doc_id and average topic proportions
-    unique_doc_ids <- unique(meta$doc_id)
-    k_topics <- ncol(final_theta)
+    final_theta <- aggregate_by_document(
+      theta = model_result$theta,
+      doc_ids = meta$doc_id,
+      segment_map = segmentation_info$segment_to_doc_map
+    )
     
-    # Create document-level theta matrix
-    doc_theta <- matrix(0, nrow = length(unique_doc_ids), ncol = k_topics)
-    for (i in seq_along(unique_doc_ids)) {
-      doc_segments <- which(meta$doc_id == unique_doc_ids[i])
-      if (length(doc_segments) == 1) {
-        doc_theta[i, ] <- final_theta[doc_segments, ]
-      } else {
-        doc_theta[i, ] <- colMeans(final_theta[doc_segments, , drop = FALSE])
-      }
-    }
+    # Create document-level metadata
+    final_meta <- get_document_metadata(meta, segmentation_info$segment_to_doc_map)
     
-    # Create document-level metadata (first occurrence of each doc_id)
-    doc_meta <- meta[match(unique_doc_ids, meta$doc_id), ]
-    
-    final_theta <- doc_theta
-    final_meta <- doc_meta
-    
-    log_message(paste("Aggregated", nrow(model_result$theta), "segments to", nrow(final_theta), "documents"), "fit_model")
+    log_message(paste("Aggregated", nrow(model_result$theta), "segments to", 
+                      nrow(final_theta), "documents"), "fit_model")
+  } else {
+    final_theta <- model_result$theta
+    final_meta <- meta
   }
   
   ## --- Display FREX terms -----------------------------------------------------
@@ -91,21 +80,25 @@ fit_model <- function(dfm, k_result, category_map = NULL, iterations = 200, seed
   
   ## --- Return result ----------------------------------------------------------
   log_message(paste("Model complete:", k, "topics,", 
-                    ifelse(model_result$convergence$converged, "converged", "not converged")), "fit_model")
+                    ifelse(model_result$convergence$converged, "converged", "not converged")), 
+              "fit_model")
   
   return(create_result(
     data = list(
       model = model_result,
       topic_proportions = final_theta,
       aligned_meta = final_meta,
-      category_map = category_map,
-      frex_terms = frex_terms
+      category_map = category_map
     ),
     metadata = list(
-      k = k,
-      converged = model_result$convergence$converged,
+      timestamp = start_time,
       processing_time_sec = as.numeric(difftime(Sys.time(), start_time, units = "secs")),
-      segmentation_used = !is.null(dfm$metadata$segmentation) && dfm$metadata$segmentation$used_segmentation
-    )
+      k = k,
+      iterations_run = model_result$convergence$its,
+      converged = model_result$convergence$converged,
+      segmentation_used = used_segmentation,
+      success = TRUE
+    ),
+    diagnostics = list()
   ))
 }

@@ -24,25 +24,23 @@ category_map <- list(
   Geography = "geography",
   Time = "time_period"
 )
-time_groups <- c("Early" = 2016, "Middle" = 2021, "Late" = Inf)
+time_groups <- c("Early" = 2018, "Middle" = 2021, "Late" = Inf)
 
 ## Run functions
 web <- web_cache(scrape_web)
 docs <- auto_cache(extract_pdfs, web)
 
 un_classifications <- auto_cache(get_un_classifications)
-metadata <- auto_cache(add_metadata, web, un_classifications, time_groups, overwrite = TRUE)
+metadata <- auto_cache(add_metadata, web, un_classifications, time_groups)
 
 dfm <- auto_cache(process_dfm, docs, metadata)
 
 # Step 2: Structural topic modeling
 ## Load scripts
-source("scripts/find_k.R")
 source("scripts/fit_model.R")
 
 # Run functions
-k <- auto_cache(find_k, dfm, overwrite = TRUE)
-model <- auto_cache(fit_model, dfm, k, category_map)
+model <- auto_cache(fit_model, dfm, k = 8, category_map)
 
 # Step 3: Analysis
 ## Load scripts
@@ -52,18 +50,14 @@ source("scripts/find_variance.R")
 source("scripts/calculate_metrics.R")
 
 # Run functions
-topic_names <- c("poverty", 
-                 "sea_rise", 
+topic_names <- c("napa", 
+                 "cyclone", 
                  "mountain", 
-                 "costal", 
+                 "island", 
                  "office", 
-                 "transit", 
-                 "rainfall", 
+                 "transit",
+                 "rcp",
                  "mainstream"
                  )
-metrics <- auto_cache(calculate_metrics, model, topics, dfm, overwrite = TRUE)
 topics <- auto_cache(name_topics, model, topic_names, overwrite = TRUE)
-
-knitr::kable(topics$data)
-knitr::kable(metrics$data)
-
+metrics <- auto_cache(calculate_metrics, model, topics, dfm, overwrite = TRUE)

@@ -72,11 +72,7 @@ add_metadata <- function(web_data, un_classifications, time = NULL) {
   result$geography[is.na(result$geography)] <- "Other"
   
   ## --- Clean up and finalize -----------------------------------------------
-  result <- dplyr::rename(result, 
-                          country_iso3c = iso3c,
-                          wb_income_level = income_level) %>%
-    dplyr::select(-country, -date_posted)
-  
+  result <- dplyr::select(result, -country, -date_posted)
   result$global_category <- "Global"
   
   log_message(paste("Processed", nrow(result), "records"), "add_metadata")

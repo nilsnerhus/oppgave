@@ -1,5 +1,5 @@
 # Calculate dominance metrics for country categories
-calculate_metrics <- function(model, topics, dfm, n = 3) {
+calculate_metrics <- function(model, topics, dfm, n = 3, min_group_size = 2) {
   
   start_time <- Sys.time()
   
@@ -17,13 +17,12 @@ calculate_metrics <- function(model, topics, dfm, n = 3) {
   results <- data.frame(
     category = character(), 
     subcategory = character(),
-    test_type = character(),
     documents = integer(),
-    dominance = numeric(),
     top_topics = character(),
+    dominance = numeric(),
+    significant = logical(),
     effect_size = numeric(),
     std_error = numeric(),
-    significant = logical(),
     stringsAsFactors = FALSE
   )
   
@@ -49,39 +48,50 @@ calculate_metrics <- function(model, topics, dfm, n = 3) {
     for (value in unique_values) {
       doc_indices <- which(meta[[col_name]] == value)
       
+      # Skip groups with too few documents
+      if (length(doc_indices) < min_group_size) {
+        log_message(paste("Skipping", category_name, "->", value, "(only", length(doc_indices), "documents, minimum:", min_group_size, ")"), "calculate_metrics")
+        next
+      }
+      
       if (length(doc_indices) > 0) {
         # Calculate dominance
         dominance_result <- find_dominance(theta, doc_indices, n)
-        top_indices <- dominance_result$corpus_level$top_indices
-        top_topics <- get_topic_names(top_indices, topics_table)
         
-        # Test statistical significance
-        significance_result <- find_variance(
-          stm_model = stm_model,
-          stm_meta = stm_meta,
-          col_name = col_name,
-          col_value = value,
-          top_topics = top_indices
-        )
-        
-        # Add individual result
-        results <- rbind(results, data.frame(
-          category = category_name,
-          subcategory = as.character(value),
-          test_type = "Individual",
-          documents = length(doc_indices),
-          dominance = dominance_result$corpus_level$normalized,
-          top_topics = paste(top_topics, collapse = ", "),
-          effect_size = significance_result$effect_size,
-          std_error = significance_result$std_error,
-          significant = significance_result$significant,
-          stringsAsFactors = FALSE
-        ))
-        
-        # Store values for category averaging
-        category_dominance <- c(category_dominance, dominance_result$corpus_level$normalized)
-        category_effects <- c(category_effects, significance_result$effect_size)
-        category_docs <- c(category_docs, length(doc_indices))
+        if (!is.null(dominance_result)) {
+          top_indices <- dominance_result$corpus_level$top_indices
+          top_topics <- get_topic_names(top_indices, topics_table)
+          
+          # Handle empty top_topics gracefully
+          top_topics_text <- if(length(top_topics) > 0) paste(top_topics, collapse = ", ") else "No topics"
+          
+          # Test statistical significance
+          significance_result <- find_variance(
+            stm_model = stm_model,
+            stm_meta = stm_meta,
+            col_name = col_name,
+            col_value = value,
+            top_topics = top_indices
+          )
+          
+          # Add individual result
+          results <- rbind(results, data.frame(
+            category = category_name,
+            subcategory = as.character(value),
+            documents = length(doc_indices),
+            top_topics = top_topics_text,
+            dominance = dominance_result$corpus_level$normalized,
+            significant = if(!is.null(significance_result$significant)) as.logical(unname(significance_result$significant)) else FALSE,
+            effect_size = if(!is.null(significance_result$effect_size)) as.numeric(unname(significance_result$effect_size)) else NA_real_,
+            std_error = if(!is.null(significance_result$std_error)) as.numeric(unname(significance_result$std_error)) else NA_real_,
+            stringsAsFactors = FALSE
+          ))
+          
+          # Store values for category averaging
+          category_dominance <- c(category_dominance, dominance_result$corpus_level$normalized)
+          category_effects <- c(category_effects, if(!is.null(significance_result$effect_size)) significance_result$effect_size else NA_real_)
+          category_docs <- c(category_docs, length(doc_indices))
+        }
       }
     }
     
@@ -90,13 +100,12 @@ calculate_metrics <- function(model, topics, dfm, n = 3) {
       results <- rbind(results, data.frame(
         category = category_name,
         subcategory = "Overall",
-        test_type = "Average",
         documents = sum(category_docs),
-        dominance = mean(category_dominance),
         top_topics = "Average across subcategories",
+        dominance = mean(category_dominance),
+        significant = NA,
         effect_size = mean(category_effects, na.rm = TRUE),
         std_error = NA_real_,
-        significant = NA,
         stringsAsFactors = FALSE
       ))
     }
@@ -113,7 +122,8 @@ calculate_metrics <- function(model, topics, dfm, n = 3) {
     data = results,
     metadata = list(
       processing_time_sec = as.numeric(difftime(Sys.time(), start_time, units = "secs")),
-      n_value = n
+      n_value = n,
+      min_group_size = min_group_size
     )
   ))
 }
