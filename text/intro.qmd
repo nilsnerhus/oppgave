@@ -1,26 +1,34 @@
 # Introduction {#sec-intro}
 
-Climate adaptation has become the new unifing story in North-South relations, yet the stories that drive it are strikingly diverse. In corporate boardrooms, executives declare "we need climate action to stay competitive in world markets." Conservation organizations insist "we need climate action to save biodiversity." Development professionals state "I need people to buy carbon credits so I can put food on the table."
+Climate change has become a central part of North-South relations. Even after the American withdrawal from all foreign aid, climate finance has reached its goals [@cpi]. While there has been a lot of written on the need for climate finance [citations], the state of it [cpi-citations] and what it ought to include, the scholarship on what it *is* on the global level, is less developed.
 
-These narratives, economic, ecological, existential, seem to demand fundamentally different responses. A corporation's competitiveness strategy should look nothing like a biodiversity protection plan, which in turn should differ from a smallholder's survival strategy. Yet when we examine how climate adaptation actually unfolds through formal planning processes, a puzzling pattern emerges.
+Climate adaptation is one of the three pillars of the UNFCCC, and the one most closely related to development aid. Here, institutional approaches dominate, with central actors being the World Bank (WB) and the International Monetary Fund (IMF) coordinating a lot of multilateral aid. 
 
-Countries facing radically different climate futures—small island states confronting rising seas, landlocked nations battling desertification, mountain kingdoms losing glaciers—produce remarkably similar adaptation plans. Their National Adaptation Plans, submitted to the United Nations Framework Convention on Climate Change (UNFCCC), converge on the same topics. The diversity of climate impacts meets the homogeneity of climate responses.
+The changing climate impacts ecosystems, and it is through this disruption that climate damages could manifest themselves. These ecosystem services are ubiquitous, and the impact should they disappear is uncertain and full of risk. What is certain, is that the risk of large scale human suffering, is large [@citations]. 
 
-This convergence cannot be explained by shared environmental challenges, as the challenges themselves are profoundly different. Instead, the pattern points to something more systematic: the operation of what development anthropologists call the adaptation regime, a transnational space where consultants, frameworks, and expertise circulate, creating standardized approaches to technical problems [@paprocki2018]. The same consulting firms work across multiple countries. The same templates structure different plans. The same indicators measure disparate realities [@mosse2011].
+The large and unknown scale of these ecosystem risks makes climate adaptation something that could be present in any field, and at any scale [citation]. While they naturally impact the ecology, this can have follow on effects on the economy, on government, on health and virtually all other sector of life [@citation]. This unknown future has to be managed in some way, and the current approach by WB and IMF, is to have the countries draw up NAPs where they draw up the next 30 to 50 years of policy.
 
-## The Hundred Billion Dollar COP-Out
+These plans are a prerequisite for receiving climate adaptation funds from multilateral money pots such as [idk, adaptation fund?]. Because of their scope, the plans cut across all sectors and deep into the future, they are policy documents that hold a lot of power. Understanding their content is thus central to understanding how the vulnerabilities and human suffering is going to be avoided. 
 
-The title of this thesis captures this puzzle in its double meaning. Climate adaptation represents both a literal "Conference of Parties outcome"—the institutional response to demands for climate justice through the $100 billion promised at Copenhagen (2009) and the $300 billion pledged at COP29 (2024). But it also constitutes a "cop-out" in the colloquial sense: an evasion of responsibility. While Southern countries reshape their societies through adaptation planning, Northern countries continue the emissions that drive climate change. While consultants design resilience projects in vulnerable communities, the systems producing this vulnerability continue unabated. As we all know, vulnerability does not fall from the sky [@ribot2013].
+The main research question is thus: **What is climate adaptation? Who decides?** To probe this further, I pose the three following sub-questions:
+- What are the NAPs about? 
+- Where do the plans come from? Who's plan is it?
+- Is this justice? 
+
+To get closer to these questions, I deploy a Structural Topic Model (STM) with the help of the `stm` package [@stm] in the programming language `R` [@base]. By analyzing all `r nap_text` English language plans, the model found `r topic_count` main topics that the plans spun around. The topic were then named, and their distribution across the UN classifications, regional, geographical, and income, as well as the time of the plans publication and estimated effects were tested. 
+
+This was then analyzed through a broad conceptual framework based on the institutional- and critical approaches from development-, decolonial-, future- and climate adaptation studies. 
+## Hundred Billion Dollar COP-Out(come)
+
+The title of the thesis attempt to capture the findings. Climate adaptation is either the literal outcome of the Conference of the Parties (COP) to the UNFCCC, the annual meeting often called the Climate Summits. Here, hundreds of billions of dollars are pledged to help developing countries, those hardest hit by climate change to adapt and overcome the challenges climate change presents them. The sum is growing, $100 billion promised at COPXX Copenhagen (2009) and the $300 billion pledged at COP29 (2024).
+
+In this institutional view, the three pillars of the UNFCCC, mitigation, adaptation, and loss and damage, is a framework where the most cost effective distribution of funds could be found, where expensive mitigation could be remedied by cheaper adaptation. To some, th
+
+The title of this thesis captures this puzzle in its double meaning. Climate adaptation represents both a literal "Conference of Parties outcome"—the institutional response to demands for climate justice through the  But it also constitutes a "cop-out" in the colloquial sense: an evasion of responsibility. While Southern countries reshape their societies through adaptation planning, Northern countries continue the emissions that drive climate change. While consultants design resilience projects in vulnerable communities, the systems producing this vulnerability continue unabated. As we all know, vulnerability does not fall from the sky [@ribot2013].
 
 This represents what the concept of "vulnerability" now plays in global relations—a role remarkably similar to "underdevelopment" in the twentieth century. Where once countries were diagnosed as underdeveloped and required development, they are now assessed as vulnerable and need adaptation. Where development economists calculated GDP gaps, climate scientists now model exposure indices. Where structural adjustment programs promised to fix economic deficiencies, adaptation projects now promise to address climatic ones. The vocabulary has changed, but the underlying structure persists. 
 
 ## Research Questions and Approach
-
-To investigate this adaptation apparatus, I pose three research questions that probe different dimensions of the adaptation regime:
-
-- How does climate adaptation planning conceptualize justice, and what possibilities does this enable or foreclose?
-- Through what mechanisms and whose knowledge do adaptation interventions become legitimate and necessary?
-- Does the current adaptation regime advance climate justice or reproduce colonial relations under new vocabularies? 
 
 To answer these questions, I employ an approach that makes patterns typically hidden in the sheer volume of policy documents visible. Using computational text analysis, specifically structural topic modeling [@stm], I identify thematic patterns that structure adaptation discourse across all National Adaptation Plans submitted to the UNFCCC. This approach accounts for both the specific national details, sorting out all words that occur in less that 10% of the corpus and the general boilerplate words that occur in more than 80%.
 

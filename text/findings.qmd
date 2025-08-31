@@ -1,15 +1,18 @@
 # Findings {#sec-findings}
 
-```{r setup, include=FALSE}
-knitr::opts_knit$set(root.dir = "..")
+```{r load data, include=FALSE}
 `%>%` <- magrittr::`%>%`
+
+variables <- readRDS("../data/load_variables.rds")
+vars <- variables$data
+list2env(vars, envir = .GlobalEnv)
 ```
 
 > My analysis of the National Adaptation Plans reveals that a few topics dominate most of the discourse, there is a strong connection between the dominance value and the country regions, but that this impact is other than what was expected.
 
 The chapter presents the findings from the structural topic model. The first section presents the topics I identified with the model, their distribution, FREX terms and most prominent countries, to get a better understanding of the clusters of meaning the topic model has identified. This is meant as a validation of our findings, and a way to better understand the corpus.
 
-The second section then presents the findings from the Dominance Index, based on the categories we have established. Here, I do a systematic walk-through of the categories, comparing the dominance value and the p-values to try to establish patterns that might shed a light on our research questions. 
+The second section then presents the findings from the Dominance Index, based on the categories we have established. Here, I do a systematic walk-through of the categories, comparing the dominance value and the effect sizes to try to establish patterns that might shed a light on our research questions. 
 
 The third section highlights the key findings from the analysis, laying the groundwork for the discussion that comes next. 
 
@@ -17,42 +20,9 @@ The third section highlights the key findings from the analysis, laying the grou
 
 > The structural topic model identified eight topics that capture how climate adaptation is conceptualized across National Adaptation Plans, with validation through FREX terms, country clustering patterns, and thematic coherence confirming the robustness of topic identification.
 
-```{r load_topics_table}
-# Load data
-source("scripts/utils.R")
+The structural topic model identified topics organizing adaptation discourse across National Adaptation Plans. Naturally, this would have changed other topic numbers, however, since we optimized for both exclusivity and coherence, another topic distribution would have had to sacrifice in another way. 
 
-topics <- readRDS("data/name_topics.rds")
-topics_table <- topics[["data"]]
-
-k_val <- nrow(topics_table)
-
-# Create topic name variables with format "name (Topic X)"
-for(i in 1:nrow(topics_table)) {
-  topic_name <- paste0("*", tools::toTitleCase(tolower(topics_table$topic_name[i])), "* (Topic ", i, ")")
-  assign(paste0("topic_", i, "_name"), topic_name)
-  assign(paste0("topic_", i, "_prop"), pct(topics_table$topic_proportion[i]))  # Apply pct() here
-  assign(paste0("topic_", i, "_frex"), topics_table$frex_terms[i])
-  assign(paste0("topic_", i, "_countries"), topics_table$top_countries[i])
-}
-
-# Create lookup table for topic name formatting
-topic_lookup <- setNames(
-  paste0("*", tools::toTitleCase(tolower(topics_table$topic_name)), "*"),
-  topics_table$topic_name
-)
-
-# Calculate combined topic groupings
-procedural_total <- pct(topics_table$topic_proportion[6] + topics_table$topic_proportion[8] + topics_table$topic_proportion[7])
-sectoral_total <- pct(topics_table$topic_proportion[1] + topics_table$topic_proportion[2] + 
-                     topics_table$topic_proportion[3] + topics_table$topic_proportion[4])
-sectoral_with_5 <- pct(topics_table$topic_proportion[1] + topics_table$topic_proportion[2] + 
-                     topics_table$topic_proportion[3] + topics_table$topic_proportion[4] + topics_table$topic_proportion[5])
-
-```
-
-The structural topic model identified `r k_val` topics organizing adaptation discourse across National Adaptation Plans. Naturally, this would have changed other topic numbers, however, since we optimized for both exclusivity and coherence, another topic distribution would have had to sacrifice in another way. 
-
-To structure this part of the analysis, I have grouped the topics by theme, starting with the procedural theme, occupying `r procedural_total` of the total corpus 
+To structure this part of the analysis, I have grouped the topics by theme, starting with the procedural theme, occupying of the total corpus 
 
 `r topic_8_name` - `r topic_8_prop` of corpus. We start with the topic with the highest share by far. The FREX terms "`r topic_8_frex`" , reveal that this theme is about the planning of planning and that the countries dedicate a lot of attention to this, despite the filtering of too common terms earlier. Rather, this signifies that the countries are not just adopting the boiler plate version of the plans, but also the activity. The key terms are  "gcf" (Green Climate Fund), "ndc" (Nationally Determined Contributions), "unfccc", "mainstream" and "document" (planning artifacts).
 
@@ -62,7 +32,7 @@ To structure this part of the analysis, I have grouped the topics by theme, star
 
 This topic focuses squarely on the technical assessment dimension of adaptation planning, representing scientific modeling approaches to understanding climate impacts that operate across different developmental contexts while maintaining standardized methodological frameworks regardless of local knowledge systems or contextual factors.
 
-The next set of themes the model identified are sectoral, where the topics together make up `r sectoral_total` of the corpus. 
+The next set of themes the model identified are sectoral, where the topics together make up  of the corpus. 
 
 `r topic_1_name` - `r topic_1_prop` of corpus. This topic exhibits FREX terms "`r topic_1_frex`" , encompassing vulnerability concerns through key terms including "poverti" (poverty), "poor" (economic status), "children", "women" and  "migrat" (population movement), and "sanit" (sanitation).
 
@@ -84,77 +54,61 @@ The last topic is `r topic_5_name` - making up `r topic_5_prop` of the corpus an
 
 I argue this, because of the focus on "transit", "line", both urban infrastructure development terms, combined with "executiv" (executive) and "instrument" and "perspect" (perspectives) being connected to planning and building, and lastly that "indigen" (indigenous) and "territori" both refer to Brazil's indigenous population, being the largest veto-player in infrastructure development in the country. 
 
-Thus, I argue it should be included with the other sectoral topics, making them `r sectoral_with_5` of the corpus. This also makes the topic prevalences an even split between institutional/planning and sectoral topics. 
+Thus, I argue it should be included with the other sectoral topics, making them of the corpus. This also makes the topic prevalences an even split between institutional/planning and sectoral topics.
+
+```{r}
+#| label: fig-topics
+#| fig-cap: "Topic distribution by proportion and document coverage. The mainstream topic dominates both dimensions."
+#| fig-height: 5
+#| echo: false
+
+# Load dependencies
+library(ggplot2)
+library(ggrepel)
+library(ggthemes)
+
+# Load data
+topics <- readRDS("../data/name_topics.rds")
+topics_table <- topics$data
+
+# Create plot
+topics_table %>%
+  ggplot(aes(x = topic_proportion, y = effective_documents)) +
+  geom_point(size = 2, alpha = 0.7) +
+  geom_text_repel(aes(label = topic_name), 
+            force = 3,
+            point.padding = 0.5,
+            box.padding = 0.5,
+            size = 4) +
+  labs(
+    x = "Topic Proportion", 
+    y = "Effective Documents"
+  ) +
+  theme_economist_white(base_size = 10) + 
+  theme(legend.position = "none",
+        axis.title.x = element_text(margin = margin(t = 10)),
+        axis.title.y = element_text(margin = margin(r = 10)))
+```
 
 ## Control index
 
 > Analysis of discourse centralization reveals remarkably high concentration across all National Adaptation Plans, with systematic patterns showing procedural topics dominating adaptation discourse regardless of country context, income level, or geographic vulnerability.
 
-```{r load_dominance_table}
-# Extract dominance data from metrics
-metrics <- readRDS("data/calculate_metrics.rds")
+The dominance analysis shows that our corpus is centralized overall. Across all countries, the global dominance is , meaning that the top topics are over twenty percentage points more concentrated than the baseline. The most popular topics, `r topic_8_name` and `r topic_6_name`, appear together in nearly every grouping's top topics regardless, of their specific climate vulnerabilities or development contexts. 
 
-dominance_table <- metrics[["data"]]
+The income values show considerable variations, with an average of `r income_dom`. Upper-middle income countries show dominance of `r upper_middle_income_dom` above baseline with their top three topics focusing on `r upper_middle_income_topics`, indicating less concentration that combines procedural requirements with technical approaches.
 
-# Create a mapping for cleaner variable names
-name_map <- c(
-  "Global" = "overall",
-  "Upper middle income" = "upper_middle",
-  "Lower middle income" = "lower_middle", 
-  "Low income" = "low_income",
-  "High income" = "high_income",
-  "Latin America & Caribbean" = "lac",
-  "Sub-Saharan Africa" = "ssa",
-  "East Asia & Pacific" = "eap",
-  "SIDS" = "sids",
-  "LLDC" = "lldc",
-  "Early" = "early",
-  "Middle" = "middle",
-  "Late" = "late"
-)
+High income countries shown a very high dominance of `r high_income_dom` above baseline, with their top topics including `r high_income_topics`. This very high value is a surprising find, but as the group is very small, and the effect size is the highest in the whole dataset at `r high_income_effect`, this might not be a robust finding. 
 
-for (i in 1:nrow(dominance_table)) {
-  row <- dominance_table[i, ]
-  
-  # Skip "Overall" rows
-  if (row$subcategory == "Overall") next
-  
-  # Get clean variable name
-  var_name <- name_map[row$subcategory]
-  if (is.na(var_name)) next
-  
-  # Create variables with formatting applied
-  assign(paste0(var_name, "_dom"), pct(row$dominance))
-  assign(paste0(var_name, "_topics"), format_topic_string(row$top_topics))  # Format here!
-  assign(paste0(var_name, "_sig"), round(row$p_value, 3))
-}
+Lower-middle income countries display significantly higher dominance at `r lower_middle_income_dom` above baseline through their emphasis on `r lower_middle_income_topics`, while low-income countries show dominance of `r low_income_dom` above baseline with their top topics including `r low_income_topics`. 
 
-# Extract overall values for each category
-income_overall_dom <- pct(dominance_table$dominance[dominance_table$category == "Income" & dominance_table$subcategory == "Overall"])
-region_overall_dom <- pct(dominance_table$dominance[dominance_table$category == "Region" & dominance_table$subcategory == "Overall"])
-geography_overall_dom <- pct(dominance_table$dominance[dominance_table$category == "Geography" & dominance_table$subcategory == "Overall"])
-time_overall_dom <- pct(dominance_table$dominance[dominance_table$category == "Time" & dominance_table$subcategory == "Overall"])
+While these values hints at a non-linear relationship between income and dominance, the effect sizes indicate a different pattern, where the countries actually follow a clear line, with high- (`r high_income_effect`), upper middle (`r upper_middle_income_effect`), lower middle (`r lower_middle_income_effect`), and low-income countries (`r low_income_effect`) indicating higher income countries experience weaker group effects than lower income countries. 
 
-# Get min/max dominance values for range
-min_dominance <- pct(min(metrics[["data"]][["dominance"]], na.rm = TRUE))
-max_dominance <- pct(max(metrics[["data"]][["dominance"]], na.rm = TRUE))
-```
+Regional patterns show a high dominance above baseline at `r region_dom`. Latin America & Caribbean exhibits the highest regional dominance at `r latin_america_caribbean_dom` above baseline through their focus on `r latin_america_caribbean_topics`, reflecting emphasis on infrastructure alongside procedural requirements.
 
-The dominance analysis shows that our corpus is centralized overall. Across all countries, the overall dominance is `r overall_dom`, meaning that the top topics are over twenty percentage points more concentrated than the baseline. The most popular topics, `r topic_8_name` and `r topic_6_name`, appear together in nearly every grouping's top topics regardless, of their specific climate vulnerabilities or development contexts. 
+Sub-Saharan Africa shows dominance of `r sub_saharan_africa_dom` above baseline through their emphasis on `r sub_saharan_africa_topics`, combining procedural requirements with poverty-reduction approaches. East Asia & Pacific displays dominance of `r east_asia_pacific_dom` above baseline through their focus on `r east_asia_pacific_topics`, indicating convergence around institutional capacity building alongside coastal vulnerabilities.
 
-The income values show considerable variations, with an average of `r income_overall_dom`. Upper-middle income countries show dominance of `r upper_middle_dom` above baseline with their top three topics focusing on `r upper_middle_topics`, indicating less concentration that combines procedural requirements with technical approaches.
-
-High income countries shown a very high dominance of `r high_income_dom` above baseline, with their top topics including `r high_income_topics`. This very high value is a surprising find, but as the group is very small, and the p-value is the highest in the whole dataset at `r high_income_sig`, this might not be a robust finding. 
-
-Lower-middle income countries display significantly higher dominance at `r lower_middle_dom` above baseline through their emphasis on `r lower_middle_topics`, while low-income countries show dominance of `r low_income_dom` above baseline with their top topics including `r low_income_topics`. 
-
-While these values hints at a non-linear relationship between income and dominance, the p-values indicate a different pattern, where the countries actually follow a clear line, with high- (`r high_income_sig`), upper middle (`r upper_middle_sig`), lower middle (`r lower_middle_sig`), and low-income countries (`r low_income_sig`) indicating higher income countries experience weaker group effects than lower income countries. 
-
-Regional patterns show a high dominance above baseline at `r region_overall_dom`.Latin America & Caribbean exhibits the highest regional dominance at `r lac_dom` above baseline through their focus on `r lac_topics`, reflecting emphasis on infrastructure alongside procedural requirements.
-
-Sub-Saharan Africa shows dominance of `r ssa_dom` above baseline through their emphasis on `r ssa_topics`, combining procedural requirements with poverty-reduction approaches. East Asia & Pacific displays dominance of `r eap_dom` above baseline through their focus on `r eap_topics`, indicating convergence around institutional capacity building alongside coastal vulnerabilities.
-
-The p-values are some of the lowest in the whole corpus, indicating that the regional patterns are very robust , with Latin America & Caribbean (`r lac_sig`), Sub-Saharan Africa (`r ssa_sig`), and East Asia & Pacific (`r eap_sig`) all showing strong group effects.
+The effect sizes are some of the lowest in the whole corpus, indicating that the regional patterns are very robust, with Latin America & Caribbean (`r latin_america_caribbean_effect`), Sub-Saharan Africa (`r sub_saharan_africa_effect`), and East Asia & Pacific (`r east_asia_pacific_effect`) all showing strong group effects.
 
 Geographic vulnerability categories show how shared environmental challenges translate into discourse patterns while maintaining substantial concentration above baseline. Small Island Developing States show the highest dominance overall at `r sids_dom` above baseline through their emphasis on `r sids_topics`. Landlocked Developing Countries display dominance of `r lldc_dom` above baseline through their focus on `r lldc_topics`, emphasizing sectoral adaptation approaches alongside procedural requirements. Both geographic categories demonstrate significant thematic concentration while differing primarily in which sectoral topics accompany universal procedural themes.
 
@@ -162,20 +116,105 @@ The time analysis reveals how adaptation discourse concentration has evolved ove
 
 Early submissions (2015-2018) display dominance of `r early_dom` above baseline through their focus on `r early_topics`, suggesting initial adaptation planning operated with somewhat greater thematic flexibility. 
 
-Late submissions (2022-2025) exhibit lower but still substantial dominance at `r late_dom` above baseline through their emphasis on `r late_topics`, suggesting some diversification of adaptation discourse in recent years. The late submissions also have a much higher p-value `r late_sig`, indicating weaker group effects than the other submissions.
+Late submissions (2022-2025) exhibit lower but still substantial dominance at `r late_dom` above baseline through their emphasis on `r late_topics`, suggesting some diversification of adaptation discourse in recent years. The late submissions also have a much higher effect size `r late_effect`, indicating weaker group effects than the other submissions.
+
+```{r}
+#| label: fig-dominance-effect
+#| fig-cap: "Dominance and Effect Size by Category. Error bars show standard error. Higher values indicate stronger dominance and larger effect sizes."
+#| fig-height: 5
+#| echo: false
+
+# Load required packages
+library(ggplot2)
+library(ggrepel)
+library(ggthemes)
+library(dplyr)
+
+# Load metrics data
+metrics <- readRDS("../data/calculate_metrics.rds")
+metrics_table <- metrics$data
+
+# Prepare data for plotting
+plot_data <- metrics_table %>%
+    filter(subcategory != "Overall", !is.na(effect_size)) %>%
+    mutate(
+        category = factor(category, levels = c("Income", "Region", "Geography", "Time")),
+        # Create labels for significant effects
+        label = ifelse(significant, subcategory, "")
+    )
+
+ggplot(plot_data, aes(x = dominance, y = effect_size)) +
+  geom_point(aes(color = category), size = 2, alpha = 0.7) +
+  geom_text_repel(aes(label = subcategory, color = category), 
+            force = 3,
+            point.padding = 0.5,
+            box.padding = 0.5,
+            size = 4) +
+  labs(x = "Dominance", 
+       y = "Estimated effect") +
+  theme_economist_white(base_size = 10) + 
+  scale_color_economist(name = "Category") +
+  theme(
+    legend.position = c(0.98, 0.02),                    # Bottom-right corner
+    legend.justification = c(1, 0),                     # Anchor to bottom-right
+    legend.background = element_rect(fill = "transparent", color = NA),
+    legend.title = element_blank(),
+    legend.text = element_text(size = 10),              # Match base_size
+    legend.margin = margin(5, 5, 5, 5),                 # Small padding
+    axis.title.x = element_text(margin = margin(t = 10)),
+    axis.title.y = element_text(margin = margin(r = 10))
+  )
+```
 
 ## Main findings
 
-> The analysis reveals three patterns; `r procedural_total` of the NAPs are about planning, a universally high level of statistically significant dominance and that higher income countries might have more room for maneuvering than lower income.
+> The analysis reveals three patterns; of the NAPs are about planning, a universally high level of statistically significant dominance and that higher income countries might have more room for maneuvering than lower income.
 
-The first pattern is how every category analyzed demonstrates dominance values substantially above the baseline distribution, ranging from `r min_dominance` to `r max_dominance`. This universal dominance suggests something systematic operating across all adaptation plans, yet this dominance varies systematically between categories. Countries are not similarly dominated by the discourse in different categories.
+The first pattern is how every category analyzed demonstrates dominance values substantially above the baseline distribution. This universal dominance suggests something systematic operating across all adaptation plans, yet this dominance varies systematically between categories. Countries are not similarly dominated by the discourse in different categories.
 
-The second pattern is how planning is procedural dominance across virtually all contexts. `r topic_8_name` appears among the top three topics in nearly every country grouping, while `r topic_6_name` consistently ranks among the most prevalent themes regardless of climate challenges. Together, these procedural topics account for `r procedural_total` of total corpus discourse. This technical and planning focus seems to be a central feature of the NAPs. 
+The second pattern is how planning is procedural dominance across virtually all contexts. `r topic_8_name` appears among the top three topics in nearly every country grouping, while `r topic_6_name` consistently ranks among the most prevalent themes regardless of climate challenges. Together, these procedural topics account for  of total corpus discourse. This technical and planning focus seems to be a central feature of the NAPs. 
 
-The third pattern emerges from the p-values, signifying that some countries might have more power in relation to other countries. The linear pattern, with high- (`r high_income_sig`), upper middle (`r upper_middle_sig`), lower middle (`r lower_middle_sig`), and low-income countries (`r low_income_sig`), shows that there might be some power relations at play. Higher income countries show weaker group constraints (higher p-values), indicating greater autonomy in adaptation, while lower income countries show stronger institutional capture (lower p-values).
+The third pattern emerges from the effect sizes, signifying that some countries might have more power in relation to other countries. The linear pattern, with high- (`r high_income_effect`), upper middle (`r upper_middle_income_effect`), lower middle (`r lower_middle_income_effect`), and low-income countries (`r low_income_effect`), shows that there might be some power relations at play. Higher income countries show weaker group constraints (higher effect sizes), indicating greater autonomy in adaptation, while lower income countries show stronger institutional capture (lower effect sizes).
+
+```{r}
+#| label: fig-average
+#| fig-cap: "Average dominance and effect size by category. Regional patterns show the strongest effects."
+#| fig-height: 5
+#| echo: false
+
+# Load dependencies
+library(tidyr)
+
+metrics_table %>%
+  filter(subcategory == "Overall", category != "Global") %>%
+  select(category, dominance, effect_size) %>%
+  mutate(category = reorder(category, dominance)) %>%           # Sort BEFORE pivoting
+  pivot_longer(cols = c(dominance, effect_size),
+               names_to = "metric", 
+               values_to = "value") %>%
+  mutate(metric = factor(metric, levels = c("effect_size", "dominance"))) %>%  # Reverse order
+  ggplot(aes(x = value, y = category, fill = metric)) +
+  geom_col(position = "dodge", alpha = 0.7) +
+  geom_text(aes(label = round(value, 2)), 
+            position = position_dodge(width = 1),
+            hjust = -0.1, 
+            size = 4) +
+  labs(x = "Average Value", y = NULL) +                          
+  scale_x_continuous(expand = expansion(mult = c(0, 0.1))) +    
+  theme_economist_white(base_size = 10) + 
+  scale_fill_economist(name = "", labels = c("Effect Size", "Dominance")) +
+  theme(
+    legend.position = c(0.98, 0.02),                    # Bottom-right corner
+    legend.justification = c(1, 0),                     # Anchor to bottom-right
+    legend.background = element_rect(fill = "transparent", color = NA),
+    legend.title = element_blank(),
+    legend.text = element_text(size = 10),              # Match base_size
+    legend.margin = margin(5, 5, 5, 5),                  # Small padding
+    axis.title.x = element_text(margin = margin(t = 10)),
+    axis.title.y = element_text(margin = margin(r = 10))
+  )
+```
 
 Remembering our discussion of the adaptation nexus [@sec-theory] we are left with a conundrum. We would on the one hand expect convergence around technical best practices. Here, the plans would follow clear patterns, with the same topics appearing in the same order across countries. Countries with similar climate challenges would also be expected to have similar plans, as they would be facing the same challenges. We would then see clear domination in categories like "Coastal" or "Water" in the plans of countries facing these challenges.
 
-On the other hand, we would expect divergence reflecting local contexts, as they are written in different contexts, with different actors and different histories. We would assume that the national plans would be too different to categorize systematically, but our findings show that all countries pass the statistical test for dominance, indicating that the plans are not just similar, but that they are directly connected to the regions they are from. 
-
-These patterns raise fundamental questions about adaptation planning: If environmental challenges don't shape discourse, and local contexts matter little, what forces are actually driving adaptation planning? The following discussion discusses what the forces shaping the plans might be.
+On the other hand, we would expect divergence reflecting local contexts, as they are written in different contexts, with different actors and different histories. We would assume that the national plans would be too different to categorize systematically, but our findings show that all countries pass the statistical test for dominance, indicating that the plans are not just similar, but that they are directly connected to the regions they are from.
