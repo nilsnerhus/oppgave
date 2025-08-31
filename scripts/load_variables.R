@@ -6,7 +6,7 @@
 #' @param digits Number of decimal places for percentages (default: 1)
 #' @param output_path Path to save variables RDS file (default: "data/inline_variables.rds")
 #' @return Standard pipeline result object with success metadata
-load_variables <- function(topics, metrics, digits = 1, output_path = "data/inline_variables.rds") {
+load_variables <- function(topics, metrics, digits = 1, output_path = "data/load_variables.rds") {
   start_time <- Sys.time()
   
   # Ensure output directory exists

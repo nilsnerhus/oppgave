@@ -274,15 +274,6 @@ web_cache <- function(func, ..., url = "https://napcentral.org/submitted-naps",
   }
 }
 
-# Formatting helpers for inline text
-pct <- function(x, digits = 1) paste0(round(x * 100, digits), "%")
-num <- function(x) {
-  if (x < 10000) {
-    return(as.character(round(x)))  # No separator for numbers under 10,000
-  } else {
-    return(format(round(x), big.mark = " "))  # Space separator for 10,000+
-  }
-}
 
 #' @title Count thesis in standard pages (2400 characters)
 #' @description Counts thesis length in standard pages as defined by university regulations
@@ -431,22 +422,4 @@ thesis_pages <- function() {
     }
   }
   cat("\n")
-}
-
-# Function to format topic lists consistently
-format_topic_string <- function(topic_string) {
-  # Split by comma and trim whitespace
-  topics <- trimws(strsplit(topic_string, ",")[[1]])
-  
-  # Apply formatting using lookup table
-  formatted_topics <- sapply(topics, function(x) {
-    if (x %in% names(topic_lookup)) {
-      return(topic_lookup[x])
-    } else {
-      return(paste0("*", tools::toTitleCase(tolower(x)), "*"))
-    }
-  })
-  
-  # Rejoin with commas
-  return(paste(formatted_topics, collapse = ", "))
 }
