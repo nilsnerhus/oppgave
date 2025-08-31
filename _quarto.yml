@@ -42,12 +42,18 @@ execute:
 
 format:
   html:
-    theme: cosmo
+    theme: journal
     code-fold: true
+    fig-width: 8
+    fig-height: 4
   pdf:
-    documentclass: scrreprt
+    documentclass: report
+    fig-width: 8
+    fig-height: 4
+    fig-align: center
     toc: true
     number-sections: true
     number-depth: 2
+    
     
 editor: source
