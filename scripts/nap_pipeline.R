@@ -24,7 +24,7 @@ category_map <- list(
   Geography = "geography",
   Time = "time_period"
 )
-time_groups <- c("Early" = 2018, "Middle" = 2021, "Late" = Inf)
+time_groups <- c("Early" = 2019, "Middle" = 2022, "Late" = Inf)
 
 ## Run functions
 web <- web_cache(scrape_web)
@@ -48,6 +48,7 @@ source("scripts/name_topics.R")
 source("scripts/find_dominance.R")
 source("scripts/find_variance.R")
 source("scripts/calculate_metrics.R")
+source("scripts/load_variables.R")
 
 # Run functions
 topic_names <- c("napa", 
@@ -59,5 +60,6 @@ topic_names <- c("napa",
                  "rcp",
                  "mainstream"
                  )
-topics <- auto_cache(name_topics, model, topic_names, overwrite = TRUE)
-metrics <- auto_cache(calculate_metrics, model, topics, dfm, overwrite = TRUE)
+topics <- auto_cache(name_topics, model, topic_names)
+metrics <- auto_cache(calculate_metrics, model, topics, dfm)
+variables <- auto_cache(load_variables, topics, metrics)
