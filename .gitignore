@@ -12,3 +12,5 @@ Innboks.md
 .trash
 .Renviron
 grateful.report.html
+text/*
+!text/*.qmd
