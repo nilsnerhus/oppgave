@@ -1,0 +1,457 @@
+{
+  "data": {
+    "tokens": [
+      {
+        "doc_id": "nap_001",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/National_Adaptation_Plan_Albania.pdf"
+      },
+      {
+        "doc_id": "nap_002",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP_Antigua_and_Barbuda_2025.pdf"
+      },
+      {
+        "doc_id": "nap_003",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP-Argentina-2023-EN.pdf"
+      },
+      {
+        "doc_id": "nap_004",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP_Armenia.pdf"
+      },
+      {
+        "doc_id": "nap_005",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/2024_NAP_Azerbaijan.pdf"
+      },
+      {
+        "doc_id": "nap_006",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP-Bangladesh-2023.pdf"
+      },
+      {
+        "doc_id": "nap_007",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP-Bhutan-2023.pdf"
+      },
+      {
+        "doc_id": "nap_008",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP-Bosnia-and-Herzegovina%20.pdf"
+      },
+      {
+        "doc_id": "nap_009",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP_Brazil_2016_EN.pdf"
+      },
+      {
+        "doc_id": "nap_010",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP_Burkina_Faso_2015_EN.pdf"
+      },
+      {
+        "doc_id": "nap_011",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP_Cabo%20Verde_EN.pdf"
+      },
+      {
+        "doc_id": "nap_012",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP_Cambodia_2021.pdf"
+      },
+      {
+        "doc_id": "nap_013",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/CHAD-NAP_EN-web.pdf"
+      },
+      {
+        "doc_id": "nap_014",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/DRC-NAP_EN.pdf"
+      },
+      {
+        "doc_id": "nap_015",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP_Ethiopia_2019.pdf"
+      },
+      {
+        "doc_id": "nap_016",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP_Fiji_2018.pdf"
+      },
+      {
+        "doc_id": "nap_017",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP_Grenada_2019.pdf"
+      },
+      {
+        "doc_id": "nap_018",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP_Israel_2025_ENG.pdf"
+      },
+      {
+        "doc_id": "nap_019",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP_Jordan_2025_ENG.pdf"
+      },
+      {
+        "doc_id": "nap_020",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP_Kenya_2017.pdf"
+      },
+      {
+        "doc_id": "nap_021",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP-Kiribati-2020.pdf"
+      },
+      {
+        "doc_id": "nap_022",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP_Kuwait_2021.pdf"
+      },
+      {
+        "doc_id": "nap_023",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/LIBERIA_%20NAP_%20FINAL_%20DOCUMENT.pdf"
+      },
+      {
+        "doc_id": "nap_024",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP-RMI-2023.pdf"
+      },
+      {
+        "doc_id": "nap_025",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP_Moldova_2024.pdf"
+      },
+      {
+        "doc_id": "nap_026",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP_Mongolia_2025.pdf"
+      },
+      {
+        "doc_id": "nap_027",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/National_Adaptation_Plan_Mozambique.pdf"
+      },
+      {
+        "doc_id": "nap_028",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP_Nepal_2021.pdf"
+      },
+      {
+        "doc_id": "nap_029",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/National_Adaptation_Plan_Pakistan.pdf"
+      },
+      {
+        "doc_id": "nap_030",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP-PNG-Finale-2023.pdf"
+      },
+      {
+        "doc_id": "nap_031",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP_Philippines_2024.pdf"
+      },
+      {
+        "doc_id": "nap_032",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP-Saint-Lucia-2018.pdf"
+      },
+      {
+        "doc_id": "nap_033",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP-Saint-Vincent-and-the-Grenadines-2019.pdf"
+      },
+      {
+        "doc_id": "nap_034",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP_Serbia_2024.pdf"
+      },
+      {
+        "doc_id": "nap_035",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/SierraLeone_iNAP_Final.pdf"
+      },
+      {
+        "doc_id": "nap_036",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/South-Africa_NAP.pdf"
+      },
+      {
+        "doc_id": "nap_037",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/South-Sudan-First-NAP%20.pdf"
+      },
+      {
+        "doc_id": "nap_038",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP-Sri-Lanka-2016.pdf"
+      },
+      {
+        "doc_id": "nap_039",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/National%20Adaptation%20Plan_%20State%20of%20Palestine.pdf"
+      },
+      {
+        "doc_id": "nap_040",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP-Sudan-2016.pdf"
+      },
+      {
+        "doc_id": "nap_041",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP-Suriname-2020.pdf"
+      },
+      {
+        "doc_id": "nap_042",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP_THAILAND_2024.pdf"
+      },
+      {
+        "doc_id": "nap_043",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP-Timor-Leste-2021.pdf"
+      },
+      {
+        "doc_id": "nap_044",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/JNAP2_Final-2018-2028.pdf"
+      },
+      {
+        "doc_id": "nap_045",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP_Trinidad_and_Tobago_2024.pdf"
+      },
+      {
+        "doc_id": "nap_046",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP_Cities_and_Infrastructure__Uruguay_Executive_Summary_ENG.pdf"
+      },
+      {
+        "doc_id": "nap_047",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP-Zambia-2023.pdf"
+      },
+      {
+        "doc_id": "nap_048",
+        "pdf_link": "https://unfccc.int/sites/default/files/resource/NAP-Zimbabwe-2024.pdf"
+      }
+    ],
+    "metadata": [
+      {
+        "doc_id": "nap_001",
+        "country_name": "Albania",
+        "date_posted": "October 27, 2021"
+      },
+      {
+        "doc_id": "nap_002",
+        "country_name": "Antigua and Barbuda",
+        "date_posted": "June 24, 2025"
+      },
+      {
+        "doc_id": "nap_003",
+        "country_name": "Argentina",
+        "date_posted": "November 23, 2023"
+      },
+      {
+        "doc_id": "nap_004",
+        "country_name": "Armenia",
+        "date_posted": "September 24, 2021"
+      },
+      {
+        "doc_id": "nap_005",
+        "country_name": "Azerbaijan",
+        "date_posted": "November 12, 2024"
+      },
+      {
+        "doc_id": "nap_006",
+        "country_name": "Bangladesh",
+        "date_posted": "March 23, 2023"
+      },
+      {
+        "doc_id": "nap_007",
+        "country_name": "Bhutan",
+        "date_posted": "September 22, 2023"
+      },
+      {
+        "doc_id": "nap_008",
+        "country_name": "Bosnia and Herzegovina",
+        "date_posted": "December 21, 2022"
+      },
+      {
+        "doc_id": "nap_009",
+        "country_name": "Brazil",
+        "date_posted": "May 12, 2016"
+      },
+      {
+        "doc_id": "nap_010",
+        "country_name": "Burkina Faso",
+        "date_posted": "October 15, 2015\n\n\t\t\tMarch 24, 2025"
+      },
+      {
+        "doc_id": "nap_011",
+        "country_name": "Cabo Verde",
+        "date_posted": "October 23, 2022"
+      },
+      {
+        "doc_id": "nap_012",
+        "country_name": "Cambodia",
+        "date_posted": "July 7, 2021"
+      },
+      {
+        "doc_id": "nap_013",
+        "country_name": "Chad",
+        "date_posted": "February 15, 2022"
+      },
+      {
+        "doc_id": "nap_014",
+        "country_name": "Democratic Republic of Congo",
+        "date_posted": "July 6, 2022"
+      },
+      {
+        "doc_id": "nap_015",
+        "country_name": "Ethiopia",
+        "date_posted": "March 1, 2019"
+      },
+      {
+        "doc_id": "nap_016",
+        "country_name": "Fiji",
+        "date_posted": "December 12, 2018"
+      },
+      {
+        "doc_id": "nap_017",
+        "country_name": "Grenada",
+        "date_posted": "November 6, 2019"
+      },
+      {
+        "doc_id": "nap_018",
+        "country_name": "Israel",
+        "date_posted": "March 23, 2025"
+      },
+      {
+        "doc_id": "nap_019",
+        "country_name": "Jordan",
+        "date_posted": "March 10, 2025"
+      },
+      {
+        "doc_id": "nap_020",
+        "country_name": "Kenya",
+        "date_posted": "February 28, 2017"
+      },
+      {
+        "doc_id": "nap_021",
+        "country_name": "Kiribati",
+        "date_posted": "January 21, 2020"
+      },
+      {
+        "doc_id": "nap_022",
+        "country_name": "Kuwait",
+        "date_posted": "February 11, 2021"
+      },
+      {
+        "doc_id": "nap_023",
+        "country_name": "Liberia",
+        "date_posted": "December 16, 2021"
+      },
+      {
+        "doc_id": "nap_024",
+        "country_name": "Marshall Islands",
+        "date_posted": "December 9, 2023"
+      },
+      {
+        "doc_id": "nap_025",
+        "country_name": "Moldova",
+        "date_posted": "June 26, 2024"
+      },
+      {
+        "doc_id": "nap_026",
+        "country_name": "Mongolia",
+        "date_posted": "April 8, 2025"
+      },
+      {
+        "doc_id": "nap_027",
+        "country_name": "Mozambique",
+        "date_posted": "July 7, 2023"
+      },
+      {
+        "doc_id": "nap_028",
+        "country_name": "Nepal",
+        "date_posted": "October 30, 2021"
+      },
+      {
+        "doc_id": "nap_029",
+        "country_name": "Pakistan",
+        "date_posted": "August 15, 2023"
+      },
+      {
+        "doc_id": "nap_030",
+        "country_name": "Papua New Guinea",
+        "date_posted": "April 11, 2023"
+      },
+      {
+        "doc_id": "nap_031",
+        "country_name": "Philippines",
+        "date_posted": "May 30, 2024"
+      },
+      {
+        "doc_id": "nap_032",
+        "country_name": "Saint Lucia",
+        "date_posted": "September 21, 2018"
+      },
+      {
+        "doc_id": "nap_033",
+        "country_name": "Saint Vincent and the Grenadines",
+        "date_posted": "November 14, 2019"
+      },
+      {
+        "doc_id": "nap_034",
+        "country_name": "Serbia",
+        "date_posted": "July 12, 2024"
+      },
+      {
+        "doc_id": "nap_035",
+        "country_name": "Sierra Leone",
+        "date_posted": "February 8, 2022"
+      },
+      {
+        "doc_id": "nap_036",
+        "country_name": "South Africa",
+        "date_posted": "29 September 2021"
+      },
+      {
+        "doc_id": "nap_037",
+        "country_name": "South Sudan",
+        "date_posted": "November 1, 2021"
+      },
+      {
+        "doc_id": "nap_038",
+        "country_name": "Sri Lanka",
+        "date_posted": "November 1, 2016"
+      },
+      {
+        "doc_id": "nap_039",
+        "country_name": "State of Palestine",
+        "date_posted": "November 11, 2016"
+      },
+      {
+        "doc_id": "nap_040",
+        "country_name": "Sudan",
+        "date_posted": "September 26, 2016"
+      },
+      {
+        "doc_id": "nap_041",
+        "country_name": "Suriname",
+        "date_posted": "June 2, 2020"
+      },
+      {
+        "doc_id": "nap_042",
+        "country_name": "Thailand",
+        "date_posted": "April 18, 2024"
+      },
+      {
+        "doc_id": "nap_043",
+        "country_name": "Timor-Leste",
+        "date_posted": "March 31, 2021"
+      },
+      {
+        "doc_id": "nap_044",
+        "country_name": "Tonga",
+        "date_posted": "October 27, 2021"
+      },
+      {
+        "doc_id": "nap_045",
+        "country_name": "Trinidad and Tobago",
+        "date_posted": "May 15, 2024"
+      },
+      {
+        "doc_id": "nap_046",
+        "country_name": "Uruguay",
+        "date_posted": "December 3, 2021\n\n\t\t\tDecember 3, 2021\n\n\t\t\tDecember 3, 2021\n\n\t\t\tAugust 2, 2024"
+      },
+      {
+        "doc_id": "nap_047",
+        "country_name": "Zambia",
+        "date_posted": "November 11, 2023"
+      },
+      {
+        "doc_id": "nap_048",
+        "country_name": "Zimbabwe",
+        "date_posted": "October 25, 2024"
+      }
+    ]
+  },
+  "metadata": {
+    "timestamp": "2025-08-31 09:03:59",
+    "r_version": "R version 4.4.3 (2025-02-28 ucrt)",
+    "session_info": "x86_64-w64-mingw32/x64",
+    "url": "https://napcentral.org/submitted-naps",
+    "timestamp.1": "2025-08-31 09:03:58",
+    "processing_time_sec": 0.6923,
+    "table_count": 1,
+    "row_count": 64,
+    "document_count": 48,
+    "success": true
+  },
+  "diagnostics": {
+    "excluded_countries": 0,
+    "skipped_rows": 0,
+    "processing_issues": []
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "data": [
+    {
+      "topic_id": 1,
+      "topic_name": "napa",
+      "frex_terms": "ment, tion, napa, percent, pro",
+      "top_countries": "Chad (0.586), Mozambique (0.569)",
+      "topic_proportion": 0.1102,
+      "effective_documents": 20
+    },
+    {
+      "topic_id": 2,
+      "topic_name": "cyclone",
+      "frex_terms": "cyclon, tropic, decad, sea, rise",
+      "top_countries": "Philippines (0.493), Tonga (0.308)",
+      "topic_proportion": 0.0945,
+      "effective_documents": 21
+    },
+    {
+      "topic_id": 3,
+      "topic_name": "mountain",
+      "frex_terms": "republ, feder, mountain, summer, accord",
+      "top_countries": "Serbia (0.795), Bosnia and Herzegovina (0.68)",
+      "topic_proportion": 0.084,
+      "effective_documents": 11
+    },
+    {
+      "topic_id": 4,
+      "topic_name": "island",
+      "frex_terms": "marin, island, hurrican, coastal, mangrov",
+      "top_countries": "Kuwait (0.496), St. Lucia (0.465)",
+      "topic_proportion": 0.1147,
+      "effective_documents": 22
+    },
+    {
+      "topic_id": 5,
+      "topic_name": "office",
+      "frex_terms": "offic, climate-resili, medium, secretariat, depart",
+      "top_countries": "Bhutan (0.519), Nepal (0.51)",
+      "topic_proportion": 0.1174,
+      "effective_documents": 22
+    },
+    {
+      "topic_id": 6,
+      "topic_name": "transit",
+      "frex_terms": "transit, task, instrument, indigen, territori",
+      "top_countries": "Brazil (0.688), Argentina (0.675)",
+      "topic_proportion": 0.0975,
+      "effective_documents": 16
+    },
+    {
+      "topic_id": 7,
+      "topic_name": "rcp",
+      "frex_terms": "rcp, rainfal, ensembl, confid, trend",
+      "top_countries": "West Bank and Gaza (0.734), Sudan (0.255)",
+      "topic_proportion": 0.0734,
+      "effective_documents": 16
+    },
+    {
+      "topic_id": 8,
+      "topic_name": "mainstream",
+      "frex_terms": "mainstream, learn, agreement, pari, progress",
+      "top_countries": "Armenia (0.707), Albania (0.644)",
+      "topic_proportion": 0.3084,
+      "effective_documents": 45
+    }
+  ],
+  "metadata": {
+    "timestamp": "2025-08-31 15:31:15",
+    "r_version": "R version 4.4.3 (2025-02-28 ucrt)",
+    "session_info": "x86_64-w64-mingw32/x64",
+    "timestamp.1": "2025-08-31 15:31:15",
+    "k": 8,
+    "manual_names_used": true,
+    "success": true
+  },
+  "diagnostics": []
+}

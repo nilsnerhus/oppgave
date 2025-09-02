@@ -12,6 +12,8 @@ jobs:
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
       HUGGINGFACE_TOKEN: ${{ secrets.HUGGINGFACE_TOKEN }}
+      RENV_CONFIG_REPOS_OVERRIDE: "https://cloud.r-project.org"
+
 
     steps:
       - name: Check out repository
