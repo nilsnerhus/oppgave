@@ -8,7 +8,7 @@ book:
     name: "Nils Nerhus Rørstad"
     email: "202302046@post.au.dk"
   date: "2025-09-16"
-  downloads: [pdf]
+  downloads: [pdf, epub]
   chapters:
     - index.qmd
     - text/intro.qmd
@@ -54,6 +54,5 @@ format:
     toc: true
     number-sections: true
     number-depth: 2
-    
-    
+
 editor: source
