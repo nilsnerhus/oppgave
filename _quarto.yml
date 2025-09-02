@@ -12,19 +12,18 @@ book:
   chapters:
     - index.qmd
     - text/intro.qmd
-    - part: Part 1 Climate adaptation
+    - part: Background
       chapters:
         - text/context.qmd
-        - text/lit.qmd
-    - part: Part 2 Research design
+        - text/concepts.qmd
+    - part: Research design
       chapters:
-        - text/theory.qmd
         - text/methods.qmd
-    - part: Part 3 Analysis
-      chapters:
         - text/findings.qmd
+    - part: Discussion
+      chapters:
         - text/discussion.qmd
-    - text/conclusion.qmd
+        - text/conclusion.qmd
 
 cap-location: bottom
 bibliography: 
