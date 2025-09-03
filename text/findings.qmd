@@ -1,4 +1,3 @@
-
 ```{r load data, include=FALSE}
 `%>%` <- magrittr::`%>%`
 
@@ -7,10 +6,9 @@ vars <- variables$data
 list2env(vars, envir = .GlobalEnv)
 ```
 
-
 ## Topics
 
-The structural topic model identified eight distinct topics that organize adaptation discourse across the National Adaptation Plans analyzed. These topics emerged through an optimization process balancing semantic coherence and exclusivity, where alternative topic distributions would have required sacrificing interpretability or distinctiveness. The naming process relied on FREX (frequency-exclusivity) terms, which identify words appearing both commonly within topics and distinctively compared to others, combined with analysis of country clustering patterns to validate thematic coherence.
+The structural topic model identified eight distinct topics that organize adaptation discourse across the National Adaptation Plans analyzed. The naming process relied on FREX (frequency-exclusivity) terms, which identify words appearing both commonly within topics and distinctively compared to others, combined with analysis of country clustering patterns to validate thematic coherence.
 
 The most striking pattern is the overwhelming dominance of procedural and planning concerns. `r topic_8_name`, representing `r topic_8_prop` of the corpus, dominates adaptation discourse to an extraordinary degree—more than three times larger than any other topic. Its FREX terms "`r topic_8_frex`" reveal this theme centers on the planning of planning itself, with countries like `r topic_8_countries` showing highest representation. The terms "mainstream" (mainstreaming adaptation), "learn" (learning processes), "agreement" (international agreements), "pari" (Paris Agreement), and "progress" (progress monitoring) capture how adaptation planning has become absorbed into broader climate governance architectures. That this topic appears in `r topic_8_documents` documents with meaningful presence demonstrates that countries are not merely adopting boilerplate language but actively engaging with these institutional frameworks as central to their adaptation approach.
 

@@ -1,3 +1,11 @@
+```{r load data, include=FALSE}
+`%>%` <- magrittr::`%>%`
+
+variables <- readRDS("../data/load_variables.rds")
+vars <- variables$data
+list2env(vars, envir = .GlobalEnv)
+```
+
 # Methods {#sec-methods}
 
 > To empirically examine whether adaptation discourse reflects epistemological control, I develop a mixed methods approach that combines computational text analysis with auto-ethnographic reflection, enabling analysis of both the structural patterns and cultural processes that shape expert knowledge production.
