@@ -18,7 +18,7 @@ name_topics <- function(model, topic_names_vector) {
   topic_proportions <- colMeans(theta)
   
   # Calculate effective document count (meaningful presence threshold)
-  meaningful_threshold <- 0.07  # 5% threshold
+  meaningful_threshold <- 0.07
   effective_doc_counts <- numeric(k)
   
   for (i in 1:k) {

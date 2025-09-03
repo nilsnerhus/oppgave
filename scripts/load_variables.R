@@ -52,6 +52,7 @@ load_variables <- function(topics, metrics, digits = 1, output_path = "data/load
     variables_list[[paste0("topic_", i, "_prop")]] <- pct(topics_table$topic_proportion[i])
     variables_list[[paste0("topic_", i, "_frex")]] <- topics_table$frex_terms[i]
     variables_list[[paste0("topic_", i, "_countries")]] <- topics_table$top_countries[i]
+    variables_list[[paste0("topic_", i, "_documents")]] <- topics_table$effective_documents[i]
   }
   
   # Create metrics variables
