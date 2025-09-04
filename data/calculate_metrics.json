@@ -3,6 +3,7 @@
     {
       "category": "Global",
       "subcategory": "Global",
+      "subcategory_abbrev": "Global",
       "documents": 47,
       "top_topics": "mainstream, office, island",
       "dominance": 0.2647,
@@ -11,6 +12,7 @@
     {
       "category": "Global",
       "subcategory": "Overall",
+      "subcategory_abbrev": "Overall",
       "documents": 47,
       "top_topics": "Average across subcategories",
       "dominance": 0.2647
@@ -18,6 +20,7 @@
     {
       "category": "Income",
       "subcategory": "Upper middle income",
+      "subcategory_abbrev": "Upper middle income",
       "documents": 19,
       "top_topics": "mainstream, mountain, island",
       "dominance": 0.3874,
@@ -28,6 +31,7 @@
     {
       "category": "Income",
       "subcategory": "High income",
+      "subcategory_abbrev": "High income",
       "documents": 5,
       "top_topics": "mainstream, island, transit",
       "dominance": 0.6571,
@@ -38,6 +42,7 @@
     {
       "category": "Income",
       "subcategory": "Lower middle income",
+      "subcategory_abbrev": "Lower middle income",
       "documents": 14,
       "top_topics": "mainstream, office, cyclone",
       "dominance": 0.4961,
@@ -48,6 +53,7 @@
     {
       "category": "Income",
       "subcategory": "Low income",
+      "subcategory_abbrev": "Low income",
       "documents": 8,
       "top_topics": "napa, mainstream, rcp",
       "dominance": 0.5177,
@@ -58,6 +64,7 @@
     {
       "category": "Income",
       "subcategory": "Overall",
+      "subcategory_abbrev": "Overall",
       "documents": 46,
       "top_topics": "Average across subcategories",
       "dominance": 0.5146,
@@ -66,6 +73,7 @@
     {
       "category": "Region",
       "subcategory": "Europe & Central Asia",
+      "subcategory_abbrev": "ECA",
       "documents": 6,
       "top_topics": "mountain, mainstream, transit",
       "dominance": 0.6853,
@@ -76,6 +84,7 @@
     {
       "category": "Region",
       "subcategory": "Latin America & Caribbean",
+      "subcategory_abbrev": "LAC",
       "documents": 9,
       "top_topics": "mainstream, transit, island",
       "dominance": 0.6534,
@@ -86,6 +95,7 @@
     {
       "category": "Region",
       "subcategory": "South Asia",
+      "subcategory_abbrev": "SA",
       "documents": 4,
       "top_topics": "office, mainstream, cyclone",
       "dominance": 0.673,
@@ -96,6 +106,7 @@
     {
       "category": "Region",
       "subcategory": "Sub-Saharan Africa",
+      "subcategory_abbrev": "SSA",
       "documents": 13,
       "top_topics": "mainstream, napa, office",
       "dominance": 0.5188,
@@ -106,6 +117,7 @@
     {
       "category": "Region",
       "subcategory": "East Asia & Pacific",
+      "subcategory_abbrev": "EAP",
       "documents": 10,
       "top_topics": "mainstream, cyclone, island",
       "dominance": 0.5232,
@@ -116,6 +128,7 @@
     {
       "category": "Region",
       "subcategory": "Middle East, North Africa, Afghanistan & Pakistan",
+      "subcategory_abbrev": "MENAP",
       "documents": 5,
       "top_topics": "rcp, mainstream, transit",
       "dominance": 0.3549,
@@ -126,6 +139,7 @@
     {
       "category": "Region",
       "subcategory": "Overall",
+      "subcategory_abbrev": "Overall",
       "documents": 47,
       "top_topics": "Average across subcategories",
       "dominance": 0.5681,
@@ -134,6 +148,7 @@
     {
       "category": "Geography",
       "subcategory": "Other",
+      "subcategory_abbrev": "Other",
       "documents": 23,
       "top_topics": "mainstream, transit, napa",
       "dominance": 0.2357,
@@ -144,6 +159,7 @@
     {
       "category": "Geography",
       "subcategory": "SIDS",
+      "subcategory_abbrev": "SIDS",
       "documents": 13,
       "top_topics": "mainstream, island, cyclone",
       "dominance": 0.6758,
@@ -154,6 +170,7 @@
     {
       "category": "Geography",
       "subcategory": "LLDC",
+      "subcategory_abbrev": "LLDC",
       "documents": 11,
       "top_topics": "mainstream, office, napa",
       "dominance": 0.4613,
@@ -164,6 +181,7 @@
     {
       "category": "Geography",
       "subcategory": "Overall",
+      "subcategory_abbrev": "Overall",
       "documents": 47,
       "top_topics": "Average across subcategories",
       "dominance": 0.4576,
@@ -172,6 +190,7 @@
     {
       "category": "Time",
       "subcategory": "Middle",
+      "subcategory_abbrev": "Middle",
       "documents": 18,
       "top_topics": "mainstream, napa, island",
       "dominance": 0.4302,
@@ -182,6 +201,7 @@
     {
       "category": "Time",
       "subcategory": "Late",
+      "subcategory_abbrev": "Late",
       "documents": 18,
       "top_topics": "mainstream, cyclone, office",
       "dominance": 0.2545,
@@ -192,6 +212,7 @@
     {
       "category": "Time",
       "subcategory": "Early",
+      "subcategory_abbrev": "Early",
       "documents": 11,
       "top_topics": "mainstream, island, office",
       "dominance": 0.363,
@@ -202,6 +223,7 @@
     {
       "category": "Time",
       "subcategory": "Overall",
+      "subcategory_abbrev": "Overall",
       "documents": 47,
       "top_topics": "Average across subcategories",
       "dominance": 0.3492,
@@ -209,10 +231,10 @@
     }
   ],
   "metadata": {
-    "timestamp": "2025-08-31 15:31:15",
+    "timestamp": "2025-09-04 17:36:33",
     "r_version": "R version 4.4.3 (2025-02-28 ucrt)",
     "session_info": "x86_64-w64-mingw32/x64",
-    "processing_time_sec": 0.3465,
+    "processing_time_sec": 0.1673,
     "n_value": 3,
     "min_group_size": 2
   },
