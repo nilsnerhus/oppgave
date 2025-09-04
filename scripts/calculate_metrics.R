@@ -26,6 +26,25 @@ calculate_metrics <- function(model, topics, dfm, n = 3, min_group_size = 2) {
     stringsAsFactors = FALSE
   )
   
+  ## --- Create abbriviated names for regions -------------------------------
+  get_subcategory_abbrev <- function(category, subcategory) {
+    if (category == "Region") {
+      abbreviations <- list(
+        "Europe & Central Asia" = "ECA",
+        "Latin America & Caribbean" = "LAC", 
+        "South Asia" = "SA",
+        "Sub-Saharan Africa" = "SSA",
+        "East Asia & Pacific" = "EAP",
+        "Middle East, North Africa, Afghanistan & Pakistan" = "MENAP"
+      )
+      return(ifelse(subcategory %in% names(abbreviations), 
+                    abbreviations[[subcategory]], 
+                    subcategory))
+    }
+    # Keep other categories as-is
+    return(subcategory)
+  }
+  
   ## --- Process each category --------------------------------------------------
   for (category_name in names(category_map)) {
     col_name <- category_map[[category_name]]
@@ -78,6 +97,7 @@ calculate_metrics <- function(model, topics, dfm, n = 3, min_group_size = 2) {
           results <- rbind(results, data.frame(
             category = category_name,
             subcategory = as.character(value),
+            subcategory_abbrev = get_subcategory_abbrev(category_name, as.character(value)),  # ADD THIS
             documents = length(doc_indices),
             top_topics = top_topics_text,
             dominance = dominance_result$corpus_level$normalized,
@@ -100,6 +120,7 @@ calculate_metrics <- function(model, topics, dfm, n = 3, min_group_size = 2) {
       results <- rbind(results, data.frame(
         category = category_name,
         subcategory = "Overall",
+        subcategory_abbrev = "Overall",  # ADD THIS LINE
         documents = sum(category_docs),
         top_topics = "Average across subcategories",
         dominance = mean(category_dominance),

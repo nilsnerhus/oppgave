@@ -60,7 +60,6 @@ topic_names <- c("napa",
                  "rcp",
                  "mainstream"
                  )
-topics <- auto_cache(name_topics, model, topic_names)
+topics <- auto_cache(name_topics, model, topic_names, overwrite = TRUE)
 metrics <- auto_cache(calculate_metrics, model, topics, dfm)
 variables <- auto_cache(load_variables, topics, metrics, web, dfm, model, overwrite = TRUE)
-

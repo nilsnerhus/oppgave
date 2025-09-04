@@ -8,7 +8,7 @@
 #' @param model Result object from fit_model pipeline function (optional)
 #' @param digits Number of decimal places for percentages (default: 1)
 #' @return Standard pipeline result object with success metadata
-load_variables <- function(topics, metrics, web = NULL, dfm = NULL, model = NULL, digits = 1) {
+load_variables <- function(topics, metrics, web = NULL, dfm = NULL, model = NULL, digits = 2) {
   start_time <- Sys.time()
   
   # Extract data
@@ -29,7 +29,7 @@ load_variables <- function(topics, metrics, web = NULL, dfm = NULL, model = NULL
   }
   
   # Format numbers with consistent spacing and decimal support
-  num <- function(x, big.mark = " ", digits = 0) {
+  num <- function(x, big.mark = " ", digits = digits) {
     if (is.na(x) || is.null(x)) return("NA")
     if (x < 10000) {
       return(as.character(round(x, digits)))
@@ -66,6 +66,40 @@ load_variables <- function(topics, metrics, web = NULL, dfm = NULL, model = NULL
       # Single string - just add italics
       return(paste0("*", x, "*"))
     }
+  }
+  
+  # Add this function near the top of load_variables.R
+  format_country_scores <- function(json_string, n_show = 2, as_percentage = TRUE) {
+    # Parse JSON
+    country_data <- jsonlite::fromJSON(json_string)
+    
+    if (nrow(country_data) == 0) {
+      return("No country data")
+    }
+    
+    # Take only top N countries
+    country_data <- head(country_data, n_show)
+    
+    # Format as percentage or decimal
+    if (as_percentage) {
+      formatted <- paste0(country_data$country, " (", 
+                          round(country_data$score * 100, 1), "%)")
+    } else {
+      formatted <- paste0(country_data$country, " (", 
+                          round(country_data$score, 3), ")")
+    }
+    
+    return(paste(formatted, collapse = ", "))
+  }
+  
+  # In the topics processing loop:
+  for (i in 1:nrow(topics_table)) {
+    # ... other variables ...
+    
+    variables_list[[paste0("topic_", i, "_countries")]] <- 
+      format_country_scores(topics_table$top_countries[i], 
+                            n_show = 2, 
+                            as_percentage = TRUE)
   }
   
   # =========================================================================
@@ -142,6 +176,29 @@ load_variables <- function(topics, metrics, web = NULL, dfm = NULL, model = NULL
     }
   }
   
+  if (!is.null(model$data$category_map)) {
+    category_map <- model$data$category_map
+    
+    # Reconstruct the formula (same as build_prevalence_formula does)
+    formula_vars <- unlist(category_map)
+    variables_list$prevalence_formula <- paste("~", paste(formula_vars, collapse = " + "))
+  }
+  
+  # Document frequency thresholds (as percentages)
+  if (!is.null(dfm$metadata$min_doc_freq)) {
+    variables_list$min_doc_threshold_pct <- pct(dfm$metadata$min_doc_freq)
+  }
+  
+  if (!is.null(dfm$metadata$max_doc_freq)) {
+    variables_list$max_doc_threshold_pct <- pct(dfm$metadata$max_doc_freq)
+  }
+  
+  # Documents after aggregation (from model)
+  if (!is.null(model) && !is.null(model$data$aligned_meta)) {
+    # Count unique documents after aggregation
+    variables_list$n_documents_after_aggregation <- length(unique(model$data$aligned_meta$doc_id))
+  }
+  
   # =========================================================================
   # TOPIC VARIABLES
   # =========================================================================
@@ -154,9 +211,16 @@ load_variables <- function(topics, metrics, web = NULL, dfm = NULL, model = NULL
       variables_list[[paste0("topic_", i, "_name")]] <- topic_name
       variables_list[[paste0("topic_", i, "_prop")]] <- pct(topics_table$topic_proportion[i])
       variables_list[[paste0("topic_", i, "_frex")]] <- string(topics_table$frex_terms[i])
-      variables_list[[paste0("topic_", i, "_countries")]] <- topics_table$top_countries[i]
       variables_list[[paste0("topic_", i, "_documents")]] <- num(topics_table$effective_documents[i])
+      variables_list[[paste0("topic_", i, "_countries")]] <- 
+        format_country_scores(topics_table$top_countries[i], 
+                              n_show = 2,  # Only show top 2 countries
+                              as_percentage = TRUE)
     }
+  }
+  
+  if (!is.null(topics$metadata$meaningful_threshold)) {
+    variables_list$meaningful_threshold <- pct(topics$metadata$meaningful_threshold)
   }
   
   # =========================================================================
@@ -180,12 +244,20 @@ load_variables <- function(topics, metrics, web = NULL, dfm = NULL, model = NULL
       
       # Safe rounding for effect size
       if (is.numeric(row$effect_size)) {
-        variables_list[[paste0(clean_name, "_effect")]] <- round(row$effect_size, 4)
-      } else {
-        variables_list[[paste0(clean_name, "_effect")]] <- row$effect_size
+        variables_list[[paste0(clean_name, "_effect")]] <- pct(row$effect_size)
+      }
+      # ADD THIS: Store the abbreviation
+      if (!is.null(row$subcategory_abbrev)) {
+        variables_list[[paste0(clean_name, "_abbrev")]] <- row$subcategory_abbrev
       }
       
       metrics_count <- metrics_count + 1
+    }
+  }
+  
+  if (!is.null(metrics$metadata)) {
+    if (!is.null(metrics$metadata$n_value)) {
+      variables_list$top_n_topics <- num(metrics$metadata$n_value)  # Number of top topics (3)
     }
   }
   

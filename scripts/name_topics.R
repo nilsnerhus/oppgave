@@ -1,5 +1,5 @@
 # Convert simple character vector to proper topics structure
-name_topics <- function(model, topic_names_vector) {
+name_topics <- function(model, topic_names_vector, meaningful_threshold = 0.07) {
   
   log_message("Converting topic names to proper structure", "name_topics")
   
@@ -18,7 +18,6 @@ name_topics <- function(model, topic_names_vector) {
   topic_proportions <- colMeans(theta)
   
   # Calculate effective document count (meaningful presence threshold)
-  meaningful_threshold <- 0.07
   effective_doc_counts <- numeric(k)
   
   for (i in 1:k) {
@@ -34,27 +33,48 @@ name_topics <- function(model, topic_names_vector) {
     frex_terms_strings <- apply(topic_labels$frex, 1, function(x) paste(x[1:5], collapse = ", "))
   }
   
-  # Calculate top countries for each topic
-  top_countries_per_topic <- character(k)
+  # Calculate top countries for each topic (store as JSON strings for RDS compatibility)
   if ("country_name" %in% names(meta)) {
+    top_countries_list <- list()
+    
     for (i in 1:k) {
       country_scores <- aggregate(theta[, i], 
                                   by = list(country = meta$country_name),
                                   FUN = mean)
-      top_2 <- country_scores[order(country_scores$x, decreasing = TRUE)[1:min(2, nrow(country_scores))], ]
-      country_info <- paste0(top_2$country, " (", round(top_2$x, 3), ")")
-      top_countries_per_topic[i] <- paste(country_info, collapse = ", ")
+      top_n <- country_scores[order(country_scores$x, decreasing = TRUE), ]
+      
+      # Store as list
+      top_countries_list[[i]] <- data.frame(
+        country = top_n$country,
+        score = top_n$x,
+        stringsAsFactors = FALSE
+      )
     }
+    
+    # Convert to JSON strings for storage (survives RDS save/load)
+    top_countries_json <- sapply(top_countries_list, jsonlite::toJSON)
   } else {
-    top_countries_per_topic <- rep("No country data available", k)
+    # Empty JSON arrays
+    top_countries_json <- rep('{"country":[],"score":[]}', k)
   }
+  
+  # Create the data frame
+  topics_table <- data.frame(
+    topic_id = 1:k,
+    topic_name = topic_names_vector,
+    frex_terms = frex_terms_strings,
+    top_countries = top_countries_json,  # Stored as JSON strings
+    topic_proportion = topic_proportions,
+    effective_documents = effective_doc_counts,
+    stringsAsFactors = FALSE
+  )
   
   # Create the data frame that calculate_metrics expects
   topics_table <- data.frame(
     topic_id = 1:k,
     topic_name = topic_names_vector,
     frex_terms = frex_terms_strings,
-    top_countries = top_countries_per_topic,
+    top_countries = top_countries_json,
     topic_proportion = topic_proportions,
     effective_documents = effective_doc_counts,
     stringsAsFactors = FALSE
@@ -69,6 +89,7 @@ name_topics <- function(model, topic_names_vector) {
       timestamp = Sys.time(),
       k = k,
       manual_names_used = TRUE,
+      meaningful_threshold = meaningful_threshold,  # ADD THIS
       success = TRUE
     ),
     diagnostics = list()
