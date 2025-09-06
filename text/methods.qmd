@@ -30,8 +30,6 @@ The methodological power of computational text analysis extends beyond pattern i
 
 Recent applications demonstrate how computational text analysis can illuminate power dynamics embedded in institutional discourse. Studies of World Bank and OECD documents reveal how seemingly neutral technical language systematically frames governance challenges in ways that preclude certain political possibilities [@defrancesco2020]. Similarly, analysis of urban climate action plans uncovers striking homogenization despite radically different urban contexts, suggesting that policy mobility operates through discourse standardization rather than substantive knowledge exchange [@westman2023]. These findings underscore how computational methods can operationalize critical theoretical insights about the relationship between language, knowledge, and power in global governance.
 
-[expand on the actual implementations of stms published on the package website, if needed]
-
 The integration of computational and interpretive approaches addresses longstanding tensions in discourse analysis between systematic comparison and contextual sensitivity. Traditional critical discourse analysis excels at unpacking the ideological work performed by specific texts but struggles to make claims about broader patterns across large corpora [@jacobs2019]. Conversely, purely quantitative content analysis may identify patterns but miss the nuanced ways language performs political work. Computational text analysis, particularly when combined with careful qualitative interpretation, enables what @jacobs2019 term "distant reading" that maintains connection to close textual analysis. Researchers can zoom out to identify corpus-wide patterns, then zoom in to examine how specific documents exemplify or deviate from these trends.
 
 For climate adaptation research specifically, computational text analysis offers crucial insights into how global frameworks interact with local knowledge systems. The technical apparatus of adaptation planning—vulnerability assessments, risk matrices, implementation frameworks—creates a standardized vocabulary that may overshadow indigenous and place-based understandings of environmental change. By systematically analyzing how different countries deploy this vocabulary, researchers can identify whether adaptation planning operates as what @ferguson1994 termed an "anti-politics machine" that transforms political questions into technical problems. The computational approach makes visible patterns of depoliticization that might otherwise remain hidden within the sheer volume of planning documents.
@@ -55,8 +53,6 @@ Ultimately, computational text analysis serves not as a replacement for critical
 ## Structural Topic Modeling
 
 >This implementation of the Structural Topic Model (STM) was adapted to solve for the varying length, poor quality of the PDFs available, as well as, the influence of national identifiers. 
-
-[Scraping, https://napcentral.org/submitted-NAPs; name, time and text]
 
 The preprocessing pipeline began by standardizing the `r n_documents` English-language NAPs into comparable analytical units. Initial processing retained documents containing `r n_tokens_raw` tokens representing a vocabulary of `r n_vocabulary_raw` unique terms. Standard text preprocessing steps—lowercasing, punctuation removal, and number removal—were applied uniformly [@stm]. 
 
@@ -92,17 +88,11 @@ The last step before running the model is to decide on how many topics the model
 
 Model estimation employed variational expectation-maximization with `r model_iterations` iterations [@stm], using spectral initialization for stability across runs. After the model had been run on the `r n_final_documents` it was aggregated back to document level. Here, I averaged the topic proportions across the segments for each document, getting a topic proportion for all topics, per plan.
 
-[insert exclusivity metrics, and that they are better than recommended @roberts2019]
-
-[extend with a better explanation of the model]
-
 Topic better understand the topics, I implemented two more metrics. First, I reviewed the top 5 FREX (frequency-exclusivity) metric [@roberts2016] identified terms that were both common within topics and distinctive across them, for all the `r k_topics`. I picked the most distinct one as the name of the topic. Then, to get a better feel for the distribution of topics, I counted all topics that had a more than `r meaningful_threshold` proportion in a document.
 
 For the group testing, the calculation proceeded in four steps. First, for each category, the mean topic distribution is extracted across all documents in that group, creating a characteristic discourse profile. Second, the top `r top_n_topics` topics by proportion are identified for each group. Third, the proportion of total discourse of these topics added together, inspired by dominance values in biology [@kilde]. Fourth, this raw score is normalized against a uniform baseline where discourse distributes equally across all topics, producing a 0-1 scale where 0 represents perfect distribution and 1 represents complete concentration. This normalization ensures that values have consistent meaning regardless of the number of topics in the model, with a value of 0.5 representing 50% more concentration than expected under uniform distribution.
 
 Establishing whether observed these patterns actually carry any weight beyond being random variation, I use the built-in functionality in STM. Here, STM runs a series of regressions to estimate the effect that group membership has on the topic proportions in the groups [@roberts2016]. Statistical significance was assessed at α = 0.05. All tested subcategories except the global baseline showed statistically significant effects (p < 0.05), indicating that category membership significantly predicts topic prevalence patterns.
-
-[expand with a better explanation of the regressions]
 
 An important methodological consideration involves the aggregation of subcategory results to category-level estimates. To facilitate interpretation and comparison across the three categorization schemes, effect sizes from individual subcategories (e.g., each income level) were averaged to create category-level measures (e.g., overall income effect). This approach treats all subcategories equally regardless of sample size or internal variance, prioritizing interpretative clarity over statistical precision. While this simplification may mask heterogeneity within categories, it enables direct comparison of whether income, region, or geography most strongly influences adaptation discourse patterns.
 
