@@ -24,6 +24,7 @@ The main research question is thus: **What is climate adaptation? Who decides?**
 To get closer to these questions, I deploy a Structural Topic Model (STM) with the help of the `stm` package [@stm] in the programming language `R` [@base]. By analyzing all `r n_documents_after_aggregation` English language plans, the model found `r k_topics` main topics that the plans spun around. The topic were then named, and their distribution across the UN classifications, regional, geographical, and income, as well as the time of the plans publication and estimated effects were tested. 
 
 This was then analyzed through a broad conceptual framework based on the institutional- and critical approaches from development-, decolonial-, future- and climate adaptation studies. 
+
 ## Hundred Billion Dollar COP-Out(come)
 
 The title of the thesis attempt to capture the findings. Climate adaptation is either the literal outcome of the Conference of the Parties (COP) to the UNFCCC, the annual meeting often called the Climate Summits. Here, hundreds of billions of dollars are pledged to help developing countries, those hardest hit by climate change to adapt and overcome the challenges climate change presents them. The sum is growing, $100 billion promised at COPXX Copenhagen (2009) and the $300 billion pledged at COP29 (2024).
