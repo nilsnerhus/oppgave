@@ -12,18 +12,12 @@ book:
   chapters:
     - index.qmd
     - text/intro.qmd
-    - part: Background
-      chapters:
-        - text/context.qmd
-        - text/concepts.qmd
-    - part: Research design
-      chapters:
-        - text/methods.qmd
-        - text/findings.qmd
-    - part: Discussion
-      chapters:
-        - text/discussion.qmd
-        - text/conclusion.qmd
+    - text/context.qmd
+    - text/concepts.qmd
+    - text/methods.qmd
+    - text/findings.qmd
+    - text/discussion.qmd
+    - text/conclusion.qmd
 
 cap-location: bottom
 bibliography: 
@@ -45,11 +39,11 @@ format:
     code-fold: true
     fig-width: 8
     fig-height: 4
+    toc: FALSE
   pdf:
     documentclass: report
     fig-width: 8
     fig-height: 4
-    fig-align: center
     toc: true
     number-sections: true
     number-depth: 2
