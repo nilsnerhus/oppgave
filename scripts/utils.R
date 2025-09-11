@@ -167,72 +167,135 @@ web_cache <- function(func, ..., url = "https://napcentral.org/submitted-naps",
 
 # --- Thesis page counter ----------------------------------------
 
-count_thesis_pages <- function(include_index = TRUE, verbose = TRUE) {
+#' Count thesis characters from Quarto HTML output with chapter breakdown
+library(rvest)
+
+check_thesis <- function(path = "docs/", per_chapter = TRUE) {
+  
+  # Constants
   CHARS_PER_PAGE <- 2400
   MIN_PAGES <- 60
   MAX_PAGES <- 80
   
-  qmd_files <- list.files("text", pattern = "\\.qmd$", full.names = TRUE)
-  if (include_index && file.exists("index.qmd")) qmd_files <- c("index.qmd", qmd_files)
-  
-  file_stats <- lapply(qmd_files, function(file) {
-    lines <- readLines(file, warn = FALSE)
-    
-    # Remove YAML
-    if (length(lines) > 0 && lines[1] == "---") {
-      yaml_end <- which(lines == "---")[2]
-      if (!is.na(yaml_end)) lines <- lines[(yaml_end + 1):length(lines)]
-    }
-    
-    # Remove code chunks and inline code
-    in_chunk <- FALSE
-    clean_lines <- character()
-    for (line in lines) {
-      if (grepl("^```\\{", line)) in_chunk <- TRUE
-      else if (grepl("^```$", line) && in_chunk) in_chunk <- FALSE
-      else if (!in_chunk) clean_lines <- c(clean_lines, gsub("`r[^`]+`", "", line))
-    }
-    
-    text <- paste(clean_lines, collapse = " ")
-    chars <- nchar(text)
-    pages <- chars / CHARS_PER_PAGE
-    list(chars = chars, pages = pages)
-  })
-  
-  names(file_stats) <- basename(qmd_files)
-  
-  total_chars <- sum(sapply(file_stats, `[[`, "chars"))
-  total_pages <- total_chars / CHARS_PER_PAGE
-  pages_to_min <- max(0, MIN_PAGES - total_pages)
-  pages_to_max <- max(0, total_pages - MAX_PAGES)
-  within_limits <- total_pages >= MIN_PAGES && total_pages <= MAX_PAGES
-  
-  if (verbose) {
-    cat("\n=== THESIS LENGTH ===\n")
-    for (f in names(file_stats)) cat(f, sprintf("%5.1f pages (%d chars)\n", file_stats[[f]]$pages, file_stats[[f]]$chars))
-    cat(sprintf("TOTAL: %5.1f pages (%d chars)\n", total_pages, total_chars))
+  # Get HTML files
+  if (grepl("\\.html$", path)) {
+    files <- path
+    per_chapter <- FALSE  # Single file, no chapter view
+  } else {
+    files <- list.files(path, "\\.html$", recursive = TRUE, full.names = TRUE)
   }
   
+  # Process each file
+  chapter_data <- list()
+  
+  for (file in files) {
+    html <- read_html(file)
+    
+    # Get all content sections
+    sections <- html_nodes(html, "section.level2, section.level1")
+    main_content <- html_nodes(html, "main")
+    
+    if (length(main_content) > 0) {
+      text <- html_text2(main_content)
+    } else if (length(sections) > 0) {
+      text <- html_text2(sections) %>% paste(collapse = " ")
+    } else {
+      body <- html_node(html, "body")
+      text <- html_text2(body)
+    }
+    
+    # Clean text
+    text <- trimws(gsub("\\s+", " ", text))
+    
+    # Store chapter data
+    chapter_name <- gsub("\\.html$", "", basename(file))
+    chapter_data[[chapter_name]] <- list(
+      chars = nchar(text),
+      pages = nchar(text) / CHARS_PER_PAGE,
+      words = length(strsplit(text, "\\s+")[[1]])
+    )
+  }
+  
+  # Calculate totals
+  total_chars <- sum(sapply(chapter_data, function(x) x$chars))
+  total_pages <- total_chars / CHARS_PER_PAGE
+  total_words <- sum(sapply(chapter_data, function(x) x$words))
+  
+  # Print header
+  cat("\n══════════════════════════════════════════════\n")
+  cat("         THESIS CHARACTER COUNT\n")
+  cat("══════════════════════════════════════════════\n")
+  
+  # Print chapter breakdown if requested
+  if (per_chapter && length(chapter_data) > 1) {
+    cat("\n📚 CHAPTER BREAKDOWN:\n")
+    cat("──────────────────────────────────────────────\n")
+    
+    # Sort by page count
+    sorted_chapters <- chapter_data[order(sapply(chapter_data, function(x) x$pages), 
+                                          decreasing = TRUE)]
+    
+    # Print each chapter
+    for (name in names(sorted_chapters)) {
+      ch <- sorted_chapters[[name]]
+      # Create a mini progress bar
+      bar_size <- round((ch$pages / max(sapply(chapter_data, function(x) x$pages))) * 20)
+      bar <- paste0(rep("▓", bar_size), collapse = "")
+      bar <- paste0(bar, paste0(rep("░", 20 - bar_size), collapse = ""))
+      
+      cat(sprintf("%-20s %s %.1f pages\n", 
+                  substr(name, 1, 20), bar, ch$pages))
+    }
+    cat("──────────────────────────────────────────────\n")
+  }
+  
+  # Print totals
+  cat("\n📊 TOTALS:\n")
+  cat("──────────────────────────────────────────────\n")
+  cat(sprintf("📄 Pages:      %.1f / %d-%d\n", total_pages, MIN_PAGES, MAX_PAGES))
+  cat(sprintf("📝 Characters: %s\n", format(total_chars, big.mark = " ")))
+  cat(sprintf("💬 Words:      %s\n", format(total_words, big.mark = " ")))
+  cat(sprintf("📁 Files:      %d chapters\n", length(chapter_data)))
+  
+  # Progress bar
+  cat("\nProgress: [")
+  filled <- round((total_pages / MAX_PAGES) * 30)
+  min_mark <- round((MIN_PAGES / MAX_PAGES) * 30)
+  for (i in 1:30) {
+    if (i == min_mark) cat("|")
+    else if (i <= filled) cat("█")
+    else cat("░")
+  }
+  cat("] ", sprintf("%.0f%%\n", (total_pages/MIN_PAGES)*100))
+  
+  # Status
+  if (total_pages < MIN_PAGES) {
+    cat(sprintf("\n⚠️  Need %.1f more pages (%.0f chars)\n", 
+                MIN_PAGES - total_pages, (MIN_PAGES - total_pages) * CHARS_PER_PAGE))
+  } else if (total_pages > MAX_PAGES) {
+    cat(sprintf("\n⚠️  %.1f pages over maximum!\n", total_pages - MAX_PAGES))
+  } else {
+    cat(sprintf("\n✅ Within range! %.1f pages to max\n", MAX_PAGES - total_pages))
+  }
+  
+  cat("══════════════════════════════════════════════\n")
+  
+  # Return data invisibly
   invisible(list(
-    total_pages = total_pages,
-    total_chars = total_chars,
-    within_limits = within_limits,
-    pages_to_min = pages_to_min,
-    pages_to_max = pages_to_max,
-    by_file = file_stats,
-    requirements = list(min = MIN_PAGES, max = MAX_PAGES, chars_per_page = CHARS_PER_PAGE)
+    total = list(
+      pages = round(total_pages, 1),
+      chars = total_chars,
+      words = total_words
+    ),
+    chapters = chapter_data
   ))
 }
 
-thesis_pages <- function() {
-  stats <- count_thesis_pages(verbose = FALSE)
-  cat(sprintf("%.1f standard pages", stats$total_pages))
-  if (!stats$within_limits) {
-    if (stats$total_pages < stats$requirements$min) cat(sprintf(" (%.1f below minimum)", stats$pages_to_min))
-    else cat(sprintf(" (%.1f above maximum)", stats$pages_to_max))
-  }
-  cat("\n")
-}
+# Usage:
+# check_thesis()                    # With chapter breakdown
+# check_thesis(per_chapter = FALSE) # Just totals
+# result <- check_thesis()          # Access the data
+# result$chapters$introduction      # Get specific chapter data
 
 # --- Dependency updater (leaner) --------------------------------
 

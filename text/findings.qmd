@@ -6,34 +6,14 @@ list2env(vars, envir = .GlobalEnv)
 
 # Findings {#sec-findings}
 
->This chapter presents the findings from the STM. It finds that the most important topic is `r topic_8_name`, and that there is a high concentration across the board, with the highest estimated effect coming from membership in regional groups (`r region_effect`). 
-
-The findings show a high level of concentration across the board, suggesting that the NAPs are concentrated somehow.
-
-In the first section I go through the topic findings, their proportion of the whole corpus and the number of effective documents they are in. I find that while `r topic_8_name` is `r topic_8_prop` of the corpus, it is also present to a meaningful degree in `r topic_8_documents` of the `r n_documents_after_aggregation` in the corpus. 
-
-In the second section I go through the group findings. Here, surprisingly or not, regional factors (`r region_effect`) have a larger estimated effect than income (`r income_effect`) or geography (`r geography_effect`). 
-
 ## Topics
 
+>This section reveals how structural topic modeling identifies eight distinct themes in adaptation planning, with one topic dominating the corpus while other climate concerns are marginalized.
 
->
+`r topic_8_name` commands an extraordinary `r topic_8_prop` of the entire corpus—more than triple any other topic—while appearing meaningfully in `r topic_8_documents` of `r n_documents_after_aggregation` national plans. The FREX terms "`r topic_8_frex`" reveal a discourse centered on planning infrastructure itself. The term _mainstream_ signals the integration of climate considerations into existing development frameworks, while _learn_ points to knowledge transfer mechanisms central to international climate architecture. References to the Paris Agreement (_pari_, _agreement_) situate this within global governance structures, and _progress_ likely refers to advancement metrics required by international reporting, other towards other goal.
 
-The remaining topics address diverse vulnerabilities and planning dimensions, though all filtered through institutional lenses and operating at much smaller scales. `r topic_1_name`, representing `r topic_1_prop` of the corpus, exhibits FREX terms "`r topic_1_frex`" with highest representation in `r topic_1_countries`. Despite its naming after the NAPA (National Adaptation Programme of Action) framework, closer examination reveals this topic encompasses vulnerability concerns through terms including "poverti" (poverty), "poor" (economic status), "children", "women", "migrat" (population movement), and "sanit" (sanitation). This reflects how adaptation in economically constrained contexts becomes framed primarily as poverty reduction rather than environmental response.
+The _Mainstream_ label captures how this topic represents the procedural backbone of adaptation planning: the frameworks, agreements, and institutional arrangements that define what adaptation can be. Its dominance suggests that regardless of whether countries face sea-level rise, desertification, or mountain glacial retreat, all must first demonstrate fluency in this technical governance language to access resources and legitimacy. The relationship between topic prevalence and document coverage reveals fundamental patterns in how adaptation discourse operates globally. @fig-topics maps each topic according to both their share of total discourse and their presence across documents, exposing how certain frameworks achieve hegemonic status while others remain peripheral.
 
-`r topic_2_name`, comprising `r topic_2_prop` of the corpus, exhibits FREX terms "`r topic_2_frex`" with highest representation in `r topic_2_countries`. This topic captures marine and coastal environments through "sea" (ocean systems), "coastal" (shoreline areas), "rise" (sea-level rise), "cyclon" (tropical cyclones), and "slr" (sea-level rise abbreviation). The geographic specificity to small island and coastal nations validates how certain environmental challenges generate recognizable thematic clusters, though still expressed through standardized vulnerability assessment frameworks.
-
-`r topic_3_name`, the least prevalent at `r topic_3_prop`, shows FREX terms "`r topic_3_frex`" with clustering around `r topic_3_countries`. This topic encompasses water infrastructure and management systems through "irrig" (irrigation systems), "hydrometeorolog" (meteorological systems), "mountain" (highland environments), "wastewat" (wastewater management), and "basin" (watershed areas). The country pattern suggests technical water management approaches that transcend developmental contexts, indicating how engineering frameworks standardize responses to hydrological vulnerabilities.
-
-`r topic_4_name` at `r topic_4_prop` shows FREX terms "`r topic_4_frex`" with clustering around `r topic_4_countries`. This topic encompasses rural livelihoods and agricultural systems through terms including "livestock" (animal husbandry), "farm" (agricultural systems), "harvest" (crop production), "pest" (agricultural threats), and "watersh" (watershed management). The countries represented—nations with large rural populations and agriculture-dependent economies—confirm how economic structures influence which climate vulnerabilities receive sustained attention in planning documents.
-
-`r topic_5_name`, comprising `r topic_5_prop` of the corpus, complements the procedural focus through organizational and bureaucratic dimensions. The FREX terms "`r topic_5_frex`" with clustering around `r topic_5_countries` emphasize institutional arrangements through terms like "offic" (offices), "organis" (organizations), "depart" (departments), "output" (deliverables), and "partnership" (collaborative frameworks). This topic captures the administrative infrastructure deemed necessary for adaptation implementation, suggesting that organizational capacity-building has become as important as addressing climate impacts themselves.
-
-`r topic_6_name` at `r topic_6_prop` presents an interesting anomaly. FREX terms "`r topic_6_frex`" with highest representation in `r topic_6_countries` initially suggest transition planning, but closer examination reveals infrastructure development concerns. The focus on "transit" and "line" as urban infrastructure terms, combined with "executiv" (executive) and "instrument" (policy instruments), alongside "indigen" (indigenous) and "territori" (territorial), reflects Brazil's specific context where indigenous populations represent significant stakeholders in infrastructure development. This misalignment between automated naming and actual content highlights how regional specificities can be obscured within standardized topic frameworks.
-
-`r topic_7_name`, at `r topic_7_prop` of the corpus, presents the technical modeling dimension of adaptation planning. FREX terms "`r topic_7_frex`" encompass climate science vocabulary including "rcp" (Representative Concentration Pathways), "ensembl" (ensemble modeling), "centuri" (century timeframes), "precipit" (precipitation), and "confid" (confidence intervals). The surprising country clustering around `r topic_7_countries` reveals how technical assessment frameworks operate across diverse political contexts. Manual review of the Palestinian NAP confirms considerable focus on precipitation modeling while notably excluding any mention of Israel, perhaps indicating how technical language can obscure political realities.
-
-`r topic_8_name`, representing `r topic_8_prop` of the corpus, dominates adaptation discourse to an extraordinary degree—more than three times larger than any other topic. Its FREX terms "`r topic_8_frex`" suggest that this theme centers on the planning of planning itself. Here, knowledge transfer (*learn*) plays a central role, as well as the international structures for climate change, the Paris agreement (*pari* and *agreement*). The only term up for debate is progress, which can hint at progress towards climate related global goals, or progress in a more general sense. That the main countries, `topic_8_countries` are both in Europe & Central Asia, the most concentrated region, as we will see below, although their dominance values are not the highest we will observe in the data. 
 
 ```{r}
 #| label: fig-topics
@@ -71,12 +51,64 @@ ggplot(topics_table, aes(x = topic_proportion, y = effective_documents)) +
         axis.title.y = element_text(margin = margin(r = 10)))
 ```
 
+The remaining topics address diverse vulnerabilities and planning dimensions, though all filtered through institutional lenses and operating at much smaller scales. 
+
+`r topic_1_name` occupies `r topic_1_prop` of discourse, appearing meaningfully in `r topic_1_documents` documents, with FREX terms "`r topic_1_frex`" and concentration in `r topic_1_countries`. The fragmented nature of most terms—_Ment_ (likely from development, management, government), _Tion_ (from adaptation, mitigation, implementation), and _Pro_ (from project, program, process)—alongside _Percent_ suggests this topic captures formulaic planning language. Only _Napa_ provides clear thematic content, referencing the National Adaptation Programme of Action framework. The _NAPA_ label is appropriate given this is the only complete meaningful term, though the topic appears to represent linguistic patterns common in countries with NAPA experience rather than coherent subject matter.
+
+`r topic_2_name` comprises `r topic_2_prop` of the corpus, present in `r topic_2_documents` documents, with FREX terms "`r topic_2_frex`" dominated by `r topic_2_countries`. The coherent terminology around tropical weather systems (_Cyclon_, _Tropic_) and temporal patterns (_Decad_, _Sea_, _Rise_) validates this topic's thematic integrity. The _Cyclone_ designation accurately reflects the focus on tropical storm vulnerabilities central to many coastal and island nations. That such acute climate threats occupy less than 10% of global adaptation discourse reveals how even the most urgent vulnerabilities must compete for space within institutionally-defined frameworks.
+
+`r topic_3_name` represents only `r topic_3_prop` of discourse across `r topic_3_documents` documents, with FREX terms "`r topic_3_frex`" and presence in `r topic_3_countries`. The terminology mixing governmental structures (_Republ_, _Feder_), geography (_Mountain_), seasonality (_Summer_), and formal agreements (_Accord_) suggests this captures federal republics discussing mountain environments and seasonal variations. The _Mountain_ label partially captures the geographic focus, though the prominence of governmental terms indicates this may reflect how certain political structures (federal republics) approach highland adaptation challenges.
+
+`r topic_4_name` at `r topic_4_prop` appearing in `r topic_4_documents` documents shows FREX terms "`r topic_4_frex`" concentrated in `r topic_4_countries`. The marine and coastal terminology (_Marin_, _Island_, _Hurrican_, _Coastal_, _Mangrov_) forms a highly coherent cluster around island and coastal vulnerabilities. The _Island_ designation perfectly captures this topic's focus on maritime environments and the specific challenges of island states facing hurricanes and coastal degradation. Its relatively modest presence despite clear thematic coherence suggests even well-defined vulnerabilities receive limited discursive space.
+
+`r topic_5_name` constitutes `r topic_5_prop` found in `r topic_5_documents` documents with FREX terms "`r topic_5_frex`" prominent in `r topic_5_countries`. The bureaucratic vocabulary (_Offic_, _Climate-Resili_, _Medium_, _Secretariat_, _Depart_) reveals institutional architecture considerations, with _Climate-Resili_ suggesting these offices focus specifically on resilience building. The _Office_ label effectively captures the administrative focus. Its presence suggests adaptation planning requires demonstrating organizational competence as much as addressing climate vulnerabilities, with countries like Bhutan and Nepal dedicating substantial discourse to institutional arrangements.
+
+`r topic_6_name` at `r topic_6_prop` in `r topic_6_documents` documents with FREX terms "`r topic_6_frex`" dominated by `r topic_6_countries`. The terminology spans infrastructure (_Transit_), planning processes (_Task_, _Instrument_), and indigenous rights (_Indigen_, _Territori_). The _Transit_ label captures only one dimension of what appears to be a complex intersection of infrastructure development and indigenous territorial governance. Brazil and Argentina's dominance suggests this topic reflects Latin American contexts where infrastructure projects must navigate indigenous rights—a reminder that adaptation occurs within existing political geographies.
+
+`r topic_7_name` comprises `r topic_7_prop` across `r topic_7_documents` documents with FREX terms "`r topic_7_frex`" appearing in `r topic_7_countries`. The technical climate science vocabulary (_Rcp_ for Representative Concentration Pathways, _Rainfal_, _Ensembl_, _Confid_, _Trend_) forms the clearest thematic cluster, representing the modeling and projection work underlying vulnerability assessments. The _RCP_ designation accurately identifies this as the technical scientific foundation of adaptation planning. Its limited presence and concentration in specific countries like West Bank and Gaza suggests that despite rhetoric about science-based planning, technical climate analysis remains a minor and geographically specific component of adaptation discourse.
+
+```{r}
+#| label: tbl-topics
+#| tbl-cap: "Summary of adaptation discourse topics identified through structural topic modeling"
+#| echo: false
+
+# Load required packages
+library(knitr)
+library(kableExtra)
+
+# Create topics data frame using a loop
+topics_data <- data.frame()
+
+for(i in 1:k_topics) {
+  topics_data <- rbind(topics_data, data.frame(
+    Topic = get(paste0("topic_", i, "_name")),
+    Proportion = get(paste0("topic_", i, "_prop")),
+    Documents = get(paste0("topic_", i, "_documents")),
+    `Key Terms` = get(paste0("topic_", i, "_frex")),
+    Countries = get(paste0("topic_", i, "_countries"))
+  ))
+}
+
+# Create formatted table (already in topic number order from loop)
+kable(topics_data, 
+      format = "markdown",
+      row.names = FALSE,
+      col.names = c("Topic", "Proportion", "Documents", "Key Terms (FREX)", "Representative Countries"))
+```
+
 ## Groups
 
+>This section examines how category membership shapes adaptation discourse, revealing that regional institutional networks exert stronger influence than actual climate vulnerabilities or economic capacity.
 
-The relationship between national wealth and adaptation discourse reveals unexpected patterns. High-income countries show the most extreme dominance at `r high_income_dom`, with their discourse overwhelmingly concentrated on `r high_income_topics`. This represents nearly two-thirds of their total discourse focused on just three topics—a remarkable concentration for countries presumably capable of addressing multiple dimensions simultaneously. Their effect size of `r high_income_effect` sits in the middle range, neither the highest nor lowest among income groups.
+Regional groupings demonstrate the most powerful influence on adaptation discourse, with an average effect size of `r region_effect`—substantially higher than income (`r income_effect`), geography (`r geography_effect`), or time (`r time_effect`). This dominance suggests that regional institutional architectures—development banks, technical assistance programs, consultant networks—create convergence pressures that overwhelm both national circumstances and actual climate vulnerabilities.
 
-Upper-middle income countries present an interesting contrast, exhibiting the lowest dominance among income categories at `r upper_middle_income_dom` with emphasis on `r upper_middle_income_topics`. Notably, they also show the smallest effect size at `r upper_middle_income_effect`, suggesting these countries maintain the most varied approaches within their group. This combination of lower dominance and lower effect size hints at greater flexibility in how these countries structure their adaptation discourse.
+Europe & Central Asia (`r europe_central_asia_abbrev`) exhibit the strongest regional effect at `r europe_central_asia_effect`, nearly half the total possible effect size. Countries in this region show dominance of `r europe_central_asia_dom` concentrated on `r europe_central_asia_topics`. Despite the region being very large and diverse, from EU members to Central Asian republics, these plans demonstrate remarkable homogeneity. The emphasis on mountain ecosystems alongside mainstream planning suggests either genuinely shared vulnerabilities or, more likely, adoption of standardized regional templates.
+
+South Asia follows with an effect size of `r south_asia_effect`, the second highest among regions. With only four plans in the dataset, this region nonetheless shows dominance of `r south_asia_dom` focused on `r south_asia_topics`. The prominence of organizational and bureaucratic concerns suggests these nations have developed parallel institutional architectures, potentially through shared regional frameworks or common technical assistance sources.
+
+Sub-Saharan Africa and Middle East, North Africa, Afghanistan & Pakistan both show effect sizes of `r sub_saharan_africa_effect`. Sub-Saharan Africa's dominance of `r sub_saharan_africa_dom` through `r sub_saharan_africa_topics` reflects the region's longer engagement with adaptation planning through NAPA frameworks. Meanwhile, MENA's lower dominance of `r middle_east_north_africa_afghanistan_pakistan_dom` but equal effect size suggests that while this region explores more diverse topics, countries within it still converge strongly around `r middle_east_north_africa_afghanistan_pakistan_topics`.
+
+The relationship between discourse dominance and group effect sizes reveals how different categorization schemes create varying levels of constraint on national adaptation planning. @fig-dominance-effect maps these patterns across all subcategories.
 
 ```{r}
 #| label: fig-dominance-effect
@@ -120,47 +152,9 @@ ggplot(plot_data, aes(x = dominance, y = effect_size)) +
   )
 ```
 
-Lower-middle income countries display moderate patterns, with dominance of `r lower_middle_income_dom` through `r lower_middle_income_topics`. Their effect size of `r lower_middle_income_effect` falls between the extremes, suggesting moderate group coherence without excessive rigidity.
+The scatter reveals no clear correlation between dominance and effect size. High-income countries show extreme topic concentration (`r high_income_dom`) but moderate group effects (`r high_income_effect`), while low-income countries display lower dominance (`r low_income_dom`) but the highest income-group effect (`r low_income_effect`). This suggests that discourse concentration and group conformity operate as independent dimensions of constraint.
 
-Low-income countries exhibit dominance of `r low_income_dom` with distinctively different top topics: `r low_income_topics`. Significantly, their effect size of `r low_income_effect` stands out as the highest among all income categories—nearly double that of upper-middle income countries. This extreme effect size suggests low-income countries show remarkably similar discourse patterns to each other, with limited variation between individual countries in this group.
-
-The non-linear relationship between income and these metrics challenges simple explanations. While one might expect a clear gradient from rich to poor, the actual pattern shows upper-middle income countries with the most autonomy (lowest effect size) while low-income countries show the strongest group constraints (highest effect size). The overall income category shows dominance of `r income_dom` with an average effect size of `r income_effect`, confirming that wealth levels significantly shape adaptation discourse, though not in straightforward ways.
-
-Regional groupings reveal the strongest patterns in the entire dataset, with an overall dominance of `r region_dom` and average effect size of `r region_effect`—the highest among all category types. This suggests regional institutional networks and shared frameworks powerfully shape how countries conceptualize adaptation, potentially more than actual climate vulnerabilities.
-
-Europe & Central Asia demonstrates extraordinary convergence, showing dominance of `r europe_central_asia_dom` through `r europe_central_asia_topics`. The effect size of `r europe_central_asia_effect` ranks as the highest regional effect and among the highest in the entire dataset. This exceptional convergence occurs despite the region encompassing diverse contexts from EU members to Central Asian republics, suggesting powerful standardizing forces at work.
-
-Latin America & Caribbean exhibits similarly high dominance at `r latin_america_caribbean_dom` with emphasis on `r latin_america_caribbean_topics`. The prominence of transit alongside mainstream topics distinguishes this region's discourse. With an effect size of `r latin_america_caribbean_effect`, the region shows significant but not extreme group convergence, allowing some space for national variation within shared regional frameworks.
-
-South Asia, despite containing only four plans, displays remarkable uniformity with dominance of `r south_asia_dom` focused on `r south_asia_topics`. The high effect size of `r south_asia_effect` indicates strong regional coherence, though the small sample size warrants cautious interpretation. The emphasis on office and organizational topics alongside mainstream planning suggests shared institutional concerns across the region.
-
-Sub-Saharan Africa, the most geographically and climatically diverse region, nonetheless shows significant convergence with dominance of `r sub_saharan_africa_dom` through `r sub_saharan_africa_topics`. The effect size of `r sub_saharan_africa_effect` reveals substantial regional patterns despite enormous variation in actual climate challenges—from Sahelian droughts to tropical flooding to highland agriculture. The prominence of NAPA topics alongside mainstream planning reflects the region's longer engagement with adaptation frameworks.
-
-East Asia & Pacific exhibits dominance of `r east_asia_pacific_dom` through `r east_asia_pacific_topics`, combining procedural concerns with obvious regional vulnerabilities. The effect size of `r east_asia_pacific_effect` represents the lowest regional effect, suggesting more diversity within this group—perhaps reflecting the vast differences between Pacific island states and continental Asian countries included in this category.
-
-Middle East, North Africa, Afghanistan & Pakistan shows the lowest regional dominance at `r middle_east_north_africa_afghanistan_pakistan_dom` with emphasis on `r middle_east_north_africa_afghanistan_pakistan_topics`. Despite this lower dominance, the effect size of `r middle_east_north_africa_afghanistan_pakistan_effect` remains substantial, indicating that even in this politically and environmentally diverse region, countries converge around similar adaptation frameworks. The prominence of RCP (climate projections) as the lead topic distinguishes this region's technical emphasis.
-
-All regional subcategories demonstrate statistical significance (p < 0.05), with no exceptions. This universal significance, combined with consistently high effect sizes, suggests regional institutional architectures—development banks, technical assistance programs, consultant networks—create powerful convergence pressures that shape adaptation discourse regardless of actual environmental differences.
-
-Geographic vulnerability classifications reveal how shared environmental exposures translate into discourse patterns, with overall dominance of `r geography_dom` and average effect size of `r geography_effect`. These categories, based on recognized climate vulnerabilities, might be expected to show the strongest convergence, yet they demonstrate more modest patterns than regional groupings.
-
-Small Island Developing States exhibit the highest dominance in the entire dataset at `r sids_dom`, focusing overwhelmingly on `r sids_topics`. This extreme concentration—over two-thirds of discourse in just three topics—reflects how acute, existential climate threats create highly focused adaptation narratives. The effect size of `r sids_effect` confirms strong group coherence, as these nations face genuinely similar challenges from sea-level rise and tropical cyclones. Yet even here, the mainstream planning topic dominates alongside obviously relevant island and cyclone concerns.
-
-Landlocked Developing Countries show moderate dominance of `r lldc_dom` through emphasis on `r lldc_topics`. The effect size of `r lldc_effect` indicates modest group patterns. Surprisingly, neither mountain nor water management topics feature prominently despite these being defining challenges for landlocked nations. Instead, organizational and procedural topics dominate, suggesting institutional concerns overshadow geographic specificities.
-
-Other countries—those without special geographic designations—display the lowest geographic dominance at `r other_dom` with top topics of `r other_topics`. The effect size of `r other_effect` represents the weakest geographic pattern, though still statistically significant. This baseline group's lower convergence might reflect greater heterogeneity when countries lack a strong categorical identity, yet procedural topics still feature prominently even in this diverse group.
-
-The pattern where SIDS show extreme dominance while other categories show moderate levels suggests that only the most acute, internationally recognized vulnerabilities generate strongly concentrated discourse. Countries with less visible or more complex vulnerabilities default to institutional frameworks rather than geography-specific approaches.
-
-Analysis of submission timing reveals how adaptation discourse has evolved over the decade-long development of NAPs, with overall temporal dominance of `r time_dom` and average effect size of `r time_effect`—the lowest among all category types, suggesting time matters less than income, region, or geography in shaping discourse.
-
-Early submissions (2015-2018) show moderate dominance of `r early_dom` with `r early_topics`. The effect size of `r early_effect`—the lowest temporal effect—suggests early adopters maintained relatively diverse approaches, perhaps because frameworks were still emerging and countries had more freedom to interpret adaptation planning according to national preferences.
-
-Middle period submissions (2019-2021) exhibit the highest temporal dominance at `r middle_dom` through focus on `r middle_topics`. More significantly, the effect size of `r middle_effect` represents the strongest temporal convergence, suggesting this period saw the most standardization. This coincides with the establishment of clearer guidelines, increased technical assistance, and more rigid requirements for accessing climate finance. Countries submitting during this period show remarkably similar discourse patterns.
-
-Late submissions (2022-2025) present an interesting shift, displaying the lowest dominance at `r late_dom` with `r late_topics`. This suggests some diversification in recent plans. However, the effect size of `r late_effect` remains substantial—nearly as high as the middle period—indicating that while recent plans explore slightly more varied topics, they still operate within strongly constraining frameworks. The continued prominence of mainstream planning across all periods shows that procedural requirements have become institutionalized rather than evolving.
-
-The temporal progression reveals no clear trend toward either convergence or divergence. Instead, it suggests waves of standardization, with the middle period representing peak conformity while recent submissions show modest diversification within persistent structural constraints.
+Figure @fig-average presents the aggregate patterns, confirming regional categories as the primary organizing force in global adaptation discourse.
 
 ```{r}
 #| label: fig-average
@@ -212,4 +206,91 @@ ggplot(plot_data, aes(x = value, y = category, fill = metric)) +
                              margin = margin(b = 15), 
                              hjust = 0.5)
   )
+```
+
+The consistently high values across both metrics for regions, compared to the variation in other categories, reinforces that institutional geography trumps physical geography in shaping how countries articulate climate responses.
+
+Income categories show an overall effect size of `r income_effect`, revealing counterintuitive patterns. Low-income countries demonstrate the highest effect within this category at `r low_income_effect`—nearly double that of upper-middle income countries (`r upper_middle_income_effect`). This extreme convergence among poor countries, despite their geographic and climatic diversity, suggests powerful standardizing forces operate through development assistance and technical support mechanisms.
+
+Low-income countries focus on `r low_income_topics` with dominance of `r low_income_dom`. The prominence of NAPA alongside mainstream planning reflects how these countries must demonstrate fluency in both historical and contemporary adaptation frameworks. Their limited autonomy in discourse construction likely reflects dependence on external technical assistance and the need to align with donor priorities.
+
+High-income countries show dominance of `r high_income_dom` concentrated on `r high_income_topics`, yet their effect size of `r high_income_effect` sits mid-range. This combination of extreme topic concentration with moderate group coherence suggests that while wealthy countries converge on certain topics, they maintain some flexibility in how they articulate them.
+
+Upper-middle income countries exhibit the most autonomy, with the lowest dominance (`r upper_middle_income_dom`) and smallest effect size (`r upper_middle_income_effect`) focused on `r upper_middle_income_topics`. These countries appear to occupy a sweet spot—developed enough to resist full standardization but not so wealthy as to converge on post-material concerns.
+
+Geographic vulnerability classifications show an overall effect of `r geography_effect`, surprisingly lower than institutional categories. Countries sharing similar climate vulnerabilities show less discourse similarity than countries in the same World Bank region, challenging assumptions about environmental determinism in adaptation planning.
+
+Small Island Developing States exhibit the highest dominance in the entire dataset at `r sids_dom`, focusing on `r sids_topics` with an effect size of `r sids_effect`. This extreme concentration reflects genuinely shared existential threats from sea-level rise and tropical cyclones. Yet even here, mainstream planning dominates alongside obviously relevant island concerns, suggesting institutional requirements constrain even the most vulnerable nations.
+
+Landlocked Developing Countries show moderate patterns with dominance of `r lldc_dom` through `r lldc_topics` and effect size of `r lldc_effect`. Surprisingly, neither mountain nor water management topics feature prominently despite these being defining challenges. Instead, organizational and mainstream topics dominate, indicating institutional templates override geographic specificities.
+
+Other countries display the lowest geographic dominance at `r other_dom` with an effect size of `r other_effect` focused on `r other_topics`. This baseline group's lower convergence might reflect greater heterogeneity when countries lack strong categorical identity, though procedural topics still predominate.
+
+Temporal categories show the weakest effects at `r time_effect`, suggesting adaptation discourse has not substantially evolved over the decade of NAP development. While individual periods show variation—middle period plans (2019-2021) demonstrating highest dominance at `r middle_dom` focused on `r middle_topics`—the overall temporal effect remains minimal.
+
+Early submissions (2015-2018) show dominance of `r early_dom` with the lowest temporal effect of `r early_effect` on `r early_topics`. Middle period submissions exhibit the highest temporal convergence at `r middle_effect`, coinciding with clearer guidelines and more rigid finance requirements. Late submissions (2022-2025) display the lowest dominance at `r late_dom` but maintain substantial effect size of `r late_effect` on `r late_topics`.
+
+The temporal patterns reveal no clear trajectory toward either convergence or divergence, suggesting that once established, adaptation planning frameworks persist regardless of accumulating experience or evolving climate science. 
+
+
+
+```{r}
+#| label: tbl-group-metrics
+#| tbl-cap: "Discourse patterns by category membership showing dominance and effect sizes"
+#| echo: false
+
+# Load required packages
+library(knitr)
+library(kableExtra)
+
+# Define all subcategories and their parent categories
+subcategories <- list(
+  Income = c("high_income", "upper_middle_income", "lower_middle_income", "low_income"),
+  Region = c("europe_central_asia", "latin_america_caribbean", "south_asia", 
+             "sub_saharan_africa", "east_asia_pacific", 
+             "middle_east_north_africa_afghanistan_pakistan"),
+  Geography = c("sids", "lldc", "other"),
+  Time = c("early", "middle", "late")
+)
+
+# Create clean name mapping
+clean_names <- c(
+  "high_income" = "High Income",
+  "upper_middle_income" = "Upper-Middle Income",
+  "lower_middle_income" = "Lower-Middle Income", 
+  "low_income" = "Low Income",
+  "europe_central_asia" = "Europe & Central Asia",
+  "latin_america_caribbean" = "Latin America & Caribbean",
+  "south_asia" = "South Asia",
+  "sub_saharan_africa" = "Sub-Saharan Africa",
+  "east_asia_pacific" = "East Asia & Pacific",
+  "middle_east_north_africa_afghanistan_pakistan" = "MENA, Afghanistan & Pakistan",
+  "sids" = "Small Island Developing States",
+  "lldc" = "Landlocked Developing Countries",
+  "other" = "Other",
+  "early" = "Early (2015-2018)",
+  "middle" = "Middle (2019-2021)",
+  "late" = "Late (2022-2025)"
+)
+
+# Create data frame with single loop
+group_data <- data.frame()
+
+for(cat in names(subcategories)) {
+  for(subcat in subcategories[[cat]]) {
+    group_data <- rbind(group_data, data.frame(
+      Category = cat,
+      Subcategory = clean_names[subcat],
+      Dominance = get(paste0(subcat, "_dom")),
+      `Effect Size` = get(paste0(subcat, "_effect")),
+      `Top Topics` = get(paste0(subcat, "_topics"))
+    ))
+  }
+}
+
+# Create formatted table
+kable(group_data, 
+      format = "markdown",
+      row.names = FALSE,
+      col.names = c("Category", "Group", "Dominance", "Effect Size", "Top Topics"))
 ```
