@@ -167,9 +167,6 @@ web_cache <- function(func, ..., url = "https://napcentral.org/submitted-naps",
 
 # --- Thesis page counter ----------------------------------------
 
-#' Count thesis characters from Quarto HTML output with chapter breakdown
-library(rvest)
-
 check_thesis <- function(path = "_book/text/", per_chapter = TRUE) {
   
   # Constants
@@ -185,38 +182,68 @@ check_thesis <- function(path = "_book/text/", per_chapter = TRUE) {
     files <- list.files(path, "\\.html$", recursive = TRUE, full.names = TRUE)
   }
   
+  # Check if any files were found
+  if (length(files) == 0) {
+    cat("\n⚠️  No HTML files found in path:", path, "\n")
+    cat("   Make sure you've built your Quarto book first.\n")
+    cat("   Try running: quarto render\n")
+    return(invisible(NULL))
+  }
+  
   # Process each file
   chapter_data <- list()
   
   for (file in files) {
-    html <- read_html(file)
-    
-    # Get all content sections
-    sections <- html_nodes(html, "section.level2, section.level1")
-    main_content <- html_nodes(html, "main")
-    
-    if (length(main_content) > 0) {
-      text <- html_text2(main_content)
-    } else if (length(sections) > 0) {
-      text <- html_text2(sections) %>% paste(collapse = " ")
-    } else {
-      body <- html_node(html, "body")
-      text <- html_text2(body)
+    # Check if file exists
+    if (!file.exists(file)) {
+      cat("Warning: File not found -", file, "\n")
+      next
     }
     
-    # Clean text
-    text <- trimws(gsub("\\s+", " ", text))
-    
-    # Store chapter data
-    chapter_name <- gsub("\\.html$", "", basename(file))
-    chapter_data[[chapter_name]] <- list(
-      chars = nchar(text),
-      pages = nchar(text) / CHARS_PER_PAGE,
-      words = length(strsplit(text, "\\s+")[[1]])
-    )
+    tryCatch({
+      html <- read_html(file)
+      
+      # Get all content sections
+      sections <- html_nodes(html, "section.level2, section.level1")
+      main_content <- html_nodes(html, "main")
+      
+      if (length(main_content) > 0) {
+        text <- html_text2(main_content)
+      } else if (length(sections) > 0) {
+        text <- html_text2(sections) %>% paste(collapse = " ")
+      } else {
+        body <- html_node(html, "body")
+        text <- html_text2(body)
+      }
+      
+      # Clean text
+      text <- trimws(gsub("\\s+", " ", text))
+      
+      # Only store if we got some text
+      if (nchar(text) > 0) {
+        chapter_name <- gsub("\\.html$", "", basename(file))
+        chapter_data[[chapter_name]] <- list(
+          chars = nchar(text),
+          pages = nchar(text) / CHARS_PER_PAGE,
+          words = length(strsplit(text, "\\s+")[[1]])
+        )
+      }
+    }, error = function(e) {
+      cat("Warning: Error processing", basename(file), "-", e$message, "\n")
+    })
   }
   
-  # Calculate totals
+  # Check if we have any data
+  if (length(chapter_data) == 0) {
+    cat("\n⚠️  No content could be extracted from HTML files.\n")
+    cat("   This might happen if:\n")
+    cat("   - The HTML files are empty\n")
+    cat("   - The HTML structure is unexpected\n")
+    cat("   - There was an error reading the files\n")
+    return(invisible(NULL))
+  }
+  
+  # Calculate totals (now safe because we know chapter_data has content)
   total_chars <- sum(sapply(chapter_data, function(x) x$chars))
   total_pages <- total_chars / CHARS_PER_PAGE
   total_words <- sum(sapply(chapter_data, function(x) x$words))
@@ -290,12 +317,6 @@ check_thesis <- function(path = "_book/text/", per_chapter = TRUE) {
     chapters = chapter_data
   ))
 }
-
-# Usage:
-# check_thesis()                    # With chapter breakdown
-# check_thesis(per_chapter = FALSE) # Just totals
-# result <- check_thesis()          # Access the data
-# result$chapters$introduction      # Get specific chapter data
 
 # --- Dependency updater (leaner) --------------------------------
 

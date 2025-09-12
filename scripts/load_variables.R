@@ -83,7 +83,7 @@ load_variables <- function(topics, metrics, web = NULL, dfm = NULL, model = NULL
     # Format as percentage or decimal
     if (as_percentage) {
       formatted <- paste0(country_data$country, " (", 
-                          round(country_data$score * 100, 1), "%)")
+                          round(country_data$score * 100, digits), "%)")
     } else {
       formatted <- paste0(country_data$country, " (", 
                           round(country_data$score, 3), ")")

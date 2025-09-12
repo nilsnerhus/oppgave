@@ -1,18 +1,14 @@
 # Context {#sec-context}
 
->This chapter explains how international climate governance operates through the United Nations Framework Convention on Climate Change and its three main pillars, mitigation, adaptation, and loss and damage.
+This chapter explains how international climate governance operates through the United Nations Framework Convention on Climate Change (UNFCCC) and its three main pillars: mitigation, adaptation, and loss and damage. Climate change presents both biophysical and political challenges that require a global response. Understanding how the UNFCCC attempts to manage this provides the context for examining the National Adaptation Plans (NAPs).
 
-Climate change is both a biophysical and political problem. To understand how the NAPs function, both as attempts to solve political problems and to govern relations between countries, this chapter will proceed in two parts. 
+The first section traces climate change as a biophysical process, following the cascade from greenhouse gas emissions through ecosystem disruption to human impacts. It then examines how the UNFCCC emerged to address these challenges through its evolving institutional architecture. The second section explores the political dimensions of climate governance, examining how it operates through interventions, shapes North-South dynamics, and enables trade-offs between different response options.
 
-The first section traces climate change as a biophysical process, following the cascade from greenhouse gas emissions through ecosystem disruption to human impacts. It examines how the United Nations Framework Convention on Climate Change attempts to manage this complexity through its three-pillar architecture of mitigation, adaptation, and loss and damage. 
-
-The second section shifts focus from technical frameworks to their political dimensions. It examines how climate governance operates through interventions, becomes a part of North-South dynamics, and enables possible trade-offs between the three pillars. Particular attention is given to the National Adaptation Plan process as a governance mechanism that shapes state-society relations and development trajectories.
-
-Together, these sections establish climate adaptation as neither purely technical nor purely political, but rather as a domain where technical frames and political projects meet in the global South. This context is essential for understanding how National Adaptation Plans, despite their technical appearance, may well function as instruments of control, a dynamic the rest of the thesis will explore. 
+Together, these sections establish climate adaptation as neither purely technical nor purely political, but rather as a domain where technical frames and political projects meet in the global South. This context is essential for understanding how National Adaptation Plans function, both as attempts to solve political problems and to govern relations between countries. The technical appearance of these plans may well obscure their role as instruments of control, a dynamic the rest of the thesis will explore.
 
 ## Climate Change
 
->Climate change is both a biophysical process caused by the emission of greenhouse gasses and a political process governed through the UNFCCC
+>This section explains climate change as both a biophysical process caused by greenhouse gas emissions and a political process governed through the UNFCCC. It traces the cascade from emissions to human impacts and examines how the international community structured its response through evolving institutional frameworks.
 
 The pathway from emissions to impacts follows a cascade of interconnected processes. Greenhouse gas emissions, primarily from fossil fuel combustion (approximately 85% according to IPCC estimates) and land-use changes including deforestation (approximately 15%), accumulate in the atmosphere [@calvin2023]. These gases trap heat, altering energy balances and driving changes in temperature, precipitation patterns, and extreme weather events. The resulting climate changes disrupt ecosystems at multiple scales, from local habitat shifts to global circulation patterns.
 
@@ -50,7 +46,7 @@ Yet climate governance also creates spaces for contestation and alternative visi
 
 ## Climate adaptation
 
->The climate adaptation pillar is sandwiched between the calls for mitigation on the one side, and compensation on the other. Being a local process, closely aligned with development paradigms, adaptation carries great potential for solving or lessening the harms of climate change, but also great risk for maladaptation. 
+>This section examines how climate governance operates through specific mechanisms and relationships. It explores how adaptation creates new forms of intervention, shapes North-South dynamics, and enables problematic trade-offs between climate responses.
 
 As the *adaptation frontier* is movable, none of the technological, economic, social and cultural limits are a question of values, the adaptation process is a choice of tradeoffs [@roberts2018]. This is an essentially political question, a question about what the future should be [@inayatullah1990]. It is also a central question in development studies [@ferguson1994;@escobar1995]. There is thus considerable power in the ability to define what adaptation is, and what should be mitigation or loss and damage instead. 
 

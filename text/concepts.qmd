@@ -1,28 +1,13 @@
 # Conceptual framework {#sec-concepts}
 
->This chapter presents the conceptual framework this thesis will use to understand the National Adaptation Plans.
+This chapter presents the conceptual framework this thesis will use to understand the National Adaptation Plans. As we saw in @sec-context, climate adaptation is being mainstreamed into development discourse. This makes it natural to look into the literature on development. This chapter will contrast the institutional and critical approaches in the three central themes of development and thus the NAPs, implementation, financing, and knowledge production.
 
-As we saw in @sec-context, climate adaptation in being mainstreamed into development discourse. This makes it natural to look into the literature on development. This chapter will contrast the institutional- and critical approaches in the three central themes of the NAPs; implementation, financing, and knowledge production.
+The first section presents the debates on how development projects interact with realities on the ground. The second section discusses how these projects are, and should be, financed. The third section examines the competing knowledge production paradigms. The last section presents some of the recent research on climate adaptation, focused on @paprocki2018 and @dewan2022's work in Bangladesh, and synthesizes the concepts into the adaptation nexus, the institutional approach, and the adaptation regime, the critical approach.
 
-The first section presents the debates on how development projects interact with realities on the ground. Here, the te
-
-The second section discusses how these projects are, and should be, financed. 
-
-The third section, rather, the competing knowledge production paradigms. 
-
-The last section presents some of the recent research on climate adaptation, especially in Bangladesh, and synthesizes the concepts into the adaptation nexus, the institutional approach, and the adaptation regime, the critical approach. 
-
-
-The institutional approach to development begins with a genuine response to real problems. Poverty, disease, lack of clean water, limited educational opportunities, these are not invented concerns but daily realities for billions of people. Development practitioners, whether in multilateral banks, government agencies, or NGOs, often come to this work with sincere commitment to improving lives [@li2007]. They bring technical expertise, financial resources, and accumulated knowledge from other contexts. The underlying belief is hopeful: communities possess the potential for development but may lack specific resources, capacities, or frameworks to realize it. With the right support, transformation is possible [@banks2015, 708].
-
-The post-World War II moment was when development became central to international relations. President Truman's 1949 inaugural address captured this vision: greater production through scientific and technical knowledge would bring prosperity and peace to all [@escobar1995, 3]. The newly formed United Nations and Bretton Woods institutions embodied this promise, creating an architecture for transferring knowledge, technology, and capital from developed to developing nations. By the early 1950s, this vision had become hegemonic. Development achieved such certainty that it seemed impossible to conceptualize social reality in other terms [@escobar1995, 5;@ferguson1994].
-
-This main problematic, is something I also will discuss. That might be changing [@ferguson1994, 19]
-
-
+The institutional approach to development begins with a genuine response to real problems. Climate change is set to bring suffering to people across the Global South and are not invented concerns, but rather daily realities for billions of people. The development apparatus come to this work with sincere commitment to improving lives. They bring technical expertise, financial resources, and accumulated knowledge from other contexts. Still, scholars argue that climate adaptation might actually create more vulnerability than it removes, and simply shift it between groups. 
 ## Implementation
 
-> It is in the implementation that grand development theories meet local realities, and local peoples. This interaction has its own logics and adaptations.
+>It is in the implementation development theories meet local realities and local peoples. This section reviews the difficulties development projects have with reaching the goals they have set for themselves. 
 
 Early development efforts focused on large-scale infrastructure and modernization. When these top-down approaches produced disappointing results, the sector underwent significant self-reflection. Participatory development emerged in the 1980s and 1990s as a corrective, promising to revolutionize practice by incorporating local knowledge, empowering communities, and ensuring interventions respond to actual needs rather than imposed blueprints [@chambers1994, 1438]. Communities would gather information about their own situation, identify their priorities, and take action themselves.
 
@@ -56,7 +41,7 @@ From the critical perspective, implementation challenges are not simply technica
 
 ## Financing
 
-> The second section discusses how these projects are, and should be, financed.
+>This section explores how development financing is based on a system of conditions, debt, and how financial mechanisms that shape what kinds of development gets funded and thus become possible.
 
 While the section above dealt with the implementation of projects, the financing for these projects exists for itself, in the global aid system. All aid is accounted in the Organisation for Economic Co-operation and Development (OECD) dataset for Official Development Assistance (ODA). The OECD Development Assistance Committee (DAC) maintains the taxonomies for the data, and makes it available through the Creditor Reporting System (CRS). This system is changed regularly, to better reflect the knowledge and policies of the OECD [@wp-stat2022; @wp-stat2020; @wp-stat2020a]. While the system is centralized, aid donors are responsible for reporting their own aid.
 
@@ -80,7 +65,7 @@ The structural adjustment programs of the 1980s and 1990s intensified these depe
 
 ## Knowledge Production
 
-> The third section presents the competing knowledge production paradigms.
+>This section presents the competing knowledge production paradigms. As the future is uncertain, it contrasts the institutional view of expert knowledge to navigate this, with critical perspectives on how development knowledge override other ways of knowing.
 
 The future is uncertain. These questions development deal with involve interconnected systems, long time horizons, and radical uncertainty [@dejong2025]. The institutional approach argues that expert knowledge, properly gathered and applied, can help societies navigate these uncertainties and make better decisions about their futures. As the World Bank argues, technical expertise can help manage this uncertainty through systematic analysis, risk assessment, and evidence from other contexts [@wb2021]. Experts bring tools for thinking about the future: scenario planning, probabilistic forecasting, sensitivity analysis. Without these tools, societies might be paralyzed by uncertainty or make choices they later regret.
 
@@ -106,11 +91,9 @@ By constructing countries as "underdeveloped", @escobar1995 argues that developm
 
 ## The Adaptation Nexus and the Adaptation Regime
 
-> The different theoretical approaches to implementation, financing, and knowledge production crystallize into two competing frameworks for understanding climate adaptation.
+>This section synthesizes recent climate adaptation research to present two frameworks. The adaptation nexus sees integration of climate considerations into development as necessary and beneficial, while the adaptation regime critique examines how adaptation may reproduce colonial patterns through technical governance.
 
 Climate adaptation has emerged as the primary framework through which developing countries must now articulate their development needs [@sec-context]. The patterns we've traced through implementation, financing, and knowledge production converge in the contemporary moment around climate change. Two frameworks emerge from the literature: the adaptation nexus and the adaptation regime. These represent not simply different perspectives but fundamentally different ways of understanding what adaptation is, how it operates, and what it accomplishes.
-
-### The Adaptation Nexus
 
 The adaptation nexus presents climate adaptation as an urgent technical challenge requiring coordinated response. Climate change poses real threats to development gains [@calvin2023]. Rising temperatures, changing precipitation patterns, and extreme weather events affect agriculture, infrastructure, health, and livelihoods. The institutional approach sees adaptation as the necessary integration of climate considerations into development planning This isn't a choice but an imperative, as climate impacts will affect all sectors and populations.
 
@@ -121,8 +104,6 @@ Within the nexus framework, implementation challenges are primarily matters of c
 The financing architecture represents a pragmatic response to adaptation's enormous costs. @stern2022 reviewed adaptation costs in developing countries and put it at tens of billions annually [@stern2022;@buchner2023]. They deem traditional aid insufficient, requiring innovative mechanisms to mobilize private capital [@bernards2024;@un2024]. Blended finance, green bonds, and climate funds attempt to fill this gap [@buchner2023]. Conditionalities ensure resources are used effectively for their intended purpose.
 
 Knowledge production within the nexus operates through scientific assessment and technical innovation. The IPCC synthesizes thousands of studies to provide authoritative climate projections [@calvin2023]. Development banks collect and disseminate adaptation experiences across countries. This accumulated expertise helps countries avoid mistakes and adopt proven approaches. The nexus acknowledges problems but sees them as challenges to be overcome through better practice. The gap between planning and implementation can be narrowed through improved project management [@unep2024]. The mismatch between global frameworks and local realities can be addressed through contextualization and flexibility. The persistence of vulnerability despite adaptation investments indicates the need for more resources and better targeting, not fundamental flaws in the approach.
-
-### The Adaptation Regime
 
 The adaptation regime presents climate adaptation as a mechanism of control that extends existing patterns of domination. @paprocki2018's analysis of Bangladesh reveals how adaptation operates as a "socially and historically specific configuration of power" that governs the landscape of possible intervention [@paprocki2018, 957]. The regime doesn't simply respond to climate change but actively constructs it as a particular kind of problem requiring particular solutions that serve specific interests.
 

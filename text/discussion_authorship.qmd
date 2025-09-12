@@ -1,12 +1,10 @@
 ## Where Do Plans Come From?
 
-> The dominance of regional over geographical effects invites us to consider how institutional architectures might shape adaptation discourse more powerfully than climate vulnerabilities themselves.
+>This section investigates who actually writes these plans, examining how regional patterns and income effects suggest complex networks of consultants, institutions, and technical assistance shape what appears as national planning. It explores how authorship relates to authority and legitimacy.
 
 The statistical patterns present a puzzle that challenges conventional assumptions about adaptation planning. Regional institutional categories show substantially stronger effects than geographical categories, with income falling between these poles. What might this hierarchy reveal about how adaptation knowledge is produced and circulated? The finding suggests that World Bank regional groupings—administrative categories created for development lending—predict adaptation discourse better than shared climate vulnerabilities like small island status or mountain ecosystems.
 
 Consider what this means in practice: Serbia and Bosnia and Herzegovina produce remarkably similar plans despite their different geographical positions, while landlocked Chad and coastal Philippines, both highly vulnerable to climate extremes, develop entirely different discursive emphases. This pattern repeats across the corpus. Countries sharing regional institutional spaces converge while those sharing geographical challenges diverge. What mechanisms might produce such counterintuitive patterns?
-
-### Interpreting Regional Dominance
 
 Through the adaptation nexus lens, regional convergence might reflect successful knowledge transfer and productive coordination. Regional development banks and cooperation platforms could be functioning as intended—creating communities of practice where countries learn from neighbors facing comparable challenges within similar institutional contexts. The Asian Development Bank, African Development Bank, Inter-American Development Bank, and other regional bodies have developed sophisticated climate programs. These might enable what @li2007 calls "rendering technical"—translating complex, context-specific challenges into manageable planning problems.
 
@@ -16,15 +14,11 @@ Yet the adaptation regime perspective invites different interpretations of these
 
 From this view, Europe and Central Asia's extreme convergence might indicate complete epistemological capture. These countries have perhaps internalized planning orthodoxies so thoroughly that alternative approaches become literally unthinkable. The technical vocabulary doesn't supplement local knowledge but displaces it entirely. Traditional practices, customary governance, place-based understanding—none can appear because they lack proper institutional grammar.
 
-### The Income Gradient's Implications
-
 The correlation between income and discursive autonomy raises particularly troubling questions. Low-income countries showing the highest effect sizes might indicate not that they receive the most support, as the nexus framework might suggest, but that they face the greatest constraints on how they can articulate their realities. These nations must perform vulnerability through prescribed frameworks to access resources, regardless of whether those frameworks capture their actual circumstances.
 
 This gradient could operate through multiple mechanisms. Low-income countries often depend more heavily on external technical assistance for plan development. They might have less negotiating power with consultants and development partners about planning approaches. They face stronger incentives to demonstrate institutional sophistication through adopting recognized frameworks. The result might be plans that speak more to donor requirements than local needs.
 
 High-income countries' greater variation, despite still showing convergence, might reflect their ability to maintain some epistemological sovereignty while engaging with international frameworks. They can afford to experiment, to resist certain templates, to articulate alternatives. This suggests that discursive freedom itself might be a luxury that climate finance inadvertently restricts for those most dependent on it.
-
-### Mechanisms of Convergence
 
 How might these patterns actually emerge? The ecosystem of actors involved in NAP production—consultants, development banks, UN agencies, knowledge networks—might operate as what we could think of as an epistemological infrastructure, shaping not just how plans are written but how adaptation itself can be imagined.
 
@@ -36,15 +30,11 @@ The UN system adds layers of guidance that countries navigate with varying degre
 
 The Green Climate Fund's requirements deserve particular consideration as they directly link planning to finance. When countries know that certain elements—vulnerability assessments, prioritization frameworks, monitoring systems—are expected for funding access, these elements appear regardless of local relevance. This might explain why plans converge around technical governance language even when addressing radically different challenges.
 
-### Temporal Dynamics and Path Dependencies
-
 The temporal patterns, though complicated by single submissions per country, suggest evolving dynamics in how adaptation planning operates. Early adopters might have had more freedom to experiment before templates solidified. The middle period's higher convergence could reflect institutionalization as frameworks became established and technical assistance scaled up. Recent declining convergence might indicate either growing innovation or exhaustion with initial approaches.
 
 These patterns might also reflect which types of countries submit when. Early submissions might come from countries with existing capacity or those prioritizing climate diplomacy. Middle period submissions might represent countries responding to increased finance availability and technical support. Recent submissions might include those who waited to learn from others' experiences or who needed more time to develop institutional readiness.
 
 The persistence of NAPA-related discourse in certain regions reveals how earlier frameworks create path dependencies. Countries that developed National Adaptation Programmes of Action years ago seem to carry forward those approaches even as they transition to NAPs. This might represent valuable institutional memory—building on established foundations—or problematic lock-in where earlier choices constrain current possibilities.
-
-### Questions of Authorship and Authority
 
 Who actually writes these plans? The patterns suggest that authorship might be more distributed and constrained than the national ownership narrative suggests. If regional institutions shape discourse more than geographical realities, if income predicts convergence, if templates travel through consultant networks, then plans might emerge from complex negotiations between multiple actors rather than sovereign national processes.
 
@@ -53,8 +43,6 @@ This raises fundamental questions about authority and legitimacy. Can plans shap
 The nexus framework would emphasize how convergence enables comparison, aggregation, and knowledge transfer. Common frameworks allow the Green Climate Fund to assess proposals, enable countries to learn from each other, and facilitate technical support. Without some standardization, international cooperation might become impossible.
 
 The regime framework would counter that this standardization comes at too high a cost. When all countries must speak the same institutional language, crucial diversity disappears. Communities whose knowledge doesn't translate into technical frameworks, whose governance doesn't follow state forms, whose futures diverge from projected pathways—all become invisible within planning processes.
-
-### Implications for Adaptation Effectiveness
 
 These patterns matter because National Adaptation Plans are meant to guide responses to climate change for decades. If institutional geography matters more than physical geography in shaping these plans, what does this mean for their relevance to actual climate impacts? Can documents converging around regional institutional requirements adequately address place-specific vulnerabilities?
 

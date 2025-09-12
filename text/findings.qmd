@@ -6,9 +6,14 @@ list2env(vars, envir = .GlobalEnv)
 
 # Findings {#sec-findings}
 
+This chapter presents the findings from the structural topic modeling analysis of `r n_documents_after_aggregation` National Adaptation Plans. The analysis reveals both what countries discuss when planning for climate adaptation and how membership in different categories shapes these discussions. The patterns that emerge suggest systematic constraints on adaptation discourse that operate across diverse contexts.
+
+The chapter has in two sections. The first examines the topics identified in the topic model and the thematic structure of global adaptation discourse. The second analyzes how category membership, by income, region, geography, and time, heavily influences topic prevalence, looking at both the concentration within the top topics, as well as STM's estimated effects.
+
+Together, these findings reveal a paradox: despite removing the most common and rare words to focus on meaningful variation, adaptation discourse shows remarkable convergence around technical themes. This convergence varies systematically by category membership in ways that suggest institutional networks matter more than climate vulnerabilities in shaping how countries discuss adaptation.
 ## Topics
 
->This section reveals how structural topic modeling identifies eight distinct themes in adaptation planning, with one topic dominating the corpus while other climate concerns are marginalized.
+>This section examines the topics that structure global adaptation discourse. Each topic is characterized by its FREX terms, proportion of total discourse, and the countries where it features most prominently.
 
 `r topic_8_name` commands an extraordinary `r topic_8_prop` of the entire corpus—more than triple any other topic—while appearing meaningfully in `r topic_8_documents` of `r n_documents_after_aggregation` national plans. The FREX terms "`r topic_8_frex`" reveal a discourse centered on planning infrastructure itself. The term _mainstream_ signals the integration of climate considerations into existing development frameworks, while _learn_ points to knowledge transfer mechanisms central to international climate architecture. References to the Paris Agreement (_pari_, _agreement_) situate this within global governance structures, and _progress_ likely refers to advancement metrics required by international reporting, other towards other goal.
 
@@ -25,6 +30,7 @@ The _Mainstream_ label captures how this topic represents the procedural backbon
 library(ggplot2)
 library(ggrepel)
 library(ggthemes)
+library(scales)
 
 # Load data
 topics <- readRDS("../data/name_topics.rds")
@@ -38,11 +44,14 @@ ggplot(topics_table, aes(x = topic_proportion, y = effective_documents)) +
             point.padding = 0.5,
             box.padding = 0.5,
             size = 5) +
-  labs(title = "Topic distrobution",
+  labs(title = "Topic distribution",
        x = "Topic Proportion",
        y = "Effective Documents"
   ) +
-  theme_economist_white(base_size = 10) + 
+  
+  scale_x_continuous(labels = percent_format(accuracy = 1)) +
+  
+  theme_economist_white(base_size = 11) + 
   theme(legend.position = "none",
         plot.title = element_text(size = 16, face = "bold", 
                              margin = margin(b = 15), 
@@ -70,6 +79,7 @@ The remaining topics address diverse vulnerabilities and planning dimensions, th
 ```{r}
 #| label: tbl-topics
 #| tbl-cap: "Summary of adaptation discourse topics identified through structural topic modeling"
+#| tbl-colwidths: [15, 10, 10, 30, 25]
 #| echo: false
 
 # Load required packages
@@ -91,9 +101,8 @@ for(i in 1:k_topics) {
 
 # Create formatted table (already in topic number order from loop)
 kable(topics_data, 
-      format = "markdown",
       row.names = FALSE,
-      col.names = c("Topic", "Proportion", "Documents", "Key Terms (FREX)", "Representative Countries"))
+      col.names = c("Topic", "Prop", "Docs", "Terms", "Countries"))
 ```
 
 ## Groups
@@ -116,13 +125,16 @@ The relationship between discourse dominance and group effect sizes reveals how 
 #| fig-cap: "Dominance and Effect Size by Category. Each panel shows a different categorization scheme."
 #| fig-height: 6
 #| echo: false
+
 # Load required packages
 library(ggplot2)
 library(ggrepel)
 library(ggthemes)
+
 # Load metrics data
 metrics <- readRDS("../data/calculate_metrics.rds")
 metrics_table <- metrics$data
+
 # Prepare data for plotting
 plot_data <- metrics_table[metrics_table$subcategory != "Overall" & !is.na(metrics_table$effect_size), ]
 plot_data$category <- factor(plot_data$category, levels = c("Income", "Region", "Geography", "Time"))
@@ -140,7 +152,10 @@ ggplot(plot_data, aes(x = dominance, y = effect_size)) +
        y = "Estimated effect") +
   facet_wrap(~ category, scales = "fixed", ncol = 2) +
   
-  theme_economist_white(base_size = 12) + 
+  scale_x_continuous(labels = percent_format(accuracy = 1)) +
+  scale_y_continuous(labels = percent_format(accuracy = 1)) +
+  
+  theme_economist_white(base_size = 11) + 
   theme(
     plot.title = element_text(size = 16, face = "bold", 
                              margin = margin(b = 15), 
@@ -183,23 +198,25 @@ plot_data$metric <- factor(plot_data$metric, levels = c("effect_size", "dominanc
 # Create plot
 ggplot(plot_data, aes(x = value, y = category, fill = metric)) +
   geom_col(position = "dodge", alpha = 0.7) +
-  geom_text(aes(label = round(value, 2)), 
+  geom_text(aes(label = paste0(round(value * 100), "%")), 
             position = position_dodge(width = 1),
             hjust = -0.1, 
             size = 4) +
   labs(title = "Average across categories",
        x = "Average Value", 
        y = NULL) +                          
-  scale_x_continuous(expand = expansion(mult = c(0, 0.1))) +
+  scale_x_continuous(
+    expand = expansion(mult = c(0, 0.1)),
+    labels = percent_format(accuracy = 1)) +
   
-  theme_economist_white(base_size = 10) + 
+  theme_economist_white(base_size = 11) + 
   scale_fill_economist(name = "", labels = c("Effect Size", "Dominance")) +
   theme(
-    legend.position = c(0.98, 0.02),                    # Bottom-right corner
-    legend.justification = c(1, 0),                     # Anchor to bottom-right
+    legend.position = c(0.98, 0.02), # Bottom-right corner
+    legend.justification = c(1, 0), # Anchor to bottom-right
     legend.background = element_rect(fill = "transparent", color = NA),
     legend.title = element_blank(),
-    legend.text = element_text(size = 10),              # Match base_size
+    legend.text = element_text(size = 10), # Match base_size
     axis.title.x = element_text(margin = margin(t = 10)),
     axis.title.y = element_text(margin = margin(r = 10)),
     plot.title = element_text(size = 16, face = "bold", 
@@ -232,11 +249,10 @@ Early submissions (2015-2018) show dominance of `r early_dom` with the lowest te
 
 The temporal patterns reveal no clear trajectory toward either convergence or divergence, suggesting that once established, adaptation planning frameworks persist regardless of accumulating experience or evolving climate science. 
 
-
-
 ```{r}
-#| label: tbl-group-metrics
+#| label: tbl-groups
 #| tbl-cap: "Discourse patterns by category membership showing dominance and effect sizes"
+#| tbl-colwidths: [15, 30, 15, 10, 30]
 #| echo: false
 
 # Load required packages
@@ -292,5 +308,6 @@ for(cat in names(subcategories)) {
 kable(group_data, 
       format = "markdown",
       row.names = FALSE,
-      col.names = c("Category", "Group", "Dominance", "Effect Size", "Top Topics"))
+      escape = FALSE,
+      col.names = c("Category", "Group", "Dominance", "Effect", "Topics"))
 ```

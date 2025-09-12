@@ -6,17 +6,11 @@ list2env(vars, envir = .GlobalEnv)
 
 # Discussion {#sec-discussion}
 
->This chapter discusses the research questions in light of the conceptual framework and findings.
+This chapter discusses the research questions in light of the conceptual framework and findings. The patterns require interpretation through the three themes and theoretical directions from the conceptual framework.
 
-The findings are puzzling. While the concentration around technical topics is clear, how should it be understood? Remembering the three themes and the three theoretical directions from the conceptual framework.
+The first section discusses what the NAPs are about, and equally interesting, what they are not, by analyzing the topics and their terms. The second section discusses where these plans come from, examining who might actually write these documents and under what constraints. The third section reviews the impacts on climate justice, exploring whether adaptation as currently structured can deliver on its promises. The last section discusses what this might mean for climate adaptation, and who decides.
 
-The first section discusses what the NAPs are about, and perhaps equally importantly, what they are not, by analyzing the topics.
-
-The second section discusses the authorship of the plans, highlighting the 
-
-The third section reviews the impacts this on climate justice
-
-The last section discusses what this means for climate adaptation, and who decides. 
+Through these sections, the discussion moves between the institutional and critical perspectives, using each to illuminate different aspects of the patterns. The nexus framework helps explain how convergence might enable coordination and learning. The regime framework reveals how standardization might eliminate alternatives and maintain dependencies. Together, they suggest adaptation operates through multiple, sometimes contradictory dynamics that require careful analysis to understand.
 
 {{< include discussion_naps.qmd >}} 
 

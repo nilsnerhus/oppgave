@@ -1,8 +1,6 @@
 # Is This Justice?
 
-The convergence patterns identified in National Adaptation Plans invite fundamental questions about justice in climate governance. To explore what these patterns might mean, we might first consider how the UNFCCC's three-pillar architecture itself embodies competing conceptualizations of climate justice.
-
-## The Portfolio Approach to Climate Action
+>This section explores what the patterns mean for climate justice, examining whether adaptation's technical framing transforms political questions into bureaucratic processes. It considers how the portfolio approach to climate action might enable problematic substitutions between mitigation, adaptation, and loss and damage.
 
 The three-pillar architecture, as described in @sec-context, creates what could be understood as a portfolio approach to climate action. This structure emerged through decades of negotiation, with each pillar representing different political compromises [@hall2018]. In principle, the pillars address distinct aspects requiring integrated response. In practice, they might become substitutable options in a portfolio approach to climate action [@roberts2018]. Countries and institutions could choose emphasis based on interests rather than effectiveness.
 
@@ -16,8 +14,6 @@ A harm-reduction approach would understand the pillars differently—as non-subs
 
 Through an adaptation regime lens, the portfolio approach might function as a mechanism for avoiding fundamental change. The ability to substitute adaptation for mitigation could allow continued accumulation while managing its consequences. The promise of loss and damage might deflect demands for immediate emission reductions. The entire architecture could maintain the appearance of comprehensive response while protecting the structures that produce vulnerability.
 
-## Adaptation as Development Redux
-
 The patterns revealed through structural topic modeling suggest the possibility that adaptation operates not as environmental response but as development redux. The dominance of mainstream planning discourse at `r topic_8_prop`, the stronger influence of regional institutional categories (`r region_effect`) compared to geographical vulnerabilities (`r geography_effect`), and the systematic relationship between income and discourse autonomy all hint at adaptation functioning through existing development apparatus.
 
 These patterns suggest more than mere similarity—they raise the possibility of continuity. If adaptation is transforming political questions about responsibility and resources into technical problems requiring expert management, it might mirror what development did before it [@ferguson1994; @escobar1995]. The adaptation frontier—what [@roberts2018] identifies as movable based on values—could become fixed through planning frameworks that predetermine what adaptation can be.
@@ -30,8 +26,6 @@ This could represent depoliticization by transforming questions of power into qu
 
 True repoliticization would allow fundamental disagreements about causes, responsibilities, and futures to be debated and contested. Social movements and indigenous peoples challenge these technocratic approaches with claims for climate justice, asserting traditional knowledge and practices as legitimate adaptation strategies [@carter2020]. Yet the patterns suggest an absence of this politics but an abundance of policy. Countries generate extensive plans, detailed frameworks, and sophisticated assessments while the underlying questions about power, alternatives, and transformation remain outside the bounds of discussion. The result might be busy-ness without contestation, activity without alternatives.
 
-## Epistemicide and Financial Architecture
-
 If adaptation indeed operates as development redux, then decades of critical development scholarship might apply directly to understanding NAP convergence patterns. The systematic absence of alternative knowledge systems from NAPs could indicate what [@santos2016] identifies as epistemicide. The convergence doesn't just exclude certain knowledge but potentially eliminates entire worlds of understanding—what @escobar2018 calls the triumph of the "One-World World" over the possibility of a pluriverse where "many worlds fit." Low-income countries' highest effect size (`r low_income_effect`) might suggest epistemological subordination where nations must translate their ways of knowing into terms donors recognize.
 
 What [@mosse2011] calls "policy as practice"—the continuous work of maintaining coherent narratives serving institutional needs—might operate through NAP production. As @dewan2022's ethnography reveals, development brokers engage in strategic code-switching, maintaining donor-facing scripts in English while preserving contextual knowledge in local languages. This performance maintains project coherence and funding while potentially obscuring the gap between official narratives and contextual realities. Translation processes could render local knowledge into international categories through fundamentally asymmetric processes. Local epistemologies must be rendered legible to access resources, while international frameworks are rarely translated into local terms.
@@ -42,13 +36,9 @@ This financial architecture might create new forms of dependency masked as clima
 
 The state-centric structure of this architecture assumes that national governments can effectively represent diverse interests within their borders. Yet as noted in the broader climate governance literature, authoritarian regimes may prioritize regime stability over citizen welfare, while contested governments might use adaptation planning to strengthen their positions rather than address vulnerability. The technical nature of adaptation planning allows governments to perform responsiveness while avoiding questions about representation or rights.
 
-## Triple Exposure and Multiple Vulnerabilities
-
 Communities experiencing climate impacts might face what can be understood as triple exposure. They face direct climate impacts—droughts, floods, storms intensifying due to global emissions. They face structural vulnerabilities—poverty, marginalization, dispossession that shape their capacity to respond. Now they might face adaptation interventions that create new risks—displacement for infrastructure projects, debt from climate-smart agriculture, exclusion from ecosystem restoration areas.
 
 Small Island Developing States' extreme convergence (`r sids_dom` dominance) could illustrate these multiple exposures. SIDS populations face sea-level rise and intensifying cyclones while dealing with economic marginalization and resource extraction. The concentration of their discourse around mainstream planning, island concerns, and cyclones might indicate not coordinated response but the narrow space within which they can articulate needs to access resources.
-
-## Securitization and Temporal Traps
 
 The temporal dynamics of adaptation planning might reveal additional mechanisms through which convergence operates. The securitization of adaptation—framing climate change as an existential threat requiring emergency response—could reshape planning processes in fundamental ways. When adaptation becomes a security issue, normal political procedures might be suspended in favor of rapid action. The need to submit plans quickly, access finance rapidly, and show results immediately could bypass the deliberation that might generate diverse approaches.
 
@@ -59,8 +49,6 @@ Yet this urgency potentially coexists with what [@paprocki2018] calls anticipato
 The result might be that adaptation planning, despite its forward-looking rhetoric, actually prevents the kind of reimagining that navigating climate change might require.
 
 The combination of securitized urgency and anticipatory ruination could create a temporal trap. Countries must act immediately based on dystopian projections, using standardized frameworks, without time to imagine alternatives. The emergency never ends because the threat never fully materializes—it always remains in the future, requiring constant preparation. This permanent emergency might serve to discipline countries into particular forms of planning while foreclosing possibilities for different relationships with climate, environment, and development.
-
-## Implications for Climate Justice
 
 If adaptation operates as development redux, if it colonizes futures while maintaining dependencies, if it depoliticizes while securitizing, this could fundamentally undermine the portfolio approach to climate governance. The assumption that adaptation investments can compensate for mitigation shortfalls becomes problematic if adaptation reproduces rather than reduces vulnerabilities.
 

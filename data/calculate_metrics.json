@@ -231,10 +231,10 @@
     }
   ],
   "metadata": {
-    "timestamp": "2025-09-04 17:36:33",
+    "timestamp": "2025-09-12 11:00:53",
     "r_version": "R version 4.4.3 (2025-02-28 ucrt)",
     "session_info": "x86_64-w64-mingw32/x64",
-    "processing_time_sec": 0.1673,
+    "processing_time_sec": 0.128,
     "n_value": 3,
     "min_group_size": 2
   },
