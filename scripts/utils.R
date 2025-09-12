@@ -170,7 +170,7 @@ web_cache <- function(func, ..., url = "https://napcentral.org/submitted-naps",
 #' Count thesis characters from Quarto HTML output with chapter breakdown
 library(rvest)
 
-check_thesis <- function(path = "docs/", per_chapter = TRUE) {
+check_thesis <- function(path = "_book/text/", per_chapter = TRUE) {
   
   # Constants
   CHARS_PER_PAGE <- 2400
