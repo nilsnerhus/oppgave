@@ -167,7 +167,7 @@ web_cache <- function(func, ..., url = "https://napcentral.org/submitted-naps",
 
 # --- Thesis page counter ----------------------------------------
 
-check_thesis <- function(path = "_book/text/", per_chapter = TRUE) {
+check_thesis <- function(path = "_book/text/", per_chapter = TRUE, exclude_refs = TRUE) {
   
   # Constants
   CHARS_PER_PAGE <- 2400
@@ -180,6 +180,10 @@ check_thesis <- function(path = "_book/text/", per_chapter = TRUE) {
     per_chapter <- FALSE  # Single file, no chapter view
   } else {
     files <- list.files(path, "\\.html$", recursive = TRUE, full.names = TRUE)
+  }
+  
+  if (exclude_refs) {
+    files <- files[!grepl("(references|bibliography)\\.html$", files)]
   }
   
   # Check if any files were found

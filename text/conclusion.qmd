@@ -1,3 +1,8 @@
+```{r load data, include=FALSE}
+variables <- readRDS("../data/load_variables.rds")
+vars <- variables$data
+list2env(vars, envir = .GlobalEnv)
+```
 # Conclusion {#sec-conclusion}
 
 As @sec-context demonstrated, the UNFCCC architecture creates a framework where adaptation, mitigation, and loss and damage potentially can substitute for each other, rather than being necessary compliments. This portfolio approach means that wealthy nations can fund adaptation projects instead of reducing their own emissions, while developing countries would have to reshape their entire societies through comprehensive planning processes to access climate finance. 
@@ -23,7 +28,3 @@ Yet the current architecture enables precisely the opposite. It treats inherentl
 The homogeneity revealed in NAPs, discourse centralization—shows this is not climate adaptation but institutional adaptation. Countries adapt not to changing rainfall or rising seas but to donor requirements and funding criteria. They develop capacity not to navigate environmental change but to navigate international bureaucracies. The patterns prove adaptation operates as epistemicide, systematically eliminating alternative ways of knowing and responding to environmental change while imposing singular frameworks that foreclose alternatives.
 
 The question is not whether wealthy countries will provide adaptation finance—they already are and will provide more. The question is whether this finance will continue operating as a cop-out, allowing the North to avoid fundamental changes while appearing to help the South. Real transformation requires abandoning the pretense that Northern institutions can manage Southern adaptation. It requires recognizing that the most effective adaptation support the North can provide is to stop driving the climate change that makes adaptation necessary. Until then, adaptation remains what this analysis reveals it to be: not climate justice but its most sophisticated evasion.
-# References {.unnumbered}
-
-::: {#refs}
-:::

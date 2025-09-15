@@ -54,7 +54,7 @@ source("scripts/load_variables.R")
 topic_names <- c("napa", 
                  "cyclone", 
                  "mountain", 
-                 "island", 
+                 "hurricane", 
                  "office", 
                  "transit",
                  "rcp",

@@ -26,7 +26,7 @@
     },
     {
       "topic_id": 4,
-      "topic_name": "island",
+      "topic_name": "hurricane",
       "frex_terms": "marin, island, hurrican, coastal, mangrov",
       "top_countries": "[{\"country\":\"Kuwait\",\"score\":0.4961},{\"country\":\"St. Lucia\",\"score\":0.4646},{\"country\":\"Antigua and Barbuda\",\"score\":0.4495},{\"country\":\"Kiribati\",\"score\":0.3794},{\"country\":\"Marshall Islands\",\"score\":0.3754},{\"country\":\"Grenada\",\"score\":0.2535},{\"country\":\"Trinidad and Tobago\",\"score\":0.2412},{\"country\":\"Fiji\",\"score\":0.2412},{\"country\":\"West Bank and Gaza\",\"score\":0.2055},{\"country\":\"Suriname\",\"score\":0.1939},{\"country\":\"Sri Lanka\",\"score\":0.1821},{\"country\":\"St. Vincent and the Grenadines\",\"score\":0.1673},{\"country\":\"Liberia\",\"score\":0.1481},{\"country\":\"Tonga\",\"score\":0.1457},{\"country\":\"Azerbaijan\",\"score\":0.1228},{\"country\":\"Cabo Verde\",\"score\":0.1117},{\"country\":\"Sierra Leone\",\"score\":0.0917},{\"country\":\"Timor-Leste\",\"score\":0.0914},{\"country\":\"Bangladesh\",\"score\":0.09},{\"country\":\"Brazil\",\"score\":0.0823},{\"country\":\"Thailand\",\"score\":0.0795},{\"country\":\"Jordan\",\"score\":0.0723},{\"country\":\"Sudan\",\"score\":0.0662},{\"country\":\"Kenya\",\"score\":0.0556},{\"country\":\"Papua New Guinea\",\"score\":0.0551},{\"country\":\"Congo, Dem. Rep.\",\"score\":0.054},{\"country\":\"Israel\",\"score\":0.0529},{\"country\":\"Moldova\",\"score\":0.0502},{\"country\":\"Philippines\",\"score\":0.0489},{\"country\":\"Pakistan\",\"score\":0.0448},{\"country\":\"Bosnia and Herzegovina\",\"score\":0.0433},{\"country\":\"Mozambique\",\"score\":0.0389},{\"country\":\"Zambia\",\"score\":0.0289},{\"country\":\"Cambodia\",\"score\":0.0228},{\"country\":\"Albania\",\"score\":0.0226},{\"country\":\"Burkina Faso\",\"score\":0.0206},{\"country\":\"Argentina\",\"score\":0.0185},{\"country\":\"South Sudan\",\"score\":0.017},{\"country\":\"Nepal\",\"score\":0.0137},{\"country\":\"South Africa\",\"score\":0.013},{\"country\":\"Uruguay\",\"score\":0.0125},{\"country\":\"Chad\",\"score\":0.0122},{\"country\":\"Mongolia\",\"score\":0.0076},{\"country\":\"Ethiopia\",\"score\":0.0026},{\"country\":\"Serbia\",\"score\":0.0022},{\"country\":\"Armenia\",\"score\":0.0012},{\"country\":\"Bhutan\",\"score\":0.0012}]",
       "topic_proportion": 0.1147,
@@ -66,10 +66,10 @@
     }
   ],
   "metadata": {
-    "timestamp": "2025-09-12 11:00:52",
+    "timestamp": "2025-09-13 15:28:53",
     "r_version": "R version 4.4.3 (2025-02-28 ucrt)",
     "session_info": "x86_64-w64-mingw32/x64",
-    "timestamp.1": "2025-09-12 11:00:52",
+    "timestamp.1": "2025-09-13 15:28:53",
     "k": 8,
     "manual_names_used": true,
     "meaningful_threshold": 0.07,

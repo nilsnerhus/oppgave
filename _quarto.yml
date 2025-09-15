@@ -18,6 +18,7 @@ book:
     - text/findings.qmd
     - text/discussion.qmd
     - text/conclusion.qmd
+    - text/references.qmd
 
 cap-location: bottom
 bibliography: 
