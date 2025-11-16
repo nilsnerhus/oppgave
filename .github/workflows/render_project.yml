@@ -37,7 +37,16 @@ jobs:
             libfribidi-dev \
             libgit2-dev \
             libpoppler-cpp-dev
+            libjpeg-dev
 
+      - name: Cache renv packages
+        uses: actions/cache@v4
+        with:
+          path: renv/library
+          key: ${{ runner.os }}-renv-${{ hashFiles('**/renv.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-renv-
+          
       # 4. Install and restore renv
       - name: Install and restore renv
         run: |
