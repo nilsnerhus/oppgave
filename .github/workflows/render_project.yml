@@ -36,7 +36,7 @@ jobs:
             libharfbuzz-dev \
             libfribidi-dev \
             libgit2-dev \
-            libpoppler-cpp-dev
+            libpoppler-cpp-dev \
             libjpeg-dev
 
       - name: Cache renv packages
