@@ -38,14 +38,12 @@ jobs:
             libgit2-dev \
             libpoppler-cpp-dev
 
-      # 4. Set up package dependencies
-      - name: Install R dependencies
-        uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          cache-version: 2
-          packages: deps::., any::sessioninfo
-          dependencies: all
-          upgrade: false
+      # 4. Install and restore renv
+      - name: Install and restore renv
+        run: |
+          install.packages("renv")
+          renv::restore()
+        shell: Rscript {0}
 
       # 5. Set up Quarto
       - name: Set up Quarto
