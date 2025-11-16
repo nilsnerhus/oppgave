@@ -21,10 +21,24 @@ jobs:
       # 2. Set up R
       - name: Set up R
         uses: r-lib/actions/setup-r@v2
-        with:
-          use-public-rspm: true
 
-      # 3. Set up dependencies
+      # 3. Set uo system dependencies
+      - name: Set up system dependencies
+        run: |
+          sudo apt-get update -y
+          sudo apt-get install -y \
+            libcurl4-openssl-dev \
+            libssl-dev \
+            libxml2-dev \
+            libfontconfig1-dev \
+            libfreetype6-dev \
+            libpng-dev \
+            libharfbuzz-dev \
+            libfribidi-dev \
+            libgit2-dev \
+            libpoppler-cpp-dev
+
+      # 4. Set up package dependencies
       - name: Install R dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
@@ -33,26 +47,16 @@ jobs:
           dependencies: all
           upgrade: false
 
-      # 4. Set up Quarto
+      # 5. Set up Quarto
       - name: Set up Quarto
         uses: quarto-dev/quarto-actions/setup@v2
         with:
           tinytex: true
 
-      # 5. Render the Quarto project and publish to GitHub Pages
+      # 6. Render the Quarto project and publish to GitHub Pages
       - name: Render and publish to GitHub Pages
         uses: quarto-dev/quarto-actions/publish@v2
         with:
           target: gh-pages
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # 6. Commit any updates to analysis cache (e.g., _freeze/)
-      - name: Commit and push cache updates
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add _freeze/
-          git diff --staged --quiet || git commit -m "Update analysis cache"
-          git push
-        continue-on-error: true
