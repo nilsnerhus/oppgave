@@ -1,17 +1,5 @@
 .Rhistory
-.RData
-.Ruserdata
 /_book/
-/_site/
-/.quarto/
-/.Rproj.user/
-/.obsidian/
-/.pandoc/
-/åå obsidian/
-Innboks.md
-.trash
-.Renviron
 grateful.report.html
 text/*
 !text/*.qmd
-test.md
