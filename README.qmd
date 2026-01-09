@@ -1,0 +1,12 @@
+---
+title: Masteroppgave
+---
+
+Her har jeg skrevet en veldig lang oppgave om utvikling og klimatilpasning. 
+
+## Ting jeg holder på med nå
+
+- [ ] Skrive om koden til å holde et høyere nivå, og være noe jeg kan lære av seinere
+
+En av hovedtingene er å skrive den som helt streit tidyverse-kode, på en måte som er enkel og grei å se og forstå. 
+Det var noe mer jeg ville skrive her også, men det har jeg faktisk glemt. 

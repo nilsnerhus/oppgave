@@ -3,3 +3,5 @@
 grateful.report.html
 text/*
 !text/*.qmd
+.quarto/
+_cache/

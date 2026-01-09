@@ -4,38 +4,45 @@
 # Purpose: Orchestrate the processing of NAP documents through
 # the entire pipeline
 
+library(memoise)
+
 # Create output directory
 dir.create("data", recursive = TRUE, showWarnings = FALSE)
 
-# Step 1: Corpus collection and preparation
-
-## Load scripts
-source("R/utils.R")
-source("R/scrape_web.R")
-source("R/extract_pdfs.R")
-source("R/get_un_classifications.R")
-source("R/add_metadata.R")
-source("R/process_dfm.R")
-
-## Set parameters
-category_map <- list(
-	Global = "global_category",
-	Income = "income_level",
-	Region = "region",
-	Geography = "geography",
-	Time = "time_period"
+# Set up caching on disk
+memoise_dir <- dir_create("_cache/memoise")
+cache <- cachem::cache_disk(
+        dir = memoise_dir,
+        max_size = 1024^3,
+        max_age = Inf
 )
-time_groups <- c("Early" = 2019, "Middle" = 2022, "Late" = Inf)
 
-## Run functions
-web <- web_cache(scrape_web)
-docs <- auto_cache(extract_pdfs, web)
+## Step 1: Assemble corpus (would be better to just source the whole R/-directory)
+source("R/scrape_web.R")
 
-un_classifications <- auto_cache(get_un_classifications)
-metadata <- auto_cache(add_metadata, web, un_classifications, time_groups)
+mem_prep_data <- memoise(prep_data, cache = cache)
+data <- mem_prep_data()
 
+## Use the adapter to make the result fit
+
+docs <- adapt_to_docs(data)
+
+metadata <- adapt_to_metadata(data)
+
+## Step 2: Prepare and tune model
 dfm <- auto_cache(process_dfm, docs, metadata)
 
+
+# For the next step maybe? I'll have to make an adapter to the rest of the pipeline.
+category_map <- list(
+        Global = "global_category",
+        Income = "income_level",
+        Region = "region",
+        Geography = "geography",
+        Time = "time_period"
+)
+
+time_groups <- c("Early" = 2019, "Middle" = 2022, "Late" = Inf)
 # Step 2: Structural topic modeling
 ## Load scripts
 source("R/fit_model.R")
@@ -53,24 +60,23 @@ source("R/load_variables.R")
 
 # Run functions
 topic_names <- c(
-	"napa",
-	"cyclone",
-	"mountain",
-	"hurricane",
-	"office",
-	"transit",
-	"rcp",
-	"mainstream"
+        "napa",
+        "cyclone",
+        "mountain",
+        "hurricane",
+        "office",
+        "transit",
+        "rcp",
+        "mainstream"
 )
 topics <- auto_cache(name_topics, model, topic_names)
 metrics <- auto_cache(calculate_metrics, model, topics, dfm)
 variables <- auto_cache(
-	load_variables,
-	topics,
-	metrics,
-	web,
-	dfm,
-	model,
-	digits = 0,
-	overwrite = TRUE
+        load_variables,
+        topics,
+        metrics,
+        web,
+        dfm,
+        model,
+        digits = 0,
 )
