@@ -7,6 +7,7 @@
 
 library(memoise)
 library(fs)
+library(purrr)
 
 ## Create output directory
 dir.create("data", recursive = TRUE, showWarnings = FALSE)
