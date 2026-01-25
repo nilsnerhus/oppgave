@@ -46,8 +46,8 @@ prep_data <- function(
     )
 
   text_tbl_unfiltered <- html_tbl |>
-    download_pdfs()
-  extract_text()
+    download_pdfs() |>
+    extract_text()
 
   text_tbl <- text_tbl_unfiltered |>
     filter(
@@ -63,6 +63,12 @@ prep_data <- function(
   nap_tbl <- text_tbl |>
     assign_wb_data() |>
     assign_un_class()
+
+  attr(nap_tbl, "pipeline_counts") <- list(
+    n_initial = nrow(html_tbl_unfiltered),
+    n_english = nrow(html_tbl),
+    n_final = nrow(text_tbl)
+  )
 
   return(nap_tbl)
 }
