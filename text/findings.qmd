@@ -39,25 +39,33 @@ topics_table <- topics$data
 # Create plot
 ggplot(topics_table, aes(x = topic_proportion, y = effective_documents)) +
   geom_point(size = 2) +
-  geom_text_repel(aes(label = topic_name), 
-            force = 4,
-            point.padding = 0.5,
-            box.padding = 0.5,
-            size = 5) +
-  labs(title = "Topic distribution",
-       x = "Topic Proportion",
-       y = "Effective Documents"
+  geom_text_repel(
+    aes(label = topic_name),
+    force = 4,
+    point.padding = 0.5,
+    box.padding = 0.5,
+    size = 5
   ) +
-  
+  labs(
+    title = "Topic distribution",
+    x = "Topic Proportion",
+    y = "Effective Documents"
+  ) +
+
   scale_x_continuous(labels = percent_format(accuracy = 1)) +
-  
-  theme_economist_white(base_size = 11) + 
-  theme(legend.position = "none",
-        plot.title = element_text(size = 16, face = "bold", 
-                             margin = margin(b = 15), 
-                             hjust = 0.5),
-        axis.title.x = element_text(margin = margin(t = 10)),
-        axis.title.y = element_text(margin = margin(r = 10)))
+
+  theme_economist_white(base_size = 11) +
+  theme(
+    legend.position = "none",
+    plot.title = element_text(
+      size = 16,
+      face = "bold",
+      margin = margin(b = 15),
+      hjust = 0.5
+    ),
+    axis.title.x = element_text(margin = margin(t = 10)),
+    axis.title.y = element_text(margin = margin(r = 10))
+  )
 ```
 
 The remaining topics address diverse vulnerabilities and planning dimensions, though all filtered through institutional lenses and operating at much smaller scales. 
@@ -89,20 +97,25 @@ library(kableExtra)
 # Create topics data frame using a loop
 topics_data <- data.frame()
 
-for(i in 1:k_topics) {
-  topics_data <- rbind(topics_data, data.frame(
-    Topic = get(paste0("topic_", i, "_name")),
-    Proportion = get(paste0("topic_", i, "_prop")),
-    Documents = get(paste0("topic_", i, "_documents")),
-    `Key Terms` = get(paste0("topic_", i, "_frex")),
-    Countries = get(paste0("topic_", i, "_countries"))
-  ))
+for (i in 1:k_topics) {
+  topics_data <- rbind(
+    topics_data,
+    data.frame(
+      Topic = get(paste0("topic_", i, "_name")),
+      Proportion = get(paste0("topic_", i, "_prop")),
+      Documents = get(paste0("topic_", i, "_documents")),
+      `Key Terms` = get(paste0("topic_", i, "_frex")),
+      Countries = get(paste0("topic_", i, "_countries"))
+    )
+  )
 }
 
 # Create formatted table (already in topic number order from loop)
-kable(topics_data, 
-      row.names = FALSE,
-      col.names = c("Topic", "Prop", "Docs", "Terms", "Countries"))
+kable(
+  topics_data,
+  row.names = FALSE,
+  col.names = c("Topic", "Prop", "Docs", "Terms", "Countries")
+)
 ```
 
 ## Groups
@@ -136,31 +149,43 @@ metrics <- readRDS("../data/calculate_metrics.rds")
 metrics_table <- metrics$data
 
 # Prepare data for plotting
-plot_data <- metrics_table[metrics_table$subcategory != "Overall" & !is.na(metrics_table$effect_size), ]
-plot_data$category <- factor(plot_data$category, levels = c("Income", "Region", "Geography", "Time"))
+plot_data <- metrics_table[
+  metrics_table$subcategory != "Overall" & !is.na(metrics_table$effect_size),
+]
+plot_data$category <- factor(
+  plot_data$category,
+  levels = c("Income", "Region", "Geography", "Time")
+)
 plot_data$label <- ifelse(plot_data$significant, plot_data$subcategory, "")
 
 ggplot(plot_data, aes(x = dominance, y = effect_size)) +
   geom_point(size = 2) +
-  geom_text_repel(aes(label = subcategory_abbrev), 
-            force = 3,
-            point.padding = 0.5,
-            box.padding = 0.5,
-            size = 3) + 
-  labs(title = "Dominance and effect",
-       x = "Dominance", 
-       y = "Estimated effect") +
-  facet_wrap(~ category, scales = "fixed", ncol = 2) +
-  
+  geom_text_repel(
+    aes(label = subcategory_abbrev),
+    force = 3,
+    point.padding = 0.5,
+    box.padding = 0.5,
+    size = 3
+  ) +
+  labs(
+    title = "Dominance and effect",
+    x = "Dominance",
+    y = "Estimated effect"
+  ) +
+  facet_wrap(~category, scales = "fixed", ncol = 2) +
+
   scale_x_continuous(labels = percent_format(accuracy = 1)) +
   scale_y_continuous(labels = percent_format(accuracy = 1)) +
-  
-  theme_economist_white(base_size = 11) + 
+
+  theme_economist_white(base_size = 11) +
   theme(
-    plot.title = element_text(size = 16, face = "bold", 
-                             margin = margin(b = 15), 
-                             hjust = 0.5),
-    strip.text = element_text(size = 12, face = "bold"),  # Facet labels
+    plot.title = element_text(
+      size = 16,
+      face = "bold",
+      margin = margin(b = 15),
+      hjust = 0.5
+    ),
+    strip.text = element_text(size = 12, face = "bold"), # Facet labels
     panel.spacing = unit(1, "lines"), # increases space between panels
     axis.title.x = element_text(margin = margin(t = 10)),
     axis.title.y = element_text(margin = margin(r = 10))
@@ -178,36 +203,44 @@ High-income countries show extreme topic concentration (`r high_income_dom`) but
 library(tidyr)
 
 # Filter and select
-temp_data <- metrics_table[metrics_table$subcategory == "Overall" & metrics_table$category != "Global", ]
+temp_data <- metrics_table[
+  metrics_table$subcategory == "Overall" & metrics_table$category != "Global",
+]
 temp_data <- temp_data[, c("category", "dominance", "effect_size")]
 
 # Reorder category by dominance
 temp_data$category <- reorder(temp_data$category, temp_data$dominance)
 
 # Pivot longer
-plot_data <- pivot_longer(temp_data, 
-                          cols = c(dominance, effect_size),
-                          names_to = "metric", 
-                          values_to = "value")
+plot_data <- pivot_longer(
+  temp_data,
+  cols = c(dominance, effect_size),
+  names_to = "metric",
+  values_to = "value"
+)
 
 # Factor the metric
-plot_data$metric <- factor(plot_data$metric, levels = c("effect_size", "dominance"))
+plot_data$metric <- factor(
+  plot_data$metric,
+  levels = c("effect_size", "dominance")
+)
 
 # Create plot
 ggplot(plot_data, aes(x = value, y = category, fill = metric)) +
   geom_col(position = "dodge", alpha = 0.7) +
-  geom_text(aes(label = paste0(round(value * 100), "%")), 
-            position = position_dodge(width = 1),
-            hjust = -0.1, 
-            size = 4) +
-  labs(title = "Average across categories",
-       x = "Average Value", 
-       y = NULL) +                          
+  geom_text(
+    aes(label = paste0(round(value * 100), "%")),
+    position = position_dodge(width = 1),
+    hjust = -0.1,
+    size = 4
+  ) +
+  labs(title = "Average across categories", x = "Average Value", y = NULL) +
   scale_x_continuous(
     expand = expansion(mult = c(0, 0.1)),
-    labels = percent_format(accuracy = 1)) +
-  
-  theme_economist_white(base_size = 11) + 
+    labels = percent_format(accuracy = 1)
+  ) +
+
+  theme_economist_white(base_size = 11) +
   scale_fill_economist(name = "", labels = c("Effect Size", "Dominance")) +
   theme(
     legend.position = c(0.98, 0.02), # Bottom-right corner
@@ -217,9 +250,12 @@ ggplot(plot_data, aes(x = value, y = category, fill = metric)) +
     legend.text = element_text(size = 10), # Match base_size
     axis.title.x = element_text(margin = margin(t = 10)),
     axis.title.y = element_text(margin = margin(r = 10)),
-    plot.title = element_text(size = 16, face = "bold", 
-                             margin = margin(b = 15), 
-                             hjust = 0.5)
+    plot.title = element_text(
+      size = 16,
+      face = "bold",
+      margin = margin(b = 15),
+      hjust = 0.5
+    )
   )
 ```
 
@@ -249,10 +285,20 @@ library(kableExtra)
 
 # Define all subcategories and their parent categories
 subcategories <- list(
-  Income = c("high_income", "upper_middle_income", "lower_middle_income", "low_income"),
-  Region = c("europe_central_asia", "latin_america_caribbean", "south_asia", 
-             "sub_saharan_africa", "east_asia_pacific", 
-             "middle_east_north_africa_afghanistan_pakistan"),
+  Income = c(
+    "high_income",
+    "upper_middle_income",
+    "lower_middle_income",
+    "low_income"
+  ),
+  Region = c(
+    "europe_central_asia",
+    "latin_america_caribbean",
+    "south_asia",
+    "sub_saharan_africa",
+    "east_asia_pacific",
+    "middle_east_north_africa_afghanistan_pakistan"
+  ),
   Geography = c("sids", "lldc", "other"),
   Time = c("early", "middle", "late")
 )
@@ -261,7 +307,7 @@ subcategories <- list(
 clean_names <- c(
   "high_income" = "High Income",
   "upper_middle_income" = "Upper-Middle Income",
-  "lower_middle_income" = "Lower-Middle Income", 
+  "lower_middle_income" = "Lower-Middle Income",
   "low_income" = "Low Income",
   "europe_central_asia" = "Europe & Central Asia",
   "latin_america_caribbean" = "Latin America & Caribbean",
@@ -280,22 +326,27 @@ clean_names <- c(
 # Create data frame with single loop
 group_data <- data.frame()
 
-for(cat in names(subcategories)) {
-  for(subcat in subcategories[[cat]]) {
-    group_data <- rbind(group_data, data.frame(
-      Category = cat,
-      Subcategory = clean_names[subcat],
-      Dominance = get(paste0(subcat, "_dom")),
-      `Effect Size` = get(paste0(subcat, "_effect")),
-      `Top Topics` = get(paste0(subcat, "_topics"))
-    ))
+for (cat in names(subcategories)) {
+  for (subcat in subcategories[[cat]]) {
+    group_data <- rbind(
+      group_data,
+      data.frame(
+        Category = cat,
+        Subcategory = clean_names[subcat],
+        Dominance = get(paste0(subcat, "_dom")),
+        `Effect Size` = get(paste0(subcat, "_effect")),
+        `Top Topics` = get(paste0(subcat, "_topics"))
+      )
+    )
   }
 }
 
 # Create formatted table
-kable(group_data, 
-      format = "markdown",
-      row.names = FALSE,
-      escape = FALSE,
-      col.names = c("Category", "Group", "Dominance", "Effect", "Topics"))
+kable(
+  group_data,
+  format = "markdown",
+  row.names = FALSE,
+  escape = FALSE,
+  col.names = c("Category", "Group", "Dominance", "Effect", "Topics")
+)
 ```

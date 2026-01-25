@@ -6,11 +6,12 @@ book:
   subtitle: "A billion dollar COP-out?"
   author:
     name: "Nils Nerhus Rørstad"
-    email: "202302046@post.au.dk"
+    email: "nnrorstad@gmail.com"
   date: "2025-09-16"
-  downloads: [pdf, epub]
+  downloads: pdf
   chapters:
     - index.qmd
+    - text/abstract.qmd
     - text/intro.qmd
     - text/context.qmd
     - text/concepts.qmd
@@ -24,11 +25,6 @@ cap-location: bottom
 bibliography: 
   - references/references.bib
   - references/grateful-refs.bib
-  
-degree: "MSc in Human Security"
-department: "Department of Culture and Society"  
-university: "Aarhus University"
-supervisor: "Assoc. Prof Michael Eilenberg"
 
 execute: 
   echo: false
@@ -48,5 +44,7 @@ format:
     toc: true
     number-sections: true
     number-depth: 2
-
-editor: source
+    include-in-header:
+      text: |
+        \let\oldsection\section
+        \renewcommand{\section}[1]{\clearpage\oldsection{#1}}

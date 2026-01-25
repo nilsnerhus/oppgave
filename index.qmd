@@ -1,17 +1,8 @@
-```{r load data, include=FALSE}
-variables <- readRDS("data/load_variables.rds")
-vars <- variables$data
-list2env(vars, envir = .GlobalEnv)
-```
 
-# Abstract {#sec-abstract .unnumbered}
+::: {.content-visible unless-format="pdf"}
 
-Climate adaptation has become central to North-South relations, with hundreds of billions of dollars promised from developed to developing countries. Through the United Nations Framework Convention for Climate Change (UNFCCC) and its three pillars of mitigation, adaptation, and loss and damage. Yet despite facing radically different climate challenges, the countries included span the whole world, from landlocked to small islands, their plans are written in much the same way. This thesis examines what this convergence reveals about how adaptation planning operates and whose interests it serves.
+# Welcome {.unnumbered .unlisted}
 
-The analysis draws on institutional and critical paradigms from development-, decolonial-, future- and climate adaptation studies to examine whether climate adaptation discourse reflects epistemological diversity or systematic control. Using structural topic modeling to analyze all `r n_documents_after_aggregation` English-language National Adaptation Plans (NAPs) submitted to the UNFCCC, I examine the relationship between discourse concentration patterns and estimated effects across different groups of countries.
+This is the webversion of my masters thesis. It is possible to download the PDF version from the top left, although the content is the same. 
 
-The findings hint at considerable convergence. Eight topics organize adaptation discourse, with `r topic_8_name` dominating the texts at over `r topic_8_prop`, three times more dominant than any other topic and appearing among the top three themes for every country group. Despite what one would assume, the effect of group membership was not highest for geographical factors (`r geography_effect`), but rather region (`r region_effect`). 
-
-These patterns raise questions about adaptation planning. Where do these plans come from, and who determines their content? Whose interests do they serve? Is this convergence around "best practices" evidence of successful knowledge transfer, or does it represent epistemicide, the systematic elimination of alternative ways of understanding and responding to climate change?
-
-While climate impacts remain uncertain and distant, dispossession and violence through adaptation planning are present. The safest approach may be avoiding institutional arrangements that systematically eliminate alternative knowledge systems, and to address the root cause of climate change: continued carbon emissions.
+:::

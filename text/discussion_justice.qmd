@@ -2,8 +2,6 @@
 
 >This section explores what the patterns mean for climate justice, examining whether adaptation's technical framing transforms political questions into bureaucratic processes. It considers how the portfolio approach to climate action might enable problematic substitutions between mitigation, adaptation, and loss and damage.
 
-### Development redux
-
 As climate adaptation is becoming the main problematic in development, it is important to establish whether or not it is actually different from development. The patterns found in the structural topic model suggest that adaptation is development redux. The dominance of mainstream planning discourse at `r topic_8_prop`, the stronger influence of regional institutional categories (`r region_effect`) compared to geographical vulnerabilities (`r geography_effect`), and the systematic relationship between income and discourse autonomy all point to adaptation functioning through existing development apparatus, rather than changing it.
 
 If adaptation is transforming political questions about responsibility and resources into technical problems requiring expert management, it might mirror what development did before it [@ferguson1994; @escobar1995]. The adaptation frontier, could become fixed through planning frameworks that predetermine what adaptation can be.
@@ -18,19 +16,15 @@ Through the portfolio lens, this appears as unfortunate implementation challenge
 
 The temporal dimensions potentially add another layer to this critique. The securitization that demands urgent action might prevent the deliberation necessary for just responses. The anticipatory ruination that justifies intervention might create permanent dependency. The colonization of futures might foreclose transformative possibilities. Together, these temporal dynamics could ensure that adaptation planning manages rather than challenges the structures producing vulnerability.
 
-### Trade-off
-
 The extraordinary convergence around mainstream planning discourse (`r topic_8_prop` of the corpus), combined with regional effects (`r region_effect`) overshadowing geographical vulnerabilities (`r geography_effect`), illuminates a fundamental tension in climate adaptation. While climate impacts manifest locally, the apparatus for responding operates through nation-states and international institutions. This scalar mismatch reveals how adaptation planning might invert the environmental maxim "think global, act local" into something more like "think local, act global."
 
 The three-pillar architecture, as described in @sec-context, creates what could be understood as a portfolio approach to climate action. This structure emerged through decades of negotiation, with each pillar representing different political compromises. In principle, the pillars address distinct aspects requiring integrated response. In practice, they become substitutable options in a portfolio approach to climate action. High-emitting countries prefer funding adaptation over reducing emissions, in a process that effectively pays to maintain fossil fuel consumption. The framing facilitates trade-offs, with cost-benefit analyses that compares mitigation costs against adaptation costs and loss and damage [@eriksen2021]. Integrated assessment models optimize resource allocation across response options. The apparently technical choice of discount rates potentially determines whose future counts in present decisions [@wallimann-helmer2023].
 
-A harm-reduction approach would understand the pillars differently—as non-substitutable obligations addressing different injustices. Mitigation addresses the injustice of continued emissions that harm others. Adaptation addresses the injustice of unequal vulnerability to unavoidable impacts. Loss and damage addresses the injustice of irreversible losses imposed on those least responsible [@vanhala2016; @roberts2015]. From this perspective, funding adaptation cannot compensate for insufficient mitigation, just as loss and damage payments cannot justify continued harm.
+A harm-reduction approach would understand the pillars differently,as non-substitutable obligations addressing different injustices. Mitigation addresses the injustice of continued emissions that harm others. Adaptation addresses the injustice of unequal vulnerability to unavoidable impacts. Loss and damage addresses the injustice of irreversible losses imposed on those least responsible [@vanhala2016; @roberts2015]. From this perspective, funding adaptation cannot compensate for insufficient mitigation, just as loss and damage payments cannot justify continued harm.
 
 From an adaptation nexus perspective, this portfolio approach is a sophisticated integration that maximizes efficiency across climate responses. The ability to optimize across pillars could enable countries to identify synergies, avoid redundancies, and achieve multiple objectives through coordinated action. Substitutability is flexibility, allowing response strategies tailored to specific national circumstances and comparative advantages. 
 
 Through an adaptation regime lens, the portfolio approach might function as a mechanism for avoiding fundamental change. The ability to substitute adaptation for mitigation could allow continued accumulation while managing its consequences. The promise of loss and damage might deflect demands for immediate emission reductions. The entire architecture could maintain the appearance of comprehensive response while protecting the structures that produce vulnerability.
-
-### Justice
 
 The justice implications of the different approaches are unclear. The questions "What is climate adaptation?" and "Who decides?" cannot be separated. Definition and decision are intertwined processes through which certain actors establish what counts as legitimate response to climate change. The patterns in National Adaptation Plans suggest these processes might systematically privilege state institutions and international organizations while marginalizing the communities experiencing climate impacts.
 
@@ -39,8 +33,6 @@ The dominance of technical governance language suggests adaptation has been rend
 Through the adaptation nexus lens, this architecture could represent necessary coordination for managing complex, multi-scalar challenges. National governments aggregate local needs, coordinate across sectors, ensure accountability to both citizens and donors. The convergence around planning procedures might reflect successful adoption of proven frameworks that enable learning across contexts. Technical standardization could facilitate the comparison, aggregation, and transfer of knowledge essential for effective response.
 
 Yet through the adaptation regime lens, this same architecture might reproduce and intensify existing power asymmetries. The state-centric structure privileges certain actors while excluding others. The technical requirements eliminate non-conforming knowledge. The financial dependencies discipline countries into particular pathways. Together, these elements might ensure that adaptation reinforces rather than transforms the structures producing vulnerability.
-
-#### Knowledge production
 
 The temporal patterns in the NAPs reveal another dimension of control. Planning horizons extending to 2050 or 2100 represent claims on the future that might lock in current arrangements. When states submit long-term adaptation plans, they potentially project existing borders, institutions, and power relations forward despite the transformative pressures climate change could bring.
 
@@ -57,8 +49,6 @@ This creates what might be understood as epistemological inequality. Those facin
 The distinction between embedded and distant knowledge proves crucial here. Those living in particular places develop understanding through sustained engagement with specific environments. This embedded knowledge captures relationships, patterns, and changes that external assessment might not perceive. By contrast, the distant knowledge of technical planning, however sophisticated its models and frameworks, remains abstracted from the specificities that matter for effective response.
 
 The systematic privileging of distant over embedded knowledge in adaptation planning potentially ensures that those least familiar with local conditions shape responses to local impacts. International consultants design vulnerability assessments. Regional banks determine funding priorities. UN agencies establish planning frameworks. Meanwhile, communities with generations of experience managing environmental variability must translate their knowledge into forms these distant actors recognize or risk exclusion from adaptation resources.
-
-#### Financing
 
 The architecture of global climate governance positions nation-states as essential intermediaries between local climate impacts and international resources. Communities cannot submit their own adaptation plans to the UNFCCC. They cannot directly access climate finance. Every adaptation initiative must pass through national governments that may or may not represent community interests.
 
@@ -81,10 +71,6 @@ Yet this urgency potentially coexists with what [@paprocki2018] calls anticipato
 The result might be that adaptation planning, despite its forward-looking rhetoric, actually prevents the kind of reimagining that navigating climate change might require.
 
 The combination of securitized urgency and anticipatory ruination could create a temporal trap. Countries must act immediately based on dystopian projections, using standardized frameworks, without time to imagine alternatives. The emergency never ends because the threat never fully materializes—it always remains in the future, requiring constant preparation. This permanent emergency might serve to discipline countries into particular forms of planning while foreclosing possibilities for different relationships with climate, environment, and development.
-
-
-#### Implementation
-### Goals of adaptation
 
 Perhaps the fundamental tension revealed by these patterns is between two visions of adaptation. The nexus approach seeks to manage climate impacts within existing systems through better planning, stronger institutions, and increased resources. It assumes that current structures can be reformed, capacities can be built, and coordination can be improved to deliver effective adaptation.
 

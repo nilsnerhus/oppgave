@@ -3,6 +3,7 @@ variables <- readRDS("../data/load_variables.rds")
 vars <- variables$data
 list2env(vars, envir = .GlobalEnv)
 ```
+
 # Conclusion {#sec-conclusion}
 
 As @sec-context demonstrated, the UNFCCC architecture creates a framework where adaptation, mitigation, and loss and damage potentially can substitute for each other, rather than being necessary compliments. This portfolio approach means that wealthy nations can fund adaptation projects instead of reducing their own emissions, while developing countries would have to reshape their entire societies through comprehensive planning processes to access climate finance. 
@@ -16,8 +17,6 @@ The methods presented in @sec-methods provided tools for quantifying the content
 The findings presented in @sec-findings hints at what the theoretical framework argues, adaptation discourse shows high centralization around technical topics regardless, with the `r topic_8_name` dominating the corpus with `r topic_8_prop` of the content. For the groups, the regional effect size of `r region_effect`, nearly double that of geographic vulnerability, hints that regional institutions are more important than any other metric. The inverse relationship between income and discourse autonomy, with low-income countries showing the highest effect sizes of the income groups, at `r low_income_effect`, suggests that financial dependency constrains how poor countries can imagine climate adaptation. These patterns provide empirical backing for the theoretical concerns raised in @sec-concepts about epistemological convergence in climate governance.
 
 As the discussion in @sec-discussion argued, the patterns in NAPs suggest adaptation operates through multiple, sometimes contradictory dynamics. The dominance of technical governance language indicates that political questions have been rendered into technical processes. The regional effects exceeding geographical ones reveals how institutional networks constrain discourse more than climate realities. The relationship between poverty and conformity confirms that financial dependency shapes epistemological possibilities. These dynamics suggest adaptation functions as what @ferguson1994 called an 'anti-politics machine', appearing to address climate vulnerability while, behind the backs of the planners, maintaining the structures that produce it. The question is not whether countries can adapt to climate change, but whether they can do so on their own terms.
-
-## The COP-out(come)
 
 The title of this thesis captures a double meaning the analysis confirms. Climate adaptation represents both a literal "Conference of Parties outcome"—the institutional response to demands for climate justice—and a "cop-out" in the colloquial sense: an evasion of responsibility. While Southern countries reshape their societies through adaptation planning, Northern countries continue the emissions that drive climate change.
 
