@@ -1,309 +1,415 @@
-## --- Load packages ---
-library(dplyr)
-library(tidyr)
-library(stringr)
-library(tibble)
-library(polite)
-library(rvest)
-library(purrr)
-library(janitor)
-library(countrycode)
-library(httr2)
-library(fs)
-library(glue)
-library(cli)
-library(pdftools)
-library(wbstats)
-library(lubridate)
+#' @title Scrape NAP documents from website
+#' @description Scrapes the UNFCCC NAP Central website to extract National Adaptation Plans
+#'   document links and metadata. Returns separate structures for text and metadata paths.
+#'
+#' @param url URL of the website to scrape (default: "https://napcentral.org/submitted-naps")
+#' @param name_col Column index containing country names (default: 2)
+#' @param date_col Column index containing publication dates (default: 6)
+#' @param link_col Column index containing document links (default: 5)
+#' @param table_index Index of the table to extract from the page (default: 1)
+#' @param has_header Whether the table has a header row (default: TRUE)
+#' @param exclude_countries Vector of country names to exclude (default: NULL)
+#' @param output_path Path to save results (default: "data/scraped_website.rds")
+#'
+#' @return A list containing:
+#'   \item{data}{
+#'     \itemize{
+#'       \item tokens - Data frame with doc_id and pdf_link for text extraction path
+#'       \item metadata - Data frame with doc_id, country_name, and date_posted for metadata path
+#'     }
+#'   }
+#'   \item{metadata}{Processing information including timestamp and statistics}
+#'   \item{diagnostics}{Information about processing issues}
+#'
+#' @examples
+#' \dontrun{
+#' nap_data <- scrape_web(exclude_countries = c("Uruguay"))
+#' # Access the two data paths
+#' tokens_data <- nap_data$data$tokens
+#' metadata_data <- nap_data$data$metadata
+#' }
 
-## --- Data pipeline ---
-prep_data <- function(
+scrape_web <- function(
 	url = "https://napcentral.org/submitted-naps",
-	freeze_date = "2025-06-24"
+	name_col = 2,
+	date_col = 6,
+	link_col = 5,
+	table_index = 1,
+	has_header = TRUE,
+	exclude_countries = NULL,
+	output_path = "data/scraped_website.rds"
 ) {
-	html <- url |>
-		bow() |>
-		scrape()
+	# Start timing
+	start_time <- Sys.time()
 
-	html_tbl_unfiltered <- html |>
-		html_table() |>
-		pluck(1) |>
-		clean_names() |>
-		get_pdf_links(html = html) |>
-		fix_country_names() |>
-		fix_dates()
+	# Import the pipe operator
+	`%>%` <- magrittr::`%>%`
 
-	html_tbl <- html_tbl_unfiltered |>
-		filter(
-			date_clean <= freeze_date,
-			!is.na(pdf_english)
-		) |>
-		select(
-			country = country_clean,
-			country_iso = country_iso,
-			date = date_clean,
-			pdf_link = pdf_english
-		)
+	# Create output directory if needed
+	ensure_directory(output_path)
 
-	text_tbl_unfiltered <- html_tbl |>
-		download_pdfs()
-	extract_text()
+	# Initialize diagnostics tracking
+	diagnostics <- list(
+		excluded_countries = 0,
+		skipped_rows = 0,
+		processing_issues = character()
+	)
 
-	text_tbl <- text_tbl_unfiltered |>
-		filter(
-			!is.na(text)
-		) |>
-		select(
-			country,
-			country_iso,
-			date,
-			text
-		)
+	## --- Input validation -------------------------------------------------------
+	log_message("Validating input parameters", "scrape_web")
 
-	nap_tbl <- text_tbl |>
-		assign_wb_data() |>
-		assign_un_class()
-
-	return(nap_tbl)
-}
-## --- Assign SIDS/LLDC status from the UN websites ---
-assign_un_class <- function(tbl) {
-	# Get SIDS list
-	sids_url <- "https://www.un.org/ohrlls/content/list-sids"
-	sids_list <- sids_url |>
-		bow() |>
-		scrape() |>
-		html_table() |>
-		pluck(1) |>
-		slice(-1) |>
-		pivot_longer(
-			cols = everything(),
-			names_to = NULL,
-			values_to = "country"
-		) |>
-		mutate(
-			sids = TRUE,
-			country = str_extract(country, "[A-Za-z].*[A-Za-z]"),
-			country_iso = countrycode(
-				sourcevar = country,
-				origin = "country.name",
-				destination = "iso3c",
-				warn = FALSE
-			)
-		) |>
-		filter(!is.na(country_iso)) |>
-		select(sids, country_iso)
-
-	# Get LLDC list
-	lldc_url <- "https://www.un.org/ohrlls/content/list-lldcs"
-	lldc_list <- lldc_url |>
-		bow() |>
-		scrape() |>
-		html_table() |>
-		pluck(1) |>
-		slice(-1) |>
-		pivot_longer(
-			cols = everything(),
-			names_to = NULL,
-			values_to = "country"
-		) |>
-		mutate(
-			lldc = TRUE,
-			country = str_extract(country, "[A-Za-z].*[A-Za-z]"),
-			country_iso = countrycode(
-				sourcevar = country,
-				origin = "country.name",
-				destination = "iso3c",
-				warn = FALSE
-			)
-		) |>
-		filter(!is.na(country_iso)) |>
-		select(lldc, country_iso)
-
-	# Join both classifications with the input table
-	tbl |>
-		left_join(sids_list, by = "country_iso") |>
-		left_join(lldc_list, by = "country_iso") |>
-		mutate(
-			sids = if_else(is.na(sids), FALSE, sids),
-			lldc = if_else(is.na(lldc), FALSE, lldc)
-		)
-}
-
-
-## --- Helper: standardize country names ---
-fix_country_names <- function(tbl) {
-	tbl |>
-		mutate(
-			country_iso = countrycode(
-				sourcevar = country,
-				origin = "country.name",
-				destination = "iso3c"
-			),
-			country_clean = countrycode(
-				sourcevar = country_iso,
-				origin = "iso3c",
-				destination = "country.name"
-			)
-		)
-}
-
-## --- get_pdf_links function ---
-get_pdf_links <- function(html_tbl, html, link_col = 5) {
-	pdf_data <- html |>
-		html_elements("table tr") |>
-		tail(-1) |>
-		map_dfr(extract_pdfs_from_row, link_col = link_col)
-	html_tbl |>
-		bind_cols(pdf_data)
-}
-
-## --- Helper: standardize the dates ---
-fix_dates <- function(tbl, date_col = "date_posted") {
-	tbl |>
-		mutate(
-			date_clean = str_extract(
-				.data[[date_col]],
-				"^[^\n]+"
-			) |>
-				str_trim() |>
-				parse_date_time(
-					orders = c(
-						"mdy",
-						"dmy",
-						"ymd",
-						"Bdy",
-						"BdY"
-					)
-				) |>
-				as.Date()
-		)
-}
-
-## --- Helper: download pdfs ---
-download_pdfs <- function(tbl) {
-	tbl |>
-		mutate(
-			pdf_path = pmap_chr(
-				list(pdf_link, country_iso, date),
-				safe_download,
-				.progress = "Downloading PDFs",
-			)
-		)
-}
-
-
-## --- Helper-helper: download just the one pdf ---
-download_one_pdf <- function(link, country_iso, date, pdf_dir) {
-	pdf_dir <- dir_create("_cache/pdfs")
-	filename <- glue("{country_iso}_{format(date, '%Y%m%d')}.pdf")
-	path <- path(pdf_dir, filename)
-
-	if (file.exists(path)) {
-		return(path)
+	if (!is.numeric(name_col) || name_col <= 0) {
+		stop("name_col must be a positive number")
+	}
+	if (!is.numeric(date_col) || date_col <= 0) {
+		stop("date_col must be a positive number")
+	}
+	if (!is.numeric(link_col) || link_col <= 0) {
+		stop("link_col must be a positive number")
+	}
+	if (!is.numeric(table_index) || table_index <= 0) {
+		stop("table_index must be a positive number")
 	}
 
-	request(link) |>
-		req_retry(max_tries = 3) |>
-		req_perform() |>
-		resp_body_raw() |>
-		writeBin(path)
+	# Convert exclude_countries to lowercase for case-insensitive matching
+	exclude_countries <- tolower(exclude_countries)
 
-	path
-}
-
-safe_download <- possibly(download_one_pdf, otherwise = NA_character_)
-
-## --Helper: extract text from pdfs
-extract_text <- function(tbl) {
-	tbl |>
-		mutate(
-			text = map_chr(
-				pdf_path,
-				safe_extract,
-				.progress = "Extracting text from the PDFs"
-			)
-		)
-}
-
-## --- Helper-helper: extract just the one ---
-extract_one_text <- function(path) {
-	suppressMessages(
-		pdftools::pdf_text(path) |>
-			str_flatten(collapse = " ")
+	## --- Setup empty tibbles ----------------------------------------------------
+	# Initialize tokens data structure (for extract_pdfs path)
+	tokens_data <- tibble::tibble(
+		doc_id = character(),
+		pdf_link = character()
 	)
-}
 
-safe_extract <- possibly(extract_one_text, otherwise = NA_character_)
+	# Initialize metadata data structure (for add_metadata path)
+	metadata_data <- tibble::tibble(
+		doc_id = character(),
+		country_name = character(),
+		date_posted = character()
+	)
 
-## --- Assign the data from the wbstats package ---
-assign_wb_data <- function(tbl) {
-	wb_stats <- wb_countries() |>
-		select(
-			country_iso = iso3c,
-			region,
-			income_level
-		) |>
-		left_join(text_tbl, wb_stats, by = "country_iso") |>
-		filter(
-			!is.na(country)
+	## --- Connect to website -----------------------------------------------------
+	log_message(paste("Connecting to", url), "scrape_web")
+
+	session <- try(
+		polite::bow(
+			url = url,
+			user_agent = "napr (nnrorstad@gmail.com)",
+			delay = 3
+		),
+		silent = TRUE
+	)
+
+	if (inherits(session, "try-error")) {
+		error_msg <- "Failed to connect to the website"
+		diagnostics$processing_issues <- c(
+			diagnostics$processing_issues,
+			error_msg
 		)
-}
+		log_message(error_msg, "scrape_web", "ERROR")
 
-## --- Helper-helper: process one row ---
-extract_pdfs_from_row <- function(row, link_col) {
-	cells <- html_nodes(row, "td")
-	links <- cells[[link_col]] |>
-		extract_all_pdfs_by_language() |>
-		pivot_wider(
-			names_from = language,
-			values_from = href,
-			names_prefix = "pdf_"
+		# Return early with error information
+		return(create_result(
+			data = list(
+				tokens = tokens_data,
+				metadata = metadata_data
+			),
+			metadata = list(
+				url = url,
+				timestamp = Sys.time(),
+				success = FALSE
+			),
+			diagnostics = diagnostics
+		))
+	}
+
+	page_html <- try(polite::scrape(session), silent = TRUE)
+
+	if (inherits(page_html, "try-error")) {
+		error_msg <- "Failed to scrape the website content"
+		diagnostics$processing_issues <- c(
+			diagnostics$processing_issues,
+			error_msg
 		)
-}
+		log_message(error_msg, "scrape_web", "ERROR")
 
-## --- Helper-helper: extract all link data from a cell ---
-extract_link_data <- function(cell) {
-	cell |>
-		html_elements("a") |>
-		map_dfr(
-			~ {
-				tibble(
-					href = html_attr(.x, "href"),
-					text = html_text(.x, trim = TRUE),
-					span_text = html_element(.x, "span") |>
-						html_text(trim = TRUE) %||%
-						""
+		# Return early with error information
+		return(create_result(
+			data = list(
+				tokens = tokens_data,
+				metadata = metadata_data
+			),
+			metadata = list(
+				url = url,
+				timestamp = Sys.time(),
+				success = FALSE
+			),
+			diagnostics = diagnostics
+		))
+	}
+
+	## --- Find and select table --------------------------------------------------
+	tables <- rvest::html_nodes(page_html, "table")
+
+	if (length(tables) == 0) {
+		log_message(
+			"No tables found, returning empty results",
+			"scrape_web",
+			"WARNING"
+		)
+		diagnostics$processing_issues <- c(
+			diagnostics$processing_issues,
+			"No tables found on page"
+		)
+
+		return(create_result(
+			data = list(
+				tokens = tokens_data,
+				metadata = metadata_data
+			),
+			metadata = list(
+				url = url,
+				timestamp = Sys.time(),
+				success = FALSE
+			),
+			diagnostics = diagnostics
+		))
+	}
+
+	if (table_index > length(tables)) {
+		log_message(
+			paste(
+				"Table index",
+				table_index,
+				"too high (only",
+				length(tables),
+				"tables). Using first table."
+			),
+			"scrape_web",
+			"WARNING"
+		)
+		diagnostics$processing_issues <- c(
+			diagnostics$processing_issues,
+			paste("Table index too high, defaulted to first table")
+		)
+		table_index <- 1
+	}
+
+	table_html <- tables[[table_index]]
+
+	## --- Parse table rows -------------------------------------------------------
+	rows <- rvest::html_nodes(table_html, "tr")
+
+	if (length(rows) == 0) {
+		log_message(
+			"Selected table has no rows",
+			"scrape_web",
+			"WARNING"
+		)
+		diagnostics$processing_issues <- c(
+			diagnostics$processing_issues,
+			"Selected table has no rows"
+		)
+
+		return(create_result(
+			data = list(
+				tokens = tokens_data,
+				metadata = metadata_data
+			),
+			metadata = list(
+				url = url,
+				timestamp = Sys.time(),
+				table_count = length(tables),
+				success = FALSE
+			),
+			diagnostics = diagnostics
+		))
+	}
+
+	if (has_header && length(rows) > 1) {
+		rows <- rows[-1]
+	}
+
+	log_message(paste("Processing", length(rows), "rows"), "scrape_web")
+
+	## --- Helper inside: make absolute URL ---------------------------------------
+	make_absolute_url <- function(href, base_url) {
+		if (!grepl("^https?://", href)) {
+			if (startsWith(href, "/")) {
+				domain <- sub(
+					"^(https?://[^/]+).*",
+					"\\1",
+					base_url
 				)
+				return(paste0(domain, href))
+			} else {
+				dir <- dirname(base_url)
+				return(file.path(dir, href))
 			}
-		)
-}
+		}
+		return(href)
+	}
 
-## --- Helper-helper: extract PDFs and identify language ---
-extract_all_pdfs_by_language <- function(cell) {
-	cell |>
-		extract_link_data() |>
-		mutate(
-			display_text = if_else(text != "", text, span_text),
-			is_pdf = str_detect(
-				href,
-				regex("\\.pdf$", ignore_case = TRUE)
-			) |
-				str_detect(
-					display_text,
-					regex(
-						"pdf|document",
-						ignore_case = TRUE
-					)
+	## --- Loop through rows ------------------------------------------------------
+	doc_counter <- 0 # Counter for generating unique doc_ids
+
+	for (i in seq_along(rows)) {
+		cells <- rvest::html_nodes(rows[[i]], "td")
+
+		if (length(cells) < max(name_col, date_col, link_col)) {
+			log_message(
+				paste("Skipping row", i, "(too few columns)"),
+				"scrape_web",
+				"WARNING"
+			)
+			diagnostics$skipped_rows <- diagnostics$skipped_rows + 1
+			next
+		}
+
+		country_name <- rvest::html_text(cells[[name_col]], trim = TRUE)
+		date_posted <- rvest::html_text(cells[[date_col]], trim = TRUE)
+
+		# Check if country is in the exclude list (case-insensitive)
+		if (
+			!is.null(exclude_countries) &&
+				tolower(country_name) %in% exclude_countries
+		) {
+			log_message(
+				paste(
+					"Skipping excluded country:",
+					country_name
 				),
-			language = display_text |>
-				str_to_lower() |>
-				str_trim() |>
-				str_replace_all("[^a-z]", "_")
-		) |>
-		filter(is_pdf, !is.na(href), href != "") |>
-		group_by(language) |>
-		slice(1) |>
-		ungroup() |>
-		select(language, href)
+				"scrape_web"
+			)
+			diagnostics$excluded_countries <- diagnostics$excluded_countries +
+				1
+			next
+		}
+
+		pdf_link <- NULL
+
+		## Try to find direct English PDF links first
+		links <- rvest::html_nodes(cells[[link_col]], "a")
+
+		for (link in links) {
+			href <- rvest::html_attr(link, "href")
+			link_text <- rvest::html_text(link, trim = TRUE)
+
+			if (is.na(href) || href == "") {
+				next
+			}
+
+			is_pdf <- grepl("\\.pdf$", href, ignore.case = TRUE) ||
+				grepl(
+					"pdf|document",
+					link_text,
+					ignore.case = TRUE
+				)
+
+			# Only match English PDFs
+			is_match <- is_pdf &&
+				grepl("english", link_text, ignore.case = TRUE)
+
+			if (is_match) {
+				pdf_link <- make_absolute_url(href, url)
+				break
+			}
+		}
+
+		## If no link found, try spans inside links
+		if (is.null(pdf_link)) {
+			spans <- rvest::html_nodes(cells[[link_col]], "a span")
+			for (span in spans) {
+				span_text <- rvest::html_text(span, trim = TRUE)
+				if (
+					grepl(
+						"english",
+						span_text,
+						ignore.case = TRUE
+					)
+				) {
+					parent_link <- rvest::html_attr(
+						rvest::html_node(
+							span,
+							xpath = ".."
+						),
+						"href"
+					)
+					if (
+						!is.na(parent_link) &&
+							parent_link != ""
+					) {
+						is_pdf <- grepl(
+							"\\.pdf$",
+							parent_link,
+							ignore.case = TRUE
+						)
+						if (is_pdf) {
+							pdf_link <- make_absolute_url(
+								parent_link,
+								url
+							)
+							break
+						}
+					}
+				}
+			}
+		}
+
+		## Save result if found
+		if (!is.null(pdf_link)) {
+			# Increment counter and generate doc_id
+			doc_counter <- doc_counter + 1
+			doc_id <- paste0("nap_", sprintf("%03d", doc_counter))
+
+			# Add to tokens data (for extract_pdfs path)
+			tokens_data <- tibble::add_row(
+				tokens_data,
+				doc_id = doc_id,
+				pdf_link = pdf_link
+			)
+
+			# Add to metadata data (for add_metadata path)
+			metadata_data <- tibble::add_row(
+				metadata_data,
+				doc_id = doc_id,
+				country_name = country_name,
+				date_posted = date_posted
+			)
+
+			log_message(
+				paste("Added English PDF for:", country_name),
+				"scrape_web"
+			)
+		}
+	}
+
+	## --- Calculate processing time ----------------------------------------------
+	end_time <- Sys.time()
+	processing_time <- as.numeric(difftime(
+		end_time,
+		start_time,
+		units = "secs"
+	))
+
+	## --- Prepare and return final result ----------------------------------------
+	metadata <- list(
+		url = url,
+		timestamp = start_time,
+		processing_time_sec = processing_time,
+		table_count = length(tables),
+		row_count = length(rows),
+		document_count = doc_counter,
+		success = TRUE
+	)
+
+	# Return standardized result with separated data structures
+	return(create_result(
+		data = list(
+			tokens = tokens_data,
+			metadata = metadata_data
+		),
+		metadata = metadata,
+		diagnostics = diagnostics
+	))
 }
