@@ -1,12 +1,7 @@
----
-title: Masteroppgave
----
+# Masteroppgave
 
-This is my master thesis in Human Security at Aarhus University submitted in September 2026 and approved in October 2026. 
+Dette er masteroppgaven jeg skrev i samfunnssikkerhetsprogrammet på Aarhus Universitet, som jeg leverte i septermber 2025. 
 
-It is written as a Quarto project and the data is analyzed using R and the `stm`-package. 
+Den er skrevet som et Quarto-prosjekt, og jeg brukte anledningen til å lære meg tekstanalyse i R, med `stm`-pakka der. Den leverte versjonen er lagra som release 1.0.
 
-While the actual text of the thesis is submitted and finished, as this is the first large-scale data science project I've worked on, it is still subject to changes and refinements as we go along. 
-
-The changes are not meant to be breaking, but changing the code to follow tidyverse conventions and organizing a Quarto project is going to evolve. 
-
+Etter at jeg leverte den inn har jeg fortsatt å jobbe litt med den.
