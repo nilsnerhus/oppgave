@@ -14,7 +14,7 @@ dir.create("data", recursive = TRUE, showWarnings = FALSE)
 
 ## Set up caching on disk
 memoise_dir <- dir_create("_cache/memoise")
-cache <- cachem::cache_disk(
+cache <- cachem::cache_disk(,
   dir = memoise_dir,
   max_size = 1024^3,
   max_age = Inf
