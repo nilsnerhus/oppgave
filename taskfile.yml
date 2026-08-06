@@ -1,0 +1,169 @@
+version: "3"
+
+tasks:
+  prep:
+    desc: Hent og forbered NAP-data
+    sources:
+      - R/utils.R
+      - R/prep_data.R
+      - R/adapt.R
+    generates:
+      - data/prep_data.rds
+      - data/adapt_to_docs.rds
+      - data/adapt_to_metadata.rds
+    cmds:
+      - |
+        Rscript -e "
+        source('R/utils.R')
+        source('R/prep_data.R')
+        source('R/adapt.R')
+        dir.create('data', showWarnings = FALSE)
+        data <- prep_data()
+        saveRDS(data, 'data/prep_data.rds', compress = 'xz')
+        saveRDS(adapt_to_docs(data), 'data/adapt_to_docs.rds', compress = 'xz')
+        saveRDS(adapt_to_metadata(data), 'data/adapt_to_metadata.rds', compress = 'xz')
+        "
+
+  dfm:
+    desc: Bygg dokument-termmatrise
+    deps: [setup, prep]
+    sources:
+      - data/adapt_to_docs.rds
+      - data/adapt_to_metadata.rds
+      - R/utils.R
+      - R/prep_data.R
+      - R/adapt.R
+      - R/process_dfm.R
+    generates:
+      - data/process_dfm.rds
+    cmds:
+      - |
+        Rscript -e "
+        source('R/utils.R')
+        source('R/prep_data.R')
+        source('R/adapt.R')
+        source('R/process_dfm.R')
+        docs <- readRDS('data/adapt_to_docs.rds')
+        metadata <- readRDS('data/adapt_to_metadata.rds')
+        dfm <- process_dfm(docs, metadata)
+        saveRDS(dfm, 'data/process_dfm.rds', compress = 'xz')
+        "
+
+  model:
+    desc: Tren STM-modellen
+    deps: [setup, dfm]
+    sources:
+      - data/process_dfm.rds
+      - R/utils.R
+      - R/fit_model.R
+    generates:
+      - data/fit_model.rds
+    cmds:
+      - |
+        Rscript -e "
+        source('R/utils.R')
+        source('R/fit_model.R')
+        dfm <- readRDS('data/process_dfm.rds')
+        category_map <- list(
+          Global = 'global_category',
+          Income = 'income_level',
+          Region = 'region',
+          Geography = 'geography',
+          Time = 'time_period'
+        )
+        model <- fit_model(dfm, k = 8, category_map)
+        saveRDS(model, 'data/fit_model.rds', compress = 'xz')
+        "
+
+  name:
+    desc: Gi navn til topics
+    deps: [setup, model]
+    sources:
+      - data/fit_model.rds
+      - R/utils.R
+      - R/name_topics.R
+    generates:
+      - data/name_topics.rds
+    cmds:
+      - |
+        Rscript -e "
+        source('R/utils.R')
+        source('R/name_topics.R')
+        model <- readRDS('data/fit_model.rds')
+        topic_names <- c('napa', 'cyclone', 'mountain', 'hurricane', 'office', 'transit', 'rcp', 'mainstream')
+        topics <- name_topics(model, topic_names)
+        saveRDS(topics, 'data/name_topics.rds', compress = 'xz')
+        "
+
+  metrics:
+    desc: Beregn dominance- og effektmål
+    deps: [setup, name]
+    sources:
+      - data/fit_model.rds
+      - data/name_topics.rds
+      - data/process_dfm.rds
+      - R/utils.R
+      - R/find_dominance.R
+      - R/find_variance.R
+      - R/calculate_metrics.R
+    generates:
+      - data/calculate_metrics.rds
+    cmds:
+      - |
+        Rscript -e "
+        source('R/utils.R')
+        source('R/find_dominance.R')
+        source('R/find_variance.R')
+        source('R/calculate_metrics.R')
+        model <- readRDS('data/fit_model.rds')
+        topics <- readRDS('data/name_topics.rds')
+        dfm <- readRDS('data/process_dfm.rds')
+        metrics <- calculate_metrics(model, topics, dfm)
+        saveRDS(metrics, 'data/calculate_metrics.rds', compress = 'xz')
+        "
+
+  variables:
+    desc: Generer inline-variabler for Quarto
+    deps: [setup, metrics]
+    sources:
+      - data/name_topics.rds
+      - data/calculate_metrics.rds
+      - data/process_dfm.rds
+      - data/fit_model.rds
+      - R/utils.R
+      - R/load_variables.R
+    generates:
+      - data/load_variables.rds
+    cmds:
+      - |
+        Rscript -e "
+        source('R/utils.R')
+        source('R/load_variables.R')
+        topics <- readRDS('data/name_topics.rds')
+        metrics <- readRDS('data/calculate_metrics.rds')
+        dfm <- readRDS('data/process_dfm.rds')
+        model <- readRDS('data/fit_model.rds')
+        variables <- load_variables(topics, metrics, web = NULL, dfm = dfm, model = model)
+        saveRDS(variables, 'data/load_variables.rds', compress = 'xz')
+        "
+
+  pipeline:
+    desc: Kjør hele datapipelinen
+    deps: [setup, prep, dfm, model, name, metrics, variables]
+
+  render:
+    desc: Render Quarto-boken
+    deps: [setup, pipeline]
+    sources:
+      - _quarto.yml
+      - index.qmd
+      - text/*.qmd
+      - data/load_variables.rds
+    generates:
+      - _book/**/*
+    cmds:
+      - quarto render
+
+  all:
+    desc: Kjør pipeline og render
+    deps: [pipeline, render]
