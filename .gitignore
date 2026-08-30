@@ -3,3 +3,6 @@ _freeze/
 _book/
 pdf/
 rds/
+
+/.quarto/
+**/*.quarto_ipynb
