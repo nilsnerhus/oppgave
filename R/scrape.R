@@ -75,10 +75,13 @@ prep_naps <- function(url = napcentral_url) {
   write_csv(naps, path(csv_dir, "naps.csv"))
 
   metadata <- tibble(
-    timestamp = format(Sys.time(), "%Y-%m-%d %H:%M:%S", tz = "UTC"),
-    n_initial = nrow(link_tbl_unfiltered),
-    n_english = nrow(link_tbl),
-    n_final = nrow(naps)
+    variable = c("timestamp", "n_initial", "n_english", "n_final"),
+    value = c(
+      format(Sys.time(), "%Y-%m-%d %H:%M:%S", tz = "UTC"),
+      as.character(nrow(link_tbl_unfiltered)),
+      as.character(nrow(link_tbl)),
+      as.character(nrow(naps))
+    )
   )
 
   write_csv(metadata, path(csv_dir, "metadata.csv"))

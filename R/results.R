@@ -9,7 +9,7 @@
 # Writes:
 #   csv/topics.csv    one row per topic: terms, share, and its countries
 #   csv/metrics.csv   dominance and estimated effects per country group
-#   csv/run_info.csv  key-value run metadata for the writing layer
+#   csv/metadata.csv  the run facts appended to the scrape metadata
 # =============================================================================
 
 library(dplyr)
@@ -73,22 +73,22 @@ write_results <- function() {
     results$meta
   )
 
-  ## Run metadata for the writing layer
-  scrape <- read_csv(path(csv_dir, "metadata.csv"), show_col_types = FALSE)
-  run_info <- build_run_info(fit, scrape)
+  ## Append the run facts to the scrape metadata
+  metadata <- read_csv(path(csv_dir, "metadata.csv"), show_col_types = FALSE)
+  run_facts <- build_run_facts(fit)
 
   write_csv(topic_tbl, path(csv_dir, "topics.csv"))
   write_csv(metrics_tbl, path(csv_dir, "metrics.csv"))
-  write_csv(run_info, path(csv_dir, "run_info.csv"))
+  write_csv(bind_rows(metadata, run_facts), path(csv_dir, "metadata.csv"))
 
   message(
     "Wrote ",
     nrow(topic_tbl),
     " topics to csv/topics.csv, ",
     nrow(metrics_tbl),
-    " group metrics to csv/metrics.csv, and ",
-    nrow(run_info),
-    " run facts to csv/run_info.csv"
+    " group metrics to csv/metrics.csv, and appended ",
+    nrow(run_facts),
+    " run facts to csv/metadata.csv"
   )
 }
 
@@ -276,9 +276,9 @@ calculate_metrics <- function(theta, meta_doc, stm_model, stm_meta) {
   bind_rows(metrics)
 }
 
-## --- Run info -----------------------------------------------------------------
+## --- Metadata -----------------------------------------------------------------
 
-build_run_info <- function(fit_info, scrape) {
+build_run_facts <- function(fit_info) {
   tibble(
     variable = c(
       "freeze_date",
@@ -288,10 +288,7 @@ build_run_info <- function(fit_info, scrape) {
       "n_final_documents",
       "avg_segment_length",
       "iterations",
-      "converged",
-      "n_initial",
-      "n_english",
-      "n_final"
+      "converged"
     ),
     value = c(
       fit_info$freeze_date,
@@ -301,10 +298,7 @@ build_run_info <- function(fit_info, scrape) {
       as.character(fit_info$n_segments),
       as.character(fit_info$avg_segment_length),
       as.character(fit_info$iterations),
-      as.character(fit_info$converged),
-      as.character(scrape$n_initial),
-      as.character(scrape$n_english),
-      as.character(scrape$n_final)
+      as.character(fit_info$converged)
     )
   )
 }
