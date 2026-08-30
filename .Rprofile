@@ -12,17 +12,3 @@ if (!requireNamespace("renv", quietly = TRUE)) {
 
 # Activate the project library.
 source("renv/activate.R")
-
-# Ensure critical packages are present in the project library.
-# - yaml: required by renv to parse dependencies
-# - knitr, rmarkdown: required by Quarto
-# These may not be auto-detected by renv because they are not explicitly loaded
-# in the Quarto source files.
-ensure_installed <- function(pkgs) {
-  missing <- pkgs[!sapply(pkgs, requireNamespace, quietly = TRUE)]
-  if (length(missing)) {
-    renv::install(missing)
-  }
-}
-
-ensure_installed(c("yaml", "knitr", "rmarkdown"))
