@@ -3,6 +3,6 @@
 
 # Welcome {.unnumbered .unlisted}
 
-This is the webversion of my masters thesis. It is possible to download the PDF version from the top left, although the content is the same. 
+This is the webversion of my masters thesis. It is possible to download the PDF version from the top left, although the content is the same.
 
 :::
