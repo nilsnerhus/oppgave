@@ -1,5 +1,5 @@
 project:
-    type: book
+  type: book
 
 book:
   title: "Climate adaptation"
@@ -11,22 +11,21 @@ book:
   downloads: pdf
   chapters:
     - index.qmd
-    - text/abstract.qmd
-    - text/intro.qmd
-    - text/context.qmd
-    - text/concepts.qmd
-    - text/methods.qmd
-    - text/findings.qmd
-    - text/discussion.qmd
-    - text/conclusion.qmd
-    - text/references.qmd
+    - quarto/abstract.qmd
+    - quarto/intro.qmd
+    - quarto/context.qmd
+    - quarto/concepts.qmd
+    - quarto/methods.qmd
+    - quarto/findings.qmd
+    - quarto/discussion.qmd
+    - quarto/conclusion.qmd
+    - quarto/references.qmd
 
 cap-location: bottom
-bibliography: 
-  - references/references.bib
-  - references/grateful-refs.bib
+bibliography:
+  - references.bib
 
-execute: 
+execute:
   echo: false
   warning: false
 
