@@ -1,4 +1,8 @@
 variable,value
+timestamp,2026-08-30 21:46:26
+n_initial,79
+n_english,62
+n_final,60
 freeze_date,2025-06-24
 k,8
 n_documents,46
@@ -7,6 +11,3 @@ n_final_documents,222
 avg_segment_length,5723
 iterations,85
 converged,TRUE
-n_initial,79
-n_english,62
-n_final,60
