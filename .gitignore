@@ -1,5 +1,5 @@
 .quarto/
 _freeze/
-_cache/
 _book/
-data/
+pdf/
+rds/
