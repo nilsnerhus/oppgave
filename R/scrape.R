@@ -34,6 +34,7 @@ lldc_url <- "https://www.un.org/ohrlls/content/list-lldcs"
 bot_id <- "napr (nnrorstad@gmail.com)"
 pdf_dir <- "pdf"
 csv_dir <- "csv"
+min_doc_words <- 1000
 
 ## --- Data pipeline ------------------------------------------------------------
 
@@ -62,7 +63,12 @@ prep_naps <- function(url = napcentral_url) {
 
   ## Clean into the NAP table and write both files
   naps <- nap_tbl |>
-    filter(!is.na(text), !is.na(date), !is.na(income_level), !is.na(region)) |>
+    filter(
+      str_count(text, "[A-Za-z]+") >= min_doc_words,
+      !is.na(date),
+      !is.na(income_level),
+      !is.na(region)
+    ) |>
     arrange(date) |>
     select(country, date, income_level, region, geography, text)
 
