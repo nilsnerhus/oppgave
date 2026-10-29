@@ -47,3 +47,6 @@ format:
       text: |
         \let\oldsection\section
         \renewcommand{\section}[1]{\clearpage\oldsection{#1}}
+
+filter:
+  - wordcount
