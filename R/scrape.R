@@ -19,7 +19,6 @@ library(readr)
 library(tibble)
 library(glue)
 library(lubridate)
-library(polite)
 library(rvest)
 library(httr2)
 library(pdftools)
@@ -35,6 +34,9 @@ bot_id <- "napr (nnrorstad@gmail.com)"
 pdf_dir <- "pdf"
 csv_dir <- "csv"
 min_doc_words <- 1000
+
+dir_create(pdf_dir)
+dir_create(csv_dir)
 
 ## --- Data pipeline ------------------------------------------------------------
 
@@ -89,14 +91,22 @@ prep_naps <- function(url = napcentral_url) {
 
 ## --- Scrape -------------------------------------------------------------------
 
+fetch_page <- function(url, user_agent = bot_id, delay = 2) {
+  Sys.sleep(delay)
+
+  request(url) |>
+    req_user_agent(user_agent) |>
+    req_perform() |>
+    resp_body_html()
+}
+
 scrape_napcentral <- function(
   url,
   user_agent = bot_id,
   delay = 2,
   link_col = 5
 ) {
-  page <- bow(url, user_agent = user_agent, delay = delay) |>
-    scrape()
+  page <- fetch_page(url, user_agent, delay)
 
   html_tbl <- html_table(page) |>
     pluck(1) |>
@@ -218,7 +228,7 @@ extract_text <- function(tbl) {
 ## --- Classifications ----------------------------------------------------------
 
 scrape_un_list <- function(url, user_agent = bot_id, delay = 2) {
-  html_table(bow(url, user_agent = user_agent, delay = delay) |> scrape()) |>
+  html_table(fetch_page(url, user_agent, delay)) |>
     pluck(1) |>
     slice(-1) |>
     pivot_longer(everything(), names_to = NULL, values_to = "country") |>
