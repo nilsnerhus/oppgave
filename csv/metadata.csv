@@ -1,13 +1,13 @@
 variable,value
-timestamp,2026-08-30 21:46:26
-n_initial,79
-n_english,62
-n_final,60
+timestamp,2026-11-24 21:08:59
+n_initial,84
+n_english,66
+n_final,62
 freeze_date,2025-06-24
 k,8
 n_documents,46
-n_tokens_raw,2074217
+n_tokens_raw,2030444
 n_final_documents,222
-avg_segment_length,5723
-iterations,85
+avg_segment_length,10153
+iterations,63
 converged,TRUE

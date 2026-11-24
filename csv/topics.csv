@@ -1,9 +1,9 @@
 topic_id,frex_terms,topic_proportion,effective_documents,c1_country,c1_score,c2_country,c2_score,c3_country,c3_score
-1,"deputi, synthesi, definit, america, intergovernment",0.07163306067743413,13,Brazil,0.5411858149101376,Argentina,0.2535116854566932,Uruguay,0.2487262557398141
-2,"specialist, alert, technolog, analyz, ration",0.07799971836929082,17,Moldova,0.6357530192200785,Israel,0.21284307799128988,Argentina,0.20047764774812232
-3,"equiti, sdg, pillar, leadership, agenda",0.19528160135857317,37,Armenia,0.5081212027223359,Papua New Guinea,0.4186086637096834,Philippines,0.4136447205079239
-4,"malnutrit, death, mortal, hygien, elderli",0.1253795558578844,32,Sudan,0.4727180716419753,Nepal,0.3012556613035932,Bangladesh,0.28138300314558246
-5,"meteorologi, surveil, induc, smart, breed",0.10645056736527506,19,Bhutan,0.6865236152227887,Sri Lanka,0.6318606021902364,Mongolia,0.3554953148950728
-6,"director, gef, ment, minist, tion",0.1459792827397011,30,Albania,0.5717769719208196,Bosnia & Herzegovina,0.4350261479976494,Congo - Kinshasa,0.42039854683904215
-7,"divis, reef, coral, sid, surg",0.13255230561489956,24,Kiribati,0.6341183981753112,St. Lucia,0.5187141735546162,Antigua & Barbuda,0.43046876723613814
-8,"rcp, maximum, centuri, warmer, upper",0.1447239080169418,37,Serbia,0.5675496480678213,Palestinian Territories,0.5264511264455242,Kuwait,0.32348159869415627
+1,"republ, mountain, summer, precipit, grow",0.07675835320558695,8,Serbia,0.7740294530105564,Bosnia & Herzegovina,0.5517349306784581,Azerbaijan,0.3949837410144056
+2,"coral, hurrican, island, surg, reef",0.13450864145266325,27,Marshall Islands,0.5693250171510512,Kuwait,0.5272763877544059,Antigua & Barbuda,0.45744328967345815
+3,"view, upon, citi, factor, famili",0.07897354318029036,13,Brazil,0.8351384543958484,Sudan,0.40468427777731864,Burkina Faso,0.3645293968179433
+4,"climate-resili, livestock, medium, wildlif, percent",0.10530663382881657,21,Nepal,0.6106503304583866,Bangladesh,0.5035317371595854,Chad,0.45844188441997674
+5,"rcp, rainfal, trend, figur, ensembl",0.08715026789824602,20,Palestinian Territories,0.698104760919736,Philippines,0.2714076458213077,Thailand,0.21006793411734212
+6,"gcf, mainstream, mandat, arrang, unfccc",0.273387103151764,40,Armenia,0.6670192848966685,Papua New Guinea,0.5827943156452596,Kenya,0.5515199249951241
+7,"offic, output, perform, conduct, secretariat",0.12995278488477416,30,Sri Lanka,0.5906535157376102,Kiribati,0.47064827615785076,St. Lucia,0.437480124218998
+8,"tion, task, line, transit, law",0.1139626723978587,20,Israel,0.7235156373145586,Argentina,0.5852009635288642,Mozambique,0.4169464622637652
