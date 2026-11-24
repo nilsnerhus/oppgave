@@ -18,7 +18,7 @@ library(stringr)
 library(readr)
 library(tibble)
 library(forcats)
-library(tidytext)
+library(purrr)
 library(lubridate)
 library(stm)
 library(SnowballC)
@@ -33,7 +33,6 @@ min_word_freq <- 0.1
 max_word_freq <- 0.8
 iterations <- 200
 seed <- 12345
-furniture_words <- c("pdf", "http", "https", "php", "www", "com", "gov", "html")
 csv_dir <- "csv"
 rds_dir <- "rds"
 
@@ -61,50 +60,57 @@ analyze_naps <- function(cutoff = freeze_date) {
     filter(date <= cutoff)
   n_documents <- nrow(naps)
 
-  ## Tokenize everything into one long table
-  message("Tokenizing ", n_documents, " NAPs ...")
-  token_tbl_unfiltered <- naps |>
-    unnest_tokens(word, text)
-  n_tokens_raw <- nrow(token_tbl_unfiltered)
-
-  ## Clean the tokens: stopwords, short words, numbers, then stemming
-  message("Cleaning ", n_tokens_raw, " tokens ...")
-  token_tbl <- token_tbl_unfiltered |>
-    clean_tokens()
-
-  ## Group the cleaned tokens back into segments
-  message("Grouping into segments ...")
-  segment_tbl <- make_segments(token_tbl)
-
-  empty <- setdiff(naps$country, unique(segment_tbl$country))
-  if (length(empty) > 0) {
-    message("No surviving tokens for: ", paste(empty, collapse = ", "))
-  }
-
-  ## Keep the words that are neither too rare nor too common across segments
-  word_tbl <- prune_words(segment_tbl, min_word_freq, max_word_freq)
-
-  ## Cast to a sparse matrix and align the segment metadata with its rows
-  meta_segment <- word_tbl |>
-    distinct(seg_key, country) |>
-    left_join(naps, by = "country")
-  meta_segment <- meta_segment[order(meta_segment$seg_key), ]
-
-  segment_matrix <- cast_sparse(
-    word_tbl |> mutate(seg_key = factor(seg_key, levels = meta_segment$seg_key)),
-    seg_key,
-    word
+  ## Segment the raw text before cleaning, as in the handed-in pipeline
+  n_tokens_raw <- sum(map_int(
+    naps$text,
+    ~ length(str_split(.x, "\\s+")[[1]])
+  ))
+  segment_length <- make_segment_length(n_tokens_raw)
+  message(
+    "Segmenting ", n_documents, " NAPs into raw-text windows of about ",
+    segment_length, " words ..."
   )
-  stopifnot(identical(rownames(segment_matrix), meta_segment$seg_key))
+  segment_tbl <- make_segments(naps, segment_length)
 
-  documents <- as_stm_documents(segment_matrix)
-  vocab <- colnames(segment_matrix)
+  ## Align segment metadata with the segment text
+  meta_segment <- segment_tbl |>
+    select(seg_key, country) |>
+    left_join(naps |> select(-text), by = "country") |>
+    arrange(match(seg_key, segment_tbl$seg_key))
 
+  ## Clean and stem the segments with STM's text processor
+  message("Cleaning ", nrow(segment_tbl), " segments ...")
+  processed <- stm::textProcessor(
+    documents = segment_tbl$text,
+    metadata = meta_segment,
+    lowercase = TRUE,
+    removestopwords = TRUE,
+    removenumbers = TRUE,
+    removepunctuation = TRUE,
+    stem = TRUE,
+    wordLengths = c(3, Inf),
+    customstopwords = geo_stopwords() |> pull(word),
+    verbose = FALSE
+  )
+
+  ## Prune terms by the share of segments in which they appear
+  min_docs <- max(1, ceiling(nrow(segment_tbl) * min_word_freq))
+  max_docs <- max(min_docs + 1, floor(nrow(segment_tbl) * max_word_freq))
+  prepped <- stm::prepDocuments(
+    documents = processed$documents,
+    vocab = processed$vocab,
+    meta = processed$meta,
+    lower.thresh = min_docs,
+    upper.thresh = max_docs,
+    verbose = FALSE
+  )
+
+  documents <- prepped$documents
+  vocab <- prepped$vocab
   ## Drop factor levels that lost their documents along the way
-  meta_segment <- meta_segment |>
+  meta_segment <- prepped$meta |>
     mutate(across(where(is.factor), fct_drop))
 
-  ## Fit the model
   check_prevalence(meta_segment)
   message("Fitting STM with k = ", k, " on ", length(documents), " segments ...")
   model <- stm(
@@ -143,8 +149,10 @@ analyze_naps <- function(cutoff = freeze_date) {
     n_documents = n_documents,
     n_segments = length(documents),
     n_tokens_raw = n_tokens_raw,
-    n_tokens = nrow(token_tbl),
-    avg_segment_length = make_segment_length(nrow(token_tbl))
+    n_tokens = sum(vapply(documents, function(doc) sum(doc[2, ]), numeric(1))),
+    avg_segment_length = segment_length,
+    min_docs = min_docs,
+    max_docs = max_docs
   )
 
   dir_create(rds_dir)
@@ -193,17 +201,6 @@ prep_covariates <- function(tbl) {
     )
 }
 
-## --- Clean --------------------------------------------------------------------
-
-clean_tokens <- function(tbl) {
-  tbl |>
-    anti_join(stop_words, by = "word") |>
-    anti_join(geo_stopwords(), by = "word") |>
-    mutate(word = str_remove_all(word, "\\d")) |>
-    filter(str_length(word) >= 3, !word %in% furniture_words) |>
-    mutate(word = wordStem(word))
-}
-
 ## Words from country names, so country mentions don't become topics
 geo_stopwords <- function(min_length = 4) {
   common_terms <- c(
@@ -218,7 +215,7 @@ geo_stopwords <- function(min_length = 4) {
 
   countrycode::codelist$country.name.en |>
     na.omit() |>
-    str_split(" ") |>
+    str_split("\\s+") |>
     unlist() |>
     str_to_lower() |>
     str_subset(str_c("^[a-z]{", min_length, ",}$")) |>
@@ -235,52 +232,40 @@ make_segment_length <- function(n_tokens) {
   max(min_seg_len, ceiling(n_tokens / target_segments))
 }
 
-## Short documents stay whole; long ones are cut into word-count windows
-make_segments <- function(tbl) {
-  segment_length <- make_segment_length(nrow(tbl))
+## Short documents stay whole; long ones are cut into raw-word windows
+segment_document <- function(country, text, doc_order, segment_length) {
+  words <- str_split(text, "\\s+")[[1]]
+  n_words <- length(words)
+  seg_id <- if (n_words < whole_doc_min) {
+    rep(0L, n_words)
+  } else {
+    as.integer((seq_len(n_words) - 1) %/% segment_length)
+  }
 
-  tbl |>
-    group_by(country) |>
+  tibble(word = words, seg_id = seg_id) |>
+    group_by(seg_id) |>
+    summarise(text = str_c(word, collapse = " "), .groups = "drop") |>
     mutate(
-      seg_id = if (n() < whole_doc_min) {
-        0L
-      } else {
-        as.integer((row_number() - 1) %/% segment_length)
-      }
-    ) |>
-    ungroup() |>
-    mutate(seg_key = paste0(country, "_", seg_id))
-}
-
-## Drop words that appear in too few or too many segments
-prune_words <- function(tbl, min_freq, max_freq) {
-  n_segments <- n_distinct(tbl$seg_key)
-  min_docs <- max(1, ceiling(n_segments * min_freq))
-  max_docs <- max(min_docs + 1, floor(n_segments * max_freq))
-
-  word_docs <- tbl |>
-    group_by(word) |>
-    summarise(n_seg = n_distinct(seg_key), .groups = "drop")
-
-  tbl |>
-    semi_join(
-      word_docs |> filter(n_seg >= min_docs, n_seg <= max_docs),
-      by = "word"
+      country = country,
+      doc_order = doc_order,
+      seg_key = paste0(country, "_", seg_id)
     )
 }
 
-## --- Model --------------------------------------------------------------------
-
-## Turn a sparse document matrix into the list of 2-row matrices stm expects:
-## the first row holds vocabulary indices, the second the counts
-as_stm_documents <- function(m) {
-  triplets <- as.data.frame(Matrix::summary(m))
-  triplets <- triplets[order(triplets$i, triplets$j), ]
-
-  lapply(seq_len(nrow(m)), function(idx) {
-    rows <- which(triplets$i == idx)
-    rbind(as.integer(triplets$j[rows]), as.integer(triplets$x[rows]))
-  })
+make_segments <- function(tbl, segment_length) {
+  pmap(
+    list(
+      country = tbl$country,
+      text = tbl$text,
+      doc_order = seq_len(nrow(tbl))
+    ),
+    function(country, text, doc_order) {
+      segment_document(country, text, doc_order, segment_length)
+    }
+  ) |>
+    bind_rows() |>
+    arrange(doc_order, seg_id) |>
+    select(-doc_order)
 }
 
 ## A missing covariate must stop the run, not silently drop out of the model
